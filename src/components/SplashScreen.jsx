@@ -28,13 +28,18 @@ const SplashScreen = ({ onComplete }) => {
             opacity: fade ? 0 : 1,
             pointerEvents: 'none'
         }}>
-            <div style={{
-                fontSize: '8rem',
-                marginBottom: '10px',
-                animation: 'bounceIn 1s cubic-bezier(0.34, 1.56, 0.64, 1)'
-            }}>
-                🥝
-            </div>
+            <img 
+                src="/icon-512.png" 
+                alt="Kiwi AAC Logo"
+                style={{
+                    width: '160px',
+                    height: '160px',
+                    marginBottom: '20px',
+                    borderRadius: '22%',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+                    animation: 'bounceIn 1s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                }}
+            />
             <h1 style={{
                 fontSize: '2.5rem',
                 fontWeight: 800,
