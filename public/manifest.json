@@ -3,9 +3,11 @@
     "short_name": "Kiwi",
     "description": "An intuitive AAC app for children with autism.",
     "start_url": "/",
+    "scope": "/",
     "display": "standalone",
     "background_color": "#F2F2F7",
     "theme_color": "#007AFF",
+    "orientation": "portrait",
     "icons": [
         {
             "src": "icon-192.png",
@@ -18,6 +20,15 @@
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "any maskable"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "screenshots/main_grid.png",
+            "sizes": "1170x2532",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "Communication Board"
         }
     ]
 }
