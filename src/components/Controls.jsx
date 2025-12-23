@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import GuidedAccessModal from './GuidedAccessModal';
 
 const Controls = ({
     isEditMode,
@@ -37,6 +38,10 @@ const Controls = ({
     const [newIcon, setNewIcon] = useState('');
     const [newType, setNewType] = useState('button');
     const [availableVoices, setAvailableVoices] = useState([]);
+    const [showGuidedAccess, setShowGuidedAccess] = useState(false);
+
+    // Detect iOS to show relevant help
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
     React.useEffect(() => {
         const loadVoices = () => {
@@ -442,9 +447,34 @@ const Controls = ({
                         🔒 Enable Child Mode
                     </button>
                 </div>
+                
+                {isIOS && (
+                    <div className="input-row">
+                        <button 
+                            style={{ flexGrow: 1, background: '#E5E5EA', color: '#007AFF', fontSize: '0.9rem' }} 
+                            onClick={() => setShowGuidedAccess(true)}
+                        >
+                            📱 How to Lock Screen (iOS)
+                        </button>
+                    </div>
+                )}
+
                 <div className="input-row">
                     <button className="danger" style={{ flexGrow: 1 }} onClick={onReset}>
                         Reset All
+                    </button>
+                </div>
+                <div className="input-row">
+                    <button
+                        style={{ flexGrow: 1, background: '#FF9500', color: 'white', fontSize: '0.85rem' }}
+                        onClick={() => {
+                            if (confirm("This will clear everything and restart from onboarding. Continue?")) {
+                                localStorage.clear();
+                                location.reload();
+                            }
+                        }}
+                    >
+                        🧪 Restart Onboarding (Testing)
                     </button>
                 </div>
 
@@ -458,6 +488,8 @@ const Controls = ({
                     <button onClick={onStopTraining}>Done</button>
                 </div>
             </div>
+
+            {showGuidedAccess && <GuidedAccessModal onClose={() => setShowGuidedAccess(false)} />}
         </div>
     );
 };
