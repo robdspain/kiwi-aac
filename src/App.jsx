@@ -37,9 +37,8 @@ const defaultData = [
   { id: 'starter-want', type: 'button', word: "I want", icon: "🙋", category: 'starter' },
   { id: 'starter-see', type: 'button', word: "I see", icon: "👀", category: 'starter' },
   { id: 'starter-feel', type: 'button', word: "I feel", icon: "😊", category: 'starter' },
-  { id: 'mom', type: 'button', word: "Mom", icon: "👩" },
-  { id: 'dad', type: 'button', word: "Dad", icon: "👨" },
-  { id: 'help', type: 'button', word: "Help", icon: "🤝" },
+  { id: 'mom', type: 'button', word: "Mom", icon: "👩‍🦱" },
+  { id: 'dad', type: 'button', word: "Dad", icon: "👱‍♂️" },
   { id: 'more', type: 'button', word: "More", icon: "➕" },
   {
     id: 'food-folder', type: 'folder', word: "Foods", icon: "🍎", contents: [
