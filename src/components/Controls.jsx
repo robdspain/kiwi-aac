@@ -39,12 +39,12 @@ const Controls = ({
 
     const phases = [
         { id: 0, label: "Normal Mode", icon: "📱" },
-        { id: 1, label: "Phase I: Physical Exchange", icon: "🤝" },
-        { id: 2, label: "Phase II: Spontaneity", icon: "🔔" },
-        { id: 3, label: "Phase III: Discrimination", icon: "🍱" },
-        { id: 4, label: "Phase IV: Sentence", icon: "🏗️" },
-        { id: 5, label: "Phase V: Responding", icon: "❓" },
-        { id: 6, label: "Phase VI: Commenting", icon: "💬" }
+        { id: 1, label: "Level 1: Physical Exchange", icon: "🤝" },
+        { id: 2, label: "Level 2: Getting Attention", icon: "🔔" },
+        { id: 3, label: "Level 3: Picture Selection", icon: "🍱" },
+        { id: 4, label: "Level 4: Sentence Building", icon: "🏗️" },
+        { id: 5, label: "Level 5: Answering Questions", icon: "❓" },
+        { id: 6, label: "Level 6: Commenting", icon: "💬" }
     ];
 
     return (
@@ -93,7 +93,7 @@ const Controls = ({
                 </div>
 
                 <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <span style={{ fontWeight: 600, color: '#333' }}>PECS Learning Level</span>
+                    <span style={{ fontWeight: 600, color: '#333' }}>Communication Level</span>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
                         {phases.map(p => (
                             <button

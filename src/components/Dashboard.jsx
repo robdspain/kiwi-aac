@@ -90,7 +90,7 @@ const Dashboard = ({ onClose, progressData }) => {
                     </div>
                 )}
 
-                <h2 style={{ borderBottom: '2px solid #EEE', paddingBottom: '10px' }}>🏃 PECS Progress</h2>
+                <h2 style={{ borderBottom: '2px solid #EEE', paddingBottom: '10px' }}>🏃 Communication Progress</h2>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px', marginBottom: '30px' }}>
                     <div style={{ background: '#F3E5F5', padding: '20px', borderRadius: '15px', textAlign: 'center' }}>
                         <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#9C27B0' }}>{independentTrials}</div>

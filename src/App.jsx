@@ -770,7 +770,13 @@ function App() {
       )}
 
       {showOnboarding && (
-        <Onboarding onComplete={() => setShowOnboarding(false)} />
+        <Onboarding onComplete={(recommendedPhase) => {
+          if (typeof recommendedPhase === 'number') {
+            setCurrentPhase(recommendedPhase);
+            localStorage.setItem('kians-phase', recommendedPhase.toString());
+          }
+          setShowOnboarding(false);
+        }} />
       )}
     </div>
   );
