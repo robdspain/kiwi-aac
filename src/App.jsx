@@ -109,6 +109,7 @@ const homeDefaultData = [
       { id: 'yogurt', type: 'button', word: "Yogurt", icon: "🍦" },
       { id: 'carrot', type: 'button', word: "Carrot", icon: "🥕" },
       { id: 'grape', type: 'button', word: "Grape", icon: "🍇" },
+      { id: 'real-apple', type: 'button', word: "Healthy Snack", icon: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=200&h=200&fit=crop", bgColor: "#E3F2FD" },
       { id: 'custom-photo', type: 'button', word: "My Snack", icon: "📷", bgColor: "#E3F2FD" }
     ]
   },
