@@ -936,6 +936,13 @@ function App() {
     <div id="main-area">
       {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
       
+      {/* Dynamic Background Decorations */}
+      <div className="bg-decorations" style={{ pointerEvents: 'none', position: 'fixed', inset: 0, zIndex: -1, opacity: 0.4 }}>
+        <div className="decor-item" style={{ top: '10%', left: '5%', fontSize: '3rem' }}>🥝</div>
+        <div className="decor-item" style={{ top: '60%', right: '10%', fontSize: '2rem' }}>🌟</div>
+        <div className="decor-item" style={{ bottom: '15%', left: '15%', fontSize: '2.5rem' }}>✨</div>
+      </div>
+
       {showStrip && (gridSize !== 'super-big' || localStorage.getItem('kiwi-force-strip') === 'true') && (
         <SentenceStrip
           stripItems={stripItems}
