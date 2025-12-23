@@ -1,5 +1,6 @@
 import UIKit
 import Capacitor
+import SuperwallKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -8,6 +9,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+
+        // Configure Superwall
+        Superwall.configure(apiKey: "pk_pdrADqfJ3XjhkUUMC92zI")
+
         return true
     }
 

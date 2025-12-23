@@ -10,6 +10,8 @@ import EditModal from './components/EditModal';
 import Onboarding from './components/Onboarding';
 import SplashScreen from './components/SplashScreen';
 import { playBellSound } from './utils/sounds';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { InAppReview } from '@capacitor-community/in-app-review';
 import {
   DndContext,
   closestCenter,
@@ -41,6 +43,47 @@ const INITIAL_CONTEXTS = [
   { id: 'store', label: 'Store', icon: '🛒' },
   { id: 'outside', label: 'Outside', icon: '🌳' },
 ];
+
+// Attributes Data for Phase 4+
+const attributesFolder = {
+  id: 'attributes-folder', type: 'folder', word: "Describe", icon: "🎨", contents: [
+    {
+      id: 'colors-folder', type: 'folder', word: "Colors", icon: "🌈", contents: [
+        { id: 'red', type: 'button', word: "Red", icon: "🔴" },
+        { id: 'blue', type: 'button', word: "Blue", icon: "🔵" },
+        { id: 'green', type: 'button', word: "Green", icon: "🟢" },
+        { id: 'yellow', type: 'button', word: "Yellow", icon: "🟡" },
+        { id: 'orange', type: 'button', word: "Orange", icon: "🟠" },
+        { id: 'purple', type: 'button', word: "Purple", icon: "🟣" }
+      ]
+    },
+    {
+      id: 'numbers-folder', type: 'folder', word: "Numbers", icon: "1️⃣", contents: [
+        { id: 'one', type: 'button', word: "1", icon: "1️⃣" },
+        { id: 'two', type: 'button', word: "2", icon: "2️⃣" },
+        { id: 'three', type: 'button', word: "3", icon: "3️⃣" },
+        { id: 'all', type: 'button', word: "All", icon: "🔢" },
+        { id: 'some', type: 'button', word: "Some", icon: "🤏" }
+      ]
+    },
+    {
+      id: 'size-folder', type: 'folder', word: "Size", icon: "📏", contents: [
+        { id: 'big', type: 'button', word: "Big", icon: "🐘" },
+        { id: 'little', type: 'button', word: "Little", icon: "🐜" },
+        { id: 'long', type: 'button', word: "Long", icon: "🦒" },
+        { id: 'short', type: 'button', word: "Short", icon: "🐛" }
+      ]
+    },
+    {
+      id: 'texture-folder', type: 'folder', word: "Feel", icon: "✋", contents: [
+        { id: 'soft', type: 'button', word: "Soft", icon: "☁️" },
+        { id: 'hard', type: 'button', word: "Hard", icon: "🪨" },
+        { id: 'smooth', type: 'button', word: "Smooth", icon: "🧊" },
+        { id: 'bumpy', type: 'button', word: "Bumpy", icon: "🐊" }
+      ]
+    }
+  ]
+};
 
 // Default icons for Home context
 const homeDefaultData = [
@@ -82,7 +125,9 @@ const homeDefaultData = [
       { id: 'sad', type: 'button', word: "Sad", icon: "😢" },
       { id: 'mad', type: 'button', word: "Mad", icon: "😠" }
     ]
-  }
+  },
+  // Include attributes by default but logic might hide it? No, just include it for new users.
+  attributesFolder
 ];
 
 // Default icons for School context
@@ -239,26 +284,46 @@ function App() {
     })
   );
 
-  // --- Superwall Initialization ---
+  // --- Literacy Mode Initialization ---
   useEffect(() => {
-    if (window.Superwall) {
-      // Configure Superwall with your API key
-      window.Superwall.configure('pk_pdrADqfJ3XjhkUUMC92zI');
-      console.log('Superwall configured successfully');
-    } else {
-      console.warn('Superwall SDK not loaded');
+    const literacy = localStorage.getItem('kiwi-literacy');
+    if (literacy) {
+      try {
+        const canRead = JSON.parse(literacy);
+        if (canRead === true || canRead === 'partial') {
+          document.body.classList.add('literacy-mode');
+        }
+      } catch (e) {
+        console.error('Failed to parse literacy preference:', e);
+      }
     }
   }, []);
 
-  const triggerPaywall = (placementName, onContinue) => {
+  // --- Superwall Initialization ---
+  useEffect(() => {
+    // Superwall is now configured natively in iOS (AppDelegate.swift)
+    // Web SDK fallback is available via the Capacitor plugin
     if (window.Superwall) {
-      // Register a placement - this will show a paywall if configured in dashboard
-      window.Superwall.register(placementName, null, () => {
-        // This callback runs when user should access the feature
+      window.Superwall.configure('pk_pdrADqfJ3XjhkUUMC92zI');
+      console.log('Superwall web SDK configured');
+    }
+    console.log('Superwall ready (native iOS + web fallback)');
+  }, []);
+
+  const triggerPaywall = async (placementName, onContinue) => {
+    try {
+      // Import the plugin dynamically to avoid errors on web
+      const { default: Superwall } = await import('./plugins/superwall');
+      const result = await Superwall.register({ event: placementName });
+      console.log(`Paywall result for ${placementName}:`, result.result);
+
+      // If user has access, run the callback
+      if (result.result === 'userIsSubscribed' || result.result === 'noRuleMatch') {
         if (onContinue) onContinue();
-      });
-    } else {
-      // Fallback: allow access if SDK not loaded
+      }
+    } catch (error) {
+      console.error('Failed to trigger paywall:', error);
+      // Fallback: allow access if plugin fails
       if (onContinue) onContinue();
     }
   };
@@ -523,7 +588,24 @@ function App() {
     synth.speak(u);
   };
 
-  const handleItemClick = (item, index) => {
+  const handleItemClick = async (item, index) => {
+    try {
+      await Haptics.impact({ style: ImpactStyle.Medium });
+    } catch (e) {
+      // Ignore errors (e.g. on web if not supported)
+    }
+
+    // Track usage for favorites
+    if (item.bgColor === '#FFF3E0') {
+      const updatedItems = rootItems.map(i => {
+        if (i.id === item.id) {
+          return { ...i, usageCount: (i.usageCount || 0) + 1, lastUsed: Date.now() };
+        }
+        return i;
+      });
+      setRootItems(updatedItems);
+    }
+
     if (item.type === 'folder') {
       setCurrentPath([...currentPath, index]);
     } else {
@@ -571,6 +653,16 @@ function App() {
     }
   };
 
+  const addAttributesFolder = () => {
+    // Check if it already exists to avoid duplicates
+    if (rootItems.find(i => i.word === "Describe")) return;
+
+    const list = [...rootItems];
+    list.push(attributesFolder);
+    setRootItems(list);
+    alert("🎉 Great Job! The 'Describe' folder has been added to help build longer sentences with colors, numbers, and sizes.");
+  };
+
   const triggerSuccess = () => {
     // Simple visual feedback for toddlers
     setShowSuccess(true);
@@ -598,6 +690,14 @@ function App() {
     } else {
       // Prompted trial resets the independent streak
       newProgress.currentStreak = 0;
+    }
+
+    // Phase 4 Mastery Check: Unlock Attributes
+    if (currentPhase === 4 && !isPrompted) {
+        const p4Independent = newProgress.trials.filter(t => t.phase === 4 && !t.isPrompted).length;
+        if (p4Independent === 5) {
+             addAttributesFolder();
+        }
     }
 
     newProgress.lastSuccessTime = Date.now();
@@ -630,6 +730,16 @@ function App() {
       // but only if they actually advanced or acknowledged. 
       // For now, reset to allow tracking new streaks.
       newProgress.currentStreak = 0;
+    }
+
+    // Check for Review Prompt (e.g. at 20 and 50 trials)
+    const totalTrials = newProgress.trials.length;
+    if (totalTrials === 20 || totalTrials === 50) {
+        try {
+            InAppReview.requestReview();
+        } catch (error) {
+            console.log('Review request skipped:', error);
+        }
     }
 
     setProgressData(newProgress);
@@ -804,8 +914,8 @@ function App() {
     const firstBtn = rootItems.find(i => i.type === 'button' && i.category !== 'starter');
     itemsToShow = firstBtn ? [firstBtn] : [];
   } else if (currentPhase === 3) {
-    // Show two items for discrimination (e.g. first two buttons)
-    itemsToShow = rootItems.filter(i => i.type === 'button' && i.category !== 'starter').slice(0, 2);
+    // Show up to 20 items for discrimination (Phase 3B)
+    itemsToShow = rootItems.filter(i => i.type === 'button' && i.category !== 'starter').slice(0, 20);
   } else if (currentPhase > 0 && currentPhase < 6) {
     // Hide starters for phases before commenting
     itemsToShow = itemsToShow.filter(i => i.category !== 'starter');
@@ -965,7 +1075,9 @@ function App() {
           onStopTraining={handleStopTraining}
           onOpenPicker={handlePickerOpen}
           onToggleEssentialMode={setIsEssentialMode}
-          onToggleDashboard={setShowDashboard}
+          onToggleDashboard={() => {
+            triggerPaywall('open_dashboard', () => setShowDashboard(true));
+          }}
           isPrompted={isPrompted}
           onSetPrompted={setIsPrompted}
           onToggleLock={() => setIsLocked(true)}
@@ -973,6 +1085,28 @@ function App() {
           onUpdateVoiceSettings={setVoiceSettings}
           gridSize={gridSize}
           onUpdateGridSize={setGridSize}
+          onAddFavorites={(favorites) => {
+            // Add favorites to the root items
+            const newFavs = favorites.map((fav, i) => ({
+              id: `fav-${Date.now()}-${i}`,
+              type: 'button',
+              word: fav.word,
+              icon: fav.icon,
+              bgColor: '#FFF3E0', // Light orange highlight
+              usageCount: 0 // Initialize usage tracking
+            }));
+
+            const list = [...rootItems];
+            // Find index of last starter
+            let insertIndex = 0;
+            for (let i = 0; i < list.length; i++) {
+              if (list[i].category === 'starter') insertIndex = i + 1;
+              else break;
+            }
+
+            list.splice(insertIndex, 0, ...newFavs);
+            setRootItems(list);
+          }}
         />
       )}
 
@@ -993,7 +1127,9 @@ function App() {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            zIndex: 100
+            zIndex: 100,
+            cursor: 'pointer',
+            textAlign: 'center'
           }}
           onClick={() => {
             const newCount = lockTapCount + 1;
@@ -1012,17 +1148,26 @@ function App() {
           }}
         >
           <span style={{
-            fontSize: '13px',
+            fontSize: '12px',
             color: '#666',
             display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
-            gap: '8px'
+            gap: '4px'
           }}>
-            🔒 Child Mode
-            {showUnlockHint && (
-              <span style={{ color: 'var(--primary)', fontWeight: 600 }}>
-                {3 - lockTapCount} more taps to unlock
-              </span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
+                🔒 Child Mode Active
+            </span>
+            {showUnlockHint ? (
+               <span style={{ color: 'var(--primary)', fontWeight: 600 }}>
+                 {3 - lockTapCount} more taps to unlock controls
+               </span>
+            ) : (
+                <span style={{ opacity: 0.8 }}>
+                    {/iPad|iPhone|iPod/.test(navigator.userAgent) 
+                        ? "Triple-click Side Button for Guided Access" 
+                        : "Tap 3x here to unlock controls"}
+                </span>
             )}
           </span>
         </div>
@@ -1071,15 +1216,69 @@ function App() {
           onClose={() => setShowDashboard(false)}
           progressData={progressData}
           currentPhase={currentPhase}
+          rootItems={rootItems}
         />
       )}
 
       {showOnboarding && (
-        <Onboarding onComplete={(recommendedPhase) => {
+        <Onboarding onComplete={(recommendedPhase, favorites, canRead) => {
           if (typeof recommendedPhase === 'number') {
             setCurrentPhase(recommendedPhase);
             localStorage.setItem('kians-phase', recommendedPhase.toString());
           }
+
+          // Store literacy preference
+          if (canRead !== null && canRead !== undefined) {
+            localStorage.setItem('kiwi-literacy', JSON.stringify(canRead));
+            // Apply literacy-friendly styles
+            if (canRead === true || canRead === 'partial') {
+              document.body.classList.add('literacy-mode');
+            }
+          }
+
+          // Inject Favorites if provided
+          if (favorites && Array.isArray(favorites) && favorites.length > 0) {
+            const newFavs = favorites.map((fav, i) => ({
+              id: `fav-${Date.now()}-${i}`,
+              type: 'button',
+              word: fav.word || fav.label, // Support both formats
+              icon: fav.icon,
+              bgColor: '#FFF3E0' // Light orange highlight
+            }));
+
+            // Insert after starters (index 3 usually) but before folders
+            // Current default: [Want, See, Feel, Mom, Dad, More, Folders...]
+            // We'll put them after "Feel" (index 2) so they are top row center/right.
+            // Or if starters are hidden in early phases, they become #1.
+            const list = [...rootItems];
+            // Find index of last starter
+            let insertIndex = 0;
+            for (let i = 0; i < list.length; i++) {
+                if (list[i].category === 'starter') insertIndex = i + 1;
+                else break;
+            }
+
+            list.splice(insertIndex, 0, ...newFavs);
+
+            // Add keyboard folder for readers
+            if (canRead === true) {
+              const keyboardFolder = {
+                id: 'keyboard-folder',
+                type: 'folder',
+                word: 'Keyboard',
+                icon: '⌨️',
+                contents: [
+                  { id: 'type-word', type: 'button', word: 'Type a word', icon: '✏️' },
+                  { id: 'abc', type: 'button', word: 'ABC', icon: '🔤' }
+                ]
+              };
+              list.push(keyboardFolder);
+            }
+
+            setRootItems(list);
+            // LocalStorage sync happens via useEffect on rootItems change
+          }
+
           setShowOnboarding(false);
         }} />
       )}

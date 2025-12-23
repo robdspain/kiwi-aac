@@ -1,16 +1,54 @@
-# React + Vite
+# Kiwi AAC 🥝
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A powerful, privacy-first Picture Exchange Communication app designed for children and adults with speech delays or autism. Built with React, Vite, and Capacitor for high-performance iOS and Android deployment.
 
-Currently, two official plugins are available:
+## 🚀 Key Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **6+ Phases of Development:** Supports progressive learning from simple requests to complex commenting.
+- **Character Builder:** Personalized vector avatar creator to increase student engagement.
+- **Visual Schedules:** Built-in routine builder with step-by-step navigation.
+- **Voice Recording:** Custom audio recording for every symbol to provide familiar voice prompts.
+- **Progress Tracking:** Detailed usage analytics for therapists and caregivers.
+- **Guided Access Ready:** Integrated instructions and lock mode optimized for iPad/iPhone safety.
+- **Privacy First:** 100% offline-first. All communication data and voice recordings stay on the device.
 
-## React Compiler
+## 🛠 Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Frontend:** React 19 + Vite
+- **Mobile Bridge:** Capacitor 8
+- **State Management:** React Context API + LocalStorage
+- **Haptics:** @capacitor/haptics
+- **Sharing/Backup:** @capacitor/share + @capacitor/filesystem
+- **Styling:** CSS3 (optimized for mobile touch targets)
 
-## Expanding the ESLint configuration
+## 📦 Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Prerequisites
+- Node.js (Latest LTS)
+- Xcode 16+ (for iOS build)
+- Android Studio (for Android build)
+
+### Installation
+```bash
+# Install dependencies
+npm install
+
+# Run in development mode (Web)
+npm run dev
+```
+
+### Building for iOS
+```bash
+# Sync web assets and plugins to native project
+npm run sync
+
+# Open project in Xcode
+npm run ios
+```
+
+## 📄 Metadata & Privacy
+- **App Store Metadata:** See `APP_STORE_METADATA.md`
+- **Privacy Policy:** See `public/privacy.html`
+
+## ⚖️ License
+© 2024 Behavior School LLC. All rights reserved.

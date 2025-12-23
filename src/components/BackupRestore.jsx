@@ -1,11 +1,14 @@
 import React, { useRef } from 'react';
+import { Share } from '@capacitor/share';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { Capacitor } from '@capacitor/core';
 
 const BackupRestore = ({ isOpen, onClose, onRestore }) => {
     const fileInputRef = useRef(null);
 
     if (!isOpen) return null;
 
-    const handleExport = () => {
+    const handleExport = async () => {
         // Collect all kiwi-related localStorage data
         const backup = {
             version: '1.0',
@@ -24,11 +27,50 @@ const BackupRestore = ({ isOpen, onClose, onRestore }) => {
             }
         }
 
-        const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+        const fileName = `kiwi-backup-${new Date().toISOString().split('T')[0]}.json`;
+        const jsonString = JSON.stringify(backup, null, 2);
+
+        if (Capacitor.isNativePlatform()) {
+            try {
+                // Write file to cache directory
+                await Filesystem.writeFile({
+                    path: fileName,
+                    data: jsonString,
+                    directory: Directory.Cache,
+                    encoding: Encoding.UTF8
+                });
+
+                // Get the URI
+                const result = await Filesystem.getUri({
+                    directory: Directory.Cache,
+                    path: fileName
+                });
+
+                // Share the file
+                await Share.share({
+                    title: 'Kiwi AAC Backup',
+                    text: 'Here is my Kiwi AAC backup file.',
+                    url: result.uri,
+                    dialogTitle: 'Save Backup'
+                });
+            } catch (error) {
+                console.error('Native share failed:', error);
+                alert('Sharing failed. Falling back to simple download.');
+                // Fallback to web download
+                downloadWeb(jsonString, fileName);
+            }
+        } else {
+            // Web Download
+            downloadWeb(jsonString, fileName);
+        }
+    };
+
+    const downloadWeb = (content, fileName) => {
+        const blob = new Blob([content], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `kiwi-backup-${new Date().toISOString().split('T')[0]}.json`;
+        a.download = fileName;
         a.click();
         URL.revokeObjectURL(url);
     };

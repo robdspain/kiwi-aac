@@ -3,13 +3,13 @@
 **Developer:** Behavior School LLC
 
 ## App Name
-**Kiwi AAC - PECS Communication**
+**Kiwi AAC - Simple Communication**
 
 ## Subtitle
-Communication Made Simple for Every Child
+Give Your Child a Voice
 
 ## Description
-Kiwi AAC is a powerful, intuitive communication app designed for children learning to express themselves through the Picture Exchange Communication System (PECS).
+Kiwi AAC is a powerful, intuitive communication app designed for children and adults learning to express themselves through structured picture exchange.
 
 **Perfect for:**
 • Children with autism or speech delays
@@ -19,36 +19,39 @@ Kiwi AAC is a powerful, intuitive communication app designed for children learni
 
 **Key Features:**
 
-🗣️ **PECS Learning Phases**
-Built-in support for all 6 PECS phases, from basic picture exchange to full sentence construction.
+📈 **6+ Phases of Development**
+Built-in support for multiple learning levels, from basic picture exchange to full sentence construction and commenting.
 
-📷 **Custom Icons**
-Upload photos, use emojis, or search 4,000+ symbols from OpenMoji.
+✨ **Character Builder**
+Create a custom vector avatar that looks just like the learner! Personalization increases engagement and ownership.
 
 🎤 **Voice Recording**
-Record personalized voice prompts instead of text-to-speech for a more natural experience.
+Record personalized voice prompts for every icon instead of text-to-speech for a more natural, familiar experience.
+
+📅 **Visual Schedules**
+Build step-by-step routines to help navigate daily transitions and reduce anxiety.
 
 📊 **Progress Tracking**
-Monitor usage with detailed analytics and export reports for therapists.
+Monitor usage with detailed analytics and export reports for therapists and IEP meetings.
 
-🔒 **Child-Safe Lock Mode**
-Prevent accidental settings changes with secure lock mode.
+📷 **Custom Icons**
+Upload your own photos, use emojis, or search 4,000+ symbols from the OpenMoji library.
 
-👨‍👩‍👧 **Multiple Profiles**
-Create separate boards for different learners with individual settings and progress tracking.
+🔒 **Guided Access Ready**
+Built-in child-safe lock mode with integrated instructions for iOS Guided Access to prevent accidental exits.
+
+👨‍👩‍👧 **Multiple Profiles & Locations**
+Create separate boards for Home, School, or Grandparents with individual settings and progress tracking.
 
 🌐 **Works Offline**
-No internet required - all data stays private on your device.
-
-**What is PECS?**
-The Picture Exchange Communication System is an evidence-based approach that teaches children to communicate using pictures before verbal speech develops.
+No internet required - all communication data stays private and secure on your device.
 
 Download Kiwi AAC today and give the gift of communication!
 
 ---
 
 ## Keywords
-AAC, autism, speech therapy, PECS, communication, nonverbal, special needs, apraxia, language delay, picture exchange, speech, kids, accessibility
+AAC, autism, speech therapy, communication, nonverbal, special needs, apraxia, language delay, picture exchange, speech, kids, accessibility, visual schedule, PECS
 
 ## Primary Category
 Education
@@ -72,11 +75,12 @@ https://behaviorschool.com/kiwi
 
 ## What's New (Version 1.0)
 • Launch release
-• Full PECS Phase 1-6 support
-• Custom voice recording
-• AAC symbol library (OpenMoji)
+• 6+ Phases of language development support
+• Custom Avatar Character Builder
+• Custom voice recording & symbol library
+• Visual Schedule builder
 • Progress analytics dashboard
-• Focus lock mode for safety
+• Guided Access lock mode for safety
 • Offline-first design
 
 ---

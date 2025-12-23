@@ -27,12 +27,15 @@ const Grid = ({
         return <VisualSchedule folder={folder} onBack={onBack} />;
     }
 
-    const gridClass =
-        currentPhase === 1 ? 'phase-single-grid' :
-            currentPhase === 3 ? 'phase-discrimination-grid' : '';
+    // Logic for Large 2x2 Grid
+    // Phase 1 & 2: Always 2x2
+    // Phase 3: 2x2 if <= 4 items, otherwise standard shrink
+    const useLargeGrid = (currentPhase === 1 || currentPhase === 2) || (currentPhase === 3 && items.length <= 4);
+
+    const gridClass = useLargeGrid ? 'phase-large-grid' : '';
 
     const getGridStyle = () => {
-        if (currentPhase === 1 || currentPhase === 3) return {};
+        if (useLargeGrid) return {};
         
         let cols;
         switch (gridSize) {

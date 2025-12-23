@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Testing Tool - Kiwi AAC</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 375px 1fr;
+            gap: 20px;
+        }
+
+        .mobile-viewport {
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+
+        .device-frame {
+            background: #000;
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .screen {
+            width: 375px;
+            height: 667px;
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 30px;
+            background: #000;
+            border-radius: 0 0 20px 20px;
+            z-index: 1000;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .controls {
+            margin-top: 15px;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .controls button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 8px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .controls button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-primary {
+            background: #007AFF;
+            color: white;
+        }
+
+        .btn-success {
+            background: #34C759;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #FF9500;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #FF3B30;
+            color: white;
+        }
+
+        .checklist {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .checklist h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .checklist h3 {
+            font-size: 1.1rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #555;
+            border-bottom: 2px solid #007AFF;
+            padding-bottom: 5px;
+        }
+
+        .test-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #ddd;
+        }
+
+        .test-item.pass {
+            border-left-color: #34C759;
+            background: #f0fdf4;
+        }
+
+        .test-item.fail {
+            border-left-color: #FF3B30;
+            background: #fff5f5;
+        }
+
+        .test-item input[type="checkbox"] {
+            margin-top: 3px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .test-item label {
+            flex: 1;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .test-item .status {
+            font-size: 1.2rem;
+        }
+
+        .summary {
+            position: sticky;
+            top: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .summary h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            border: none;
+            color: white;
+            padding: 0;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .stat {
+            background: rgba(255,255,255,0.2);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .notes {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+        }
+
+        .notes textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .issue-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .tag-critical { background: #FF3B30; color: white; }
+        .tag-major { background: #FF9500; color: white; }
+        .tag-minor { background: #FFD60A; color: black; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="mobile-viewport">
+            <div class="device-frame">
+                <div class="screen">
+                    <div class="notch"></div>
+                    <iframe id="app-frame" src="http://localhost:5174/"></iframe>
+                </div>
+            </div>
+
+            <div class="controls">
+                <h3 style="margin-bottom: 10px;">Quick Actions</h3>
+                <button class="btn-primary" onclick="reloadApp()">🔄 Reload App</button>
+                <button class="btn-warning" onclick="clearStorage()">🗑️ Clear LocalStorage</button>
+                <button class="btn-success" onclick="takeScreenshot()">📸 Take Screenshot</button>
+                <button class="btn-primary" onclick="openDevTools()">🔧 Open in New Tab</button>
+                <button class="btn-danger" onclick="exportReport()">📄 Export Report</button>
+            </div>
+        </div>
+
+        <div class="checklist-panel">
+            <div class="summary">
+                <h3>Testing Progress</h3>
+                <div class="summary-stats">
+                    <div class="stat">
+                        <div class="stat-value" id="total-tests">0</div>
+                        <div class="stat-label">Total Tests</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="passed-tests">0</div>
+                        <div class="stat-label">Passed</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="failed-tests">0</div>
+                        <div class="stat-label">Failed</div>
+                    </div>
+                </div>
+                <div class="notes">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Testing Notes:</label>
+                    <textarea id="testing-notes" placeholder="Add notes about issues found, screenshots taken, etc."></textarea>
+                </div>
+            </div>
+
+            <div class="checklist">
+                <h2>📱 Mobile Testing Checklist</h2>
+
+                <h3>1. Initial Load & Onboarding</h3>
+                <div class="test-item">
+                    <input type="checkbox" id="test-1-1" onchange="updateStats()">
+                    <label for="test-1-1">Splash screen displays correctly</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-1-2" onchange="updateStats()">
+                    <label for="test-1-2">Assessment flow appears after splash</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-1-3" onchange="updateStats()">
+                    <label for="test-1-3">"I'm not sure" button exists and works</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-1-4" onchange="updateStats()">
+                    <label for="test-1-4">Modal opens when clicking "I'm not sure"</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-1-5" onchange="updateStats()">
+                    <label for="test-1-5">Can skip to Level 1 from modal</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-1-6" onchange="updateStats()">
+                    <label for="test-1-6">Character Builder loads after assessment</label>
+                </div>
+
+                <h3>2. Main Interface</h3>
+                <div class="test-item">
+                    <input type="checkbox" id="test-2-1" onchange="updateStats()">
+                    <label for="test-2-1">Grid displays communication buttons correctly</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-2-2" onchange="updateStats()">
+                    <label for="test-2-2">Buttons are touch-friendly (44x44px minimum)</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-2-3" onchange="updateStats()">
+                    <label for="test-2-3">Tapping buttons speaks/adds to sentence strip</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-2-4" onchange="updateStats()">
+                    <label for="test-2-4">Sentence strip visible at top (when enabled)</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-2-5" onchange="updateStats()">
+                    <label for="test-2-5">"Clear" and "Speak" buttons work</label>
+                </div>
+
+                <h3>3. Adult Settings Panel</h3>
+                <div class="test-item">
+                    <input type="checkbox" id="test-3-1" onchange="updateStats()">
+                    <label for="test-3-1">"Adult Settings" bar visible at bottom</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-3-2" onchange="updateStats()">
+                    <label for="test-3-2">Drawer opens from bottom when tapped</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-3-3" onchange="updateStats()">
+                    <label for="test-3-3">Lock for Child Use button (red gradient) visible</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-3-4" onchange="updateStats()">
+                    <label for="test-3-4">Communication Level selector shows 0-6</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-3-5" onchange="updateStats()">
+                    <label for="test-3-5">Locations/Contexts selector displays all contexts</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-3-6" onchange="updateStats()">
+                    <label for="test-3-6">Grid Layout options (5 choices) render correctly</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-3-7" onchange="updateStats()">
+                    <label for="test-3-7">Trial Mode toggle (Independent/Prompted) works</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-3-8" onchange="updateStats()">
+                    <label for="test-3-8">Skin Tone selector (6 buttons) displays</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-3-9" onchange="updateStats()">
+                    <label for="test-3-9">Voice Settings section renders correctly</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-3-10" onchange="updateStats()">
+                    <label for="test-3-10">Enable Child Mode button (green) visible</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-3-11" onchange="updateStats()">
+                    <label for="test-3-11">iOS Guided Access button shows (on iOS only)</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-3-12" onchange="updateStats()">
+                    <label for="test-3-12">All sections are scrollable if content overflows</label>
+                </div>
+
+                <h3>4. Child Mode Lock</h3>
+                <div class="test-item">
+                    <input type="checkbox" id="test-4-1" onchange="updateStats()">
+                    <label for="test-4-1">Enabling Child Mode locks Adult Settings</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-4-2" onchange="updateStats()">
+                    <label for="test-4-2">Bottom bar shows "🔒 Child Mode"</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-4-3" onchange="updateStats()">
+                    <label for="test-4-3">3-tap unlock mechanism works</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-4-4" onchange="updateStats()">
+                    <label for="test-4-4">Shows "X more taps to unlock" hint</label>
+                </div>
+
+                <h3>5. Context Switching</h3>
+                <div class="test-item">
+                    <input type="checkbox" id="test-5-1" onchange="updateStats()">
+                    <label for="test-5-1">Can switch between different locations</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-5-2" onchange="updateStats()">
+                    <label for="test-5-2">Icons change based on selected context</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-5-3" onchange="updateStats()">
+                    <label for="test-5-3">Context badge appears in breadcrumbs</label>
+                </div>
+
+                <h3>6. Grid Size Options</h3>
+                <div class="test-item">
+                    <input type="checkbox" id="test-6-1" onchange="updateStats()">
+                    <label for="test-6-1">Auto grid size works responsively</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-6-2" onchange="updateStats()">
+                    <label for="test-6-2">Super Big (2 columns) displays correctly</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-6-3" onchange="updateStats()">
+                    <label for="test-6-3">Big (3 columns) displays correctly</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-6-4" onchange="updateStats()">
+                    <label for="test-6-4">Standard (4 columns) displays correctly</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-6-5" onchange="updateStats()">
+                    <label for="test-6-5">Dense (6 columns) displays correctly</label>
+                </div>
+
+                <h3>7. Training Mode</h3>
+                <div class="test-item">
+                    <input type="checkbox" id="test-7-1" onchange="updateStats()">
+                    <label for="test-7-1">Training Mode button opens training panel</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-7-2" onchange="updateStats()">
+                    <label for="test-7-2">Can select 2+ items (checkboxes appear)</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-7-3" onchange="updateStats()">
+                    <label for="test-7-3">Shuffle button randomizes selected items</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-7-4" onchange="updateStats()">
+                    <label for="test-7-4">Done button exits training mode</label>
+                </div>
+
+                <h3>8. Character Builder</h3>
+                <div class="test-item">
+                    <input type="checkbox" id="test-8-1" onchange="updateStats()">
+                    <label for="test-8-1">Character Builder modal opens correctly</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-8-2" onchange="updateStats()">
+                    <label for="test-8-2">Skin tone picker is scrollable horizontally</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-8-3" onchange="updateStats()">
+                    <label for="test-8-3">Hair color picker is scrollable horizontally</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-8-4" onchange="updateStats()">
+                    <label for="test-8-4">Hair style grid is responsive on mobile</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-8-5" onchange="updateStats()">
+                    <label for="test-8-5">Preview updates in real-time</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-8-6" onchange="updateStats()">
+                    <label for="test-8-6">Save Character button generates SVG</label>
+                </div>
+
+                <h3>9. Progress Dashboard</h3>
+                <div class="test-item">
+                    <input type="checkbox" id="test-9-1" onchange="updateStats()">
+                    <label for="test-9-1">Dashboard opens full screen</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-9-2" onchange="updateStats()">
+                    <label for="test-9-2">Charts display correctly on mobile</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-9-3" onchange="updateStats()">
+                    <label for="test-9-3">Close button is functional</label>
+                </div>
+
+                <h3>10. Photo/Camera Features</h3>
+                <div class="test-item">
+                    <input type="checkbox" id="test-10-1" onchange="updateStats()">
+                    <label for="test-10-1">File picker opens on mobile</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-10-2" onchange="updateStats()">
+                    <label for="test-10-2">Can select photos from gallery</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-10-3" onchange="updateStats()">
+                    <label for="test-10-3">Images upload successfully</label>
+                </div>
+
+                <h3>11. Performance & Accessibility</h3>
+                <div class="test-item">
+                    <input type="checkbox" id="test-11-1" onchange="updateStats()">
+                    <label for="test-11-1">App loads in under 3 seconds</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-11-2" onchange="updateStats()">
+                    <label for="test-11-2">Touch targets are 44x44px minimum</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-11-3" onchange="updateStats()">
+                    <label for="test-11-3">Text is readable (14px minimum)</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-11-4" onchange="updateStats()">
+                    <label for="test-11-4">No JavaScript errors in console</label>
+                </div>
+                <div class="test-item">
+                    <input type="checkbox" id="test-11-5" onchange="updateStats()">
+                    <label for="test-11-5">Animations are smooth (no lag)</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateStats() {
+            const checkboxes = document.querySelectorAll('.test-item input[type="checkbox"]');
+            const total = checkboxes.length;
+            let passed = 0;
+
+            checkboxes.forEach(checkbox => {
+                const item = checkbox.closest('.test-item');
+                if (checkbox.checked) {
+                    passed++;
+                    item.classList.add('pass');
+                } else {
+                    item.classList.remove('pass');
+                }
+            });
+
+            document.getElementById('total-tests').textContent = total;
+            document.getElementById('passed-tests').textContent = passed;
+            document.getElementById('failed-tests').textContent = total - passed;
+
+            // Save state to localStorage
+            saveProgress();
+        }
+
+        function saveProgress() {
+            const state = {};
+            document.querySelectorAll('.test-item input[type="checkbox"]').forEach(checkbox => {
+                state[checkbox.id] = checkbox.checked;
+            });
+            state.notes = document.getElementById('testing-notes').value;
+            localStorage.setItem('test-progress', JSON.stringify(state));
+        }
+
+        function loadProgress() {
+            const saved = localStorage.getItem('test-progress');
+            if (saved) {
+                const state = JSON.parse(saved);
+                Object.keys(state).forEach(key => {
+                    if (key === 'notes') {
+                        document.getElementById('testing-notes').value = state[key];
+                    } else {
+                        const checkbox = document.getElementById(key);
+                        if (checkbox) checkbox.checked = state[key];
+                    }
+                });
+                updateStats();
+            }
+        }
+
+        function reloadApp() {
+            document.getElementById('app-frame').src = document.getElementById('app-frame').src;
+        }
+
+        function clearStorage() {
+            if (confirm('This will clear all app data. Continue?')) {
+                const frame = document.getElementById('app-frame');
+                frame.contentWindow.localStorage.clear();
+                reloadApp();
+            }
+        }
+
+        function takeScreenshot() {
+            alert('Use browser DevTools (F12) > Mobile Device Toolbar > Screenshot button to capture screenshots');
+        }
+
+        function openDevTools() {
+            window.open('http://localhost:5174/', '_blank');
+        }
+
+        function exportReport() {
+            const checkboxes = document.querySelectorAll('.test-item input[type="checkbox"]');
+            const notes = document.getElementById('testing-notes').value;
+
+            let report = '# Mobile Testing Report - Kiwi AAC\\n';
+            report += '**Date:** ' + new Date().toLocaleDateString() + '\\n';
+            report += '**Viewport:** 375x667 (iPhone SE)\\n\\n';
+
+            const sections = document.querySelectorAll('.checklist h3');
+            sections.forEach((section, idx) => {
+                report += '## ' + section.textContent + '\\n\\n';
+
+                const tests = section.parentElement.querySelectorAll('.test-item');
+                let sectionTests = Array.from(tests);
+                if (idx < sections.length - 1) {
+                    const nextSection = sections[idx + 1];
+                    const nextSectionIndex = Array.from(section.parentElement.children).indexOf(nextSection);
+                    const currentSectionIndex = Array.from(section.parentElement.children).indexOf(section);
+                    sectionTests = Array.from(section.parentElement.children)
+                        .slice(currentSectionIndex + 1, nextSectionIndex)
+                        .filter(el => el.classList.contains('test-item'));
+                }
+
+                sectionTests.forEach(test => {
+                    const checkbox = test.querySelector('input[type="checkbox"]');
+                    const label = test.querySelector('label').textContent;
+                    const status = checkbox.checked ? '✅' : '❌';
+                    report += '- ' + status + ' ' + label + '\\n';
+                });
+                report += '\\n';
+            });
+
+            report += '## Testing Notes\\n\\n' + notes + '\\n';
+
+            const blob = new Blob([report], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'mobile-test-report-' + Date.now() + '.md';
+            a.click();
+        }
+
+        // Auto-save notes
+        document.getElementById('testing-notes').addEventListener('input', saveProgress);
+
+        // Load saved progress on page load
+        window.addEventListener('load', () => {
+            loadProgress();
+            updateStats();
+        });
+    </script>
+</body>
+</html>

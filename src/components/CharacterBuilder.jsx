@@ -48,14 +48,14 @@ const FaceBase = ({ skinId }) => (
         {/* Neck */}
         <path d="M 40 80 L 40 95 L 60 95 L 60 80" fill={`url(#skin-grad-${skinId})`} />
         <path d="M 40 82 Q 50 88 60 82" fill="none" stroke="black" strokeOpacity="0.05" strokeWidth="2" />
-        
+
         {/* Ears */}
         <circle cx="18" cy="50" r="7" fill={`url(#skin-grad-${skinId})`} />
         <circle cx="82" cy="50" r="7" fill={`url(#skin-grad-${skinId})`} />
-        
+
         {/* Head */}
         <circle cx="50" cy="50" r="35" fill={`url(#skin-grad-${skinId})`} />
-        
+
         {/* Shoulders / Shirt */}
         <path d="M 15 95 Q 50 110 85 95 L 95 110 L 5 110 Z" fill="#4ECDC4" />
     </g>
@@ -90,7 +90,7 @@ const FacialFeatures = () => (
 
         {/* Mouth */}
         <path d="M 40 70 Q 50 78 60 70" fill="none" stroke="#442222" strokeWidth="2" strokeLinecap="round" />
-        
+
         {/* Blush */}
         <circle cx="28" cy="62" r="5" fill="#FF8585" opacity="0.15" />
         <circle cx="72" cy="62" r="5" fill="#FF8585" opacity="0.15" />
@@ -193,10 +193,35 @@ const HAIR_STYLES = [
     }
 ];
 
+const FACIAL_HAIR_STYLES = [
+    { id: 'none', label: 'None', path: null },
+    { 
+        id: 'stubble', 
+        label: 'Stubble', 
+        path: <path d="M 25 65 Q 50 85 75 65 L 75 75 Q 50 100 25 75 Z" opacity="0.3" /> 
+    },
+    { 
+        id: 'beard-short', 
+        label: 'Short', 
+        path: <path d="M 25 60 Q 50 85 75 60 L 78 55 L 82 55 L 82 65 Q 85 85 50 95 Q 15 85 18 65 L 18 55 L 22 55 Z" /> 
+    },
+    { 
+        id: 'beard-medium', 
+        label: 'Medium', 
+        path: <path d="M 25 60 Q 50 85 75 60 L 78 55 L 82 55 L 82 65 Q 85 95 50 105 Q 15 95 18 65 L 18 55 L 22 55 Z" /> 
+    },
+    { 
+        id: 'beard-long', 
+        label: 'Long', 
+        path: <path d="M 25 60 Q 50 85 75 60 L 78 55 L 82 55 L 82 65 Q 90 110 50 125 Q 10 110 18 65 L 18 55 L 22 55 Z" /> 
+    }
+];
+
 const CharacterBuilder = ({ initialConfig, onSelect, onClose }) => {
     const [skinId, setSkinId] = useState(SKIN_COLORS[2].id);
     const [hairColor, setHairColor] = useState(HAIR_COLORS[3].color);
     const [hairStyleId, setHairStyleId] = useState('long-straight');
+    const [facialHairId, setFacialHairId] = useState('none');
 
     const svgRef = useRef(null);
 
@@ -205,10 +230,12 @@ const CharacterBuilder = ({ initialConfig, onSelect, onClose }) => {
             setSkinId(initialConfig.skinId || 'medium');
             setHairColor(initialConfig.hairColor || HAIR_COLORS[3].color);
             setHairStyleId(initialConfig.hairStyleId || 'long-straight');
+            setFacialHairId(initialConfig.facialHairId || 'none');
         }
     }, [initialConfig]);
 
     const selectedStyle = HAIR_STYLES.find(h => h.id === hairStyleId) || HAIR_STYLES[0];
+    const selectedBeard = FACIAL_HAIR_STYLES.find(b => b.id === facialHairId) || FACIAL_HAIR_STYLES[0];
 
     const generateSVGString = () => {
         if (!svgRef.current) return '';
@@ -223,63 +250,72 @@ const CharacterBuilder = ({ initialConfig, onSelect, onClose }) => {
 
     const handleConfirm = () => {
         const dataUrl = generateSVGString();
-        onSelect(dataUrl, { skinId, hairColor, hairStyleId });
+        onSelect(dataUrl, { skinId, hairColor, hairStyleId, facialHairId });
     };
 
     return (
         <div style={{
             position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1300,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '10px'
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: '10px',
+            paddingBottom: 'calc(10px + env(safe-area-inset-bottom, 0px))'
         }}>
             <div style={{
-                background: 'white', borderRadius: '30px', padding: '25px',
-                width: '100%', maxWidth: '480px', maxHeight: '90vh', overflowY: 'auto',
-                display: 'flex', flexDirection: 'column', gap: '20px',
+                background: 'white', borderRadius: '24px', padding: '20px',
+                width: '100%', maxWidth: '420px', maxHeight: '85vh', overflowY: 'auto',
+                display: 'flex', flexDirection: 'column', gap: '16px',
                 boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
             }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h2 style={{ margin: 0, fontSize: '1.6rem', color: '#333' }}>✨ My Character</h2>
-                    <button onClick={onClose} style={{ background: '#F5F5F7', border: 'none', borderRadius: '50%', width: '36px', height: '36px', fontSize: '1.2rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
+                    <h2 style={{ margin: 0, fontSize: '1.4rem', color: '#333' }}>✨ My Character</h2>
+                    <button onClick={onClose} style={{ background: '#F5F5F7', border: 'none', borderRadius: '50%', width: '40px', height: '40px', fontSize: '1.4rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
                 </div>
 
-                {/* Preview Area */}
+                {/* Preview Area - Responsive size */}
                 <div style={{
                     display: 'flex', justifyContent: 'center',
                     background: 'linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%)',
-                    borderRadius: '24px', padding: '30px', border: '1px solid #EEE'
+                    borderRadius: '20px', padding: '20px', border: '1px solid #EEE'
                 }}>
                     <svg
                         ref={svgRef}
-                        width="220"
-                        height="220"
-                        viewBox="0 0 100 110"
-                        style={{ filter: 'drop-shadow(0 10px 15px rgba(0,0,0,0.15))' }}
+                        width="160"
+                        height="160"
+                        viewBox="0 0 100 130"
+                        style={{ filter: 'drop-shadow(0 8px 12px rgba(0,0,0,0.15))' }}
                     >
                         <Defs />
                         <g fill={hairColor} stroke={hairColor} strokeWidth="1">
                             {selectedStyle.back}
                         </g>
                         <FaceBase skinId={skinId} />
+                        
+                        {/* Facial Hair Layer */}
+                        <g fill={hairColor} stroke={hairColor} strokeWidth="1">
+                            {selectedBeard.path}
+                        </g>
+
                         <FacialFeatures />
+                        
                         <g fill={hairColor} stroke={hairColor} strokeWidth="1">
                             {selectedStyle.front}
-                            <rect x="0" y="0" width="100" height="110" fill="url(#hair-shine)" opacity="0.5" style={{ mixBlendMode: 'overlay', pointerEvents: 'none' }} />
+                            <rect x="0" y="0" width="100" height="130" fill="url(#hair-shine)" opacity="0.5" style={{ mixBlendMode: 'overlay', pointerEvents: 'none' }} />
                         </g>
                     </svg>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     <div>
-                        <label style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#555', marginBottom: '8px', display: 'block' }}>Skin Tone</label>
-                        <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '5px' }}>
+                        <label style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#555', marginBottom: '6px', display: 'block' }}>Skin Tone</label>
+                        <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '5px', WebkitOverflowScrolling: 'touch' }}>
                             {SKIN_COLORS.map(tone => (
                                 <button
                                     key={tone.id}
                                     onClick={() => setSkinId(tone.id)}
                                     style={{
-                                        minWidth: '38px', height: '38px', borderRadius: '50%',
+                                        minWidth: '44px', height: '44px', borderRadius: '50%',
                                         background: tone.color,
-                                        border: skinId === tone.id ? '3px solid #007AFF' : '1px solid rgba(0,0,0,0.1)',
+                                        border: skinId === tone.id ? '3px solid #007AFF' : '2px solid rgba(0,0,0,0.1)',
                                         cursor: 'pointer', flexShrink: 0, transition: 'transform 0.2s'
                                     }}
                                 />
@@ -288,16 +324,16 @@ const CharacterBuilder = ({ initialConfig, onSelect, onClose }) => {
                     </div>
 
                     <div>
-                        <label style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#555', marginBottom: '8px', display: 'block' }}>Hair Color</label>
-                        <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '5px' }}>
+                        <label style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#555', marginBottom: '6px', display: 'block' }}>Hair Color</label>
+                        <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '5px', WebkitOverflowScrolling: 'touch' }}>
                             {HAIR_COLORS.map(color => (
                                 <button
                                     key={color.id}
                                     onClick={() => setHairColor(color.color)}
                                     style={{
-                                        minWidth: '38px', height: '38px', borderRadius: '50%',
+                                        minWidth: '44px', height: '44px', borderRadius: '50%',
                                         background: color.color,
-                                        border: hairColor === color.color ? '3px solid #007AFF' : '1px solid rgba(0,0,0,0.1)',
+                                        border: hairColor === color.color ? '3px solid #007AFF' : '2px solid rgba(0,0,0,0.1)',
                                         cursor: 'pointer', flexShrink: 0, transition: 'transform 0.2s'
                                     }}
                                 />
@@ -306,22 +342,49 @@ const CharacterBuilder = ({ initialConfig, onSelect, onClose }) => {
                     </div>
 
                     <div>
-                        <label style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#555', marginBottom: '8px', display: 'block' }}>Hair Style</label>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                        <label style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#555', marginBottom: '6px', display: 'block' }}>Hair Style</label>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', gap: '8px' }}>
                             {HAIR_STYLES.map(style => (
                                 <button
                                     key={style.id}
                                     onClick={() => setHairStyleId(style.id)}
                                     style={{
-                                        padding: '12px 8px',
-                                        borderRadius: '15px',
+                                        padding: '10px 6px',
+                                        borderRadius: '12px',
                                         background: hairStyleId === style.id ? '#007AFF' : '#F5F5F7',
                                         color: hairStyleId === style.id ? 'white' : '#333',
                                         border: 'none',
                                         cursor: 'pointer',
-                                        fontSize: '0.8rem',
-                                        fontWeight: 700,
-                                        transition: 'all 0.2s'
+                                        fontSize: '0.75rem',
+                                        fontWeight: 600,
+                                        transition: 'all 0.2s',
+                                        minHeight: '44px'
+                                    }}
+                                >
+                                    {style.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#555', marginBottom: '6px', display: 'block' }}>Facial Hair</label>
+                        <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '5px', WebkitOverflowScrolling: 'touch' }}>
+                            {FACIAL_HAIR_STYLES.map(style => (
+                                <button
+                                    key={style.id}
+                                    onClick={() => setFacialHairId(style.id)}
+                                    style={{
+                                        padding: '10px 12px',
+                                        borderRadius: '12px',
+                                        background: facialHairId === style.id ? '#007AFF' : '#F5F5F7',
+                                        color: facialHairId === style.id ? 'white' : '#333',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        fontSize: '0.75rem',
+                                        fontWeight: 600,
+                                        minWidth: '70px',
+                                        flexShrink: 0
                                     }}
                                 >
                                     {style.label}

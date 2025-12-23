@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import GuidedAccessModal from './GuidedAccessModal';
+import FavoritesPickerModal from './FavoritesPickerModal';
+import Superwall from '../plugins/superwall';
 
 const Controls = ({
     isEditMode,
@@ -31,7 +33,8 @@ const Controls = ({
     voiceSettings,
     onUpdateVoiceSettings,
     gridSize,
-    onUpdateGridSize
+    onUpdateGridSize,
+    onAddFavorites
 }) => {
 
     const [newWord, setNewWord] = useState('');
@@ -39,6 +42,8 @@ const Controls = ({
     const [newType, setNewType] = useState('button');
     const [availableVoices, setAvailableVoices] = useState([]);
     const [showGuidedAccess, setShowGuidedAccess] = useState(false);
+    const [showFavoritesPicker, setShowFavoritesPicker] = useState(false);
+    const [isRestoring, setIsRestoring] = useState(false);
 
     // Detect iOS to show relevant help
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -52,6 +57,22 @@ const Controls = ({
         loadVoices();
         window.speechSynthesis.onvoiceschanged = loadVoices;
     }, []);
+
+    const handleRestore = async () => {
+        setIsRestoring(true);
+        try {
+            const result = await Superwall.restore();
+            if (result.result === 'restored') {
+                alert("Purchases successfully restored!");
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error('Restore failed:', error);
+            alert("Restore failed. Please try again or contact support.");
+        } finally {
+            setIsRestoring(false);
+        }
+    };
 
     const handleAdd = () => {
         if (!newWord || !newIcon) {
@@ -73,6 +94,16 @@ const Controls = ({
         { id: 6, label: "Level 6: Commenting", icon: "💬" }
     ];
 
+    const handleLock = () => {
+        if (isIOS) {
+            setShowGuidedAccess(true);
+        } else {
+            if (confirm("Lock controls for child use?")) {
+                onToggleLock();
+            }
+        }
+    };
+
     return (
         <div id="controls" className={isEditMode || isTrainingMode ? '' : 'collapsed'}>
             <div className="drag-handle"></div>
@@ -85,7 +116,7 @@ const Controls = ({
             <div id="edit-panel" style={{ display: (isEditMode && !isTrainingMode) ? 'flex' : 'none' }}>
                 {/* Prominent Lock Button at top */}
                 <button
-                    onClick={onToggleLock}
+                    onClick={handleLock}
                     style={{
                         width: '100%',
                         padding: '12px',
@@ -102,7 +133,7 @@ const Controls = ({
                         gap: '8px'
                     }}
                 >
-                    🔒 Lock for Child Use
+                    🔒 Lock App for Child
                 </button>
 
                 <div style={{ display: 'flex', gap: '10px', marginBottom: '5px' }}>
@@ -138,6 +169,22 @@ const Controls = ({
                         };
                         input.click();
                     }}>📤 Import Layout</button>
+                </div>
+
+                <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
+                    <button
+                        style={{
+                            width: '100%',
+                            fontSize: '13px',
+                            background: 'linear-gradient(135deg, #FFD700, #FFA500)',
+                            color: 'white',
+                            border: 'none',
+                            fontWeight: '600'
+                        }}
+                        onClick={() => setShowFavoritesPicker(true)}
+                    >
+                        ⭐ Add More Favorites
+                    </button>
                 </div>
 
                 <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -466,6 +513,16 @@ const Controls = ({
                 </div>
                 <div className="input-row">
                     <button
+                        style={{ flexGrow: 1, background: '#5856D6', color: 'white', fontSize: '0.85rem' }}
+                        onClick={() => {
+                            document.body.classList.toggle('screenshot-mode');
+                        }}
+                    >
+                        📸 Toggle Screenshot Mode
+                    </button>
+                </div>
+                <div className="input-row">
+                    <button
                         style={{ flexGrow: 1, background: '#FF9500', color: 'white', fontSize: '0.85rem' }}
                         onClick={() => {
                             if (confirm("This will clear everything and restart from onboarding. Continue?")) {
@@ -476,6 +533,44 @@ const Controls = ({
                     >
                         🧪 Restart Onboarding (Testing)
                     </button>
+                </div>
+
+                {/* Compliance Section */}
+                <div style={{ 
+                    marginTop: '20px', 
+                    padding: '15px', 
+                    background: '#f8f8f8', 
+                    borderRadius: '12px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px'
+                }}>
+                    <span style={{ fontWeight: 600, color: '#666', fontSize: '12px', textTransform: 'uppercase' }}>Subscription & Legal</span>
+                    
+                    <button 
+                        onClick={handleRestore}
+                        disabled={isRestoring}
+                        style={{ 
+                            width: '100%', 
+                            padding: '10px', 
+                            background: 'white', 
+                            border: '1px solid #ddd', 
+                            borderRadius: '8px', 
+                            fontSize: '13px',
+                            fontWeight: '600'
+                        }}
+                    >
+                        {isRestoring ? 'Restoring...' : 'Restore Purchases'}
+                    </button>
+
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '5px' }}>
+                        <a href="/privacy.html" target="_blank" style={{ fontSize: '12px', color: '#007AFF', textDecoration: 'none' }}>Privacy Policy</a>
+                        <a href="/terms.html" target="_blank" style={{ fontSize: '12px', color: '#007AFF', textDecoration: 'none' }}>Terms of Use</a>
+                    </div>
+                    
+                    <p style={{ fontSize: '10px', color: '#999', textAlign: 'center', margin: 0 }}>
+                        © 2024 Behavior School LLC. All rights reserved.
+                    </p>
                 </div>
 
             </div>
@@ -489,7 +584,26 @@ const Controls = ({
                 </div>
             </div>
 
-            {showGuidedAccess && <GuidedAccessModal onClose={() => setShowGuidedAccess(false)} />}
+            {showGuidedAccess && (
+                <GuidedAccessModal
+                    onClose={() => {
+                        setShowGuidedAccess(false);
+                        onToggleLock(); // Lock the app after they see the instructions
+                    }}
+                />
+            )}
+
+            {showFavoritesPicker && (
+                <FavoritesPickerModal
+                    onClose={() => setShowFavoritesPicker(false)}
+                    onAddFavorites={(favorites) => {
+                        if (onAddFavorites) {
+                            onAddFavorites(favorites);
+                        }
+                    }}
+                    existingFavorites={[]} // We'll pass this from App
+                />
+            )}
         </div>
     );
 };

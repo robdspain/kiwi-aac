@@ -118,9 +118,29 @@ body {
   padding-top: env(safe-area-inset-top, 0px);
 }
 
+/* Literacy Mode - Dyslexia-friendly styles */
+body.literacy-mode {
+  font-family: 'Comic Sans MS', 'Lexend', 'OpenDyslexic', -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: 0.05em;
+}
+
+body.literacy-mode .app-label {
+  font-size: 16px !important;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+  text-transform: uppercase;
+  color: #000;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+body.literacy-mode .app-icon {
+  font-size: 2.8rem !important;
+}
+
 /* Sentence Strip */
 #strip-container {
-  padding: 12px 16px 0;
+  padding: 12px 24px 0;
   flex-shrink: 0;
 }
 
@@ -176,7 +196,7 @@ body {
 }
 
 #breadcrumbs {
-  padding: 16px 20px 8px;
+  padding: 16px 24px 8px;
   font-size: 1.75rem;
   font-weight: 800;
   color: var(--text-primary);
@@ -198,25 +218,30 @@ body {
   letter-spacing: 0.5px;
 }
 
-/* Grid - Optimized for minimal scrolling */
+/* Grid - Optimized for minimal scrolling and side-grip safety */
 #grid-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
-  padding: 12px 12px;
+  padding: 12px 24px;
   padding-bottom: 120px;
   overflow-y: auto;
   align-content: start;
   -webkit-overflow-scrolling: touch;
 }
 
-/* Small phones (SE, mini) - 3 columns, tighter */
+/* Small phones (SE, mini) - 3 columns, tighter but with side padding */
 @media (max-width: 380px) {
   #grid-container {
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
-    padding: 8px 10px;
+    padding: 8px 16px;
     padding-bottom: 110px;
+  }
+  
+  #breadcrumbs, #strip-container {
+    padding-left: 16px;
+    padding-right: 16px;
   }
 
   .app-icon {
@@ -233,7 +258,12 @@ body {
   #grid-container {
     grid-template-columns: repeat(3, 1fr);
     gap: 12px;
-    padding: 12px 14px;
+    padding: 12px 24px;
+  }
+  
+  #breadcrumbs, #strip-container {
+    padding-left: 24px;
+    padding-right: 24px;
   }
 }
 
@@ -242,17 +272,27 @@ body {
   #grid-container {
     grid-template-columns: repeat(4, 1fr);
     gap: 14px;
-    padding: 16px 20px;
+    padding: 16px 32px;
+  }
+  
+  #breadcrumbs, #strip-container {
+    padding-left: 32px;
+    padding-right: 32px;
   }
 }
 
-/* Tablets portrait - 5 columns */
+/* Tablets portrait - 5 columns - Higher side padding for grip */
 @media (min-width: 768px) and (max-width: 1023px) {
   #grid-container {
     grid-template-columns: repeat(5, 1fr);
     gap: 20px;
-    padding: 20px 24px;
+    padding: 20px 48px;
     padding-bottom: 140px;
+  }
+  
+  #breadcrumbs, #strip-container {
+    padding-left: 48px;
+    padding-right: 48px;
   }
 
   .app-icon {
@@ -264,14 +304,22 @@ body {
   }
 }
 
-/* Tablets landscape / Desktop - 6 columns */
+/* Tablets landscape / Desktop - 6 columns - Maximum side padding */
 @media (min-width: 1024px) {
   #grid-container {
     grid-template-columns: repeat(6, 1fr);
     gap: 24px;
-    padding: 24px 32px;
+    padding: 24px 64px;
     max-width: 1400px;
     margin: 0 auto;
+  }
+  
+  #breadcrumbs, #strip-container {
+    padding-left: 64px;
+    padding-right: 64px;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
   }
 
   .app-icon {
@@ -451,37 +499,36 @@ body {
   transform: scale(0.95);
 }
 
-/* Communication Levels */
-.phase-single-grid {
-  display: flex;
+/* Large 2x2 Grid (Phase 1, 2, & 3 start) */
+.phase-large-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 32px;
+  padding: 40px;
   align-items: center;
-  justify-content: center;
+  justify-items: center;
   height: 100%;
-  padding: 32px;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
-.phase-single-grid .app-icon {
-  width: 220px;
-  height: 220px;
+.phase-large-grid .app-item {
+  width: 100%;
+  max-width: 280px;
+  aspect-ratio: 1;
+}
+
+.phase-large-grid .app-icon {
+  width: 100%;
+  height: 100%;
   font-size: 6rem;
+  border-radius: 40px; /* Softer radius for big buttons */
 }
 
-.phase-discrimination-grid {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 24px;
-  height: 100%;
-  padding: 20px;
-}
-
-.phase-discrimination-grid .app-item {
-  width: 45%;
-  max-width: 200px;
-}
-
-.phase-discrimination-grid .app-icon {
-  font-size: 4rem;
+.phase-large-grid .app-label {
+  font-size: 1.5rem;
+  margin-top: 12px;
 }
 
 /* Call Overlay */
@@ -703,6 +750,18 @@ button.danger {
 
 .picker-btn:active {
   transform: scale(0.95);
+}
+
+body.screenshot-mode {
+  background: white;
+}
+
+body.screenshot-mode #main-area {
+  padding: 40px;
+  background: white;
+  border-radius: 40px;
+  overflow: hidden;
+  box-shadow: 0 0 0 100vh white; /* Fill outer area with white */
 }
 
 /* Accessibility */

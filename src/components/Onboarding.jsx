@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
 import Assessment from './Assessment';
+import TouchCalibration from './TouchCalibration';
+import FavoritesPicker from './FavoritesPicker';
 
 const Onboarding = ({ onComplete }) => {
     const [step, setStep] = useState(0);
     const [showAssessment, setShowAssessment] = useState(false);
+    const [showCalibration, setShowCalibration] = useState(false);
+    const [showFavorites, setShowFavorites] = useState(false);
     const [recommendedPhase, setRecommendedPhase] = useState(null);
+    const [selectedFavorites, setSelectedFavorites] = useState([]);
+    const [canRead, setCanRead] = useState(null);
 
     const steps = [
         {
@@ -76,31 +82,52 @@ const Onboarding = ({ onComplete }) => {
 
     const handleNext = () => {
         if (step === 0) {
-            // After welcome, show assessment
-            setShowAssessment(true);
+            // After welcome, check motor skills
+            setShowCalibration(true);
         } else if (step < steps.length - 1) {
             setStep(step + 1);
         } else {
             // Complete onboarding
             localStorage.setItem('kiwi-onboarding-complete', 'true');
-            onComplete(recommendedPhase || 0);
+            onComplete(recommendedPhase || 0, selectedFavorites, canRead);
         }
     };
 
-    const handleAssessmentComplete = (phase) => {
+    const handleCalibrationComplete = () => {
+        setShowCalibration(false);
+        setShowAssessment(true);
+    };
+
+    const handleAssessmentComplete = (phase, favorites, literacy) => {
         setRecommendedPhase(phase);
+        setSelectedFavorites(favorites || []);
+        setCanRead(literacy);
         setShowAssessment(false);
+        setStep(1); // Move to "How to Use" step
+    };
+
+    const handleFavoritesComplete = (favs) => {
+        setSelectedFavorites(favs);
+        setShowFavorites(false);
         setStep(1); // Move to "How to Use" step
     };
 
     const handleSkip = () => {
         localStorage.setItem('kiwi-onboarding-complete', 'true');
-        onComplete(recommendedPhase || 0);
+        onComplete(recommendedPhase || 0, selectedFavorites, canRead);
     };
+
+    if (showCalibration) {
+        return <TouchCalibration onComplete={handleCalibrationComplete} />;
+    }
 
     // Show assessment
     if (showAssessment) {
         return <Assessment onComplete={handleAssessmentComplete} />;
+    }
+
+    if (showFavorites) {
+        return <FavoritesPicker onComplete={handleFavoritesComplete} />;
     }
 
     return (
