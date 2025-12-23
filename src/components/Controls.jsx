@@ -6,6 +6,12 @@ const Controls = ({
     currentPhase,
     showStrip,
     skinTone,
+    currentContext,
+    contexts,
+    onSetContext,
+    onAddContext,
+    onRenameContext,
+    onDeleteContext,
     onSetSkinTone,
     onToggleMenu,
     onAddItem,
@@ -20,12 +26,27 @@ const Controls = ({
     onToggleDashboard,
     isPrompted,
     onSetPrompted,
-    onToggleLock
+    onToggleLock,
+    voiceSettings,
+    onUpdateVoiceSettings,
+    gridSize,
+    onUpdateGridSize
 }) => {
 
     const [newWord, setNewWord] = useState('');
     const [newIcon, setNewIcon] = useState('');
     const [newType, setNewType] = useState('button');
+    const [availableVoices, setAvailableVoices] = useState([]);
+
+    React.useEffect(() => {
+        const loadVoices = () => {
+            const voices = window.speechSynthesis.getVoices();
+            // Filter for English voices or current locale to keep it clean
+            setAvailableVoices(voices.filter(v => v.lang.startsWith('en')));
+        };
+        loadVoices();
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+    }, []);
 
     const handleAdd = () => {
         if (!newWord || !newIcon) {
@@ -121,6 +142,131 @@ const Controls = ({
                     </p>
                 </div>
 
+                {/* Context/Location Selector */}
+                <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontWeight: 600, color: '#333' }}>📍 Locations</span>
+                        <button 
+                            onClick={() => {
+                                const label = prompt("Location Name (e.g. Playground)");
+                                if (label) {
+                                    onOpenPicker((w, icon) => {
+                                        onAddContext(label, icon);
+                                    }, true);
+                                }
+                            }}
+                            style={{ padding: '4px 10px', background: 'var(--primary)', color: 'white', borderRadius: '8px', fontSize: '12px' }}
+                        >
+                            + New
+                        </button>
+                    </div>
+                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                        {contexts && contexts.map(ctx => (
+                            <div key={ctx.id} style={{ position: 'relative' }}>
+                                <button
+                                    onClick={() => onSetContext(ctx.id)}
+                                    style={{
+                                        padding: '8px 12px',
+                                        fontSize: '12px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '4px',
+                                        background: currentContext === ctx.id ? 'var(--primary)' : '#E5E5EA',
+                                        color: currentContext === ctx.id ? 'white' : 'black',
+                                        borderRadius: '10px',
+                                        border: 'none',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    <span>{ctx.icon}</span>
+                                    <span>{ctx.label}</span>
+                                </button>
+                                {isEditMode && (
+                                    <div 
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            const newLabel = prompt("Rename location:", ctx.label);
+                                            if (newLabel) {
+                                                onRenameContext(ctx.id, newLabel, ctx.icon);
+                                            }
+                                        }}
+                                        style={{
+                                            position: 'absolute', top: '-5px', right: '-5px',
+                                            background: '#fff', borderRadius: '50%', width: '15px', height: '15px',
+                                            fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            boxShadow: '0 1px 3px rgba(0,0,0,0.2)', border: '1px solid #ddd'
+                                        }}
+                                    >
+                                        ✎
+                                    </div>
+                                )}
+                                {isEditMode && contexts.length > 1 && (
+                                    <div 
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            onDeleteContext(ctx.id);
+                                        }}
+                                        style={{
+                                            position: 'absolute', bottom: '-5px', right: '-5px',
+                                            background: '#fff', borderRadius: '50%', width: '15px', height: '15px',
+                                            fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            boxShadow: '0 1px 3px rgba(0,0,0,0.2)', border: '1px solid #ddd', color: 'red'
+                                        }}
+                                    >
+                                        ×
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                    <p style={{ fontSize: '11px', color: '#888', margin: 0 }}>
+                        {isEditMode ? "Tap ✎ to rename or × to delete" : "Each location has its own set of icons"}
+                    </p>
+                </div>
+
+                {/* Grid Accessibility */}
+                <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <span style={{ fontWeight: 600, color: '#333' }}>📐 Grid Layout</span>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
+                        {[
+                            { id: 'auto', label: '📱 Auto' },
+                            { id: 'super-big', label: '🐘 Super Big' },
+                            { id: 'big', label: '🦒 Big' },
+                            { id: 'standard', label: '🐕 Standard' },
+                            { id: 'dense', label: '🐜 Dense' },
+                        ].map(size => (
+                            <button
+                                key={size.id}
+                                onClick={() => onUpdateGridSize(size.id)}
+                                style={{
+                                    padding: '10px',
+                                    fontSize: '13px',
+                                    background: gridSize === size.id ? 'var(--primary)' : '#E5E5EA',
+                                    color: gridSize === size.id ? 'white' : 'black',
+                                    borderRadius: '10px',
+                                    border: 'none'
+                                }}
+                            >
+                                {size.label}
+                            </button>
+                        ))}
+                    </div>
+                    {gridSize === 'super-big' && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '5px' }}>
+                            <input 
+                                type="checkbox" 
+                                checked={localStorage.getItem('kiwi-force-strip') === 'true'} 
+                                onChange={(e) => {
+                                    localStorage.setItem('kiwi-force-strip', e.target.checked);
+                                    window.dispatchEvent(new Event('storage')); // Simple hack to force refresh
+                                    location.reload(); // Safer for this complexity
+                                }}
+                            />
+                            <span style={{ fontSize: '11px', color: '#666' }}>Force sentence strip in Super Big mode</span>
+                        </div>
+                    )}
+                </div>
+
                 {/* Trial Type Selector */}
                 <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     <span style={{ fontWeight: 600, color: '#333' }}>Next Trial Mode</span>
@@ -188,6 +334,64 @@ const Controls = ({
                     </div>
                 </div>
 
+                {/* Voice Settings */}
+                <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <span style={{ fontWeight: 600, color: '#333' }}>🗣️ Voice Settings</span>
+                    
+                    <div>
+                        <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Voice</label>
+                        <select 
+                            value={voiceSettings.voiceURI || ''} 
+                            onChange={(e) => onUpdateVoiceSettings({ ...voiceSettings, voiceURI: e.target.value })}
+                            style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '14px' }}
+                        >
+                            <option value="">Default System Voice</option>
+                            {availableVoices.map(v => (
+                                <option key={v.voiceURI} value={v.voiceURI}>{v.name}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '15px' }}>
+                        <div style={{ flex: 1 }}>
+                            <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Speed: {voiceSettings.rate}x</label>
+                            <input 
+                                type="range" min="0.5" max="1.5" step="0.1" 
+                                value={voiceSettings.rate}
+                                onChange={(e) => onUpdateVoiceSettings({ ...voiceSettings, rate: parseFloat(e.target.value) })}
+                                style={{ width: '100%' }}
+                            />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Pitch: {voiceSettings.pitch}</label>
+                            <input 
+                                type="range" min="0.5" max="1.5" step="0.1" 
+                                value={voiceSettings.pitch}
+                                onChange={(e) => onUpdateVoiceSettings({ ...voiceSettings, pitch: parseFloat(e.target.value) })}
+                                style={{ width: '100%' }}
+                            />
+                        </div>
+                    </div>
+                    
+                    <button 
+                        onClick={() => {
+                            const synth = window.speechSynthesis;
+                            if (synth.speaking) synth.cancel();
+                            const u = new SpeechSynthesisUtterance("Hello, I am your new voice.");
+                            u.rate = voiceSettings.rate;
+                            u.pitch = voiceSettings.pitch;
+                            if (voiceSettings.voiceURI) {
+                                const v = synth.getVoices().find(v => v.voiceURI === voiceSettings.voiceURI);
+                                if (v) u.voice = v;
+                            }
+                            synth.speak(u);
+                        }}
+                        style={{ padding: '8px', background: '#f0f0f0', borderRadius: '8px', border: 'none', fontSize: '12px', cursor: 'pointer' }}
+                    >
+                        ▶️ Preview Voice
+                    </button>
+                </div>
+
                 {currentPhase === 5 && (
                     <div className="input-row">
                         <button className="primary" style={{ flexGrow: 1, background: '#FF9500' }} onClick={() => {
@@ -212,8 +416,8 @@ const Controls = ({
                     </button>
                 </div>
                 <div className="input-row">
-                    <button style={{ flexGrow: 1, background: '#FF9500', color: 'white' }} onClick={onToggleLock}>
-                        🔒 Lock Mode (Child Safe)
+                    <button style={{ flexGrow: 1, background: '#34C759', color: 'white' }} onClick={onToggleLock}>
+                        🔒 Enable Child Mode
                     </button>
                 </div>
                 <div className="input-row">

@@ -9,6 +9,7 @@ import {
 const Grid = ({
     items,
     currentPhase = 0,
+    gridSize = 'auto',
     isTrainingMode,
     trainingSelection,
     isEditMode,
@@ -30,8 +31,22 @@ const Grid = ({
         currentPhase === 1 ? 'phase-single-grid' :
             currentPhase === 3 ? 'phase-discrimination-grid' : '';
 
+    const getGridStyle = () => {
+        if (currentPhase === 1 || currentPhase === 3) return {};
+        
+        let cols;
+        switch (gridSize) {
+            case 'super-big': cols = 2; break;
+            case 'big': cols = 3; break;
+            case 'standard': cols = 4; break;
+            case 'dense': cols = 6; break;
+            default: return {}; // Use CSS responsive defaults
+        }
+        return { gridTemplateColumns: `repeat(${cols}, 1fr)` };
+    };
+
     return (
-        <div id="grid-container" className={gridClass}>
+        <div id="grid-container" className={gridClass} style={getGridStyle()}>
             {hasBack && !isTrainingMode && (
                 <AppItem
                     item={{ id: 'back-btn', word: 'Back', icon: '⬅️', type: 'button' }}

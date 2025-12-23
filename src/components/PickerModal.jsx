@@ -14,9 +14,21 @@ const PickerModal = ({ isOpen, onClose, onSelect }) => {
     const [photos, setPhotos] = useState([]);
     const [symbols, setSymbols] = useState([]);
     const [isLoadingPhotos, setIsLoadingPhotos] = useState(false);
-    const [isLoadingSymbols, setIsLoadingSymbols] = useState(false);
+    const [isOnline, setIsOnline] = useState(navigator.onLine);
 
     useEffect(() => {
+        const handleOnline = () => setIsOnline(true);
+        const handleOffline = () => setIsOnline(false);
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
+        return () => {
+            window.removeEventListener('online', handleOnline);
+            window.removeEventListener('offline', handleOffline);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!isOnline) return;
         if (activeTab === 'photo' && searchQuery.length > 2) {
             const timer = setTimeout(() => {
                 searchUnsplash(searchQuery);
@@ -34,10 +46,21 @@ const PickerModal = ({ isOpen, onClose, onSelect }) => {
     const searchUnsplash = async (query) => {
         setIsLoadingPhotos(true);
         try {
-            const response = await fetch(`https://api.unsplash.com/search/photos?query=${query}&per_page=12&client_id=YOUR_UNSPLASH_ACCESS_KEY`);
+            const accessKey = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
+            const response = await fetch(`https://api.unsplash.com/search/photos?query=${query}&per_page=12&client_id=${accessKey}`);
             if (response.ok) {
                 const data = await response.json();
-                setPhotos(data.results.map(p => ({ w: query, i: p.urls.small })));
+                // Store full photo data for proper attribution and download tracking
+                setPhotos(data.results.map(p => ({
+                    w: query,
+                    i: p.urls.small,
+                    // Unsplash compliance: track download_location for when user selects
+                    downloadLocation: p.links.download_location,
+                    // Unsplash compliance: photographer attribution
+                    photographerName: p.user.name,
+                    photographerLink: `${p.user.links.html}?utm_source=kiwi_aac&utm_medium=referral`,
+                    unsplashLink: `${p.links.html}?utm_source=kiwi_aac&utm_medium=referral`
+                })));
             } else {
                 // Fallback: use picsum.photos
                 const simulatedResults = Array.from({ length: 8 }).map((_, i) => ({
@@ -53,14 +76,42 @@ const PickerModal = ({ isOpen, onClose, onSelect }) => {
         }
     };
 
+    // Unsplash compliance: trigger download tracking when photo is selected
+    const trackUnsplashDownload = async (downloadLocation) => {
+        if (!downloadLocation) return;
+        const accessKey = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
+        try {
+            await fetch(`${downloadLocation}?client_id=${accessKey}`);
+        } catch (error) {
+            console.log('Unsplash download tracking failed:', error);
+        }
+    };
+
     const searchSymbols = async (query) => {
+        if (!navigator.onLine) return;
         setIsLoadingSymbols(true);
         try {
-            // OpenMoji API - CC BY-SA 4.0 (allows commercial use with attribution)
-            // Using openmoji.org CDN which serves all emojis
-            const response = await fetch(`https://raw.githubusercontent.com/hfg-gmuend/openmoji/master/data/openmoji.json`);
-            if (response.ok) {
-                const data = await response.json();
+            // Use Cache API if available to save the 5MB file locally after first fetch
+            const cacheName = 'kiwi-symbols-cache';
+            const url = 'https://raw.githubusercontent.com/hfg-gmuend/openmoji/master/data/openmoji.json';
+
+            let data;
+            if ('caches' in window) {
+                const cache = await caches.open(cacheName);
+                let response = await cache.match(url);
+                if (!response) {
+                    await cache.add(url);
+                    response = await cache.match(url);
+                }
+                if (response) data = await response.json();
+            }
+
+            if (!data) {
+                const response = await fetch(url);
+                if (response.ok) data = await response.json();
+            }
+
+            if (data) {
                 const queryLower = query.toLowerCase();
                 const results = data
                     .filter(item =>
@@ -152,6 +203,12 @@ const PickerModal = ({ isOpen, onClose, onSelect }) => {
                     />
                 </div>
 
+                {!isOnline && activeTab !== 'emoji' && (
+                    <div style={{ background: '#FFF3CD', color: '#856404', padding: '10px', borderRadius: '10px', marginBottom: '10px', fontSize: '0.9rem', textAlign: 'center' }}>
+                        📡 You are offline. Online search is unavailable.
+                    </div>
+                )}
+
                 {activeTab === 'emoji' ? (
                     <>
                         {!searchQuery && (
@@ -229,20 +286,35 @@ const PickerModal = ({ isOpen, onClose, onSelect }) => {
                         {isLoadingPhotos ? (
                             <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px' }}>Searching...</div>
                         ) : photos.length > 0 ? (
-                            photos.map((photo, index) => (
-                                <button
-                                    key={index}
-                                    className="picker-btn"
-                                    onClick={() => {
-                                        onSelect(photo.w, photo.i, true);
-                                        setSearchQuery('');
-                                    }}
-                                    style={{ padding: '5px' }}
-                                >
-                                    <img src={photo.i} alt={photo.w} style={{ width: '100%', height: '60px', objectFit: 'cover', borderRadius: '8px' }} />
-                                    <span style={{ fontSize: '10px', marginTop: '4px', opacity: 0.8, whiteSpace: 'nowrap', overflow: 'hidden', width: '100%' }}>{photo.w}</span>
-                                </button>
-                            ))
+                            <>
+                                {photos.map((photo, index) => (
+                                    <button
+                                        key={index}
+                                        className="picker-btn"
+                                        onClick={() => {
+                                            // Unsplash compliance: track download when photo is selected
+                                            if (photo.downloadLocation) {
+                                                trackUnsplashDownload(photo.downloadLocation);
+                                            }
+                                            onSelect(photo.w, photo.i, true);
+                                            setSearchQuery('');
+                                        }}
+                                        style={{ padding: '5px', position: 'relative' }}
+                                    >
+                                        <img src={photo.i} alt={photo.w} style={{ width: '100%', height: '60px', objectFit: 'cover', borderRadius: '8px' }} />
+                                        {/* Unsplash compliance: photographer attribution */}
+                                        {photo.photographerName && (
+                                            <span style={{ fontSize: '8px', opacity: 0.6, display: 'block' }}>
+                                                by {photo.photographerName}
+                                            </span>
+                                        )}
+                                    </button>
+                                ))}
+                                {/* Unsplash compliance: attribution link */}
+                                <div style={{ gridColumn: '1/-1', textAlign: 'center', fontSize: '0.7rem', color: '#888', marginTop: '10px' }}>
+                                    Photos from <a href="https://unsplash.com?utm_source=kiwi_aac&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+                                </div>
+                            </>
                         ) : (
                             <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px', opacity: 0.5 }}>
                                 {searchQuery.length < 3 ? "Type 3+ characters to search photos" : "No photos found"}

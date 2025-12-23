@@ -1,7 +1,9 @@
 {
-  "name": "temp-app",
+  "name": "kiwi-aac",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Kiwi AAC - Picture Exchange Communication System",
+  "author": "Behavior School LLC",
   "type": "module",
   "scripts": {
     "dev": "vite",

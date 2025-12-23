@@ -1,7 +1,7 @@
 import React from 'react';
 import { getTopItems, getDailyStats, getTotalStats, exportToCSV } from '../utils/AnalyticsService';
 
-const Dashboard = ({ onClose, progressData }) => {
+const Dashboard = ({ onClose, progressData, currentPhase }) => {
     const stats = progressData?.essentialStats || {
         fcr_attempts: 0,
         denial_presented: 0,
@@ -22,6 +22,35 @@ const Dashboard = ({ onClose, progressData }) => {
     const totalStats = getTotalStats();
     const maxDaily = Math.max(...dailyStats.map(d => d.clicks), 1);
 
+    const handleShare = async () => {
+        const report = `
+📊 Kiwi AAC Progress Report
+---------------------------
+📍 Current Phase: Level ${currentPhase}
+📈 Total Interactions: ${totalStats.totalClicks}
+🧠 Independence Rate: ${independenceRate}%
+🔥 Current Streak: ${progressData.currentStreak} trials
+🏆 Top Words: ${topItems.slice(0, 3).map(i => i.word).join(', ')}
+
+Communication is growing! 🥝
+        `.trim();
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'Kiwi AAC Progress Report',
+                    text: report,
+                });
+            } catch (err) {
+                console.log('Share failed:', err);
+            }
+        } else {
+            // Fallback: copy to clipboard
+            navigator.clipboard.writeText(report);
+            alert("Report copied to clipboard!");
+        }
+    };
+
     return (
         <div id="picker-modal" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <div id="picker-content" style={{
@@ -31,6 +60,7 @@ const Dashboard = ({ onClose, progressData }) => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                     <h1 style={{ margin: 0 }}>📊 Dashboard</h1>
                     <div style={{ display: 'flex', gap: '10px' }}>
+                        <button onClick={handleShare} style={{ padding: '10px 20px', borderRadius: '10px', background: '#007AFF', color: 'white', border: 'none', cursor: 'pointer' }}>📤 Share Progress</button>
                         <button onClick={exportToCSV} style={{ padding: '10px 20px', borderRadius: '10px', background: '#34C759', color: 'white', border: 'none', cursor: 'pointer' }}>📥 Export CSV</button>
                         <button onClick={onClose} style={{ padding: '10px 20px', borderRadius: '10px', background: '#E5E5EA', border: 'none', cursor: 'pointer' }}>Close</button>
                     </div>

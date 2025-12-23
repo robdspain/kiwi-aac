@@ -33,52 +33,37 @@ const SKIN_TONES = {
   dark: '🏿'
 };
 
-const defaultData = [
-  { id: 'starter-want', type: 'button', word: "I want", icon: "🙋", category: 'starter' },
-  { id: 'starter-see', type: 'button', word: "I see", icon: "👀", category: 'starter' },
-  { id: 'starter-feel', type: 'button', word: "I feel", icon: "😊", category: 'starter' },
-  { id: 'mom', type: 'button', word: "Mom", icon: "👩🏼‍🦱" },
-  { id: 'dad', type: 'button', word: "Dad", icon: "👱‍♂️" },
-  { id: 'more', type: 'button', word: "More", icon: "➕" },
-  {
-    id: 'food-folder', type: 'folder', word: "Foods", icon: "🍎", contents: [
-      { id: 'banana', type: 'button', word: "Banana", icon: "🍌" },
-      { id: 'apple', type: 'button', word: "Apple", icon: "🍎" },
-      { id: 'cracker', type: 'button', word: "Cracker", icon: "🍘" },
-      { id: 'water', type: 'button', word: "Water", icon: "💧" },
-      { id: 'broccoli', type: 'button', word: "Broccoli", icon: "🥦" }
-    ]
-  },
-  {
-    id: 'toys-folder', type: 'folder', word: "Toys", icon: "⚽", contents: [
-      { id: 'ball', type: 'button', word: "Ball", icon: "⚽" },
-      { id: 'bubbles', type: 'button', word: "Bubbles", icon: "🫧" },
-      { id: 'blocks', type: 'button', word: "Blocks", icon: "🧱" },
-      { id: 'car', type: 'button', word: "Car", icon: "🚗" },
-      { id: 'mouse', type: 'button', word: "Mouse", icon: "🐭" }
-    ]
-  },
-  {
-    id: 'tv-folder', type: 'folder', word: "TV", icon: "📺", contents: [
-      { id: 'elmo', type: 'button', word: "Elmo", icon: "🔴" },
-      { id: 'bluey', type: 'button', word: "Bluey", icon: "🐶" },
-      { id: 'music', type: 'button', word: "Music", icon: "🎵" },
-      { id: 'book', type: 'button', word: "Book", icon: "📚" }
-    ]
-  },
-  {
-    id: 'feelings-folder', type: 'folder', word: "Feelings", icon: "😄", contents: [
-      { id: 'happy', type: 'button', word: "Happy", icon: "😄" },
-      { id: 'sad', type: 'button', word: "Sad", icon: "😢" },
-      { id: 'mad', type: 'button', word: "Mad", icon: "😠" }
-    ]
-  }
+const INITIAL_CONTEXTS = [
+  { id: 'home', label: 'Home', icon: '🏠' },
+  { id: 'school', label: 'School', icon: '🏫' },
+  { id: 'grandparents', label: 'Grandparents', icon: '👵' },
+  { id: 'store', label: 'Store', icon: '🛒' },
+  { id: 'outside', label: 'Outside', icon: '🌳' },
 ];
 
 function App() {
+  const [contexts, setContexts] = useState(() => {
+    const saved = localStorage.getItem('kiwi-contexts');
+    return saved ? JSON.parse(saved) : INITIAL_CONTEXTS;
+  });
+
+  // Save contexts when changed
+  useEffect(() => {
+    localStorage.setItem('kiwi-contexts', JSON.stringify(contexts));
+  }, [contexts]);
+
+  // Current context/location
+  const [currentContext, setCurrentContext] = useState(() => {
+    return localStorage.getItem('kiwi-context') || 'home';
+  });
+
+  // Get storage key for current context
+  const getContextStorageKey = (ctx) => `kiwi-words-${ctx}`;
+
   const [rootItems, setRootItems] = useState(() => {
-    const saved = localStorage.getItem('kians-words-ios');
-    return saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(defaultData));
+    const key = getContextStorageKey(localStorage.getItem('kiwi-context') || 'home');
+    const saved = localStorage.getItem(key);
+    return saved ? JSON.parse(saved) : getDefaultDataForContext(localStorage.getItem('kiwi-context') || 'home');
   });
 
   const [currentPhase, setCurrentPhase] = useState(() => {
@@ -94,9 +79,15 @@ function App() {
     return !localStorage.getItem('kiwi-onboarding-complete');
   });
 
-  const [isLocked, setIsLocked] = useState(false);
+  // Child Mode Lock (default to locked for child-safe mode)
+  const [isLocked, setIsLocked] = useState(() => {
+    const saved = localStorage.getItem('kiwi-child-mode');
+    return saved !== 'unlocked'; // Default to locked (child mode)
+  });
   const [lockTapCount, setLockTapCount] = useState(0);
   const [bellCooldown, setBellCooldown] = useState(false);
+  const [timerRemaining, setTimerRemaining] = useState(0);
+  const [showUnlockHint, setShowUnlockHint] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -237,6 +228,7 @@ function App() {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pickerCallback, setPickerCallback] = useState(null);
   const [callActive, setCallActive] = useState(false); // For Phase II
+  const [isCommunicating, setIsCommunicating] = useState(false); // For Phase II communication stage
   const [isPrompting, setIsPrompting] = useState(false); // For Phase V
   const [isPrompted, setIsPrompted] = useState(false); // New: Track if current trial is prompted or independent
   const [showSuccess, setShowSuccess] = useState(false);
@@ -252,6 +244,13 @@ function App() {
   const [showAdvancementModal, setShowAdvancementModal] = useState(false);
   const [isEssentialMode, setIsEssentialMode] = useState(false);
   const [showDashboard, setShowDashboard] = useState(false);
+  const [voiceSettings, setVoiceSettings] = useState(() => {
+    const saved = localStorage.getItem('kiwi-voice-settings');
+    return saved ? JSON.parse(saved) : { rate: 0.9, pitch: 1.0, voiceURI: null };
+  });
+  const [gridSize, setGridSize] = useState(() => {
+    return localStorage.getItem('kiwi-grid-size') || 'auto';
+  });
 
   // For training mode shuffle
   const [shuffledItems, setShuffledItems] = useState(null);
@@ -259,8 +258,70 @@ function App() {
   const synth = window.speechSynthesis;
 
   useEffect(() => {
-    localStorage.setItem('kians-words-ios', JSON.stringify(rootItems));
-  }, [rootItems]);
+    localStorage.setItem('kiwi-voice-settings', JSON.stringify(voiceSettings));
+  }, [voiceSettings]);
+
+  useEffect(() => {
+    localStorage.setItem('kiwi-grid-size', gridSize);
+  }, [gridSize]);
+
+  useEffect(() => {
+    const key = getContextStorageKey(currentContext);
+    localStorage.setItem(key, JSON.stringify(rootItems));
+  }, [rootItems, currentContext]);
+
+  // Save current context
+  useEffect(() => {
+    localStorage.setItem('kiwi-context', currentContext);
+  }, [currentContext]);
+
+  // Handle context switching
+  const handleSetContext = (newContext) => {
+    // Save current layout to current context before switching
+    const currentKey = getContextStorageKey(currentContext);
+    localStorage.setItem(currentKey, JSON.stringify(rootItems));
+
+    // Load new context's layout
+    const newKey = getContextStorageKey(newContext);
+    const saved = localStorage.getItem(newKey);
+    const newItems = saved ? JSON.parse(saved) : getDefaultDataForContext(newContext);
+
+    setRootItems(newItems);
+    setCurrentContext(newContext);
+    setCurrentPath([]);
+  };
+
+  const handleAddContext = (label, icon) => {
+    const id = 'ctx-' + Date.now();
+    const newContext = { id, label, icon };
+    setContexts([...contexts, newContext]);
+    handleSetContext(id);
+  };
+
+  const handleRenameContext = (id, newLabel, newIcon) => {
+    setContexts(contexts.map(ctx => 
+      ctx.id === id ? { ...ctx, label: newLabel, icon: newIcon } : ctx
+    ));
+  };
+
+  const handleDeleteContext = (id) => {
+    if (contexts.length <= 1) {
+      alert("You must have at least one location.");
+      return;
+    }
+    if (confirm("Delete this location and all its icons?")) {
+      const newContexts = contexts.filter(ctx => ctx.id !== id);
+      setContexts(newContexts);
+      
+      // Remove data
+      localStorage.removeItem(getContextStorageKey(id));
+      
+      // Switch if active
+      if (currentContext === id) {
+        handleSetContext(newContexts[0].id);
+      }
+    }
+  };
 
   useEffect(() => {
     localStorage.setItem('kians-show-strip', showStrip);
@@ -309,7 +370,17 @@ function App() {
     }
     if (synth.speaking) synth.cancel();
     const u = new SpeechSynthesisUtterance(text);
-    u.rate = 0.9;
+    
+    // Apply user settings
+    u.rate = voiceSettings.rate;
+    u.pitch = voiceSettings.pitch;
+    
+    if (voiceSettings.voiceURI) {
+      const voices = synth.getVoices();
+      const selectedVoice = voices.find(v => v.voiceURI === voiceSettings.voiceURI);
+      if (selectedVoice) u.voice = selectedVoice;
+    }
+
     synth.speak(u);
   };
 
@@ -431,6 +502,9 @@ function App() {
     setTimeout(() => {
       document.body.classList.remove('success-flash');
       setShowSuccess(false);
+      if (currentPhase === 2) {
+        setIsCommunicating(false);
+      }
     }, 1200);
   };
 
@@ -593,7 +667,7 @@ function App() {
 
   return (
     <div id="main-area">
-      {showStrip && (
+      {showStrip && (gridSize !== 'super-big' || localStorage.getItem('kiwi-force-strip') === 'true') && (
         <SentenceStrip
           stripItems={stripItems}
           onClear={() => setStripItems([])}
@@ -603,6 +677,11 @@ function App() {
 
       <div id="breadcrumbs">
         {getBreadcrumbs()}
+        {currentContext !== 'home' && (
+          <span className="phase-label-badge" style={{ background: '#5856D6' }}>
+            {CONTEXTS.find(c => c.id === currentContext)?.icon} {CONTEXTS.find(c => c.id === currentContext)?.label}
+          </span>
+        )}
         {currentPhase > 0 && <span className="phase-label-badge">Level {currentPhase}</span>}
       </div>
 
@@ -617,31 +696,52 @@ function App() {
         </div>
       )}
 
-      {currentPhase === 2 && !callActive && (
+      {currentPhase === 2 && !callActive && !isCommunicating && (
         <div className="call-overlay">
-          <h2>I have something to say</h2>
+          <h2>{timerRemaining > 0 ? "Wait for partner..." : "I have something to say"}</h2>
           <button
             className={`call-btn ${bellCooldown ? 'cooldown' : ''}`}
             disabled={bellCooldown}
             onClick={() => {
               if (!bellCooldown) {
-                setCallActive(true);
                 playBellSound();
                 setBellCooldown(true);
-                setTimeout(() => setBellCooldown(false), 5000);
+                setTimerRemaining(5);
+                
+                const interval = setInterval(() => {
+                  setTimerRemaining(prev => {
+                    if (prev <= 1) {
+                      clearInterval(interval);
+                      setCallActive(true);
+                      setBellCooldown(false);
+                      return 0;
+                    }
+                    return prev - 1;
+                  });
+                }, 1000);
               }
             }}
           >
-            {bellCooldown ? '⏳' : '🔔'}
+            {timerRemaining > 0 ? (
+              <div className="timer-display">
+                <div className="timer-circle" style={{ 
+                  background: `conic-gradient(var(--primary) ${timerRemaining * 72}deg, #eee 0deg)` 
+                }}>
+                  <span className="timer-text">{timerRemaining}</span>
+                </div>
+              </div>
+            ) : '🔔'}
           </button>
-          {bellCooldown && <p style={{ color: '#666', marginTop: '10px' }}>Wait 5 seconds...</p>}
         </div>
       )}
 
       {callActive && (
         <div className="call-overlay" style={{ background: 'rgba(255,255,255,0.8)' }}>
           <h2 style={{ color: 'var(--primary)' }}>Partner is here!</h2>
-          <button className="primary" onClick={() => setCallActive(false)}>Let's communicate!</button>
+          <button className="primary" onClick={() => {
+            setCallActive(false);
+            setIsCommunicating(true);
+          }}>Let's communicate!</button>
         </div>
       )}
 
@@ -653,6 +753,7 @@ function App() {
         <Grid
           items={itemsToShow}
           currentPhase={currentPhase}
+          gridSize={gridSize}
           isTrainingMode={isTrainingMode}
           trainingSelection={trainingSelection}
           isEditMode={isEditMode}
@@ -685,6 +786,9 @@ function App() {
           isEssentialMode={isEssentialMode}
           showStrip={showStrip}
           skinTone={skinTone}
+          currentContext={currentContext}
+          contexts={CONTEXTS}
+          onSetContext={handleSetContext}
           onSetSkinTone={setSkinTone}
           onToggleMenu={() => {
             if (!isEditMode) {
@@ -694,6 +798,9 @@ function App() {
             }
           }}
           onAddItem={handleAddItem}
+          onAddContext={handleAddContext}
+          onRenameContext={handleRenameContext}
+          onDeleteContext={handleDeleteContext}
           onToggleStrip={setShowStrip}
           onSetPhase={handleSetPhase}
           onStartTraining={() => {
@@ -714,26 +821,63 @@ function App() {
           isPrompted={isPrompted}
           onSetPrompted={setIsPrompted}
           onToggleLock={() => setIsLocked(true)}
+          voiceSettings={voiceSettings}
+          onUpdateVoiceSettings={setVoiceSettings}
+          gridSize={gridSize}
+          onUpdateGridSize={setGridSize}
         />
       )}
 
-      {/* Unlock button when locked */}
+      {/* Child Mode Indicator & Unlock Area */}
       {isLocked && (
         <div
           style={{
-            position: 'fixed', bottom: '10px', right: '10px',
-            width: '50px', height: '50px', opacity: 0.3
+            position: 'fixed',
+            bottom: '0',
+            left: '0',
+            right: '0',
+            padding: '12px 20px calc(12px + env(safe-area-inset-bottom, 0px)) 20px',
+            background: 'rgba(255,255,255,0.95)',
+            backdropFilter: 'blur(10px)',
+            borderTopLeftRadius: '20px',
+            borderTopRightRadius: '20px',
+            boxShadow: '0 -2px 10px rgba(0,0,0,0.1)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 100
           }}
           onClick={() => {
             const newCount = lockTapCount + 1;
             setLockTapCount(newCount);
+            setShowUnlockHint(true);
             if (newCount >= 3) {
               setIsLocked(false);
+              localStorage.setItem('kiwi-child-mode', 'unlocked');
               setLockTapCount(0);
+              setShowUnlockHint(false);
             }
-            setTimeout(() => setLockTapCount(0), 2000);
+            setTimeout(() => {
+              setLockTapCount(0);
+              setShowUnlockHint(false);
+            }, 3000);
           }}
-        />
+        >
+          <span style={{
+            fontSize: '13px',
+            color: '#666',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            🔒 Child Mode
+            {showUnlockHint && (
+              <span style={{ color: 'var(--primary)', fontWeight: 600 }}>
+                {3 - lockTapCount} more taps to unlock
+              </span>
+            )}
+          </span>
+        </div>
       )}
 
 
@@ -778,6 +922,7 @@ function App() {
         <Dashboard
           onClose={() => setShowDashboard(false)}
           progressData={progressData}
+          currentPhase={currentPhase}
         />
       )}
 
