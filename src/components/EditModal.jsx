@@ -333,7 +333,7 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item 
                         initialIcon={icon}
                         onSelect={(newIcon) => {
                             setIcon(newIcon);
-                            setIsImage(false);
+                            setIsImage(true);
                             setShowCharacterBuilder(false);
                         }}
                         onClose={() => setShowCharacterBuilder(false)}
