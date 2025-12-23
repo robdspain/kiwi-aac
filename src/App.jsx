@@ -41,6 +41,142 @@ const INITIAL_CONTEXTS = [
   { id: 'outside', label: 'Outside', icon: '🌳' },
 ];
 
+// Default icons for Home context
+const homeDefaultData = [
+  { id: 'starter-want', type: 'button', word: "I want", icon: "🙋", category: 'starter' },
+  { id: 'starter-see', type: 'button', word: "I see", icon: "👀", category: 'starter' },
+  { id: 'starter-feel', type: 'button', word: "I feel", icon: "😊", category: 'starter' },
+  { id: 'mom', type: 'button', word: "Mom", icon: "👩🏼‍🦱" },
+  { id: 'dad', type: 'button', word: "Dad", icon: "👱‍♂️" },
+  { id: 'more', type: 'button', word: "More", icon: "➕" },
+  {
+    id: 'food-folder', type: 'folder', word: "Foods", icon: "🍎", contents: [
+      { id: 'banana', type: 'button', word: "Banana", icon: "🍌" },
+      { id: 'apple', type: 'button', word: "Apple", icon: "🍎" },
+      { id: 'cracker', type: 'button', word: "Cracker", icon: "🍘" },
+      { id: 'water', type: 'button', word: "Water", icon: "💧" },
+      { id: 'broccoli', type: 'button', word: "Broccoli", icon: "🥦" }
+    ]
+  },
+  {
+    id: 'toys-folder', type: 'folder', word: "Toys", icon: "⚽", contents: [
+      { id: 'ball', type: 'button', word: "Ball", icon: "⚽" },
+      { id: 'bubbles', type: 'button', word: "Bubbles", icon: "🫧" },
+      { id: 'blocks', type: 'button', word: "Blocks", icon: "🧱" },
+      { id: 'car', type: 'button', word: "Car", icon: "🚗" },
+      { id: 'mouse', type: 'button', word: "Mouse", icon: "🐭" }
+    ]
+  },
+  {
+    id: 'tv-folder', type: 'folder', word: "TV", icon: "📺", contents: [
+      { id: 'elmo', type: 'button', word: "Elmo", icon: "🔴" },
+      { id: 'bluey', type: 'button', word: "Bluey", icon: "🐶" },
+      { id: 'music', type: 'button', word: "Music", icon: "🎵" },
+      { id: 'book', type: 'button', word: "Book", icon: "📚" }
+    ]
+  },
+  {
+    id: 'feelings-folder', type: 'folder', word: "Feelings", icon: "😄", contents: [
+      { id: 'happy', type: 'button', word: "Happy", icon: "😄" },
+      { id: 'sad', type: 'button', word: "Sad", icon: "😢" },
+      { id: 'mad', type: 'button', word: "Mad", icon: "😠" }
+    ]
+  }
+];
+
+// Default icons for School context
+const schoolDefaultData = [
+  { id: 'starter-want', type: 'button', word: "I want", icon: "🙋", category: 'starter' },
+  { id: 'starter-see', type: 'button', word: "I see", icon: "👀", category: 'starter' },
+  { id: 'teacher', type: 'button', word: "Teacher", icon: "👩‍🏫" },
+  { id: 'help', type: 'button', word: "Help", icon: "🙋‍" },
+  { id: 'bathroom', type: 'button', word: "Bathroom", icon: "🚽" },
+  { id: 'more', type: 'button', word: "More", icon: "➕" },
+  {
+    id: 'school-folder', type: 'folder', word: "School", icon: "🏫", contents: [
+      { id: 'pencil', type: 'button', word: "Pencil", icon: "✏️" },
+      { id: 'paper', type: 'button', word: "Paper", icon: "📄" },
+      { id: 'computer', type: 'button', word: "Computer", icon: "💻" },
+      { id: 'backpack', type: 'button', word: "Backpack", icon: "🎒" }
+    ]
+  },
+  {
+    id: 'friends-folder', type: 'folder', word: "Friends", icon: "👫", contents: [
+      { id: 'friend1', type: 'button', word: "Friend", icon: "🧑" },
+      { id: 'play', type: 'button', word: "Play", icon: "⚽" },
+      { id: 'share', type: 'button', word: "Share", icon: "🤝" }
+    ]
+  }
+];
+
+// Default icons for Grandparents context
+const grandparentsDefaultData = [
+  { id: 'starter-want', type: 'button', word: "I want", icon: "🙋", category: 'starter' },
+  { id: 'grandma', type: 'button', word: "Grandma", icon: "👵" },
+  { id: 'grandpa', type: 'button', word: "Grandpa", icon: "👴" },
+  { id: 'hug', type: 'button', word: "Hug", icon: "🫲" },
+  { id: 'cookie', type: 'button', word: "Cookie", icon: "🍪" },
+  { id: 'more', type: 'button', word: "More", icon: "➕" },
+  {
+    id: 'treats-folder', type: 'folder', word: "Treats", icon: "🍬", contents: [
+      { id: 'candy', type: 'button', word: "Candy", icon: "🍬" },
+      { id: 'ice-cream', type: 'button', word: "Ice Cream", icon: "🍦" },
+      { id: 'juice', type: 'button', word: "Juice", icon: "🧃" }
+    ]
+  }
+];
+
+// Default icons for Store context  
+const storeDefaultData = [
+  { id: 'starter-want', type: 'button', word: "I want", icon: "🙋", category: 'starter' },
+  { id: 'help', type: 'button', word: "Help", icon: "🙋‍" },
+  { id: 'cart', type: 'button', word: "Cart", icon: "🛒" },
+  { id: 'bathroom', type: 'button', word: "Bathroom", icon: "🚽" },
+  { id: 'more', type: 'button', word: "More", icon: "➕" },
+  {
+    id: 'shopping-folder', type: 'folder', word: "Shopping", icon: "🛒", contents: [
+      { id: 'snack', type: 'button', word: "Snack", icon: "🍿" },
+      { id: 'drink', type: 'button', word: "Drink", icon: "🧃" },
+      { id: 'toy', type: 'button', word: "Toy", icon: "🧸" }
+    ]
+  }
+];
+
+// Default icons for Outside context
+const outsideDefaultData = [
+  { id: 'starter-want', type: 'button', word: "I want", icon: "🙋", category: 'starter' },
+  { id: 'play', type: 'button', word: "Play", icon: "⚽" },
+  { id: 'swing', type: 'button', word: "Swing", icon: "🧘" },
+  { id: 'slide', type: 'button', word: "Slide", icon: "🚻" },
+  { id: 'more', type: 'button', word: "More", icon: "➕" },
+  {
+    id: 'nature-folder', type: 'folder', word: "Nature", icon: "🌳", contents: [
+      { id: 'tree', type: 'button', word: "Tree", icon: "🌳" },
+      { id: 'flower', type: 'button', word: "Flower", icon: "🌸" },
+      { id: 'bird', type: 'button', word: "Bird", icon: "🐦" },
+      { id: 'bug', type: 'button', word: "Bug", icon: "🐛" }
+    ]
+  },
+  {
+    id: 'playground-folder', type: 'folder', word: "Playground", icon: "🎢", contents: [
+      { id: 'sandbox', type: 'button', word: "Sandbox", icon: "🏖️" },
+      { id: 'climb', type: 'button', word: "Climb", icon: "🧗" },
+      { id: 'run', type: 'button', word: "Run", icon: "🏃" }
+    ]
+  }
+];
+
+// Get default data for a context
+const getDefaultDataForContext = (contextId) => {
+  switch (contextId) {
+    case 'school': return JSON.parse(JSON.stringify(schoolDefaultData));
+    case 'grandparents': return JSON.parse(JSON.stringify(grandparentsDefaultData));
+    case 'store': return JSON.parse(JSON.stringify(storeDefaultData));
+    case 'outside': return JSON.parse(JSON.stringify(outsideDefaultData));
+    default: return JSON.parse(JSON.stringify(homeDefaultData));
+  }
+};
+
 function App() {
   const [contexts, setContexts] = useState(() => {
     const saved = localStorage.getItem('kiwi-contexts');
