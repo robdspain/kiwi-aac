@@ -679,7 +679,7 @@ function App() {
         {getBreadcrumbs()}
         {currentContext !== 'home' && (
           <span className="phase-label-badge" style={{ background: '#5856D6' }}>
-            {CONTEXTS.find(c => c.id === currentContext)?.icon} {CONTEXTS.find(c => c.id === currentContext)?.label}
+            {contexts.find(c => c.id === currentContext)?.icon} {contexts.find(c => c.id === currentContext)?.label}
           </span>
         )}
         {currentPhase > 0 && <span className="phase-label-badge">Level {currentPhase}</span>}
@@ -787,7 +787,7 @@ function App() {
           showStrip={showStrip}
           skinTone={skinTone}
           currentContext={currentContext}
-          contexts={CONTEXTS}
+          contexts={contexts}
           onSetContext={handleSetContext}
           onSetSkinTone={setSkinTone}
           onToggleMenu={() => {
