@@ -38,7 +38,7 @@ const Onboarding = ({ onComplete }) => {
                         <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
                             <div style={{ fontSize: '2rem', width: '50px', textAlign: 'center' }}>⚙️</div>
                             <div>
-                                <strong>Parent Settings</strong> to customize and edit
+                                <strong>Adult Settings</strong> to customize and edit
                             </div>
                         </div>
                         <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>

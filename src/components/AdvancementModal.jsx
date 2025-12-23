@@ -139,7 +139,7 @@ const levelDetails = {
 • Child uses tablet to answer
 
 👣 Steps:
-1. Tap "Play Question Prompt" in Parent Settings
+1. Tap "Play Question Prompt" in Adult Settings
 2. The app asks "What do you want?"
 3. Wait silently for 3-5 seconds
 4. Child taps "I want" + item on tablet

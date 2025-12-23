@@ -8,6 +8,7 @@ import EssentialSkillsMode from './components/EssentialSkillsMode';
 import Dashboard from './components/Dashboard';
 import EditModal from './components/EditModal';
 import Onboarding from './components/Onboarding';
+import SplashScreen from './components/SplashScreen';
 import { playBellSound } from './utils/sounds';
 import {
   DndContext,
@@ -214,6 +215,8 @@ function App() {
   const [showOnboarding, setShowOnboarding] = useState(() => {
     return !localStorage.getItem('kiwi-onboarding-complete');
   });
+
+  const [showSplash, setShowSplash] = useState(true);
 
   // Child Mode Lock (default to locked for child-safe mode)
   const [isLocked, setIsLocked] = useState(() => {
@@ -810,6 +813,8 @@ function App() {
 
   return (
     <div id="main-area">
+      {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
+      
       {showStrip && (gridSize !== 'super-big' || localStorage.getItem('kiwi-force-strip') === 'true') && (
         <SentenceStrip
           stripItems={stripItems}

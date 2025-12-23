@@ -72,12 +72,34 @@ const Controls = ({
         <div id="controls" className={isEditMode || isTrainingMode ? '' : 'collapsed'}>
             <div className="drag-handle"></div>
             <div id="parent-header" onClick={onToggleMenu}>
-                <span>Parent Settings</span>
+                <span>Adult Settings</span>
                 <span id="menu-arrow">{isEditMode || isTrainingMode ? 'Hide ▼' : 'Show ▲'}</span>
             </div>
 
             {/* Edit Panel */}
             <div id="edit-panel" style={{ display: (isEditMode && !isTrainingMode) ? 'flex' : 'none' }}>
+                {/* Prominent Lock Button at top */}
+                <button
+                    onClick={onToggleLock}
+                    style={{
+                        width: '100%',
+                        padding: '12px',
+                        background: 'linear-gradient(135deg, #FF3B30, #FF6B6B)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '12px',
+                        fontWeight: 'bold',
+                        fontSize: '1rem',
+                        marginBottom: '15px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px'
+                    }}
+                >
+                    🔒 Lock for Child Use
+                </button>
+
                 <div style={{ display: 'flex', gap: '10px', marginBottom: '5px' }}>
                     <button className="primary" style={{ flex: 1 }} onClick={() => onAddItem('', '', 'button')}>+ Add Button</button>
                     <button className="primary" style={{ flex: 1, background: '#34C759' }} onClick={() => onAddItem('', '', 'folder')}>+ Add Folder</button>
@@ -146,7 +168,7 @@ const Controls = ({
                 <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontWeight: 600, color: '#333' }}>📍 Locations</span>
-                        <button 
+                        <button
                             onClick={() => {
                                 const label = prompt("Location Name (e.g. Playground)");
                                 if (label) {
@@ -182,7 +204,7 @@ const Controls = ({
                                     <span>{ctx.label}</span>
                                 </button>
                                 {isEditMode && (
-                                    <div 
+                                    <div
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             const newLabel = prompt("Rename location:", ctx.label);
@@ -201,7 +223,7 @@ const Controls = ({
                                     </div>
                                 )}
                                 {isEditMode && contexts.length > 1 && (
-                                    <div 
+                                    <div
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             onDeleteContext(ctx.id);
@@ -253,9 +275,9 @@ const Controls = ({
                     </div>
                     {gridSize === 'super-big' && (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '5px' }}>
-                            <input 
-                                type="checkbox" 
-                                checked={localStorage.getItem('kiwi-force-strip') === 'true'} 
+                            <input
+                                type="checkbox"
+                                checked={localStorage.getItem('kiwi-force-strip') === 'true'}
                                 onChange={(e) => {
                                     localStorage.setItem('kiwi-force-strip', e.target.checked);
                                     window.dispatchEvent(new Event('storage')); // Simple hack to force refresh
@@ -337,11 +359,11 @@ const Controls = ({
                 {/* Voice Settings */}
                 <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     <span style={{ fontWeight: 600, color: '#333' }}>🗣️ Voice Settings</span>
-                    
+
                     <div>
                         <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Voice</label>
-                        <select 
-                            value={voiceSettings.voiceURI || ''} 
+                        <select
+                            value={voiceSettings.voiceURI || ''}
                             onChange={(e) => onUpdateVoiceSettings({ ...voiceSettings, voiceURI: e.target.value })}
                             style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '14px' }}
                         >
@@ -355,8 +377,8 @@ const Controls = ({
                     <div style={{ display: 'flex', gap: '15px' }}>
                         <div style={{ flex: 1 }}>
                             <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Speed: {voiceSettings.rate}x</label>
-                            <input 
-                                type="range" min="0.5" max="1.5" step="0.1" 
+                            <input
+                                type="range" min="0.5" max="1.5" step="0.1"
                                 value={voiceSettings.rate}
                                 onChange={(e) => onUpdateVoiceSettings({ ...voiceSettings, rate: parseFloat(e.target.value) })}
                                 style={{ width: '100%' }}
@@ -364,16 +386,16 @@ const Controls = ({
                         </div>
                         <div style={{ flex: 1 }}>
                             <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Pitch: {voiceSettings.pitch}</label>
-                            <input 
-                                type="range" min="0.5" max="1.5" step="0.1" 
+                            <input
+                                type="range" min="0.5" max="1.5" step="0.1"
                                 value={voiceSettings.pitch}
                                 onChange={(e) => onUpdateVoiceSettings({ ...voiceSettings, pitch: parseFloat(e.target.value) })}
                                 style={{ width: '100%' }}
                             />
                         </div>
                     </div>
-                    
-                    <button 
+
+                    <button
                         onClick={() => {
                             const synth = window.speechSynthesis;
                             if (synth.speaking) synth.cancel();
