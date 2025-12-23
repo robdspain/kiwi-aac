@@ -661,12 +661,19 @@ function App() {
     setEditModalOpen(true);
   };
 
-  const handleSaveEdit = (newWord, newIcon, newBgColor, newViewMode, newCustomAudio) => {
+  const handleSaveEdit = (newWord, newIcon, newBgColor, newViewMode, newCustomAudio, newCharacterConfig) => {
     if (editingItemIndex === null) return;
 
     const list = [...getCurrentList()];
     const item = list[editingItemIndex];
-    const newItem = { ...item, word: newWord, icon: newIcon, bgColor: newBgColor, customAudio: newCustomAudio };
+    const newItem = { 
+      ...item, 
+      word: newWord, 
+      icon: newIcon, 
+      bgColor: newBgColor, 
+      customAudio: newCustomAudio,
+      characterConfig: newCharacterConfig // Save configuration for re-editing
+    };
     if (item.type === 'folder') {
       newItem.viewMode = newViewMode;
     }

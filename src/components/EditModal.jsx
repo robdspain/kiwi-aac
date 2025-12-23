@@ -14,6 +14,7 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item 
     const [isTranslating, setIsTranslating] = useState(false);
     const [isRemovingBackground, setIsRemovingBackground] = useState(false);
     const [showCharacterBuilder, setShowCharacterBuilder] = useState(false);
+    const [characterConfig, setCharacterConfig] = useState(null);
     const fileInputRef = useRef(null);
     const cameraInputRef = useRef(null);
 
@@ -24,6 +25,7 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item 
             setBgColor(item.bgColor || '');
             setViewMode(item.viewMode || 'grid');
             setCustomAudio(item.customAudio || null);
+            setCharacterConfig(item.characterConfig || null);
             // Detect if current icon is image path/data or emoji
             const isImg = typeof item.icon === 'string' && (item.icon.startsWith('/') || item.icon.startsWith('data:') || item.icon.includes('.'));
             setIsImage(isImg);
@@ -107,7 +109,7 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item 
     };
 
     const handleSave = () => {
-        onSave(word, icon, bgColor, viewMode, customAudio);
+        onSave(word, icon, bgColor, viewMode, customAudio, characterConfig);
         onClose();
     };
 
@@ -330,9 +332,10 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item 
 
                 {showCharacterBuilder && (
                     <CharacterBuilder
-                        initialIcon={icon}
-                        onSelect={(newIcon) => {
+                        initialConfig={characterConfig}
+                        onSelect={(newIcon, config) => {
                             setIcon(newIcon);
+                            setCharacterConfig(config);
                             setIsImage(true);
                             setShowCharacterBuilder(false);
                         }}
