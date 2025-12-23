@@ -99,7 +99,17 @@ const homeDefaultData = [
       { id: 'apple', type: 'button', word: "Apple", icon: "🍎" },
       { id: 'cracker', type: 'button', word: "Cracker", icon: "🍘" },
       { id: 'water', type: 'button', word: "Water", icon: "💧" },
-      { id: 'broccoli', type: 'button', word: "Broccoli", icon: "🥦" }
+      { id: 'broccoli', type: 'button', word: "Broccoli", icon: "🥦" },
+      { id: 'strawberry', type: 'button', word: "Strawberry", icon: "🍓" },
+      { id: 'pizza', type: 'button', word: "Pizza", icon: "🍕" },
+      { id: 'chicken', type: 'button', word: "Chicken", icon: "🍗" },
+      { id: 'juice', type: 'button', word: "Juice", icon: "🧃" },
+      { id: 'milk', type: 'button', word: "Milk", icon: "🥛" },
+      { id: 'cookie', type: 'button', word: "Cookie", icon: "🍪" },
+      { id: 'yogurt', type: 'button', word: "Yogurt", icon: "🍦" },
+      { id: 'carrot', type: 'button', word: "Carrot", icon: "🥕" },
+      { id: 'grape', type: 'button', word: "Grape", icon: "🍇" },
+      { id: 'custom-photo', type: 'button', word: "My Snack", icon: "📷", bgColor: "#E3F2FD" }
     ]
   },
   {

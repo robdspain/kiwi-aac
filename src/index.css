@@ -757,7 +757,7 @@ body.screenshot-mode {
 }
 
 body.screenshot-mode #main-area {
-  padding: 40px;
+  padding: 60px;
   background: white;
   border-radius: 40px;
   overflow: hidden;
