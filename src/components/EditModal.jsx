@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { translateWord } from '../utils/translate';
 import { removeBackground } from '@imgly/background-removal';
 import VoiceRecorder from './VoiceRecorder';
+import CharacterBuilder from './CharacterBuilder';
 
 const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item }) => {
     const [word, setWord] = useState('');
@@ -12,6 +13,7 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item 
     const [isImage, setIsImage] = useState(false);
     const [isTranslating, setIsTranslating] = useState(false);
     const [isRemovingBackground, setIsRemovingBackground] = useState(false);
+    const [showCharacterBuilder, setShowCharacterBuilder] = useState(false);
     const fileInputRef = useRef(null);
 
     useEffect(() => {
@@ -244,10 +246,10 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item 
 
                 <div>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Icon Source</label>
-                    <div style={{ display: 'flex', gap: '10px' }}>
+                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                         <button
                             onClick={() => fileInputRef.current.click()}
-                            style={{ flex: 1, padding: '10px', background: '#E5E5EA', border: 'none', borderRadius: '10px', cursor: 'pointer' }}
+                            style={{ flex: '1 1 45%', padding: '10px', background: '#E5E5EA', border: 'none', borderRadius: '10px', cursor: 'pointer' }}
                         >
                             📷 Upload Photo
                         </button>
@@ -258,9 +260,15 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item 
                                     setIsImage(!!isImgSearch);
                                 });
                             }}
-                            style={{ flex: 1, padding: '10px', background: '#E5E5EA', border: 'none', borderRadius: '10px', cursor: 'pointer' }}
+                            style={{ flex: '1 1 45%', padding: '10px', background: '#E5E5EA', border: 'none', borderRadius: '10px', cursor: 'pointer' }}
                         >
                             😀 Library
+                        </button>
+                        <button
+                            onClick={() => setShowCharacterBuilder(true)}
+                            style={{ flex: '1 1 100%', padding: '10px', background: 'linear-gradient(135deg, #4ECDC4, #3DB8B0)', color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', fontWeight: 600 }}
+                        >
+                            👤 Build Character (Mom, Dad, Teacher...)
                         </button>
                         <input
                             type="file"
@@ -302,6 +310,18 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item 
                         Save
                     </button>
                 </div>
+
+                {showCharacterBuilder && (
+                    <CharacterBuilder
+                        initialIcon={icon}
+                        onSelect={(newIcon) => {
+                            setIcon(newIcon);
+                            setIsImage(false);
+                            setShowCharacterBuilder(false);
+                        }}
+                        onClose={() => setShowCharacterBuilder(false)}
+                    />
+                )}
             </div>
         </div>
     );

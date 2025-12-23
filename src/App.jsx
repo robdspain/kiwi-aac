@@ -37,7 +37,7 @@ const defaultData = [
   { id: 'starter-want', type: 'button', word: "I want", icon: "🙋", category: 'starter' },
   { id: 'starter-see', type: 'button', word: "I see", icon: "👀", category: 'starter' },
   { id: 'starter-feel', type: 'button', word: "I feel", icon: "😊", category: 'starter' },
-  { id: 'mom', type: 'button', word: "Mom", icon: "👩‍🦱" },
+  { id: 'mom', type: 'button', word: "Mom", icon: "👩🏼‍🦱" },
   { id: 'dad', type: 'button', word: "Dad", icon: "👱‍♂️" },
   { id: 'more', type: 'button', word: "More", icon: "➕" },
   {
@@ -96,6 +96,7 @@ function App() {
 
   const [isLocked, setIsLocked] = useState(false);
   const [lockTapCount, setLockTapCount] = useState(0);
+  const [bellCooldown, setBellCooldown] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -618,11 +619,22 @@ function App() {
 
       {currentPhase === 2 && !callActive && (
         <div className="call-overlay">
-          <h2>Tap the bell to call your partner</h2>
-          <button className="call-btn" onClick={() => {
-            setCallActive(true);
-            playBellSound();
-          }}>🔔</button>
+          <h2>I have something to say</h2>
+          <button
+            className={`call-btn ${bellCooldown ? 'cooldown' : ''}`}
+            disabled={bellCooldown}
+            onClick={() => {
+              if (!bellCooldown) {
+                setCallActive(true);
+                playBellSound();
+                setBellCooldown(true);
+                setTimeout(() => setBellCooldown(false), 5000);
+              }
+            }}
+          >
+            {bellCooldown ? '⏳' : '🔔'}
+          </button>
+          {bellCooldown && <p style={{ color: '#666', marginTop: '10px' }}>Wait 5 seconds...</p>}
         </div>
       )}
 
