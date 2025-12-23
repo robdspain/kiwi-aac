@@ -32,7 +32,7 @@ Record personalized voice prompts for every icon instead of text-to-speech for a
 Build step-by-step routines to help navigate daily transitions and reduce anxiety.
 
 📊 **Progress Tracking**
-Monitor usage with detailed analytics and export reports for therapists and IEP meetings.
+Monitor usage with detailed analytics and export reports for professionals and IEP meetings.
 
 📷 **Custom Icons**
 Upload your own photos, use emojis, or search 4,000+ symbols from the OpenMoji library.
@@ -51,7 +51,7 @@ Download Kiwi AAC today and give the gift of communication!
 ---
 
 ## Keywords
-AAC, autism, speech therapy, communication, nonverbal, special needs, apraxia, language delay, picture exchange, speech, kids, accessibility, visual schedule, PECS
+AAC, autism, communication, nonverbal, special needs, apraxia, language delay, picture exchange, speech, kids, accessibility, visual schedule, PECS
 
 ## Primary Category
 Education
