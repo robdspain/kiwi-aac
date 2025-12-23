@@ -30,7 +30,7 @@ const SplashScreen = ({ onComplete }) => {
         }}>
             <div style={{
                 fontSize: '8rem',
-                marginBottom: '20px',
+                marginBottom: '10px',
                 animation: 'bounceIn 1s cubic-bezier(0.34, 1.56, 0.64, 1)'
             }}>
                 🥝
@@ -45,32 +45,6 @@ const SplashScreen = ({ onComplete }) => {
             }}>
                 Kiwi AAC
             </h1>
-            <p style={{
-                fontSize: '1rem',
-                color: 'var(--text-secondary)',
-                marginTop: '10px',
-                fontWeight: 600,
-                animation: 'fadeIn 1s ease 0.6s both'
-            }}>
-                Communication Made Simple
-            </p>
-            
-            {/* Loading dots */}
-            <div style={{
-                display: 'flex',
-                gap: '8px',
-                marginTop: '40px'
-            }}>
-                {[0, 1, 2].map(i => (
-                    <div key={i} style={{
-                        width: '10px',
-                        height: '10px',
-                        borderRadius: '50%',
-                        background: 'var(--primary)',
-                        animation: `pulse 1s infinite ${i * 0.2}s`
-                    }} />
-                ))}
-            </div>
         </div>
     );
 };
