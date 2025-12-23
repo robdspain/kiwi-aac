@@ -26,6 +26,11 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  // Skip cross-origin requests (like Superwall, Analytics, etc.)
+  if (!event.request.url.startsWith(self.location.origin)) {
+    return;
+  }
+
   // Network first for main bundle to ensure updates, but cache fallback for offline
   if (event.request.mode === 'navigate') {
     event.respondWith(
@@ -39,7 +44,7 @@ self.addEventListener('fetch', (event) => {
       if (cachedResponse) return cachedResponse;
 
       return fetch(event.request).then((response) => {
-        // Don't cache non-successful responses or cross-origin requests unless needed
+        // Don't cache non-successful responses
         if (!response || response.status !== 200 || response.type !== 'basic') {
           return response;
         }
@@ -50,8 +55,10 @@ self.addEventListener('fetch', (event) => {
         });
 
         return response;
-      }).catch(() => {
-        // Optional: return a fallback for images if offline
+      }).catch((error) => {
+        // Return a custom offline response or nothing (let browser handle error)
+        // Returning undefined here caused the "Failed to convert value to Response" error
+        throw error; 
       });
     })
   );
