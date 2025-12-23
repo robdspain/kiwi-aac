@@ -1,0 +1,678 @@
+:root {
+  --bg-color: #F2F2F7;
+  /* iOS System Grey */
+  --icon-bg: #FFFFFF;
+  --folder-bg: #E4E4E4;
+  /* iOS Folder Grey */
+  --text-color: #000000;
+  --primary: #007AFF;
+  /* iOS Blue */
+  --danger: #FF3B30;
+  /* iOS Red */
+  --success: #34C759;
+  /* iOS Green */
+  --phase-bg: #FFFFFF;
+}
+
+@keyframes flash {
+  0% {
+    background-color: var(--bg-color);
+  }
+
+  50% {
+    background-color: #FFF;
+  }
+
+  100% {
+    background-color: var(--bg-color);
+  }
+}
+
+@keyframes zoomIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+body.success-flash {
+  animation: flash 0.5s ease-out;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-color);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  /* Use dynamic viewport height */
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  /* Safe area support for top and bottom */
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* --- WIDGET AREA (Sentence Strip) --- */
+#strip-container {
+  /* display: none; Handled by React conditional rendering */
+  padding: 15px 20px 0 20px;
+  flex-shrink: 0;
+  animation: fadeIn 0.3s ease;
+}
+
+#sentence-strip {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  gap: 10px;
+  overflow-x: auto;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  flex-grow: 1;
+  -webkit-overflow-scrolling: touch;
+  /* Smooth scrolling for iOS */
+}
+
+.strip-wrapper {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+#clear-btn {
+  background: #E5E5EA;
+  color: #8E8E93;
+  border: none;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  font-weight: bold;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.strip-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+/* --- HOME SCREEN GRID --- */
+#main-area {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#breadcrumbs {
+  padding: 20px 25px 5px 25px;
+  font-size: 2rem;
+  font-weight: 700;
+  color: black;
+  letter-spacing: -0.5px;
+  flex-shrink: 0;
+}
+
+#grid-container {
+  display: grid;
+  /* Adaptive Grid: Start with 3, go to 4 or 5 on wider screens */
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px 15px;
+  padding: 20px 25px;
+  padding-bottom: 200px;
+  /* Increased padding for the bottom dock */
+  overflow-y: auto;
+  align-content: start;
+  -webkit-overflow-scrolling: touch;
+  /* Smooth scrolling for iOS */
+}
+
+@media (min-width: 450px) {
+  #grid-container {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px 20px;
+  }
+}
+
+@media (min-width: 768px) {
+  #grid-container {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 40px 30px;
+  }
+}
+
+/* --- APP ICON STYLE --- */
+.app-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  cursor: pointer;
+}
+
+/* The Squircle Icon */
+.app-icon {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: var(--icon-bg);
+  border-radius: 22%;
+  /* The specific iOS curvature */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.5rem;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.05);
+  position: relative;
+  transition: transform 0.1s, filter 0.2s;
+  overflow: hidden;
+  /* Ensure image fits shape */
+}
+
+.app-icon img {
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.sub-icon-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.app-item:active .app-icon {
+  filter: brightness(0.7);
+  transform: scale(0.95);
+}
+
+.app-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+  text-align: center;
+  letter-spacing: 0.2px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Special States */
+.app-icon.is-folder {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.app-icon.is-back {
+  background: #E5E5EA;
+}
+
+/* Folder Grid Preview (Mini icons inside folder) */
+.folder-grid {
+  display: grid;
+  grid-template-columns: 2fr 2fr;
+  grid-template-rows: 2fr 2fr;
+  gap: 4px;
+  padding: 12px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.mini-icon {
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Training Mode Styles */
+.app-item.dimmed {
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.app-item.selected .app-icon {
+  box-shadow: 0 0 0 4px var(--success);
+  transform: scale(0.95);
+}
+
+/* --- JIGGLE MODE (Editing) --- */
+@keyframes jiggle {
+  0% {
+    transform: rotate(-1.5deg);
+  }
+
+  50% {
+    transform: rotate(1.5deg);
+  }
+
+  100% {
+    transform: rotate(-1.5deg);
+  }
+}
+
+.is-editing .app-icon {
+  animation: jiggle 0.25s infinite;
+}
+
+/* iOS Style Delete Button */
+.del-badge {
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  width: 26px;
+  height: 26px;
+  background: rgba(230, 230, 230, 0.9);
+  backdrop-filter: blur(4px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.del-badge::after {
+  content: "−";
+  /* Minus sign */
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+  margin-top: -2px;
+}
+
+/* Edit (Pencil) Badge */
+.edit-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 26px;
+  height: 26px;
+  background: var(--primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  color: white;
+  font-size: 14px;
+}
+
+/* --- PECS SPECIFIC --- */
+.phase-single-grid {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 40px;
+}
+
+.phase-single-grid .app-icon {
+  width: 250px;
+  height: 250px;
+  font-size: 8rem;
+}
+
+.phase-discrimination-grid {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  height: 100%;
+  padding: 20px;
+}
+
+.phase-discrimination-grid .app-item {
+  width: 45%;
+}
+
+.phase-discrimination-grid .app-icon {
+  width: 100%;
+  aspect-ratio: 1/1;
+  font-size: 6rem;
+}
+
+.call-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-color);
+  z-index: 150;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+}
+
+.call-btn {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  font-size: 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 10px solid white;
+  box-shadow: 0 10px 30px rgba(0, 122, 255, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 122, 255, 0.4);
+  }
+
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 30px rgba(0, 122, 255, 0);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 122, 255, 0);
+  }
+}
+
+.phase-label-badge {
+  background: var(--primary);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-left: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* --- CONTROL DOCK --- */
+#controls {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  /* Safe area padding for the home indicator */
+  padding: 15px 25px calc(20px + env(safe-area-inset-bottom, 15px)) 25px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 100;
+  box-sizing: border-box;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  touch-action: pan-y;
+}
+
+/* Collapsed State */
+#controls.collapsed {
+  transform: translateY(calc(100% - 60px));
+}
+
+#controls:not(.collapsed) {
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+#parent-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  color: #007AFF;
+  cursor: pointer;
+  padding: 5px 0 15px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.drag-handle {
+  width: 45px;
+  height: 6px;
+  background: #C7C7CC;
+  border-radius: 10px;
+  margin: 0 auto 12px auto;
+  flex-shrink: 0;
+}
+
+#edit-panel,
+#training-panel {
+  /* display: none; Handled by React */
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.input-row {
+  display: flex;
+  gap: 10px;
+}
+
+input,
+select {
+  padding: 12px;
+  background: #E5E5EA;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  flex-grow: 1;
+}
+
+button {
+  padding: 14px 20px;
+  border-radius: 14px;
+  border: none;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  background: #E5E5EA;
+  color: black;
+  transition: opacity 0.1s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:active {
+  opacity: 0.8;
+  transform: scale(0.98);
+}
+
+button.primary {
+  background: var(--primary);
+  color: white;
+}
+
+button.danger {
+  background: var(--danger);
+  color: white;
+}
+
+/* Larger tap targets for mobile */
+@media (max-width: 768px) {
+  button {
+    min-height: 54px;
+  }
+}
+
+/* --- PICKER MODAL --- */
+#picker-modal {
+  /* display: none; Handled by React */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 200;
+  align-items: flex-end;
+}
+
+#picker-content {
+  background: #F2F2F7;
+  width: 100%;
+  height: 85vh;
+  border-top-left-radius: 25px;
+  border-top-right-radius: 25px;
+  padding: 20px 25px calc(20px + env(safe-area-inset-bottom, 10px)) 25px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.picker-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  overflow-y: auto;
+  padding-top: 20px;
+}
+
+.picker-btn {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  font-size: 2rem;
+  border: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* ========== ACCESSIBILITY ========== */
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus visible states for keyboard navigation */
+*:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.app-item:focus-visible .app-icon {
+  box-shadow: 0 0 0 4px var(--primary);
+}
+
+/* High contrast mode */
+body.high-contrast {
+  --bg-color: #000000;
+  --icon-bg: #FFFFFF;
+  --text-color: #FFFFFF;
+}
+
+body.high-contrast .app-label {
+  color: #FFFFFF;
+  font-weight: 700;
+}
+
+body.high-contrast .app-icon {
+  border: 3px solid #FFFFFF;
+}
+
+body.high-contrast #controls {
+  background: #000000;
+  color: #FFFFFF;
+  border-top: 2px solid #FFFFFF;
+}
+
+/* Large buttons mode */
+body.large-buttons .app-icon {
+  min-width: 80px;
+  min-height: 80px;
+}
+
+body.large-buttons .app-label {
+  font-size: 16px;
+}
+
+body.large-buttons button {
+  min-height: 60px;
+  font-size: 18px;
+}
+
+body.large-buttons #grid-container {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+@media (min-width: 768px) {
+  body.large-buttons #grid-container {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Minimum touch targets (44x44pt iOS requirement) */
+.app-item {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.del-badge,
+.edit-badge {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+button {
+  min-height: 44px;
+}
+
+/* Skip link for screen readers */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--primary);
+  color: white;
+  padding: 8px;
+  z-index: 1000;
+}
+
+.skip-link:focus {
+  top: 0;
+}

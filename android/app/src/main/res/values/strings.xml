@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Kiwi AAC</string>
+    <string name="title_activity_main">Kiwi AAC</string>
+    <string name="package_name">com.kiwiaac.app</string>
+    <string name="custom_url_scheme">com.kiwiaac.app</string>
+</resources>
