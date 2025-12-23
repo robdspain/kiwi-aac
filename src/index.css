@@ -111,6 +111,8 @@ body {
   overflow: hidden;
   user-select: none;
   -webkit-user-select: none;
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
   color: var(--text-primary);
   padding-top: env(safe-area-inset-top, 0px);
 }
@@ -345,6 +347,13 @@ body {
 .app-item:active .app-icon {
   transform: scale(0.92);
   box-shadow: 0 4px 16px rgba(78, 205, 196, 0.2);
+}
+
+/* Better touch targets for small kids */
+@media (hover: none) and (pointer: coarse) {
+  .app-icon {
+    cursor: pointer;
+  }
 }
 
 .app-label {
