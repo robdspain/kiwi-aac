@@ -26,10 +26,10 @@ const TONES = [
 ];
 
 const HAIR = [
-    { id: 'none', label: 'Standard', emoji: '👤' },
+    { id: 'none', label: 'Standard', modifier: '' },
     { id: 'curly', label: 'Curly', modifier: '🦱' },
     { id: 'red', label: 'Red', modifier: '🦰' },
-    { id: 'blond', label: 'Blond', modifier: '👱' }, // Special case
+    { id: 'blond', label: 'Blond', modifier: '👱', isBaseOverride: true }, // Special case
     { id: 'white', label: 'White', modifier: '🦳' },
     { id: 'bald', label: 'Bald', modifier: '🦲' },
 ];
@@ -88,23 +88,32 @@ const CharacterBuilder = ({ initialConfig, onSelect, onClose, isTab = false, tri
 
     const isIOS = Capacitor.getPlatform() === 'ios';
 
-    const composedEmoji = (() => {
+    // Calculate composed emoji
+    const getComposedEmoji = () => {
         let res = BASES.find(b => b.id === base)?.emoji || '🧑';
-        const toneMod = TONES.find(t => t.id === skin)?.modifier;
-        const hairMod = HAIR.find(h => h.id === hair)?.modifier;
+        const toneMod = TONES.find(t => t.id === skin)?.modifier || '';
+        const hairItem = HAIR.find(h => h.id === hair);
+        const hairMod = hairItem?.modifier || '';
         
         // Humans only for skin/hair
         const isHuman = ['person', 'woman', 'man', 'child', 'baby', 'older', 'beard'].includes(base);
         
         if (isHuman) {
+            if (hairItem?.isBaseOverride) {
+                res = hairMod; // e.g. Person Blond Hair emoji
+            }
+            
             if (toneMod) res = applyModifier(res, toneMod);
-            if (hairMod) {
+            
+            if (hairMod && !hairItem.isBaseOverride) {
                 // Hair is a separate ZWJ part: Base + Tone + ZWJ + Hair
                 res = res + '\u200D' + hairMod;
             }
         }
         return res;
-    })();
+    };
+
+    const composedEmoji = getComposedEmoji();
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -143,17 +152,17 @@ const CharacterBuilder = ({ initialConfig, onSelect, onClose, isTab = false, tri
 
     const content = (
         <div style={{
-            background: 'white',
+            background: isTab ? 'transparent' : 'white',
             borderRadius: isTab ? '0' : '24px',
             padding: isTab ? '0' : '20px',
             width: '100%',
             maxWidth: isTab ? 'none' : '500px',
             maxHeight: isTab ? 'none' : '90vh',
-            overflowY: isTab ? 'visible' : 'auto',
             display: 'flex',
             flexDirection: 'column',
             gap: '15px',
-            boxShadow: isTab ? 'none' : '0 20px 60px rgba(0,0,0,0.3)'
+            boxShadow: isTab ? 'none' : '0 20px 60px rgba(0,0,0,0.3)',
+            minHeight: '400px' // Ensure it's visible
         }}>
             {/* Header */}
             {!isTab && (
@@ -196,7 +205,8 @@ const CharacterBuilder = ({ initialConfig, onSelect, onClose, isTab = false, tri
                         fontWeight: '600',
                         boxSizing: 'border-box',
                         outline: 'none',
-                        transition: 'border-color 0.2s'
+                        transition: 'border-color 0.2s',
+                        background: 'white'
                     }}
                 />
                 <span style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', fontSize: '1.2rem' }}>🏷️</span>
@@ -336,8 +346,8 @@ const CharacterBuilder = ({ initialConfig, onSelect, onClose, isTab = false, tri
                                 style={{
                                     height: '50px',
                                     borderRadius: '12px',
-                                    background: base === b.id ? '#007AFF' : '#F5F5F7',
-                                    border: 'none',
+                                    background: base === b.id ? '#007AFF' : 'white',
+                                    border: base === b.id ? 'none' : '1px solid #DDD',
                                     fontSize: '1.5rem',
                                     cursor: 'pointer',
                                     transform: base === b.id ? 'scale(1.1)' : 'scale(1)'
@@ -360,7 +370,7 @@ const CharacterBuilder = ({ initialConfig, onSelect, onClose, isTab = false, tri
                                     height: '50px',
                                     borderRadius: '12px',
                                     background: s.modifier ? '#F0C5A9' : '#FFCC00', // Preview color
-                                    border: skin === s.id ? '3px solid #007AFF' : '2px solid transparent',
+                                    border: skin === s.id ? '3px solid #007AFF' : '1px solid #DDD',
                                     cursor: 'pointer',
                                     transition: 'transform 0.2s',
                                     transform: skin === s.id ? 'scale(1.1)' : 'scale(1)',
@@ -387,15 +397,15 @@ const CharacterBuilder = ({ initialConfig, onSelect, onClose, isTab = false, tri
                                 style={{
                                     height: '50px',
                                     borderRadius: '12px',
-                                    background: hair === h.id ? '#007AFF' : '#F5F5F7',
-                                    border: 'none',
+                                    background: hair === h.id ? '#007AFF' : 'white',
+                                    border: hair === h.id ? 'none' : '1px solid #DDD',
                                     fontSize: '1.5rem',
                                     cursor: 'pointer',
                                     transform: hair === h.id ? 'scale(1.1)' : 'scale(1)'
                                 }}
                                 title={h.label}
                             >
-                                {h.modifier || h.emoji}
+                                {h.modifier || '👤'}
                             </button>
                         ))}
                     </div>
@@ -410,8 +420,8 @@ const CharacterBuilder = ({ initialConfig, onSelect, onClose, isTab = false, tri
                                 style={{
                                     height: '50px',
                                     borderRadius: '12px',
-                                    background: acc === e.id ? '#007AFF' : '#F5F5F7',
-                                    border: 'none',
+                                    background: acc === e.id ? '#007AFF' : 'white',
+                                    border: acc === e.id ? 'none' : '1px solid #DDD',
                                     fontSize: '1.5rem',
                                     cursor: 'pointer',
                                     transform: acc === e.id ? 'scale(1.1)' : 'scale(1)'
@@ -486,6 +496,24 @@ const CharacterBuilder = ({ initialConfig, onSelect, onClose, isTab = false, tri
                     {isTab ? 'Add to Library' : 'Save Character'}
                 </button>
             </div>
+        </div>
+    );
+
+    if (isTab) return content;
+
+    return (
+        <div style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.5)',
+            zIndex: 1300,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '10px',
+            paddingBottom: 'calc(10px + env(safe-area-inset-bottom, 0px))'
+        }}>
+            {content}
         </div>
     );
 };

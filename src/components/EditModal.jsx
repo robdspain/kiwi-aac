@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { translateWord } from '../utils/translate';
-// Lazy load background removal - only imported when needed (24MB library)
 import VoiceRecorder from './VoiceRecorder';
 import CharacterBuilder from './CharacterBuilder';
 
@@ -12,7 +11,6 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
     const [customAudio, setCustomAudio] = useState(null);
     const [isImage, setIsImage] = useState(false);
     const [isTranslating, setIsTranslating] = useState(false);
-    const [isRemovingBackground, setIsRemovingBackground] = useState(false);
     const [showCharacterBuilder, setShowCharacterBuilder] = useState(false);
     const [characterConfig, setCharacterConfig] = useState(null);
     const fileInputRef = useRef(null);
@@ -69,32 +67,6 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                 img.src = event.target.result;
             };
             reader.readAsDataURL(file);
-        }
-    };
-
-    const handleRemoveBackground = async () => {
-        if (!icon || !isImage) return;
-
-        setIsRemovingBackground(true);
-        try {
-            // Dynamically import the heavy background removal library (24MB)
-            const { removeBackground } = await import('@imgly/background-removal');
-
-            const blob = await removeBackground(icon, {
-                progress: (key, current, total) => {
-                    console.log(`Background removal progress: ${key} ${current}/${total}`);
-                }
-            });
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setIcon(reader.result);
-            };
-            reader.readAsDataURL(blob);
-        } catch (error) {
-            console.error('Background removal failed:', error);
-            alert('Failed to remove background. Please try again.');
-        } finally {
-            setIsRemovingBackground(false);
         }
     };
 
@@ -182,25 +154,6 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                             icon
                         )}
                     </div>
-                    {isImage && (
-                        <button
-                            onClick={handleRemoveBackground}
-                            disabled={isRemovingBackground}
-                            style={{
-                                marginTop: '10px',
-                                padding: '6px 12px',
-                                background: '#34C759',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '8px',
-                                cursor: isRemovingBackground ? 'default' : 'pointer',
-                                fontSize: '0.8rem',
-                                opacity: isRemovingBackground ? 0.7 : 1
-                            }}
-                        >
-                            {isRemovingBackground ? '✨ Removing...' : '✨ Remove Background'}
-                        </button>
-                    )}
                 </div>
 
 
@@ -348,6 +301,7 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                 {showCharacterBuilder && (
                     <CharacterBuilder
                         initialConfig={characterConfig}
+                        triggerPaywall={triggerPaywall}
                         onSelect={(newIcon, config) => {
                             setIcon(newIcon);
                             setCharacterConfig(config);
