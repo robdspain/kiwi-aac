@@ -1092,6 +1092,7 @@ function App() {
           onBack={handleBack}
           onDelete={handleDelete}
           onEdit={handleEdit}
+          onAddItem={handleAddItem}
           onToggleTraining={handleToggleTraining}
           hasBack={currentPath.length > 0}
           trainingPanelVisible={!shuffledItems}

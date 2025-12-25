@@ -17,6 +17,7 @@ const Grid = ({
     onBack,
     onDelete,
     onEdit,
+    onAddItem,
     onToggleTraining,
     hasBack,
     trainingPanelVisible,
@@ -78,22 +79,29 @@ const Grid = ({
                 }}>
                     {hasBack
                         ? 'Go back and add items to this folder.'
-                        : 'Tap the ⚙️ Settings button to add communication icons for your child.'}
+                        : 'Tap the button below to add your first icon.'}
                 </p>
                 {!hasBack && (
-                    <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        padding: '12px 20px',
-                        background: 'linear-gradient(135deg, #007AFF, #0051D5)',
-                        color: 'white',
-                        borderRadius: '20px',
-                        fontSize: '0.9rem',
-                        fontWeight: '600',
-                        animation: 'pulse 2s infinite'
-                    }}>
-                        <span>⬇️</span> Tap Settings Below
+                    <div
+                        onClick={() => onAddItem('', '', 'button')}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            padding: '12px 24px',
+                            background: '#007AFF', // Solid primary color
+                            color: 'white',
+                            borderRadius: '30px',
+                            fontSize: '1.2rem',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            boxShadow: '0 4px 12px rgba(0,122,255,0.3)',
+                            transition: 'transform 0.2s',
+                        }}
+                        onMouseDown={e => e.currentTarget.style.transform = 'scale(0.95)'}
+                        onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
+                    >
+                        <span>➕</span> Add First Button
                     </div>
                 )}
             </div>

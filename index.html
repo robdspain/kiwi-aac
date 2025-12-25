@@ -30,6 +30,61 @@
         width: 100%;
       }
     }
+
+    @keyframes enter {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.3;
+      }
+
+      50% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 0.5;
+      }
+
+      100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.3;
+      }
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-15px);
+      }
+
+      100% {
+        transform: translateY(0px);
+      }
+    }
+
+    @keyframes fadeText {
+
+      0%,
+      100% {
+        opacity: 0.5;
+      }
+
+      50% {
+        opacity: 1;
+      }
+    }
   </style>
   <!-- Superwall Paywall.js (async to prevent blocking if CDN is unreachable) -->
   <script async src="https://js.superwall.me/"></script>
@@ -55,19 +110,21 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      animation: enter 0.8s ease-out;
     ">
       <div style="
         position: absolute;
-        width: 200px;
-        height: 200px;
+        width: 250px;
+        height: 250px;
         background: #4ECDC4;
-        filter: blur(60px);
-        opacity: 0.4;
+        filter: blur(80px);
+        opacity: 0.3;
         border-radius: 50%;
         z-index: -1;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
+        animation: pulse 4s infinite ease-in-out;
       "></div>
       <img src="/icon-512.png" alt="Kiwi Voice Logo" style="
         width: 140px;
@@ -75,6 +132,7 @@
         margin-bottom: 30px;
         border-radius: 28%;
         box-shadow: 0 0 40px rgba(78, 205, 196, 0.3);
+        animation: float 6s infinite ease-in-out;
       " />
       <h1 style="
         font-size: 3.5rem;
@@ -87,12 +145,13 @@
       ">Kiwi Voice</h1>
 
       <p style="
-        color: rgba(255,255,255,0.5);
+        color: rgba(255,255,255,0.6);
         margin-top: 15px;
         font-size: 0.9rem;
         font-weight: 600;
-        letter-spacing: 1px;
-      ">INITIALIZING...</p>
+        letter-spacing: 2px;
+        animation: fadeText 2s infinite ease-in-out;
+      ">STARTING UP...</p>
     </div>
   </div>
   <div id="root"></div>

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiwi AAC Screenshot Generator</title>
+    <style>
+        :root {
+            --bg-color: #FDF8F3;
+            --bg-gradient: linear-gradient(180deg, #FDF8F3 0%, #F5F0EB 100%);
+            --card-bg: #FFFFFF;
+            --primary: #4ECDC4;
+            --primary-dark: #3DB8B0;
+            --accent: #FF6B6B;
+            --accent-light: #FF8585;
+            --success: #7ED957;
+            --warning: #FFB84D;
+            --danger: #FF6B6B;
+            --text-primary: #2D3436;
+            --text-secondary: #636E72;
+            --text-muted: #B2BEC3;
+            --radius-md: 20px;
+            --radius-lg: 28px;
+            --radius-xl: 40px;
+            --shadow-card: 0 8px 32px rgba(78, 205, 196, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Text", sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            justify-content: center;
+        }
+
+        .screenshot-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .device {
+            width: 390px;
+            height: 844px;
+            background: #000;
+            border-radius: 50px;
+            padding: 12px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: var(--bg-gradient);
+            border-radius: 40px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Common App Elements */
+        #breadcrumbs {
+            padding: 40px 24px 8px;
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .phase-label-badge {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding: 12px 20px;
+            flex-grow: 1;
+        }
+
+        .app-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .app-icon {
+            width: 100%;
+            aspect-ratio: 1/1;
+            background: white;
+            border-radius: 28%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.8rem;
+            box-shadow: var(--shadow-card);
+        }
+
+        .app-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Screenshot 1: Hero Grid */
+        .hero-grid .app-icon { font-size: 3.2rem; }
+
+        /* Screenshot 2: Sentence Strip */
+        #strip-container {
+            padding: 12px 20px 0;
+            margin-top: 30px;
+        }
+
+        #sentence-strip {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--radius-lg);
+            height: 72px;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 12px;
+            box-shadow: var(--shadow-card);
+        }
+
+        .strip-icon { font-size: 2.2rem; }
+
+        /* Screenshot 3: Character Builder */
+        .builder-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            z-index: 100;
+        }
+
+        .builder-card {
+            background: white;
+            border-radius: 24px;
+            padding: 20px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .builder-preview {
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .avatar-circle {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background: #E3F2FD;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4.5rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 5px;
+            background: #F5F5F7;
+            padding: 4px;
+            border-radius: 12px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 8px 0;
+            text-align: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            border-radius: 8px;
+        }
+
+        .tab.active { background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+
+        .opt-btn {
+            aspect-ratio: 1/1;
+            background: white;
+            border: 1px solid #DDD;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .opt-btn.active { background: #007AFF; color: white; border: none; }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #007AFF, #0051D5);
+            color: white;
+            padding: 14px;
+            border-radius: 16px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        h3 { margin: 0; font-size: 1.2rem; color: #333; }
+
+        /* Labels */
+        .shot-label {
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: #2D3436;
+            margin-top: 10px;
+        }
+
+        .filename {
+            font-family: monospace;
+            background: #e0e0e0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Screenshot 1: Hero Grid -->
+    <div class="screenshot-container">
+        <div class="device">
+            <div class="screen hero-grid">
+                <div id="breadcrumbs">
+                    Home <span class="phase-label-badge">Level 4</span>
+                </div>
+                <div class="grid">
+                    <div class="app-item"><div class="app-icon">🙋</div><div class="app-label">I want</div></div>
+                    <div class="app-item"><div class="app-icon">👀</div><div class="app-label">I see</div></div>
+                    <div class="app-item"><div class="app-icon">😊</div><div class="app-label">I feel</div></div>
+                    <div class="app-item"><div class="app-icon">🍎</div><div class="app-icon" style="position:absolute; font-size:1rem; bottom:5px; right:5px; background:none; box-shadow:none;">📁</div><div class="app-label">Foods</div></div>
+                    <div class="app-item"><div class="app-icon">🧸</div><div class="app-label">Toy</div></div>
+                    <div class="app-item"><div class="app-icon">🏃</div><div class="app-label">Play</div></div>
+                    <div class="app-item"><div class="app-icon">🥨</div><div class="app-label">Snack</div></div>
+                    <div class="app-item"><div class="app-icon">🦒</div><div class="app-label">Long</div></div>
+                    <div class="app-item"><div class="app-icon">🔴</div><div class="app-label">Red</div></div>
+                    <div class="app-item"><div class="app-icon">🐶</div><div class="app-label">Bluey</div></div>
+                    <div class="app-item"><div class="app-icon">📺</div><div class="app-label">TV</div></div>
+                    <div class="app-item"><div class="app-icon">🏫</div><div class="app-label">School</div></div>
+                </div>
+            </div>
+        </div>
+        <div class="shot-label">1. Hero Grid</div>
+        <div class="filename">hero-screenshot.png</div>
+    </div>
+
+    <!-- Screenshot 2: Sentence Strip -->
+    <div class="screenshot-container">
+        <div class="device">
+            <div class="screen">
+                <div id="strip-container">
+                    <div id="sentence-strip">
+                        <span class="strip-icon">🙋</span>
+                        <span style="font-size: 1.5rem; opacity: 0.3;">+</span>
+                        <span class="strip-icon">🥨</span>
+                        <span style="font-size: 1.5rem; opacity: 0.3;">+</span>
+                        <span class="strip-icon">🙏</span>
+                        <div style="flex-grow: 1;"></div>
+                        <div style="background: var(--primary); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 4px 12px rgba(78, 205, 196, 0.3);">▶️</div>
+                    </div>
+                </div>
+                <div id="breadcrumbs">
+                    Snacks <span class="phase-label-badge">Level 4</span>
+                </div>
+                <div class="grid">
+                    <div class="app-item"><div class="app-icon">🥨</div><div class="app-label">Snack</div></div>
+                    <div class="app-item"><div class="app-icon">🍪</div><div class="app-label">Cookie</div></div>
+                    <div class="app-item"><div class="app-icon">🍘</div><div class="app-label">Cracker</div></div>
+                    <div class="app-item"><div class="app-icon">🍎</div><div class="app-label">Apple</div></div>
+                    <div class="app-item"><div class="app-icon">🍌</div><div class="app-label">Banana</div></div>
+                    <div class="app-item"><div class="app-icon">🥛</div><div class="app-label">Milk</div></div>
+                    <div class="app-item"><div class="app-icon">🧃</div><div class="app-label">Juice</div></div>
+                    <div class="app-item"><div class="app-icon">🙏</div><div class="app-label">Please</div></div>
+                    <div class="app-item" style="opacity: 0.5;"><div class="app-icon">➕</div><div class="app-label">Add</div></div>
+                </div>
+            </div>
+        </div>
+        <div class="shot-label">2. Sentence Strip</div>
+        <div class="filename">sentence-strip.png</div>
+    </div>
+
+    <!-- Screenshot 3: Character Builder -->
+    <div class="screenshot-container">
+        <div class="device">
+            <div class="screen">
+                <div id="breadcrumbs">Settings</div>
+                <div style="padding: 0 24px; font-weight: bold; color: #666; font-size: 0.9rem;">CHARACTER</div>
+                <div class="builder-overlay">
+                    <div class="builder-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h3>✨ Build Character</h3>
+                            <div style="background: #F5F5F7; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #666;">×</div>
+                        </div>
+                        <div style="position: relative;">
+                            <input type="text" value="My Voice" style="width: 100%; padding: 12px 12px 12px 40px; border-radius: 12px; border: 2px solid #F0F0F0; font-weight: 600; box-sizing: border-box;">
+                            <span style="position: absolute; left: 12px; top: 10px; font-size: 1.2rem;">🏷️</span>
+                        </div>
+                        <div class="builder-preview">
+                            <div class="avatar-circle">
+                                🧑🏼‍🦱
+                            </div>
+                        </div>
+                        <div class="tabs">
+                            <div class="tab">FACE</div>
+                            <div class="tab">SKIN</div>
+                            <div class="tab active">HAIR</div>
+                            <div class="tab">EYES</div>
+                            <div class="tab">BG</div>
+                        </div>
+                        <div class="options-grid">
+                            <div class="opt-btn">👤</div>
+                            <div class="opt-btn active">🦱</div>
+                            <div class="opt-btn">🦰</div>
+                            <div class="opt-btn">👱</div>
+                            <div class="opt-btn">🦳</div>
+                        </div>
+                        <div class="btn-primary">Save Character</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="shot-label">3. Character Builder</div>
+        <div class="filename">character-builder.png</div>
+    </div>
+
+</body>
+</html>
