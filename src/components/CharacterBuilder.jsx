@@ -1,77 +1,110 @@
 import React, { useState, useRef } from 'react';
 import { Capacitor } from '@capacitor/core';
 
-// Tapback Memoji API configuration
-const TAPBACK_API = 'https://www.tapback.co/api/avatar';
+// Build Character using standard emojis and ZWJ sequences
+// This matches the "built-in" icon set used in the main application
 
-// Pre-defined attribute options
-const SKIN_TONES = [
-    { id: 'pale', label: 'Pale', color: '#F7D7C4' },
-    { id: 'light', label: 'Light', color: '#F0C5A9' },
-    { id: 'medium', label: 'Medium', color: '#D4A78A' },
-    { id: 'dark', label: 'Dark', color: '#8D5524' },
-    { id: 'black', label: 'Deep', color: '#3C2E28' },
-];
-
-const HAIR_STYLES = [
-    { id: 'short', label: 'Short', emoji: '💇‍♂️' },
-    { id: 'long', label: 'Long', emoji: '💇‍♀️' },
-    { id: 'curly', label: 'Curly', emoji: '👨‍🦱' },
-    { id: 'bald', label: 'Bald', emoji: '👨‍🦲' },
-    { id: 'bob', label: 'Bob', emoji: '👩‍🦳' },
-];
-
-const EYE_COLORS = [
-    { id: 'brown', label: 'Brown', color: '#634e34' },
-    { id: 'blue', label: 'Blue', color: '#2e536f' },
-    { id: 'green', label: 'Green', color: '#3d671d' },
-    { id: 'hazel', label: 'Hazel', color: '#8e7618' },
-];
-
-const FACES = [
-    { id: 'happy', label: 'Happy', emoji: '😊' },
+const BASES = [
+    { id: 'person', label: 'Person', emoji: '🧑' },
+    { id: 'woman', label: 'Woman', emoji: '👩' },
+    { id: 'man', label: 'Man', emoji: '👨' },
+    { id: 'child', label: 'Child', emoji: '🧒' },
+    { id: 'baby', label: 'Baby', emoji: '👶' },
+    { id: 'older', label: 'Older', emoji: '🧓' },
+    { id: 'beard', label: 'Beard', emoji: '🧔' },
+    { id: 'smiley', label: 'Happy', emoji: '😊' },
     { id: 'cool', label: 'Cool', emoji: '😎' },
-    { id: 'thinking', label: 'Thinking', emoji: '🤔' },
-    { id: 'wink', label: 'Wink', emoji: '😉' },
-    { id: 'star', label: 'Star', emoji: '🤩' },
+];
+
+const TONES = [
+    { id: 'none', label: 'Default', modifier: '' },
+    { id: 'light', label: 'Light', modifier: '🏻' },
+    { id: 'med-light', label: 'Med-Light', modifier: '🏼' },
+    { id: 'medium', label: 'Medium', modifier: '🏽' },
+    { id: 'med-dark', label: 'Med-Dark', modifier: '🏾' },
+    { id: 'dark', label: 'Dark', modifier: '🏿' },
+];
+
+const HAIR = [
+    { id: 'none', label: 'Standard', emoji: '👤' },
+    { id: 'curly', label: 'Curly', modifier: '🦱' },
+    { id: 'red', label: 'Red', modifier: '🦰' },
+    { id: 'blond', label: 'Blond', modifier: '👱' }, // Special case
+    { id: 'white', label: 'White', modifier: '🦳' },
+    { id: 'bald', label: 'Bald', modifier: '🦲' },
+];
+
+const ACCESSORIES = [
+    { id: 'none', label: 'None', emoji: '👁️' },
+    { id: 'glasses', label: 'Glasses', emoji: '👓' },
+    { id: 'sunglasses', label: 'Sun', emoji: '🕶️' },
 ];
 
 const BACKGROUND_COLORS = [
-    { id: 5, name: 'Blue', hex: '#E3F2FD' },
-    { id: 6, name: 'Purple', hex: '#F3E5F5' },
-    { id: 7, name: 'Pink', hex: '#FCE4EC' },
-    { id: 1, name: 'Red', hex: '#FFEBEE' },
-    { id: 2, name: 'Orange', hex: '#FFF3E0' },
-    { id: 3, name: 'Yellow', hex: '#FFFDE7' },
-    { id: 4, name: 'Green', hex: '#E8F5E9' },
-    { id: 8, name: 'Teal', hex: '#E0F2F1' },
+    { id: 'blue', name: 'Blue', hex: '#E3F2FD' },
+    { id: 'purple', name: 'Purple', hex: '#F3E5F5' },
+    { id: 'pink', name: 'Pink', hex: '#FCE4EC' },
+    { id: 'red', name: 'Red', hex: '#FFEBEE' },
+    { id: 'orange', name: 'Orange', hex: '#FFF3E0' },
+    { id: 'yellow', name: 'Yellow', hex: '#FFFDE7' },
+    { id: 'green', name: 'Green', hex: '#E8F5E9' },
+    { id: 'teal', name: 'Teal', hex: '#E0F2F1' },
 ];
+
+const applyModifier = (baseEmoji, modifier) => {
+    if (!modifier) return baseEmoji;
+    
+    // Check for ZWJ
+    const zwjIndex = baseEmoji.indexOf('\u200D');
+    if (zwjIndex !== -1) {
+        const part1 = baseEmoji.substring(0, zwjIndex);
+        const part2 = baseEmoji.substring(zwjIndex);
+        let cleanPart1 = part1;
+        if (cleanPart1.endsWith('\uFE0F')) {
+            cleanPart1 = cleanPart1.substring(0, cleanPart1.length - 1);
+        }
+        return cleanPart1 + modifier + part2;
+    } else {
+        let cleanBase = baseEmoji;
+        if (cleanBase.endsWith('\uFE0F')) {
+            cleanBase = cleanBase.substring(0, cleanBase.length - 1);
+        }
+        return cleanBase + modifier;
+    }
+};
 
 const CharacterBuilder = ({ initialConfig, onSelect, onClose, isTab = false, triggerPaywall }) => {
     const [name, setName] = useState(initialConfig?.name || '');
-    const [skin, setSkin] = useState(initialConfig?.skin || 'light');
-    const [hair, setHair] = useState(initialConfig?.hair || 'short');
-    const [eyes, setEyes] = useState(initialConfig?.eyes || 'brown');
-    const [face, setFace] = useState(initialConfig?.face || 'happy');
+    const [base, setBase] = useState(initialConfig?.base || 'person');
+    const [skin, setSkin] = useState(initialConfig?.skin || 'none');
+    const [hair, setHair] = useState(initialConfig?.hair || 'none');
+    const [acc, setAcc] = useState(initialConfig?.acc || 'none');
     const [selectedColor, setSelectedColor] = useState(
-        initialConfig?.color || 5 // Default to Blue (ID 5)
+        initialConfig?.color || 'blue'
     );
-    const [activeTab, setActiveTab] = useState('skin');
-    const [importedImage, setImportedImage] = useState(null);
+    const [activeTab, setActiveTab] = useState('face');
+    const [importedImage, setImportedImage] = useState(initialConfig?.isImported ? initialConfig.url : null);
     const fileInputRef = useRef(null);
 
     const isIOS = Capacitor.getPlatform() === 'ios';
 
-    const getSeed = () => {
-        // Use name if provided to make it unique, otherwise use attribute combination
-        const base = name.trim() ? `${name}-${face}` : `${face}-${hair}-${skin}-${eyes}`;
-        return base.toLowerCase().replace(/\s+/g, '-');
-    };
-
-    const getAvatarUrl = () => {
-        if (importedImage) return importedImage;
-        return `${TAPBACK_API}/${getSeed()}.webp?color=${selectedColor}`;
-    };
+    const composedEmoji = (() => {
+        let res = BASES.find(b => b.id === base)?.emoji || '🧑';
+        const toneMod = TONES.find(t => t.id === skin)?.modifier;
+        const hairMod = HAIR.find(h => h.id === hair)?.modifier;
+        
+        // Humans only for skin/hair
+        const isHuman = ['person', 'woman', 'man', 'child', 'baby', 'older', 'beard'].includes(base);
+        
+        if (isHuman) {
+            if (toneMod) res = applyModifier(res, toneMod);
+            if (hairMod) {
+                // Hair is a separate ZWJ part: Base + Tone + ZWJ + Hair
+                res = res + '\u200D' + hairMod;
+            }
+        }
+        return res;
+    })();
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -93,18 +126,21 @@ const CharacterBuilder = ({ initialConfig, onSelect, onClose, isTab = false, tri
     };
 
     const handleConfirm = () => {
-        const url = getAvatarUrl();
+        const url = importedImage || composedEmoji;
         onSelect(url, { 
             name, 
+            base,
             skin, 
             hair, 
-            eyes, 
-            face, 
+            acc, 
             color: selectedColor,
             isImported: !!importedImage,
-            seed: getSeed()
+            url: url // Store for re-editing
         });
     };
+
+    const bgColorHex = BACKGROUND_COLORS.find(c => c.id === selectedColor)?.hex || '#E3F2FD';
+
     const content = (
         <div style={{
             background: 'white',
@@ -178,21 +214,31 @@ const CharacterBuilder = ({ initialConfig, onSelect, onClose, isTab = false, tri
                 border: '2px solid #EEE'
             }}>
                 <div style={{ position: 'relative' }}>
-                    <img
-                        src={getAvatarUrl()}
-                        alt="Character Preview"
-                        style={{
-                            width: '130px',
-                            height: '130px',
-                            borderRadius: '50%',
-                            boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
-                            background: 'white',
-                            objectFit: 'cover'
-                        }}
-                        onError={(e) => {
-                            e.target.src = `${TAPBACK_API}/user1.webp?color=${selectedColor}`;
-                        }}
-                    />
+                    <div style={{
+                        width: '130px',
+                        height: '130px',
+                        borderRadius: '50%',
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+                        background: bgColorHex,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '5rem',
+                        overflow: 'hidden'
+                    }}>
+                        {importedImage ? (
+                            <img src={importedImage} alt="Custom" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : (
+                            <div style={{ position: 'relative' }}>
+                                {composedEmoji}
+                                {acc !== 'none' && (
+                                    <div style={{ position: 'absolute', top: '5%', left: 0, right: 0, textAlign: 'center', fontSize: '3rem', opacity: 0.9 }}>
+                                        {ACCESSORIES.find(a => a.id === acc)?.emoji}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
                     {importedImage && (
                         <button
                             onClick={() => setImportedImage(null)}
@@ -250,10 +296,10 @@ const CharacterBuilder = ({ initialConfig, onSelect, onClose, isTab = false, tri
                 overflowX: 'auto'
             }}>
                 {[
+                    { id: 'face', label: 'Face', icon: '😊' },
                     { id: 'skin', label: 'Skin', icon: '🎨' },
                     { id: 'hair', label: 'Hair', icon: '💇' },
                     { id: 'eyes', label: 'Eyes', icon: '👁️' },
-                    { id: 'face', label: 'Face', icon: '😊' },
                     { id: 'bg', label: 'Back', icon: '🖼️' }
                 ].map(tab => (
                     <button
@@ -281,30 +327,60 @@ const CharacterBuilder = ({ initialConfig, onSelect, onClose, isTab = false, tri
 
             {/* Tab Content */}
             <div style={{ minHeight: '120px' }}>
-                {activeTab === 'skin' && (
+                {activeTab === 'face' && (
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '10px' }}>
-                        {SKIN_TONES.map(s => (
+                        {BASES.map(b => (
+                            <button
+                                key={b.id}
+                                onClick={() => { setBase(b.id); setImportedImage(null); }}
+                                style={{
+                                    height: '50px',
+                                    borderRadius: '12px',
+                                    background: base === b.id ? '#007AFF' : '#F5F5F7',
+                                    border: 'none',
+                                    fontSize: '1.5rem',
+                                    cursor: 'pointer',
+                                    transform: base === b.id ? 'scale(1.1)' : 'scale(1)'
+                                }}
+                                title={b.label}
+                            >
+                                {b.emoji}
+                            </button>
+                        ))}
+                    </div>
+                )}
+
+                {activeTab === 'skin' && (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '10px' }}>
+                        {TONES.map(s => (
                             <button
                                 key={s.id}
                                 onClick={() => { setSkin(s.id); setImportedImage(null); }}
                                 style={{
                                     height: '50px',
                                     borderRadius: '12px',
-                                    background: s.color,
+                                    background: s.modifier ? '#F0C5A9' : '#FFCC00', // Preview color
                                     border: skin === s.id ? '3px solid #007AFF' : '2px solid transparent',
                                     cursor: 'pointer',
                                     transition: 'transform 0.2s',
-                                    transform: skin === s.id ? 'scale(1.1)' : 'scale(1)'
+                                    transform: skin === s.id ? 'scale(1.1)' : 'scale(1)',
+                                    position: 'relative',
+                                    overflow: 'hidden'
                                 }}
                                 title={s.label}
-                            />
+                            >
+                                {s.modifier && (
+                                    <div style={{ position: 'absolute', inset: 0, background: '#D4A78A', opacity: TONES.indexOf(s) / 6 }}></div>
+                                )}
+                                <span style={{ position: 'relative', fontSize: '1.2rem' }}>{s.modifier || '🟡'}</span>
+                            </button>
                         ))}
                     </div>
                 )}
 
                 {activeTab === 'hair' && (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '10px' }}>
-                        {HAIR_STYLES.map(h => (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '10px' }}>
+                        {HAIR.map(h => (
                             <button
                                 key={h.id}
                                 onClick={() => { setHair(h.id); setImportedImage(null); }}
@@ -319,7 +395,7 @@ const CharacterBuilder = ({ initialConfig, onSelect, onClose, isTab = false, tri
                                 }}
                                 title={h.label}
                             >
-                                {h.emoji}
+                                {h.modifier || h.emoji}
                             </button>
                         ))}
                     </div>
@@ -327,42 +403,22 @@ const CharacterBuilder = ({ initialConfig, onSelect, onClose, isTab = false, tri
 
                 {activeTab === 'eyes' && (
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
-                        {EYE_COLORS.map(e => (
+                        {ACCESSORIES.map(e => (
                             <button
                                 key={e.id}
-                                onClick={() => { setEyes(e.id); setImportedImage(null); }}
+                                onClick={() => { setAcc(e.id); setImportedImage(null); }}
                                 style={{
                                     height: '50px',
                                     borderRadius: '12px',
-                                    background: e.color,
-                                    border: eyes === e.id ? '3px solid #007AFF' : '2px solid transparent',
-                                    cursor: 'pointer',
-                                    transform: eyes === e.id ? 'scale(1.1)' : 'scale(1)'
-                                }}
-                                title={e.label}
-                            />
-                        ))}
-                    </div>
-                )}
-
-                {activeTab === 'face' && (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '10px' }}>
-                        {FACES.map(f => (
-                            <button
-                                key={f.id}
-                                onClick={() => { setFace(f.id); setImportedImage(null); }}
-                                style={{
-                                    height: '50px',
-                                    borderRadius: '12px',
-                                    background: face === f.id ? '#007AFF' : '#F5F5F7',
+                                    background: acc === e.id ? '#007AFF' : '#F5F5F7',
                                     border: 'none',
                                     fontSize: '1.5rem',
                                     cursor: 'pointer',
-                                    transform: face === f.id ? 'scale(1.1)' : 'scale(1)'
+                                    transform: acc === e.id ? 'scale(1.1)' : 'scale(1)'
                                 }}
-                                title={f.label}
+                                title={e.label}
                             >
-                                {f.emoji}
+                                {e.emoji}
                             </button>
                         ))}
                     </div>
@@ -430,24 +486,6 @@ const CharacterBuilder = ({ initialConfig, onSelect, onClose, isTab = false, tri
                     {isTab ? 'Add to Library' : 'Save Character'}
                 </button>
             </div>
-        </div>
-    );
-
-    if (isTab) return content;
-
-    return (
-        <div style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.5)',
-            zIndex: 1300,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '10px',
-            paddingBottom: 'calc(10px + env(safe-area-inset-bottom, 0px))'
-        }}>
-            {content}
         </div>
     );
 };
