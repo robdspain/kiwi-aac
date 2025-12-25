@@ -25,36 +25,36 @@ const MODIFIERS = {
 
 // Map for manually moving items from "New Emojis" to better categories
 const CATEGORY_OVERRIDES = {
-    'Harp': 'Objects',
-    'Shovel': 'Objects',
-    'Face With Diagonal Mouth': 'Smileys & Emotion',
-    'Face with Diagonal Mouth': 'Smileys & Emotion',
-    'Face Exhaling': 'Smileys & Emotion',
-    'Face in Clouds': 'Smileys & Emotion',
-    'Heart on Fire': 'Smileys & Emotion',
-    'Mending Heart': 'Smileys & Emotion',
-    'Person with White Cane': 'People & Fantasy', // Correct name?
-    'New Emojis Person': 'People & Fantasy' // Catch-all for unlabeled people in New Emojis
+  'Harp': 'Objects',
+  'Shovel': 'Objects',
+  'Face With Diagonal Mouth': 'Smileys & Emotion',
+  'Face with Diagonal Mouth': 'Smileys & Emotion',
+  'Face Exhaling': 'Smileys & Emotion',
+  'Face in Clouds': 'Smileys & Emotion',
+  'Heart on Fire': 'Smileys & Emotion',
+  'Mending Heart': 'Smileys & Emotion',
+  'Person with White Cane': 'People & Fantasy', // Correct name?
+  'New Emojis Person': 'People & Fantasy' // Catch-all for unlabeled people in New Emojis
 };
 
 const applyModifier = (baseEmoji, modifier) => {
   // Check for ZWJ
   const zwjIndex = baseEmoji.indexOf('\u200D');
   if (zwjIndex !== -1) {
-      const part1 = baseEmoji.substring(0, zwjIndex);
-      const part2 = baseEmoji.substring(zwjIndex);
-      // Remove FE0F from end of part1 if present
-      let cleanPart1 = part1;
-      if (cleanPart1.endsWith('\uFE0F')) {
-          cleanPart1 = cleanPart1.substring(0, cleanPart1.length - 1);
-      }
-      return cleanPart1 + modifier + part2;
+    const part1 = baseEmoji.substring(0, zwjIndex);
+    const part2 = baseEmoji.substring(zwjIndex);
+    // Remove FE0F from end of part1 if present
+    let cleanPart1 = part1;
+    if (cleanPart1.endsWith('\uFE0F')) {
+      cleanPart1 = cleanPart1.substring(0, cleanPart1.length - 1);
+    }
+    return cleanPart1 + modifier + part2;
   } else {
-      let cleanBase = baseEmoji;
-      if (cleanBase.endsWith('\uFE0F')) {
-          cleanBase = cleanBase.substring(0, cleanBase.length - 1);
-      }
-      return cleanBase + modifier;
+    let cleanBase = baseEmoji;
+    if (cleanBase.endsWith('\uFE0F')) {
+      cleanBase = cleanBase.substring(0, cleanBase.length - 1);
+    }
+    return cleanBase + modifier;
   }
 };
 
@@ -63,16 +63,16 @@ const { categories, groupedEmojiData, allEmojisFlat } = (() => {
   if (!EMOJI_DATA) return { categories: [], groupedEmojiData: {}, allEmojisFlat: [] };
 
   console.log('Processing and grouping emojis...');
-  
+
   // We exclude the Tone categories from being displayed as "Base" categories
   const baseCategoriesList = Object.keys(EMOJI_DATA).filter(c => !TONE_CATEGORIES.includes(c));
-  
+
   // Index ALL emojis globally for lookup by string
   const globalEmojiMap = new Map(); // EmojiChar -> Item
   Object.keys(EMOJI_DATA).forEach(cat => {
-      (EMOJI_DATA[cat] || []).forEach(item => {
-          globalEmojiMap.set(item.emoji, item);
-      });
+    (EMOJI_DATA[cat] || []).forEach(item => {
+      globalEmojiMap.set(item.emoji, item);
+    });
   });
 
   const flatList = [];
@@ -86,12 +86,12 @@ const { categories, groupedEmojiData, allEmojisFlat } = (() => {
       let effectiveCategory = cat;
       // Check overrides based on name (or partial name for "New Emojis Person")
       if (cat === "New Emojis") {
-          if (CATEGORY_OVERRIDES[item.name]) {
-              effectiveCategory = CATEGORY_OVERRIDES[item.name];
-          } else if (item.name === "New Emojis Person" || item.emoji === "🧑‍🦯" || item.emoji === "👨‍🦯" || item.emoji === "👩‍🦯") {
-              // "Person with White Cane" usually looks like this.
-              effectiveCategory = 'People & Fantasy';
-          }
+        if (CATEGORY_OVERRIDES[item.name]) {
+          effectiveCategory = CATEGORY_OVERRIDES[item.name];
+        } else if (item.name === "New Emojis Person" || item.emoji === "🧑‍🦯" || item.emoji === "👨‍🦯" || item.emoji === "👩‍🦯") {
+          // "Person with White Cane" usually looks like this.
+          effectiveCategory = 'People & Fantasy';
+        }
       }
 
       const newItem = { ...item, category: effectiveCategory, variations: [] };
@@ -100,16 +100,16 @@ const { categories, groupedEmojiData, allEmojisFlat } = (() => {
 
       // Try to find variations by generating strings (Global Search)
       Object.keys(MODIFIERS).forEach(toneName => {
-          const modChar = MODIFIERS[toneName];
-          const generatedEmoji = applyModifier(item.emoji, modChar);
-          
-          if (globalEmojiMap.has(generatedEmoji)) {
-              const foundItem = globalEmojiMap.get(generatedEmoji);
-              if (!newItem.variations.find(v => v.emoji === foundItem.emoji)) {
-                  newItem.variations.push({ ...foundItem, tone: toneName });
-                  identifiedVariations.add(foundItem.emoji);
-              }
+        const modChar = MODIFIERS[toneName];
+        const generatedEmoji = applyModifier(item.emoji, modChar);
+
+        if (globalEmojiMap.has(generatedEmoji)) {
+          const foundItem = globalEmojiMap.get(generatedEmoji);
+          if (!newItem.variations.find(v => v.emoji === foundItem.emoji)) {
+            newItem.variations.push({ ...foundItem, tone: toneName });
+            identifiedVariations.add(foundItem.emoji);
           }
+        }
       });
     });
   });
@@ -135,8 +135,8 @@ const { categories, groupedEmojiData, allEmojisFlat } = (() => {
       if (baseName && baseMap.has(baseName.toLowerCase())) {
         const baseItem = baseMap.get(baseName.toLowerCase());
         if (!baseItem.variations.find(v => v.emoji === item.emoji)) {
-            baseItem.variations.push({ ...item, tone });
-            identifiedVariations.add(item.emoji);
+          baseItem.variations.push({ ...item, tone });
+          identifiedVariations.add(item.emoji);
         }
       }
     });
@@ -144,27 +144,27 @@ const { categories, groupedEmojiData, allEmojisFlat } = (() => {
 
   // 3. Set Default Tone to Brown
   flatList.forEach(item => {
-      if (item.variations.length > 0) {
-          const brownVar = item.variations.find(v => v.tone === 'Brown');
-          if (brownVar) {
-              item.emoji = brownVar.emoji;
-              item.variations = item.variations.filter(v => v.tone !== 'Brown');
-          }
+    if (item.variations.length > 0) {
+      const brownVar = item.variations.find(v => v.tone === 'Brown');
+      if (brownVar) {
+        item.emoji = brownVar.emoji;
+        item.variations = item.variations.filter(v => v.tone !== 'Brown');
       }
+    }
   });
 
   // 4. Build Grouped Data (Filtering out variations)
   const groupedData = {};
   // Re-build categories list including potential target categories from overrides
   const allTargetCategories = new Set([...baseCategoriesList, ...Object.values(CATEGORY_OVERRIDES)]);
-  
+
   allTargetCategories.forEach(cat => {
-      // Filter out items that were identified as variations of another base emoji
-      // And check effectiveCategory
-      const filtered = flatList.filter(i => i.category === cat && !identifiedVariations.has(i.emoji));
-      if (filtered.length > 0) {
-          groupedData[cat] = filtered;
-      }
+    // Filter out items that were identified as variations of another base emoji
+    // And check effectiveCategory
+    const filtered = flatList.filter(i => i.category === cat && !identifiedVariations.has(i.emoji));
+    if (filtered.length > 0) {
+      groupedData[cat] = filtered;
+    }
   });
 
   return { categories: Object.keys(groupedData), groupedEmojiData: groupedData, allEmojisFlat: flatList };
@@ -172,10 +172,10 @@ const { categories, groupedEmojiData, allEmojisFlat } = (() => {
 
 // Current icons in the app (from PickerModal.jsx)
 const CURRENT_ICONS = {
-    'TV': ['🔴', '🐶', '🎵', '📚'],
-    'Food': ['🍎', '🍌', '🧃', '🍪'],
-    'Toys': ['⚽', '🧱', '🚗', '🫧'],
-    'Feelings': ['😄', '😢', '😠']
+  'TV': ['🔴', '🐶', '🎵', '📚'],
+  'Food': ['🍎', '🍌', '🧃', '🍪'],
+  'Toys': ['⚽', '🧱', '🚗', '🫧'],
+  'Feelings': ['😄', '😢', '😠']
 };
 
 const EmojiCurator = () => {
@@ -183,81 +183,94 @@ const EmojiCurator = () => {
     const [activeCategory, setActiveCategory] = useState(categories[0] || '');
     const [searchQuery, setSearchQuery] = useState('');
     const [pickerTarget, setPickerTarget] = useState(null); // { item, x, y } 
-    
+
     const [selectedEmojis, setSelectedEmojis] = useState(() => {
       const initial = {};
       categories.forEach(category => {
         initial[category] = [];
       });
-      
+
       // Pre-populate with existing icons
       Object.keys(CURRENT_ICONS).forEach(cat => {
-          (CURRENT_ICONS[cat] || []).forEach(emoji => {
-              // Find in flat list (which only contains base) OR search in variations?
-              // Ideally check base items
-              const foundBase = allEmojisFlat.find(e => e.emoji === emoji);
-              if (foundBase) {
-                  if (!initial[foundBase.category]) initial[foundBase.category] = [];
-                  if (!initial[foundBase.category].includes(emoji)) {
-                    initial[foundBase.category].push(emoji);
-                  }
-              } else {
-                  // Check if it's a variation
-                   const foundVarBase = allEmojisFlat.find(e => e.variations.some(v => v.emoji === emoji));
-                   if (foundVarBase) {
-                       if (!initial[foundVarBase.category]) initial[foundVarBase.category] = [];
-                       if (!initial[foundVarBase.category].includes(emoji)) {
-                           initial[foundVarBase.category].push(emoji);
-                       }
-                   }
+        (CURRENT_ICONS[cat] || []).forEach(emoji => {
+          // Find in flat list (which only contains base) OR search in variations?
+          // Ideally check base items
+          const foundBase = allEmojisFlat.find(e => e.emoji === emoji);
+          if (foundBase) {
+            if (!initial[foundBase.category]) initial[foundBase.category] = [];
+            if (!initial[foundBase.category].includes(emoji)) {
+              initial[foundBase.category].push(emoji);
+            }
+          } else {
+            // Check if it's a variation
+            const foundVarBase = allEmojisFlat.find(e => e.variations.some(v => v.emoji === emoji));
+            if (foundVarBase) {
+              if (!initial[foundVarBase.category]) initial[foundVarBase.category] = [];
+              if (!initial[foundVarBase.category].includes(emoji)) {
+                initial[foundVarBase.category].push(emoji);
               }
-          });
+            }
+          }
+        });
       });
-      
+
       return initial;
     });
 
+    // Check if an item (base emoji) is selected
+    const isSelected = (cat, item) => {
+      const list = selectedEmojis[cat] || [];
+      return list.includes(item.emoji);
+    };
+
+    // Check if any variation of the item is selected
+    const hasSelectedVariation = (cat, item) => {
+      const list = selectedEmojis[cat] || [];
+      if (!item.variations || item.variations.length === 0) return false;
+      return item.variations.some(v => list.includes(v.emoji));
+    };
+
     // Helper to find WHICH emoji from a group is selected (if any)
     const getSelectedInGroup = (cat, item) => {
-        const list = selectedEmojis[cat] || [];
-        if (list.includes(item.emoji)) return item.emoji;
-        const found = item.variations.find(v => list.includes(v.emoji));
-        return found ? found.emoji : null;
+      const list = selectedEmojis[cat] || [];
+      if (list.includes(item.emoji)) return item.emoji;
+      const found = item.variations.find(v => list.includes(v.emoji));
+      return found ? found.emoji : null;
     };
 
     const toggleEmoji = (category, targetEmoji, baseItem = null) => {
       if (!baseItem) {
-          // Try to find it (expensive but needed for arbitrary toggles)
-          baseItem = allEmojisFlat.find(b => 
-              b.emoji === targetEmoji || 
-              b.variations.some(v => v.emoji === targetEmoji)
-          );
+        // Try to find it (expensive but needed for arbitrary toggles)
+        baseItem = allEmojisFlat.find(b =>
+          b.emoji === targetEmoji ||
+          b.variations.some(v => v.emoji === targetEmoji)
+        );
       }
 
       setSelectedEmojis(prev => {
         const catList = prev[category] || [];
-        
+
         let groupEmojis = [targetEmoji]; // Default if no group
         if (baseItem) {
-            groupEmojis = [baseItem.emoji, ...baseItem.variations.map(v => v.emoji)];
+          groupEmojis = [baseItem.emoji, ...baseItem.variations.map(v => v.emoji)];
         }
-        
+
         // Is target currently selected?
         const isTargetSelected = catList.includes(targetEmoji);
-        
+
         let newList = [...catList];
-        
+
         if (isTargetSelected) {
-            // Deselect target
-            newList = newList.filter(e => e !== targetEmoji);
+          // Deselect target
+          newList = newList.filter(e => e !== targetEmoji);
         } else {
-            // Select target
-            // FIRST, remove any other emojis from the same group
-            newList = newList.filter(e => !groupEmojis.includes(e));
-            // THEN add target
-            newList.push(targetEmoji);
+          // Select target
+          // FIRST, remove any other emojis from the same group
+          newList = newList.filter(e => !groupEmojis.includes(e));
+          // THEN add target
+          newList.push(targetEmoji);
         }
-        
+
         return { ...prev, [category]: newList };
       });
     };
@@ -268,22 +281,22 @@ const EmojiCurator = () => {
         if (selectedEmojis[category] && selectedEmojis[category].length > 0) {
           // We need to find the name for each selected emoji (could be base or variation)
           output[category] = selectedEmojis[category].map(emojiChar => {
-              // Search in base first
-              const base = allEmojisFlat.find(e => e.emoji === emojiChar);
-              if (base) return { w: base.name, i: base.emoji };
-              
-              // Search in variations
-              // We have to iterate all base to find the variation
-              let foundName = "Unknown";
-              allEmojisFlat.some(b => {
-                  const v = b.variations.find(v => v.emoji === emojiChar);
-                  if (v) {
-                      foundName = v.name; // Or base name? Usually specific name is better.
-                      return true;
-                  }
-                  return false;
-              });
-              return { w: foundName, i: emojiChar };
+            // Search in base first
+            const base = allEmojisFlat.find(e => e.emoji === emojiChar);
+            if (base) return { w: base.name, i: base.emoji };
+
+            // Search in variations
+            // We have to iterate all base to find the variation
+            let foundName = "Unknown";
+            allEmojisFlat.some(b => {
+              const v = b.variations.find(v => v.emoji === emojiChar);
+              if (v) {
+                foundName = v.name; // Or base name? Usually specific name is better.
+                return true;
+              }
+              return false;
+            });
+            return { w: foundName, i: emojiChar };
           });
         }
       });
@@ -299,7 +312,7 @@ const EmojiCurator = () => {
 
     const filteredEmojis = useMemo(() => {
       if (searchQuery) {
-        return allEmojisFlat.filter(item => 
+        return allEmojisFlat.filter(item =>
           (item.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
           item.emoji.includes(searchQuery)
         );
@@ -314,55 +327,55 @@ const EmojiCurator = () => {
     const isLongPress = useRef(false);
 
     const openPicker = (e, item) => {
-        const rect = e.currentTarget.getBoundingClientRect();
-        setPickerTarget({
-            item,
-            category: item.category || activeCategory,
-            x: rect.left + rect.width / 2,
-            y: rect.top
-        });
-        if (navigator.vibrate) navigator.vibrate(50);
+      const rect = e.currentTarget.getBoundingClientRect();
+      setPickerTarget({
+        item,
+        category: item.category || activeCategory,
+        x: rect.left + rect.width / 2,
+        y: rect.top
+      });
+      if (navigator.vibrate) navigator.vibrate(50);
     };
 
     const handleStart = (e, item) => {
-        isLongPress.current = false;
-        // Don't trigger if no variations
-        if (!item.variations || item.variations.length === 0) return;
+      isLongPress.current = false;
+      // Don't trigger if no variations
+      if (!item.variations || item.variations.length === 0) return;
 
-        longPressTimer.current = setTimeout(() => {
-            isLongPress.current = true;
-            openPicker(e, item);
-        }, 500);
+      longPressTimer.current = setTimeout(() => {
+        isLongPress.current = true;
+        openPicker(e, item);
+      }, 500);
     };
 
     const handleCleanup = () => {
-        if (longPressTimer.current) {
-            clearTimeout(longPressTimer.current);
-            longPressTimer.current = null;
-        }
+      if (longPressTimer.current) {
+        clearTimeout(longPressTimer.current);
+        longPressTimer.current = null;
+      }
     };
 
     const handleClick = (e, cat, item) => {
-        if (!isLongPress.current && !pickerTarget) {
-            toggleEmoji(cat, item.emoji, item);
-        }
+      if (!isLongPress.current && !pickerTarget) {
+        toggleEmoji(cat, item.emoji, item);
+      }
     };
 
     const handleContextMenu = (e, item) => {
-        if (item.variations && item.variations.length > 0) {
-            e.preventDefault();
-            const rect = e.currentTarget.getBoundingClientRect();
-            setPickerTarget({
-                item,
-                category: item.category || activeCategory,
-                x: rect.left + rect.width / 2,
-                y: rect.top
-            });
-        }
+      if (item.variations && item.variations.length > 0) {
+        e.preventDefault();
+        const rect = e.currentTarget.getBoundingClientRect();
+        setPickerTarget({
+          item,
+          category: item.category || activeCategory,
+          x: rect.left + rect.width / 2,
+          y: rect.top
+        });
+      }
     };
 
     if (categories.length === 0) {
-        return <div style={{padding: '50px', background: 'white'}}>No categories found in EMOJI_DATA. Check src/utils/emojiData.js</div>;
+      return <div style={{ padding: '50px', background: 'white' }}>No categories found in EMOJI_DATA. Check src/utils/emojiData.js</div>;
     }
 
     return (
@@ -383,14 +396,14 @@ const EmojiCurator = () => {
         userSelect: 'none'
       }}>
         {/* Top Navigation Bar */}
-        <div style={{ 
-          padding: '15px 30px', 
-          background: '#1a1a1a', 
+        <div style={{
+          padding: '15px 30px',
+          background: '#1a1a1a',
           color: 'white',
-          display: 'flex', 
-          justifyContent: 'space-between', 
+          display: 'flex',
+          justifyContent: 'space-between',
           alignItems: 'center',
-          flexShrink: 0 
+          flexShrink: 0
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
             <span style={{ fontSize: '1.5rem' }}>🥝</span>
@@ -420,7 +433,7 @@ const EmojiCurator = () => {
         </div>
 
         <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-          
+
           {/* Category List */}
           <div style={{
             width: '280px',
@@ -435,20 +448,20 @@ const EmojiCurator = () => {
             <div style={{ padding: '0 15px 15px 15px' }}>
               <div style={{ fontSize: '0.7rem', color: '#999', fontWeight: 'bold', marginBottom: '10px' }}>CATEGORIES</div>
               <div style={{ position: 'relative' }}>
-                  <input 
-                      type="text"
-                      placeholder="Search all..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      style={{
-                          width: '100%',
-                          padding: '8px 10px 8px 30px',
-                          borderRadius: '6px',
-                          border: '1px solid #ddd',
-                          fontSize: '0.85rem'
-                      }}
-                  />
-                  <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', fontSize: '0.8rem' }}>🔍</span>
+                <input
+                  type="text"
+                  placeholder="Search all..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '8px 10px 8px 30px',
+                    borderRadius: '6px',
+                    border: '1px solid #ddd',
+                    fontSize: '0.85rem'
+                  }}
+                />
+                <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', fontSize: '0.8rem' }}>🔍</span>
               </div>
             </div>
 
@@ -473,7 +486,7 @@ const EmojiCurator = () => {
               >
                 <span>{category}</span>
                 {selectedEmojis[category]?.length > 0 && (
-                  <span style={{ 
+                  <span style={{
                     background: '#4ECDC4',
                     color: 'white',
                     width: '20px',
@@ -493,21 +506,21 @@ const EmojiCurator = () => {
 
           {/* Emoji Grid */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#f8f9fa' }}>
-            <div style={{ 
-              padding: '20px 30px', 
-              background: 'white', 
+            <div style={{
+              padding: '20px 30px',
+              background: 'white',
               borderBottom: '1px solid #eee',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center'
             }}>
               <h2 style={{ margin: 0, fontSize: '1.1rem' }}>
-                  {searchQuery ? `Search results for "${searchQuery}"` : activeCategory}
+                {searchQuery ? `Search results for "${searchQuery}"` : activeCategory}
               </h2>
-              
+
               {!searchQuery && (
                 <div style={{ display: 'flex', gap: '10px' }}>
-                  <button 
+                  <button
                     onClick={() => {
                       const allInCat = (groupedEmojiData[activeCategory] || []).map(item => item.emoji);
                       setSelectedEmojis(prev => ({
@@ -527,7 +540,7 @@ const EmojiCurator = () => {
                   >
                     Select All Base
                   </button>
-                  <button 
+                  <button
                     onClick={() => {
                       setSelectedEmojis(prev => ({
                         ...prev,
@@ -561,12 +574,12 @@ const EmojiCurator = () => {
                   const isItemSel = isSelected(cat, item);
                   const isVarSel = hasSelectedVariation(cat, item);
                   const hasVariations = item.variations && item.variations.length > 0;
-                  
+
                   // Determine display emoji
                   let displayEmoji = item.emoji;
                   if (isVarSel) {
-                      const found = item.variations.find(v => (selectedEmojis[cat]||[]).includes(v.emoji));
-                      if (found) displayEmoji = found.emoji;
+                    const found = item.variations.find(v => (selectedEmojis[cat] || []).includes(v.emoji));
+                    if (found) displayEmoji = found.emoji;
                   }
 
                   return (
@@ -585,7 +598,7 @@ const EmojiCurator = () => {
                         border: 'none',
                         background: 'white',
                         boxShadow: (isItemSel || isVarSel)
-                          ? '0 0 0 3px #4ECDC4, 0 4px 12px rgba(0,0,0,0.1)' 
+                          ? '0 0 0 3px #4ECDC4, 0 4px 12px rgba(0,0,0,0.1)'
                           : '0 2px 6px rgba(0,0,0,0.05)',
                         cursor: 'pointer',
                         display: 'flex',
@@ -598,16 +611,16 @@ const EmojiCurator = () => {
                       }}
                     >
                       <span style={{ fontSize: '3rem' }}>{displayEmoji}</span>
-                      <span style={{ 
-                        fontSize: '0.8rem', 
-                        textAlign: 'center', 
-                        lineHeight: '1.2', 
+                      <span style={{
+                        fontSize: '0.8rem',
+                        textAlign: 'center',
+                        lineHeight: '1.2',
                         color: '#333',
                         fontWeight: (isItemSel || isVarSel) ? 'bold' : 'normal'
                       }}>
                         {item.name}
                       </span>
-                      
+
                       {/* Selection Badge */}
                       {(isItemSel || isVarSel) && (
                         <div style={{
@@ -632,33 +645,33 @@ const EmojiCurator = () => {
 
                       {/* Variation Indicator */}
                       {hasVariations && (
-                          <div 
-                              onClick={(e) => {
-                                  e.stopPropagation();
-                                  openPicker(e.nativeEvent ? e : { currentTarget: e.target }, item);
-                              }}
-                              style={{
-                                  position: 'absolute',
-                                  bottom: '5px',
-                                  right: '5px',
-                                  width: '20px', 
-                                  height: '20px',
-                                  display: 'flex',
-                                  alignItems: 'flex-end',
-                                  justifyContent: 'flex-end',
-                                  cursor: 'pointer'
-                              }}
-                          >
-                             <div style={{
-                                width: '0',
-                                height: '0',
-                                borderLeft: '6px solid transparent',
-                                borderRight: '6px solid transparent',
-                                borderBottom: '6px solid #aaa',
-                                transform: 'rotate(135deg)',
-                                pointerEvents: 'none'
-                             }} />
-                          </div>
+                        <div
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openPicker(e.nativeEvent ? e : { currentTarget: e.target }, item);
+                          }}
+                          style={{
+                            position: 'absolute',
+                            bottom: '5px',
+                            right: '5px',
+                            width: '20px',
+                            height: '20px',
+                            display: 'flex',
+                            alignItems: 'flex-end',
+                            justifyContent: 'flex-end',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          <div style={{
+                            width: '0',
+                            height: '0',
+                            borderLeft: '6px solid transparent',
+                            borderRight: '6px solid transparent',
+                            borderBottom: '6px solid #aaa',
+                            transform: 'rotate(135deg)',
+                            pointerEvents: 'none'
+                          }} />
+                        </div>
                       )}
                     </button>
                   );
@@ -670,75 +683,75 @@ const EmojiCurator = () => {
 
         {/* Skin Tone Picker Overlay */}
         {pickerTarget && (
-            <div 
-                style={{
-                    position: 'fixed',
-                    top: 0, left: 0, width: '100%', height: '100%',
-                    zIndex: 10000,
-                }}
-                onClick={() => setPickerTarget(null)}
+          <div
+            style={{
+              position: 'fixed',
+              top: 0, left: 0, width: '100%', height: '100%',
+              zIndex: 10000,
+            }}
+            onClick={() => setPickerTarget(null)}
+          >
+            <div
+              style={{
+                position: 'absolute',
+                top: Math.max(20, pickerTarget.y - 80), // Show above
+                left: Math.max(20, Math.min(window.innerWidth - 300, pickerTarget.x - 150)),
+                background: 'white',
+                borderRadius: '16px',
+                padding: '10px',
+                boxShadow: '0 5px 20px rgba(0,0,0,0.3)',
+                display: 'flex',
+                gap: '8px',
+                animation: 'popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+              }}
+              onClick={(e) => e.stopPropagation()}
             >
-                <div 
-                    style={{
-                        position: 'absolute',
-                        top: Math.max(20, pickerTarget.y - 80), // Show above
-                        left: Math.max(20, Math.min(window.innerWidth - 300, pickerTarget.x - 150)),
-                        background: 'white',
-                        borderRadius: '16px',
-                        padding: '10px',
-                        boxShadow: '0 5px 20px rgba(0,0,0,0.3)',
-                        display: 'flex',
-                        gap: '8px',
-                        animation: 'popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-                    }}
-                    onClick={(e) => e.stopPropagation()}
-                >
-                    {/* Include Base Option */}
-                    <button
-                        onClick={() => {
-                            toggleEmoji(pickerTarget.category, pickerTarget.item.emoji, pickerTarget.item);
-                            setPickerTarget(null);
-                        }}
-                        style={{
-                            fontSize: '2rem',
-                            padding: '10px',
-                            background: isSelected(pickerTarget.category, pickerTarget.item) ? '#e6f7ff' : 'transparent',
-                            border: isSelected(pickerTarget.category, pickerTarget.item) ? '2px solid #007AFF' : '1px solid transparent',
-                            borderRadius: '8px',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        {pickerTarget.item.emoji}
-                    </button>
+              {/* Include Base Option */}
+              <button
+                onClick={() => {
+                  toggleEmoji(pickerTarget.category, pickerTarget.item.emoji, pickerTarget.item);
+                  setPickerTarget(null);
+                }}
+                style={{
+                  fontSize: '2rem',
+                  padding: '10px',
+                  background: isSelected(pickerTarget.category, pickerTarget.item) ? '#e6f7ff' : 'transparent',
+                  border: isSelected(pickerTarget.category, pickerTarget.item) ? '2px solid #007AFF' : '1px solid transparent',
+                  borderRadius: '8px',
+                  cursor: 'pointer'
+                }}
+              >
+                {pickerTarget.item.emoji}
+              </button>
 
-                    {/* Variations */}
-                    {pickerTarget.item.variations.map((v, i) => (
-                        <button
-                            key={i}
-                            onClick={() => {
-                                toggleEmoji(pickerTarget.category, v.emoji, pickerTarget.item);
-                                setPickerTarget(null);
-                            }}
-                            style={{
-                                fontSize: '2rem',
-                                padding: '10px',
-                                background: isSelected(pickerTarget.category, v) ? '#e6f7ff' : 'transparent',
-                                border: isSelected(pickerTarget.category, v) ? '2px solid #007AFF' : '1px solid transparent',
-                                borderRadius: '8px',
-                                cursor: 'pointer'
-                            }}
-                        >
-                            {v.emoji}
-                        </button>
-                    ))}
-                </div>
-                <style>{`
+              {/* Variations */}
+              {pickerTarget.item.variations.map((v, i) => (
+                <button
+                  key={i}
+                  onClick={() => {
+                    toggleEmoji(pickerTarget.category, v.emoji, pickerTarget.item);
+                    setPickerTarget(null);
+                  }}
+                  style={{
+                    fontSize: '2rem',
+                    padding: '10px',
+                    background: isSelected(pickerTarget.category, v) ? '#e6f7ff' : 'transparent',
+                    border: isSelected(pickerTarget.category, v) ? '2px solid #007AFF' : '1px solid transparent',
+                    borderRadius: '8px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {v.emoji}
+                </button>
+              ))}
+            </div>
+            <style>{`
                     @keyframes popIn {
                         from { opacity: 0; transform: scale(0.8); }
                         to { opacity: 1; transform: scale(1); }
                     }
                 `}</style>
-            </div>
+          </div>
         )}
       </div>
     );

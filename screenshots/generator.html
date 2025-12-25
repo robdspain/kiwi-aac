@@ -147,8 +147,10 @@
             width: 100%;
             height: 100%;
             object-fit: cover; 
-            /* Scale reduced to 1.03 - the perfect balance to hide blue edges without cutting off the UI */
-            transform: scale(1.03); 
+            /* Scale reduced to 1.05 - This is the safest setting.
+               It hides blue edges but leaves a huge amount of safe space 
+               for your interface due to the new 200px app padding. */
+            transform: scale(1.05); 
         }
 
         /* Gradients */

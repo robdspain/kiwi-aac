@@ -329,7 +329,7 @@ function App() {
     return !localStorage.getItem('kiwi-onboarding-complete');
   });
 
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(false); // Disabled for screenshots
   const [showLevelIntro, setShowLevelIntro] = useState(false);
 
   const [showPhase1Selector, setShowPhase1Selector] = useState(false);
@@ -898,9 +898,9 @@ function App() {
   };
 
   const handlePickerOpen = (setWord, setIcon) => {
-    setPickerCallback(() => (w, i) => {
+    setPickerCallback(() => (w, i, isImage) => {
       setWord(w);
-      setIcon(i);
+      setIcon(i, isImage);
       setPickerOpen(false);
     });
     setPickerOpen(true);

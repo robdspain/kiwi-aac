@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { EMOJI_DATA } from '../utils/emojiData';
 
 const iconsData = {
     'TV': [{ w: 'Elmo', i: '🔴' }, { w: 'Bluey', i: '🐶' }, { w: 'Music', i: '🎵' }, { w: 'Book', i: '📚' }],
@@ -7,13 +8,14 @@ const iconsData = {
     'Feelings': [{ w: 'Happy', i: '😄' }, { w: 'Sad', i: '😢' }, { w: 'Mad', i: '😠' }]
 };
 
-const PickerModal = ({ isOpen, onClose, onSelect }) => {
+const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
     const [activeTab, setActiveTab] = useState('emoji'); // 'emoji', 'photo', or 'symbol'
     const [activeCategory, setActiveCategory] = useState('TV');
     const [searchQuery, setSearchQuery] = useState('');
     const [photos, setPhotos] = useState([]);
     const [symbols, setSymbols] = useState([]);
     const [isLoadingPhotos, setIsLoadingPhotos] = useState(false);
+    const [isLoadingSymbols, setIsLoadingSymbols] = useState(false);
     const [isOnline, setIsOnline] = useState(navigator.onLine);
 
     useEffect(() => {
@@ -87,53 +89,33 @@ const PickerModal = ({ isOpen, onClose, onSelect }) => {
         }
     };
 
-    const searchSymbols = async (query) => {
-        if (!navigator.onLine) return;
-        setIsLoadingSymbols(true);
-        try {
-            // Use Cache API if available to save the 5MB file locally after first fetch
-            const cacheName = 'kiwi-symbols-cache';
-            const url = 'https://raw.githubusercontent.com/hfg-gmuend/openmoji/master/data/openmoji.json';
+    // Get all categories from the emoji data
+    const getEmojiCategories = () => Object.keys(EMOJI_DATA);
 
-            let data;
-            if ('caches' in window) {
-                const cache = await caches.open(cacheName);
-                let response = await cache.match(url);
-                if (!response) {
-                    await cache.add(url);
-                    response = await cache.match(url);
-                }
-                if (response) data = await response.json();
-            }
+    // Get all emojis flattened for searching
+    const getAllEmojis = () => Object.values(EMOJI_DATA).flat();
 
-            if (!data) {
-                const response = await fetch(url);
-                if (response.ok) data = await response.json();
-            }
-
-            if (data) {
-                const queryLower = query.toLowerCase();
-                const results = data
-                    .filter(item =>
-                        item.annotation?.toLowerCase().includes(queryLower) ||
-                        item.tags?.toLowerCase().includes(queryLower)
-                    )
-                    .slice(0, 12)
-                    .map(item => ({
-                        w: item.annotation || query,
-                        i: `https://openmoji.org/data/color/svg/${item.hexcode}.svg`
-                    }));
-                setSymbols(results);
-            } else {
-                setSymbols([]);
-            }
-        } catch (error) {
-            console.error('Symbol search failed:', error);
+    // Search built-in emoji library (instant, no network needed)
+    const searchBuiltInEmojis = (query) => {
+        if (!query || query.length < 2) {
             setSymbols([]);
-        } finally {
-            setIsLoadingSymbols(false);
+            return;
         }
+        const q = query.toLowerCase();
+        const results = getAllEmojis()
+            .filter(item => item.name?.toLowerCase().includes(q))
+            .slice(0, 24);
+        setSymbols(results);
     };
+
+    // Trigger emoji search when query changes on symbol tab
+    useEffect(() => {
+        if (activeTab === 'symbol' && searchQuery.length >= 2) {
+            searchBuiltInEmojis(searchQuery);
+        } else if (activeTab === 'symbol' && searchQuery.length < 2) {
+            setSymbols([]);
+        }
+    }, [searchQuery, activeTab]);
 
     if (!isOpen) return null;
 
@@ -213,6 +195,21 @@ const PickerModal = ({ isOpen, onClose, onSelect }) => {
                     <>
                         {!searchQuery && (
                             <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '10px' }}>
+                                <button
+                                    key="my-icons"
+                                    onClick={() => setActiveCategory('My Icons')}
+                                    style={{
+                                        background: activeCategory === 'My Icons' ? '#34C759' : '#E8F5E9',
+                                        color: activeCategory === 'My Icons' ? '#fff' : '#34C759',
+                                        padding: '8px 16px',
+                                        borderRadius: '20px',
+                                        border: 'none',
+                                        fontWeight: '600',
+                                        whiteSpace: 'nowrap'
+                                    }}
+                                >
+                                    ⭐ My Icons
+                                </button>
                                 {Object.keys(iconsData).map(cat => (
                                     <button
                                         key={cat}
@@ -233,54 +230,131 @@ const PickerModal = ({ isOpen, onClose, onSelect }) => {
                             </div>
                         )}
                         <div id="picker-grid" className="picker-grid">
-                            {(searchQuery
-                                ? Object.values(iconsData).flat().filter(item =>
-                                    item.w.toLowerCase().includes(searchQuery.toLowerCase())
-                                )
-                                : iconsData[activeCategory]
-                            ).map((item, index) => (
-                                <button
-                                    key={`${item.w}-${index}`}
-                                    className="picker-btn"
-                                    onClick={() => {
-                                        onSelect(item.w, item.i, false);
-                                        setSearchQuery('');
-                                    }}
-                                >
-                                    <span style={{ fontSize: '32px' }}>{item.i}</span>
-                                    <span style={{ fontSize: '12px', marginTop: '4px', opacity: 0.8 }}>{item.w}</span>
-                                </button>
-                            ))}
+                            {(() => {
+                                // Prepare user icons in picker format
+                                const userIconsList = (userItems || []).filter(item => item.type === 'button').map(item => ({
+                                    w: item.word,
+                                    i: item.icon,
+                                    isUserIcon: true
+                                }));
+
+                                // Get library icons
+                                const libraryIcons = Object.values(iconsData).flat();
+
+                                let displayIcons;
+                                if (searchQuery) {
+                                    // Search both user icons and library
+                                    const q = searchQuery.toLowerCase();
+                                    displayIcons = [
+                                        ...userIconsList.filter(item => item.w.toLowerCase().includes(q)),
+                                        ...libraryIcons.filter(item => item.w.toLowerCase().includes(q))
+                                    ];
+                                } else if (activeCategory === 'My Icons') {
+                                    displayIcons = userIconsList;
+                                } else {
+                                    displayIcons = iconsData[activeCategory] || [];
+                                }
+
+                                if (displayIcons.length === 0) {
+                                    return (
+                                        <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px', color: '#666' }}>
+                                            {activeCategory === 'My Icons'
+                                                ? 'No icons yet. Add some from the library!'
+                                                : searchQuery
+                                                    ? 'No icons found'
+                                                    : 'No icons in this category'}
+                                        </div>
+                                    );
+                                }
+
+                                return displayIcons.map((item, index) => (
+                                    <button
+                                        key={`${item.w}-${index}`}
+                                        className="picker-btn"
+                                        onClick={() => {
+                                            onSelect(item.w, item.i, typeof item.i === 'string' && (item.i.startsWith('http') || item.i.startsWith('data:')));
+                                            setSearchQuery('');
+                                        }}
+                                        style={{ position: 'relative' }}
+                                    >
+                                        {typeof item.i === 'string' && (item.i.startsWith('http') || item.i.startsWith('data:')) ? (
+                                            <img src={item.i} alt={item.w} style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
+                                        ) : (
+                                            <span style={{ fontSize: '32px' }}>{item.i}</span>
+                                        )}
+                                        <span style={{ fontSize: '12px', marginTop: '4px', opacity: 0.8 }}>{item.w}</span>
+                                        {item.isUserIcon && (
+                                            <span style={{
+                                                position: 'absolute',
+                                                top: '4px',
+                                                right: '4px',
+                                                fontSize: '10px',
+                                                background: '#34C759',
+                                                color: 'white',
+                                                borderRadius: '4px',
+                                                padding: '2px 4px'
+                                            }}>My</span>
+                                        )}
+                                    </button>
+                                ));
+                            })()}
                         </div>
                     </>
                 ) : activeTab === 'symbol' ? (
-                    <div id="picker-grid" className="picker-grid">
-                        {isLoadingSymbols ? (
-                            <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px' }}>Searching symbols...</div>
-                        ) : symbols.length > 0 ? (
-                            symbols.map((symbol, index) => (
-                                <button
-                                    key={index}
-                                    className="picker-btn"
-                                    onClick={() => {
-                                        onSelect(symbol.w, symbol.i, true);
-                                        setSearchQuery('');
-                                    }}
-                                    style={{ padding: '5px' }}
-                                >
-                                    <img src={symbol.i} alt={symbol.w} style={{ width: '100%', height: '60px', objectFit: 'contain', borderRadius: '8px' }} />
-                                    <span style={{ fontSize: '10px', marginTop: '4px', opacity: 0.8 }}>{symbol.w}</span>
-                                </button>
-                            ))
-                        ) : (
-                            <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px', opacity: 0.5 }}>
-                                {searchQuery.length < 3 ? "Type 3+ characters to search AAC symbols" : "No symbols found"}
+                    <>
+                        {!searchQuery && (
+                            <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '10px', flexWrap: 'nowrap' }}>
+                                {getEmojiCategories().map(cat => (
+                                    <button
+                                        key={cat}
+                                        onClick={() => setActiveCategory(cat)}
+                                        style={{
+                                            background: activeCategory === cat ? '#5856D6' : '#f0f0f0',
+                                            color: activeCategory === cat ? '#fff' : '#333',
+                                            padding: '6px 12px',
+                                            borderRadius: '16px',
+                                            border: 'none',
+                                            fontWeight: '500',
+                                            fontSize: '0.75rem',
+                                            whiteSpace: 'nowrap',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        {cat}
+                                    </button>
+                                ))}
                             </div>
                         )}
-                        <div style={{ gridColumn: '1/-1', textAlign: 'center', fontSize: '0.7rem', color: '#888', marginTop: '10px' }}>
-                            Symbols from <a href="https://openmoji.org" target="_blank" rel="noopener noreferrer">OpenMoji</a> (CC BY-SA 4.0)
+                        <div id="picker-grid" className="picker-grid">
+                            {(() => {
+                                const displayEmojis = searchQuery.length >= 2
+                                    ? symbols
+                                    : (EMOJI_DATA[activeCategory] || []);
+
+                                if (displayEmojis.length === 0) {
+                                    return (
+                                        <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px', color: '#666' }}>
+                                            {searchQuery.length >= 2 ? 'No emojis found' : 'Select a category or search'}
+                                        </div>
+                                    );
+                                }
+
+                                return displayEmojis.map((item, index) => (
+                                    <button
+                                        key={`${item.name || item.w}-${index}`}
+                                        className="picker-btn"
+                                        onClick={() => {
+                                            onSelect(item.name || item.w, item.emoji || item.i, false);
+                                            setSearchQuery('');
+                                        }}
+                                    >
+                                        <span style={{ fontSize: '32px' }}>{item.emoji || item.i}</span>
+                                        <span style={{ fontSize: '10px', marginTop: '4px', opacity: 0.8 }}>{item.name || item.w}</span>
+                                    </button>
+                                ));
+                            })()}
                         </div>
-                    </div>
+                    </>
                 ) : (
                     <div id="picker-grid" className="picker-grid">
                         {isLoadingPhotos ? (

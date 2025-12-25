@@ -1,4 +1,4 @@
-# Kiwi AAC 🥝
+# Kiwi Voice 🥝
 
 A powerful, privacy-first Picture Exchange Communication app designed for children and adults with speech delays or autism. Built with React, Vite, and Capacitor for high-performance iOS and Android deployment.
 

@@ -68,6 +68,11 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
         }
     };
 
+    const handleSave = () => {
+        onSave(word, icon, bgColor, viewMode, customAudio, characterConfig);
+        onClose();
+    };
+
     const handleDelete = () => {
         if (window.confirm("Delete this item?")) {
             onDelete();

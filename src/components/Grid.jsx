@@ -36,7 +36,7 @@ const Grid = ({
 
     const getGridStyle = () => {
         if (useLargeGrid) return {};
-        
+
         let cols;
         switch (gridSize) {
             case 'super-big': cols = 2; break;
@@ -47,6 +47,58 @@ const Grid = ({
         }
         return { gridTemplateColumns: `repeat(${cols}, 1fr)` };
     };
+
+    // Show empty state when no items to display
+    if (items.length === 0) {
+        return (
+            <div id="grid-container" style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100%',
+                padding: '40px',
+                textAlign: 'center'
+            }}>
+                <div style={{ fontSize: '4rem', marginBottom: '20px' }}>🥝</div>
+                <h2 style={{
+                    fontSize: '1.5rem',
+                    fontWeight: '700',
+                    color: '#333',
+                    margin: '0 0 12px 0'
+                }}>
+                    {hasBack ? 'This folder is empty' : 'Let\'s add some icons!'}
+                </h2>
+                <p style={{
+                    fontSize: '1rem',
+                    color: '#666',
+                    maxWidth: '300px',
+                    lineHeight: '1.5',
+                    margin: '0 0 24px 0'
+                }}>
+                    {hasBack
+                        ? 'Go back and add items to this folder.'
+                        : 'Tap the ⚙️ Settings button to add communication icons for your child.'}
+                </p>
+                {!hasBack && (
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '12px 20px',
+                        background: 'linear-gradient(135deg, #007AFF, #0051D5)',
+                        color: 'white',
+                        borderRadius: '20px',
+                        fontSize: '0.9rem',
+                        fontWeight: '600',
+                        animation: 'pulse 2s infinite'
+                    }}>
+                        <span>⬇️</span> Tap Settings Below
+                    </div>
+                )}
+            </div>
+        );
+    }
 
     return (
         <div id="grid-container" className={gridClass} style={getGridStyle()}>

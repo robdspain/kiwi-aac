@@ -58,7 +58,7 @@ const SplashScreen = ({ onComplete }) => {
 
                 <img
                     src="/icon-512.png"
-                    alt="Kiwi Talk Logo"
+                    alt="Kiwi Voice Logo"
                     style={{
                         width: '140px',
                         height: '140px',
@@ -77,7 +77,7 @@ const SplashScreen = ({ onComplete }) => {
                     textTransform: 'uppercase',
                     textShadow: '0 0 20px rgba(78, 205, 196, 0.5)'
                 }}>
-                    Kiwi Talk
+                    Kiwi Voice
                 </h1>
 
                 <p style={{

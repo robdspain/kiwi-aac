@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-        <string>Kiwi AAC</string>
+        <string>Kiwi Voice</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -48,6 +48,6 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Kiwi AAC needs microphone access to record custom voice prompts for communication buttons.</string>
+	<string>Kiwi Voice needs microphone access to record custom voice prompts for communication buttons.</string>
 </dict>
 </plist>

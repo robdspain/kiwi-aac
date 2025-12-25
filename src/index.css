@@ -226,7 +226,8 @@ body.literacy-mode .app-icon {
   padding: 12px 12px;
   padding-bottom: 120px;
   overflow-y: auto;
-  align-content: center; /* Centered layout for communication icons */
+  place-content: center;
+  /* Center items both vertically and horizontally */
   min-height: 100%;
   -webkit-overflow-scrolling: touch;
 }
@@ -239,8 +240,9 @@ body.literacy-mode .app-icon {
     padding: 8px 16px;
     padding-bottom: 110px;
   }
-  
-  #breadcrumbs, #strip-container {
+
+  #breadcrumbs,
+  #strip-container {
     padding-left: 16px;
     padding-right: 16px;
   }
@@ -261,8 +263,9 @@ body.literacy-mode .app-icon {
     gap: 12px;
     padding: 12px 24px;
   }
-  
-  #breadcrumbs, #strip-container {
+
+  #breadcrumbs,
+  #strip-container {
     padding-left: 24px;
     padding-right: 24px;
   }
@@ -275,8 +278,9 @@ body.literacy-mode .app-icon {
     gap: 14px;
     padding: 16px 32px;
   }
-  
-  #breadcrumbs, #strip-container {
+
+  #breadcrumbs,
+  #strip-container {
     padding-left: 32px;
     padding-right: 32px;
   }
@@ -290,8 +294,9 @@ body.literacy-mode .app-icon {
     padding: 20px 48px;
     padding-bottom: 140px;
   }
-  
-  #breadcrumbs, #strip-container {
+
+  #breadcrumbs,
+  #strip-container {
     padding-left: 48px;
     padding-right: 48px;
   }
@@ -314,8 +319,9 @@ body.literacy-mode .app-icon {
     max-width: 1400px;
     margin: 0 auto;
   }
-  
-  #breadcrumbs, #strip-container {
+
+  #breadcrumbs,
+  #strip-container {
     padding-left: 64px;
     padding-right: 64px;
     max-width: 1400px;
@@ -524,7 +530,8 @@ body.literacy-mode .app-icon {
 
 .phase-large-grid .app-icon {
   width: 100%;
-  aspect-ratio: 1 / 1; /* Applied to icon, not wrapper */
+  aspect-ratio: 1 / 1;
+  /* Applied to icon, not wrapper */
   font-size: 6rem;
   border-radius: 40px;
 }
@@ -538,7 +545,8 @@ body.literacy-mode .app-icon {
 }
 
 body.screenshot-mode #main-area {
-  padding: 200px 120px; /* Ultra-safe margins to clear all phone corners and status bars */
+  padding: 200px 120px;
+  /* Ultra-safe margins to clear all phone corners and status bars */
   background: var(--bg-gradient);
   min-height: 100vh;
   box-sizing: border-box;
@@ -554,7 +562,8 @@ body.screenshot-mode #grid-container {
 
 .phase-large-grid .app-item {
   width: 100%;
-  max-width: 200px; /* Reduced further to ensure text label stays clear of margins */
+  max-width: 200px;
+  /* Reduced further to ensure text label stays clear of margins */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -563,7 +572,8 @@ body.screenshot-mode #grid-container {
 .phase-large-grid .app-icon {
   width: 100%;
   aspect-ratio: 1 / 1;
-  font-size: 4.5rem; /* Balanced size for large buttons */
+  font-size: 4.5rem;
+  /* Balanced size for large buttons */
   border-radius: 40px;
 }
 
@@ -652,9 +662,19 @@ body.screenshot-mode #grid-container {
 }
 
 @keyframes floatApp {
-  0%, 100% { transform: translate(0, 0) rotate(0deg); }
-  33% { transform: translate(10px, -20px) rotate(5deg); }
-  66% { transform: translate(-10px, 10px) rotate(-5deg); }
+
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  33% {
+    transform: translate(10px, -20px) rotate(5deg);
+  }
+
+  66% {
+    transform: translate(-10px, 10px) rotate(-5deg);
+  }
 }
 
 /* Floating Settings Button */
@@ -870,7 +890,8 @@ button.danger {
 
 /* Background Decorations - Only for Screenshots */
 .bg-decorations {
-  display: none; /* Hidden during normal use */
+  display: none;
+  /* Hidden during normal use */
   pointer-events: none;
   position: fixed;
   inset: 0;
@@ -891,9 +912,19 @@ body.screenshot-mode .bg-decorations {
 }
 
 @keyframes floatApp {
-  0%, 100% { transform: translate(0, 0) rotate(0deg); }
-  33% { transform: translate(10px, -20px) rotate(5deg); }
-  66% { transform: translate(-10px, 10px) rotate(-5deg); }
+
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  33% {
+    transform: translate(10px, -20px) rotate(5deg);
+  }
+
+  66% {
+    transform: translate(-10px, 10px) rotate(-5deg);
+  }
 }
 
 /* Screenshot Mode - Optimized for framing without cutoff */
@@ -904,12 +935,14 @@ body.screenshot-mode {
 }
 
 body.screenshot-mode #main-area {
-  padding: 140px 100px; /* Even larger safe margins */
+  padding: 140px 100px;
+  /* Even larger safe margins */
   background: var(--bg-gradient);
 }
 
 body.screenshot-mode #grid-container {
-  padding-bottom: 0; /* True centering */
+  padding-bottom: 0;
+  /* True centering */
 }
 
 
