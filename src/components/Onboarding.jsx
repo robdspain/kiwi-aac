@@ -14,7 +14,7 @@ const Onboarding = ({ onComplete }) => {
 
     const steps = [
         {
-            title: "Welcome to Kiwi Talk! 🥝",
+            title: "Welcome to Kiwi Voice! 🥝",
             content: (
                 <div style={{ textAlign: 'center' }}>
                     <div style={{ fontSize: '5rem', marginBottom: '20px' }}>🥝</div>
@@ -80,6 +80,31 @@ const Onboarding = ({ onComplete }) => {
                         <div style={{ background: 'rgba(255, 184, 77, 0.15)', padding: '15px', borderRadius: '12px' }}>
                             📷 <strong>Personalize</strong> — Add photos of family, pets, favorite foods
                         </div>
+                    </div>
+                </div>
+            )
+        },
+        {
+            title: "Child Lock Mode 🔒",
+            content: (
+                <div style={{ textAlign: 'center' }}>
+                    <img
+                        src="/images/guided-access.png"
+                        alt="Guided Access Instructions"
+                        style={{ width: '100%', maxWidth: '400px', marginBottom: '20px', borderRadius: '16px' }}
+                    />
+                    <div style={{ textAlign: 'left', background: 'rgba(88, 86, 214, 0.1)', padding: '20px', borderRadius: '16px', marginTop: '15px' }}>
+                        <div style={{ fontSize: '1.5rem', marginBottom: '12px', textAlign: 'center' }}>📱 Enable Guided Access</div>
+                        <div style={{ fontSize: '1rem', lineHeight: 1.7, color: '#636E72' }}>
+                            <p style={{ marginBottom: '12px' }}><strong>Step 1:</strong> Go to Settings → Accessibility → Guided Access</p>
+                            <p style={{ marginBottom: '12px' }}><strong>Step 2:</strong> Turn it ON and set a passcode</p>
+                            <p style={{ marginBottom: '12px' }}><strong>Step 3:</strong> Open Kiwi Voice and <strong>triple-click the Side Button</strong></p>
+                            <p style={{ marginBottom: '12px' }}><strong>Step 4:</strong> Tap "Start" to lock the app</p>
+                            <p style={{ marginBottom: '0' }}><strong>To Exit:</strong> Triple-click Side Button again and enter passcode</p>
+                        </div>
+                    </div>
+                    <div style={{ marginTop: '15px', fontSize: '0.95rem', color: '#95A5A6', textAlign: 'center' }}>
+                        This prevents accidental exits and keeps your child focused on communication
                     </div>
                 </div>
             )

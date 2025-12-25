@@ -12,10 +12,44 @@ const VoiceRecorder = ({ currentAudio, onSave, onRemove }) => {
         setAudioUrl(currentAudio || null);
     }, [currentAudio]);
 
+    // Detect supported MIME type for cross-platform compatibility
+    const getSupportedMimeType = () => {
+        const types = [
+            'audio/webm;codecs=opus',
+            'audio/webm',
+            'audio/mp4',
+            'audio/ogg;codecs=opus',
+            'audio/wav'
+        ];
+        for (const type of types) {
+            if (MediaRecorder.isTypeSupported(type)) {
+                return type;
+            }
+        }
+        return ''; // Let browser choose default
+    };
+
     const startRecording = async () => {
         try {
+            // Check if MediaRecorder is available
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert('Voice recording is not supported in this browser.');
+                return;
+            }
+
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorderRef.current = new MediaRecorder(stream);
+
+            const mimeType = getSupportedMimeType();
+            const options = mimeType ? { mimeType } : {};
+
+            try {
+                mediaRecorderRef.current = new MediaRecorder(stream, options);
+            } catch (e) {
+                // Fallback: try without options
+                console.warn('MediaRecorder with options failed, using default:', e);
+                mediaRecorderRef.current = new MediaRecorder(stream);
+            }
+
             chunksRef.current = [];
 
             mediaRecorderRef.current.ondataavailable = (e) => {
@@ -25,7 +59,9 @@ const VoiceRecorder = ({ currentAudio, onSave, onRemove }) => {
             };
 
             mediaRecorderRef.current.onstop = () => {
-                const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
+                // Use the actual mimeType from the recorder for cross-platform compatibility
+                const actualMimeType = mediaRecorderRef.current.mimeType || 'audio/webm';
+                const blob = new Blob(chunksRef.current, { type: actualMimeType });
                 const reader = new FileReader();
                 reader.onloadend = () => {
                     setAudioUrl(reader.result);

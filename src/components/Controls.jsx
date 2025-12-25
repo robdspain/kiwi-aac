@@ -167,6 +167,31 @@ const Controls = ({
                         🔒 Lock App for Child
                     </button>
 
+                    {/* Guided Access Help Button */}
+                    {isIOS && (
+                        <button
+                            onClick={() => setShowGuidedAccess(true)}
+                            style={{
+                                width: '100%',
+                                padding: '10px',
+                                background: 'rgba(88, 86, 214, 0.1)',
+                                color: '#5856D6',
+                                border: '2px solid rgba(88, 86, 214, 0.3)',
+                                borderRadius: '12px',
+                                fontWeight: '600',
+                                fontSize: '0.9rem',
+                                marginBottom: '15px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            ℹ️ How to Use Guided Access
+                        </button>
+                    )}
+
                     {/* Tab Navigation */}
                     <div style={{
                         display: 'flex',
