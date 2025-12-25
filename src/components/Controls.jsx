@@ -4,6 +4,7 @@ import FavoritesPickerModal from './FavoritesPickerModal';
 import CharacterBuilder from './CharacterBuilder';
 import Superwall from '../plugins/superwall';
 import { LEVELS, STAGES, LEVEL_ORDER, getLevel, getStage, formatLevel } from '../data/levelDefinitions';
+import { BELL_SOUNDS, playBellSound } from '../utils/sounds';
 
 const Controls = ({
     isEditMode,
@@ -44,7 +45,9 @@ const Controls = ({
     rootItems,
     colorTheme,
     onSetColorTheme,
-    triggerPaywall
+    triggerPaywall,
+    bellSound,
+    onUpdateBellSound
 }) => {
 
     // Theme definitions
@@ -493,6 +496,36 @@ const Controls = ({
                                     onChange={(e) => onUpdateVoiceSettings({ ...voiceSettings, rate: parseFloat(e.target.value) })}
                                     style={{ width: '100%' }}
                                 />
+                            </div>
+                        </div>
+
+                        {/* Bell Sound Settings */}
+                        <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                            <span style={{ fontWeight: 600, color: '#333' }}>🔔 Attention Bell Sound</span>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '8px' }}>
+                                <select
+                                    value={bellSound}
+                                    onChange={(e) => {
+                                        onUpdateBellSound(e.target.value);
+                                        playBellSound(e.target.value); // Preview the sound
+                                    }}
+                                    style={{
+                                        padding: '12px',
+                                        borderRadius: '10px',
+                                        border: '1px solid #DDD',
+                                        fontSize: '14px',
+                                        background: '#F9F9F9'
+                                    }}
+                                >
+                                    {BELL_SOUNDS.map(sound => (
+                                        <option key={sound.id} value={sound.id}>
+                                            {sound.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                <p style={{ fontSize: '11px', color: '#888', margin: 0 }}>
+                                    This sound is played when the child uses the bell to get attention in Level 2.
+                                </p>
                             </div>
                         </div>
 

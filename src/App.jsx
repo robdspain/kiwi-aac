@@ -383,6 +383,14 @@ function App() {
   const [bellCooldown, setBellCooldown] = useState(false);
   const [isCommunicating, setIsCommunicating] = useState(false);
 
+  const [bellSound, setBellSound] = useState(() => {
+    return localStorage.getItem('kiwi-bell-sound') || 'synthetic';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('kiwi-bell-sound', bellSound);
+  }, [bellSound]);
+
   const [gridSize, setGridSize] = useState(() => {
     const saved = localStorage.getItem('kiwi-grid-size');
     // Restrict to 3 sizes as requested (Large, Medium, Standard)
@@ -997,7 +1005,7 @@ function App() {
             disabled={bellCooldown}
             onClick={() => {
               if (!bellCooldown) {
-                playBellSound();
+                playBellSound(bellSound);
                 setBellCooldown(true);
                 setTimerRemaining(5);
 
@@ -1142,6 +1150,8 @@ function App() {
           colorTheme={colorTheme}
           onSetColorTheme={setColorTheme}
           triggerPaywall={triggerPaywall}
+          bellSound={bellSound}
+          onUpdateBellSound={setBellSound}
         />
       )}
 
@@ -1227,6 +1237,7 @@ function App() {
       <PickerModal
         isOpen={pickerOpen}
         onClose={() => setPickerOpen(false)}
+        userItems={rootItems}
         onSelect={(w, i) => {
           if (pickerCallback) pickerCallback(w, i);
         }}
