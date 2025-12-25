@@ -48,8 +48,8 @@ const BackupRestore = ({ isOpen, onClose, onRestore }) => {
 
                 // Share the file
                 await Share.share({
-                    title: 'Kiwi AAC Backup',
-                    text: 'Here is my Kiwi AAC backup file.',
+                    title: 'Kiwi Talk Backup',
+                    text: 'Here is my Kiwi Talk backup file.',
                     url: result.uri,
                     dialogTitle: 'Save Backup'
                 });

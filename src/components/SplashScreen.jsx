@@ -4,10 +4,16 @@ const SplashScreen = ({ onComplete }) => {
     const [fade, setFade] = useState(false);
 
     useEffect(() => {
+        // Remove the static splash screen from index.html if it exists
+        const staticSplash = document.getElementById('static-splash');
+        if (staticSplash) {
+            staticSplash.remove();
+        }
+
         // Start fading out slightly before completion
-        const fadeTimer = setTimeout(() => setFade(true), 1500);
-        const completionTimer = setTimeout(onComplete, 2000);
-        
+        const fadeTimer = setTimeout(() => setFade(true), 800);
+        const completionTimer = setTimeout(onComplete, 1000);
+
         return () => {
             clearTimeout(fadeTimer);
             clearTimeout(completionTimer);
@@ -15,7 +21,9 @@ const SplashScreen = ({ onComplete }) => {
     }, [onComplete]);
 
     return (
-        <div style={{
+        <div 
+            onClick={onComplete}
+            style={{
             position: 'fixed',
             inset: 0,
             background: 'linear-gradient(180deg, #1a1a2e 0%, #16213e 100%)', // Dark premium background
@@ -24,16 +32,17 @@ const SplashScreen = ({ onComplete }) => {
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 2000,
-            transition: 'opacity 0.8s ease',
+            transition: 'opacity 0.2s ease',
             opacity: fade ? 0 : 1,
-            pointerEvents: 'none'
+            pointerEvents: 'auto',
+            cursor: 'pointer'
         }}>
             <div style={{
                 position: 'relative',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                animation: 'bounceIn 1.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                animation: 'bounceIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)'
             }}>
                 {/* Glow Effect */}
                 <div style={{
@@ -47,9 +56,9 @@ const SplashScreen = ({ onComplete }) => {
                     zIndex: -1
                 }} />
 
-                <img 
-                    src="/icon-512.png" 
-                    alt="Kiwi AAC Logo"
+                <img
+                    src="/icon-512.png"
+                    alt="Kiwi Talk Logo"
                     style={{
                         width: '140px',
                         height: '140px',
@@ -58,7 +67,7 @@ const SplashScreen = ({ onComplete }) => {
                         boxShadow: '0 0 40px rgba(78, 205, 196, 0.3)',
                     }}
                 />
-                
+
                 <h1 style={{
                     fontSize: '3.5rem',
                     fontWeight: 900,
@@ -68,30 +77,9 @@ const SplashScreen = ({ onComplete }) => {
                     textTransform: 'uppercase',
                     textShadow: '0 0 20px rgba(78, 205, 196, 0.5)'
                 }}>
-                    Kiwi AAC
+                    Kiwi Talk
                 </h1>
 
-                {/* Progress Bar like in the reference image */}
-                <div style={{
-                    width: '240px',
-                    height: '6px',
-                    background: 'rgba(255,255,255,0.1)',
-                    borderRadius: '10px',
-                    marginTop: '40px',
-                    overflow: 'hidden',
-                    position: 'relative'
-                }}>
-                    <div style={{
-                        position: 'absolute',
-                        left: 0,
-                        top: 0,
-                        height: '100%',
-                        width: '100%',
-                        background: 'var(--primary)',
-                        animation: 'loading 2s ease-in-out'
-                    }} />
-                </div>
-                
                 <p style={{
                     color: 'rgba(255,255,255,0.5)',
                     marginTop: '15px',
@@ -99,16 +87,9 @@ const SplashScreen = ({ onComplete }) => {
                     fontWeight: 600,
                     letterSpacing: '1px'
                 }}>
-                    INITIALIZING EXPERIENCE...
+                    INITIALIZING...
                 </p>
             </div>
-
-            <style>{`
-                @keyframes loading {
-                    0% { width: 0; }
-                    100% { width: 100%; }
-                }
-            `}</style>
         </div>
     );
 };

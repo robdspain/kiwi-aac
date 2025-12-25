@@ -27,8 +27,12 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@imgly/background-removal": "^1.7.0",
+    "@neondatabase/serverless": "^1.0.2",
+    "@supabase/supabase-js": "^2.89.0",
     "react": "^19.2.3",
-    "react-dom": "^19.2.3"
+    "react-dom": "^19.2.3",
+    "react-router-dom": "^7.11.0",
+    "tapback-memojis": "github:wimell/tapback-memojis"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

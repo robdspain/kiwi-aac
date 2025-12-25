@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import LevelIntro from './LevelIntro';
 
 const questions = [
     {
@@ -62,21 +63,12 @@ const phaseDescriptions = {
 
 // High-value reinforcers that kids typically love
 const favoriteOptions = [
-    { id: 'bubbles', word: 'Bubbles', icon: '🫧' },
-    { id: 'cookie', word: 'Cookie', icon: '🍪' },
-    { id: 'train', word: 'Train', icon: '🚂' },
-    { id: 'ipad', word: 'iPad', icon: '📱' },
-    { id: 'tickles', word: 'Tickles', icon: '🤗' },
-    { id: 'swing', word: 'Swing', icon: '🎢' },
-    { id: 'music', word: 'Music', icon: '🎵' },
-    { id: 'tv', word: 'TV', icon: '📺' },
-    { id: 'ball', word: 'Ball', icon: '⚽' },
-    { id: 'blocks', word: 'Blocks', icon: '🧱' },
-    { id: 'car', word: 'Car', icon: '🚗' },
-    { id: 'dinosaur', word: 'Dinosaur', icon: '🦕' },
-    { id: 'dog', word: 'Dog', icon: '🐕' },
-    { id: 'jump', word: 'Jump', icon: '🦘' },
-    { id: 'book', word: 'Book', icon: '📚' },
+    { id: 'play', word: 'Play', icon: '🏃' },
+    { id: 'my-turn', word: 'My Turn', icon: '🙋' },
+    { id: 'snack', word: 'Snack', icon: '🥨' },
+    { id: 'mom', word: 'Mom', icon: '👩' },
+    { id: 'dad', word: 'Dad', icon: '👨' },
+    { id: 'toy', word: 'Toy', icon: '🧸' },
 ];
 
 const Assessment = ({ onComplete }) => {
@@ -88,23 +80,43 @@ const Assessment = ({ onComplete }) => {
     const [showLiteracyCheck, setShowLiteracyCheck] = useState(false);
     const [selectedFavorites, setSelectedFavorites] = useState([]);
     const [canRead, setCanRead] = useState(null);
+    const [showIntro, setShowIntro] = useState(false);
+    const [history, setHistory] = useState([]);
+    const [answers, setAnswers] = useState({});
 
     const question = questions[currentQuestion];
 
-    const handleAnswer = (isYes) => {
-        if (isYes) {
-            if (question.yesNext === null) {
-                // Completed all questions - recommend normal mode (phase 0)
-                setResult(0);
-                setShowFavoritesPicker(true); // Show favorites picker first
-            } else {
-                // Move to next question
-                setCurrentQuestion(question.yesNext - 1);
+    const calculateResult = (finalAnswers) => {
+        let recommendedPhase = 0; // Default to advanced/free mode if all Yes
+        
+        // Iterate through questions to find the first skill gap
+        for (let i = 0; i < questions.length; i++) {
+            const q = questions[i];
+            if (finalAnswers[q.id] === false) {
+                // If they can't do this skill yet, start at this level
+                // Use the noResult from the question definition as the phase
+                recommendedPhase = q.noResult;
+                break;
             }
+        }
+        
+        // If they answered Yes to everything, recommendedPhase stays 0
+        setResult(recommendedPhase);
+        setShowFavoritesPicker(true);
+    };
+
+    const handleAnswer = (isYes) => {
+        // Save current question to history before moving
+        setHistory([...history, currentQuestion]);
+        
+        // Record answer
+        const newAnswers = { ...answers, [question.id]: isYes };
+        setAnswers(newAnswers);
+
+        if (currentQuestion < questions.length - 1) {
+            setCurrentQuestion(currentQuestion + 1);
         } else {
-            // No - recommend the phase for this question
-            setResult(question.noResult);
-            setShowFavoritesPicker(true); // Show favorites picker first
+            calculateResult(newAnswers);
         }
     };
 
@@ -112,9 +124,17 @@ const Assessment = ({ onComplete }) => {
         if (selectedFavorites.find(f => f.id === favorite.id)) {
             setSelectedFavorites(selectedFavorites.filter(f => f.id !== favorite.id));
         } else {
-            if (selectedFavorites.length < 5) {
+            if (selectedFavorites.length < 3) {
                 setSelectedFavorites([...selectedFavorites, favorite]);
             }
+        }
+    };
+
+    const handleBack = () => {
+        if (history.length > 0) {
+            const previousQuestion = history[history.length - 1];
+            setHistory(history.slice(0, -1));
+            setCurrentQuestion(previousQuestion);
         }
     };
 
@@ -162,7 +182,7 @@ const Assessment = ({ onComplete }) => {
                     marginBottom: '24px',
                     padding: '0 20px'
                 }}>
-                    Pick 3-5 favorites we'll add to the home screen
+                    Pick 1-3 favorites we'll add to the home screen
                 </p>
 
                 <div style={{
@@ -228,9 +248,9 @@ const Assessment = ({ onComplete }) => {
                     marginBottom: '16px'
                 }}>
                     {selectedFavorites.length === 0 && '👆 Tap to select favorites'}
-                    {selectedFavorites.length > 0 && selectedFavorites.length < 3 &&
-                        `${selectedFavorites.length} selected - pick at least 3`}
-                    {selectedFavorites.length >= 3 &&
+                    {selectedFavorites.length > 0 && selectedFavorites.length < 1 &&
+                        `${selectedFavorites.length} selected - pick at least 1`}
+                    {selectedFavorites.length >= 1 &&
                         `✨ ${selectedFavorites.length} selected - great choices!`}
                 </div>
 
@@ -239,9 +259,9 @@ const Assessment = ({ onComplete }) => {
                         setShowFavoritesPicker(false);
                         setShowLiteracyCheck(true); // Show literacy check next
                     }}
-                    disabled={selectedFavorites.length < 3}
+                    disabled={selectedFavorites.length < 1}
                     style={{
-                        background: selectedFavorites.length >= 3
+                        background: selectedFavorites.length >= 1
                             ? 'linear-gradient(135deg, #4ECDC4, #3DB8B0)'
                             : '#D1D5DB',
                         color: 'white',
@@ -250,8 +270,8 @@ const Assessment = ({ onComplete }) => {
                         borderRadius: '16px',
                         fontSize: '1.1rem',
                         fontWeight: 700,
-                        cursor: selectedFavorites.length >= 3 ? 'pointer' : 'not-allowed',
-                        boxShadow: selectedFavorites.length >= 3
+                        cursor: selectedFavorites.length >= 1 ? 'pointer' : 'not-allowed',
+                        boxShadow: selectedFavorites.length >= 1
                             ? '0 6px 20px rgba(78, 205, 196, 0.3)'
                             : 'none',
                         marginBottom: '16px'
@@ -450,6 +470,23 @@ const Assessment = ({ onComplete }) => {
                 padding: '24px',
                 zIndex: 1000
             }}>
+                {showIntro && (
+                    <div style={{ position: 'fixed', inset: 0, zIndex: 2000 }}>
+                        <LevelIntro 
+                            phase={result} 
+                            onComplete={() => setShowIntro(false)} 
+                            onChangeLevel={() => {
+                                setShowIntro(false);
+                                setShowResult(false);
+                                setCurrentQuestion(0);
+                                setResult(null);
+                                setHistory([]);
+                                setAnswers({});
+                            }}
+                        />
+                    </div>
+                )}
+
                 <div style={{
                     fontSize: '4rem',
                     marginBottom: '20px',
@@ -475,14 +512,38 @@ const Assessment = ({ onComplete }) => {
                     borderRadius: '20px',
                     textAlign: 'center',
                     marginBottom: '20px',
-                    boxShadow: '0 8px 24px rgba(78, 205, 196, 0.3)'
+                    boxShadow: '0 8px 24px rgba(78, 205, 196, 0.3)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center'
                 }}>
                     <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '8px' }}>
                         {phaseInfo.name}
                     </div>
-                    <div style={{ fontSize: '0.9rem', opacity: 0.9 }}>
+                    <div style={{ fontSize: '0.9rem', opacity: 0.9, marginBottom: '12px' }}>
                         {phaseInfo.description}
                     </div>
+
+                    {result > 0 && (
+                        <button
+                            onClick={() => setShowIntro(true)}
+                            style={{
+                                background: 'rgba(255,255,255,0.2)',
+                                border: '1px solid rgba(255,255,255,0.4)',
+                                color: 'white',
+                                padding: '8px 16px',
+                                borderRadius: '20px',
+                                fontSize: '0.85rem',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                fontWeight: 600
+                            }}
+                        >
+                            📖 Show me how
+                        </button>
+                    )}
                 </div>
 
                 <button
@@ -534,6 +595,27 @@ const Assessment = ({ onComplete }) => {
             padding: '24px',
             zIndex: 1000
         }}>
+            {/* Back Button */}
+            {history.length > 0 && (
+                <button 
+                    onClick={handleBack}
+                    style={{
+                        position: 'absolute',
+                        top: '20px',
+                        left: '20px',
+                        background: 'transparent',
+                        border: 'none',
+                        fontSize: '1.5rem',
+                        cursor: 'pointer',
+                        color: '#636E72',
+                        padding: '10px',
+                        zIndex: 10
+                    }}
+                >
+                    ←
+                </button>
+            )}
+
             {/* Progress dots */}
             <div style={{
                 display: 'flex',

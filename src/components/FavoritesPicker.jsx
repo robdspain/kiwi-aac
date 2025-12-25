@@ -1,18 +1,12 @@
 import React, { useState } from 'react';
 
 const COMMON_REINFORCERS = [
-    { id: 'bubbles', label: 'Bubbles', icon: '🫧' },
-    { id: 'cookie', label: 'Cookie', icon: '🍪' },
-    { id: 'car', label: 'Car', icon: '🚗' },
-    { id: 'music', label: 'Music', icon: '🎵' },
-    { id: 'tickle', label: 'Tickles', icon: '🧸' },
-    { id: 'ipad', label: 'iPad', icon: '📱' },
-    { id: 'ball', label: 'Ball', icon: '⚽' },
-    { id: 'juice', label: 'Juice', icon: '🧃' },
-    { id: 'swing', label: 'Swing', icon: '🏃' },
-    { id: 'tv', label: 'TV', icon: '📺' },
-    { id: 'book', label: 'Book', icon: '📚' },
-    { id: 'candy', label: 'Candy', icon: '🍬' }
+    { id: 'play', label: 'Play', icon: '🏃' },
+    { id: 'my-turn', label: 'My Turn', icon: '🙋' },
+    { id: 'snack', label: 'Snack', icon: '🥨' },
+    { id: 'mom', label: 'Mom', icon: '👩' },
+    { id: 'dad', label: 'Dad', icon: '👨' },
+    { id: 'toy', label: 'Toy', icon: '🧸' }
 ];
 
 const FavoritesPicker = ({ onComplete }) => {

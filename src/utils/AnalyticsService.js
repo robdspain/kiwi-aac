@@ -8,12 +8,35 @@ const getAnalytics = () => {
         sessions: [],
         itemClicks: {},
         dailyUsage: {},
-        favorites: []
+        favorites: [],
+        sentences: [] // Track full sentences
     };
 };
 
 const saveAnalytics = (data) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+};
+
+export const trackSentence = (sentence) => {
+    if (!sentence || !sentence.trim()) return;
+    const analytics = getAnalytics();
+    
+    // Initialize if missing (backward compatibility)
+    if (!analytics.sentences) analytics.sentences = [];
+
+    const entry = {
+        text: sentence,
+        timestamp: new Date().toISOString()
+    };
+
+    analytics.sentences.unshift(entry); // Add to beginning
+    
+    // Keep last 100 sentences
+    if (analytics.sentences.length > 100) {
+        analytics.sentences = analytics.sentences.slice(0, 100);
+    }
+
+    saveAnalytics(analytics);
 };
 
 export const trackItemClick = (itemId, itemWord) => {
@@ -86,6 +109,11 @@ export const getDailyStats = (days = 7) => {
     return stats;
 };
 
+export const getRecentSentences = (limit = 10) => {
+    const analytics = getAnalytics();
+    return (analytics.sentences || []).slice(0, limit);
+};
+
 export const getTotalStats = () => {
     const analytics = getAnalytics();
     const totalClicks = Object.values(analytics.itemClicks).reduce((sum, item) => sum + item.count, 0);
@@ -123,10 +151,12 @@ export const exportToCSV = () => {
 
 export default {
     trackItemClick,
+    trackSentence,
     startSession,
     endSession,
     getTopItems,
     getDailyStats,
+    getRecentSentences,
     getTotalStats,
     exportToCSV
 };

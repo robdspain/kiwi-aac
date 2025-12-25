@@ -14,7 +14,7 @@ const Onboarding = ({ onComplete }) => {
 
     const steps = [
         {
-            title: "Welcome to Kiwi AAC! 🥝",
+            title: "Welcome to Kiwi Talk! 🥝",
             content: (
                 <div style={{ textAlign: 'center' }}>
                     <div style={{ fontSize: '5rem', marginBottom: '20px' }}>🥝</div>
@@ -42,7 +42,13 @@ const Onboarding = ({ onComplete }) => {
                             </div>
                         </div>
                         <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                            <div style={{ fontSize: '2rem', width: '50px', textAlign: 'center' }}>⚙️</div>
+                            <div style={{ width: '50px', textAlign: 'center' }}>
+                                <img 
+                                    src="/images/settings-gear.png" 
+                                    alt="Settings" 
+                                    style={{ width: '50px', height: '50px', objectFit: 'contain', opacity: 0.5 }} 
+                                />
+                            </div>
                             <div>
                                 <strong>Adult Settings</strong> to customize and edit
                             </div>
@@ -63,7 +69,7 @@ const Onboarding = ({ onComplete }) => {
                 <div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         <div style={{ background: 'rgba(78, 205, 196, 0.15)', padding: '15px', borderRadius: '12px' }}>
-                            💡 <strong>Start simple</strong> — Begin with 1-3 highly motivating items
+                            💡 <strong>Start simple</strong> — Begin with one item that could have multiple meanings such as play, snack or toy
                         </div>
                         <div style={{ background: 'rgba(126, 217, 87, 0.15)', padding: '15px', borderRadius: '12px' }}>
                             🎯 <strong>Be consistent</strong> — Practice during natural routines

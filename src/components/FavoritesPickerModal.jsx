@@ -2,26 +2,12 @@ import React, { useState } from 'react';
 
 // Same favorites from Assessment
 const favoriteOptions = [
-    { id: 'bubbles', word: 'Bubbles', icon: '🫧' },
-    { id: 'cookie', word: 'Cookie', icon: '🍪' },
-    { id: 'train', word: 'Train', icon: '🚂' },
-    { id: 'ipad', word: 'iPad', icon: '📱' },
-    { id: 'tickles', word: 'Tickles', icon: '🤗' },
-    { id: 'swing', word: 'Swing', icon: '🎢' },
-    { id: 'music', word: 'Music', icon: '🎵' },
-    { id: 'tv', word: 'TV', icon: '📺' },
-    { id: 'ball', word: 'Ball', icon: '⚽' },
-    { id: 'blocks', word: 'Blocks', icon: '🧱' },
-    { id: 'car', word: 'Car', icon: '🚗' },
-    { id: 'dinosaur', word: 'Dinosaur', icon: '🦕' },
-    { id: 'dog', word: 'Dog', icon: '🐕' },
-    { id: 'jump', word: 'Jump', icon: '🦘' },
-    { id: 'book', word: 'Book', icon: '📚' },
-    { id: 'puzzle', word: 'Puzzle', icon: '🧩' },
-    { id: 'paint', word: 'Paint', icon: '🎨' },
-    { id: 'bike', word: 'Bike', icon: '🚲' },
-    { id: 'snack', word: 'Snack', icon: '🍿' },
-    { id: 'game', word: 'Game', icon: '🎮' },
+    { id: 'play', word: 'Play', icon: '🏃' },
+    { id: 'my-turn', word: 'My Turn', icon: '🙋' },
+    { id: 'snack', word: 'Snack', icon: '🥨' },
+    { id: 'mom', word: 'Mom', icon: '👩' },
+    { id: 'dad', word: 'Dad', icon: '👨' },
+    { id: 'toy', word: 'Toy', icon: '🧸' },
 ];
 
 const FavoritesPickerModal = ({ onClose, onAddFavorites, existingFavorites = [] }) => {

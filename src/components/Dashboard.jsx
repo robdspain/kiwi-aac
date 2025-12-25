@@ -1,7 +1,8 @@
 import React from 'react';
-import { getTopItems, getDailyStats, getTotalStats, exportToCSV } from '../utils/AnalyticsService';
+import { getTopItems, getDailyStats, getTotalStats, exportToCSV, getRecentSentences } from '../utils/AnalyticsService';
+import { getLevel, getStage, formatLevel, LEVEL_ORDER } from '../data/levelDefinitions';
 
-const Dashboard = ({ onClose, progressData, currentPhase, rootItems = [] }) => {
+const Dashboard = ({ onClose, progressData, currentPhase, currentLevel, rootItems = [] }) => {
     const stats = progressData?.essentialStats || {
         fcr_attempts: 0,
         denial_presented: 0,
@@ -30,14 +31,18 @@ const Dashboard = ({ onClose, progressData, currentPhase, rootItems = [] }) => {
     const totalFavoriteUses = favorites.reduce((sum, f) => sum + (f.usageCount || 0), 0);
 
     const handleShare = async () => {
+        const levelDef = currentLevel ? getLevel(currentLevel) : null;
+        const stageDef = currentLevel ? getStage(currentLevel) : null;
         const report = `
-📊 Kiwi AAC Progress Report
+📊 Kiwi Talk Progress Report
 ---------------------------
-📍 Current Phase: Level ${currentPhase}
+📍 Current Level: ${currentLevel || 'Not set'} ${levelDef?.name || ''}
+${stageDef ? `🎯 Stage ${Math.floor(currentLevel)}: ${stageDef.name}` : ''}
 📈 Total Interactions: ${totalStats.totalClicks}
 🧠 Independence Rate: ${independenceRate}%
 🔥 Current Streak: ${progressData.currentStreak} trials
 🏆 Top Words: ${topItems.slice(0, 3).map(i => i.word).join(', ')}
+💬 Last Sentence: "${recentSentences[0]?.text || 'None'}"
 
 Communication is growing! 🥝
         `.trim();
@@ -45,7 +50,7 @@ Communication is growing! 🥝
         if (navigator.share) {
             try {
                 await navigator.share({
-                    title: 'Kiwi AAC Progress Report',
+                    title: 'Kiwi Talk Progress Report',
                     text: report,
                 });
             } catch (err) {
@@ -72,6 +77,213 @@ Communication is growing! 🥝
                         <button onClick={onClose} style={{ padding: '10px 20px', borderRadius: '10px', background: '#E5E5EA', border: 'none', cursor: 'pointer' }}>Close</button>
                     </div>
                 </div>
+
+                {/* Level Progress Section */}
+                <h2 style={{ borderBottom: '2px solid #EEE', paddingBottom: '10px' }}>🎯 Level Progress</h2>
+                {(() => {
+                    // Calculate progress per level from trials
+                    const levelProgress = {};
+                    const trials = progressData?.trials || [];
+
+                    // Group trials by level
+                    trials.forEach(t => {
+                        const lvl = t.level || t.phase; // Support old phase or new level
+                        if (!levelProgress[lvl]) {
+                            levelProgress[lvl] = {
+                                attempts: 0,
+                                independent: 0,
+                                prompted: 0,
+                                firstAttempt: t.timestamp,
+                                lastAttempt: t.timestamp
+                            };
+                        }
+                        levelProgress[lvl].attempts++;
+                        if (t.isPrompted) {
+                            levelProgress[lvl].prompted++;
+                        } else {
+                            levelProgress[lvl].independent++;
+                        }
+                        if (t.timestamp < levelProgress[lvl].firstAttempt) {
+                            levelProgress[lvl].firstAttempt = t.timestamp;
+                        }
+                        if (t.timestamp > levelProgress[lvl].lastAttempt) {
+                            levelProgress[lvl].lastAttempt = t.timestamp;
+                        }
+                    });
+
+                    // Get sorted levels
+                    const sortedLevels = Object.keys(levelProgress)
+                        .map(l => parseFloat(l))
+                        .filter(l => !isNaN(l))
+                        .sort((a, b) => a - b);
+
+                    if (sortedLevels.length === 0) {
+                        return (
+                            <div style={{
+                                background: '#f8f8f8',
+                                padding: '30px',
+                                borderRadius: '15px',
+                                textAlign: 'center',
+                                marginBottom: '30px'
+                            }}>
+                                <div style={{ fontSize: '3rem', marginBottom: '10px' }}>📝</div>
+                                <p style={{ color: '#666', margin: 0 }}>No level progress data yet. Complete some trials to see progress here!</p>
+                            </div>
+                        );
+                    }
+
+                    return (
+                        <div style={{ marginBottom: '30px' }}>
+                            {/* Current Level Card */}
+                            {currentLevel && (
+                                <div style={{
+                                    background: `linear-gradient(135deg, ${getStage(currentLevel).color}15, ${getStage(currentLevel).color}30)`,
+                                    border: `2px solid ${getStage(currentLevel).color}`,
+                                    padding: '20px',
+                                    borderRadius: '15px',
+                                    marginBottom: '20px'
+                                }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div>
+                                            <div style={{ fontSize: '0.85rem', color: '#666', marginBottom: '4px' }}>Current Level</div>
+                                            <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: getStage(currentLevel).color }}>
+                                                {getStage(currentLevel).icon} Level {currentLevel}
+                                            </div>
+                                            <div style={{ fontSize: '0.9rem', color: '#555' }}>{getLevel(currentLevel)?.name}</div>
+                                        </div>
+                                        {levelProgress[currentLevel] && (
+                                            <div style={{ textAlign: 'right' }}>
+                                                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: getStage(currentLevel).color }}>
+                                                    {levelProgress[currentLevel].attempts}
+                                                </div>
+                                                <div style={{ fontSize: '0.8rem', color: '#666' }}>attempts</div>
+                                            </div>
+                                        )}
+                                    </div>
+                                    {levelProgress[currentLevel] && (
+                                        <div style={{
+                                            display: 'flex',
+                                            gap: '15px',
+                                            marginTop: '15px',
+                                            background: 'white',
+                                            padding: '12px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <div style={{ flex: 1, textAlign: 'center' }}>
+                                                <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#34C759' }}>
+                                                    {levelProgress[currentLevel].independent}
+                                                </div>
+                                                <div style={{ fontSize: '0.75rem', color: '#666' }}>Independent</div>
+                                            </div>
+                                            <div style={{ flex: 1, textAlign: 'center' }}>
+                                                <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#FF9500' }}>
+                                                    {levelProgress[currentLevel].prompted}
+                                                </div>
+                                                <div style={{ fontSize: '0.75rem', color: '#666' }}>Prompted</div>
+                                            </div>
+                                            <div style={{ flex: 1, textAlign: 'center' }}>
+                                                <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#007AFF' }}>
+                                                    {levelProgress[currentLevel].attempts > 0
+                                                        ? Math.round((levelProgress[currentLevel].independent / levelProgress[currentLevel].attempts) * 100)
+                                                        : 0}%
+                                                </div>
+                                                <div style={{ fontSize: '0.75rem', color: '#666' }}>Accuracy</div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* All Levels Progress */}
+                            <div style={{ background: '#f8f8f8', padding: '20px', borderRadius: '15px' }}>
+                                <h3 style={{ margin: '0 0 15px 0', fontSize: '1rem' }}>Level History</h3>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                    {sortedLevels.map(lvl => {
+                                        const progress = levelProgress[lvl];
+                                        const levelDef = getLevel(lvl);
+                                        const stageDef = getStage(lvl);
+                                        const accuracy = progress.attempts > 0
+                                            ? Math.round((progress.independent / progress.attempts) * 100)
+                                            : 0;
+                                        const timeSpent = progress.lastAttempt && progress.firstAttempt
+                                            ? Math.round((progress.lastAttempt - progress.firstAttempt) / (1000 * 60 * 60 * 24))
+                                            : 0;
+                                        const isPassed = levelDef && progress.attempts >= (levelDef.threshold || 20) &&
+                                            (!levelDef.accuracy || accuracy >= levelDef.accuracy);
+                                        const isCurrent = lvl === currentLevel;
+
+                                        return (
+                                            <div
+                                                key={lvl}
+                                                style={{
+                                                    background: 'white',
+                                                    padding: '12px 15px',
+                                                    borderRadius: '10px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '12px',
+                                                    border: isCurrent ? `2px solid ${stageDef?.color || '#007AFF'}` : '1px solid #eee'
+                                                }}
+                                            >
+                                                <div style={{
+                                                    width: '36px',
+                                                    height: '36px',
+                                                    borderRadius: '50%',
+                                                    background: isPassed ? '#34C759' : (stageDef?.color || '#E5E5EA') + '30',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    fontSize: isPassed ? '1rem' : '0.9rem',
+                                                    color: isPassed ? 'white' : stageDef?.color || '#666'
+                                                }}>
+                                                    {isPassed ? '✓' : stageDef?.icon || '📍'}
+                                                </div>
+                                                <div style={{ flex: 1 }}>
+                                                    <div style={{ fontWeight: '600', fontSize: '0.9rem' }}>
+                                                        Level {lvl} {levelDef?.name && `– ${levelDef.name}`}
+                                                    </div>
+                                                    <div style={{ fontSize: '0.75rem', color: '#888' }}>
+                                                        {progress.attempts} attempts • {accuracy}% accuracy
+                                                        {timeSpent > 0 && ` • ${timeSpent} day${timeSpent !== 1 ? 's' : ''}`}
+                                                    </div>
+                                                </div>
+                                                <div style={{ textAlign: 'right' }}>
+                                                    {isPassed ? (
+                                                        <span style={{
+                                                            background: '#34C759',
+                                                            color: 'white',
+                                                            padding: '4px 10px',
+                                                            borderRadius: '12px',
+                                                            fontSize: '0.75rem',
+                                                            fontWeight: '600'
+                                                        }}>Passed</span>
+                                                    ) : isCurrent ? (
+                                                        <span style={{
+                                                            background: stageDef?.color || '#007AFF',
+                                                            color: 'white',
+                                                            padding: '4px 10px',
+                                                            borderRadius: '12px',
+                                                            fontSize: '0.75rem',
+                                                            fontWeight: '600'
+                                                        }}>Current</span>
+                                                    ) : (
+                                                        <span style={{
+                                                            background: '#E5E5EA',
+                                                            color: '#666',
+                                                            padding: '4px 10px',
+                                                            borderRadius: '12px',
+                                                            fontSize: '0.75rem'
+                                                        }}>In Progress</span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })()}
 
                 {/* Usage Overview */}
                 <h2 style={{ borderBottom: '2px solid #EEE', paddingBottom: '10px' }}>📈 Usage Overview</h2>
@@ -146,7 +358,7 @@ Communication is growing! 🥝
                                         <line x1="0" y1="0" x2="100" y2="0" stroke="#eee" strokeWidth="0.5" />
                                         <line x1="0" y1="50" x2="100" y2="50" stroke="#eee" strokeWidth="0.5" />
                                         <line x1="0" y1="100" x2="100" y2="100" stroke="#eee" strokeWidth="0.5" />
-                                        
+
                                         {/* Trend Line */}
                                         <polyline
                                             points={points}
@@ -156,7 +368,7 @@ Communication is growing! 🥝
                                             strokeLinecap="round"
                                             strokeLinejoin="round"
                                         />
-                                        
+
                                         {/* Data Points */}
                                         {days.map((d, i) => (
                                             <circle
@@ -168,7 +380,7 @@ Communication is growing! 🥝
                                             />
                                         ))}
                                     </svg>
-                                    
+
                                     {/* Labels */}
                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px', fontSize: '0.7rem', color: '#666' }}>
                                         {days.map((d, i) => (

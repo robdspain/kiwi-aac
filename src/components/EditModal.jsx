@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { translateWord } from '../utils/translate';
-import { removeBackground } from '@imgly/background-removal';
+// Lazy load background removal - only imported when needed (24MB library)
 import VoiceRecorder from './VoiceRecorder';
 import CharacterBuilder from './CharacterBuilder';
 
-const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item }) => {
+const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item, triggerPaywall }) => {
     const [word, setWord] = useState('');
     const [icon, setIcon] = useState('');
     const [bgColor, setBgColor] = useState('');
@@ -77,6 +77,9 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item 
 
         setIsRemovingBackground(true);
         try {
+            // Dynamically import the heavy background removal library (24MB)
+            const { removeBackground } = await import('@imgly/background-removal');
+
             const blob = await removeBackground(icon, {
                 progress: (key, current, total) => {
                     console.log(`Background removal progress: ${key} ${current}/${total}`);
@@ -251,13 +254,25 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item 
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Icon Source</label>
                     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                         <button
-                            onClick={() => fileInputRef.current.click()}
+                            onClick={() => {
+                                if (triggerPaywall) {
+                                    triggerPaywall('upload_photo', () => fileInputRef.current.click());
+                                } else {
+                                    fileInputRef.current.click();
+                                }
+                            }}
                             style={{ flex: '1 1 45%', padding: '10px', background: '#E5E5EA', border: 'none', borderRadius: '10px', cursor: 'pointer' }}
                         >
                             🖼️ Photo Library
                         </button>
                         <button
-                            onClick={() => cameraInputRef.current.click()}
+                            onClick={() => {
+                                if (triggerPaywall) {
+                                    triggerPaywall('upload_photo', () => cameraInputRef.current.click());
+                                } else {
+                                    cameraInputRef.current.click();
+                                }
+                            }}
                             style={{ flex: '1 1 45%', padding: '10px', background: '#E5E5EA', border: 'none', borderRadius: '10px', cursor: 'pointer' }}
                         >
                             📷 Take Photo
@@ -336,6 +351,7 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item 
                         onSelect={(newIcon, config) => {
                             setIcon(newIcon);
                             setCharacterConfig(config);
+                            if (config.name) setWord(config.name);
                             setIsImage(true);
                             setShowCharacterBuilder(false);
                         }}

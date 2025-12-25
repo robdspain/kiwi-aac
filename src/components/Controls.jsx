@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import GuidedAccessModal from './GuidedAccessModal';
 import FavoritesPickerModal from './FavoritesPickerModal';
+import CharacterBuilder from './CharacterBuilder';
 import Superwall from '../plugins/superwall';
+import { LEVELS, STAGES, LEVEL_ORDER, getLevel, getStage, formatLevel } from '../data/levelDefinitions';
 
 const Controls = ({
     isEditMode,
     isTrainingMode,
     currentPhase,
+    currentLevel,
     showStrip,
     skinTone,
     currentContext,
@@ -20,6 +23,7 @@ const Controls = ({
     onAddItem,
     onToggleStrip,
     onSetPhase,
+    onSetLevel,
     onStartTraining,
     onReset,
     onShuffle,
@@ -27,6 +31,7 @@ const Controls = ({
     onOpenPicker,
     onToggleEssentialMode,
     onToggleDashboard,
+    onRedoCalibration,
     isPrompted,
     onSetPrompted,
     onToggleLock,
@@ -34,8 +39,23 @@ const Controls = ({
     onUpdateVoiceSettings,
     gridSize,
     onUpdateGridSize,
-    onAddFavorites
+    phase1TargetId,
+    onSetPhase1Target,
+    rootItems,
+    colorTheme,
+    onSetColorTheme,
+    triggerPaywall
 }) => {
+
+    // Theme definitions
+    const COLOR_THEMES = [
+        { id: 'default', label: 'Kiwi', icon: '🥝', primary: '#4ECDC4', bg: '#FDF8F3', premium: false },
+        { id: 'ocean', label: 'Ocean', icon: '🌊', primary: '#0EA5E9', bg: '#E8F4FC', premium: true },
+        { id: 'sunset', label: 'Sunset', icon: '🌅', primary: '#F97316', bg: '#FFF7ED', premium: true },
+        { id: 'forest', label: 'Forest', icon: '🌲', primary: '#22C55E', bg: '#F0FDF4', premium: true },
+        { id: 'berry', label: 'Berry', icon: '🍇', primary: '#A855F7', bg: '#FAF5FF', premium: true },
+        { id: 'candy', label: 'Candy', icon: '🍬', primary: '#EC4899', bg: '#FDF2F8', premium: true },
+    ];
 
     const [newWord, setNewWord] = useState('');
     const [newIcon, setNewIcon] = useState('');
@@ -44,6 +64,8 @@ const Controls = ({
     const [showGuidedAccess, setShowGuidedAccess] = useState(false);
     const [showFavoritesPicker, setShowFavoritesPicker] = useState(false);
     const [isRestoring, setIsRestoring] = useState(false);
+    const [showAdvanced, setShowAdvanced] = useState(false);
+    const [activeTab, setActiveTab] = useState('basic');
 
     // Detect iOS to show relevant help
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -104,484 +126,649 @@ const Controls = ({
         }
     };
 
+    React.useEffect(() => {
+        console.log('Controls - isEditMode:', isEditMode, 'isTrainingMode:', isTrainingMode);
+    }, [isEditMode, isTrainingMode]);
+
     return (
-        <div id="controls" className={isEditMode || isTrainingMode ? '' : 'collapsed'}>
-            <div className="drag-handle"></div>
-            <div id="parent-header" onClick={onToggleMenu}>
-                <span>Adult Settings</span>
-                <span id="menu-arrow">{isEditMode || isTrainingMode ? 'Hide ▼' : 'Show ▲'}</span>
-            </div>
-
-            {/* Edit Panel */}
-            <div id="edit-panel" style={{ display: (isEditMode && !isTrainingMode) ? 'flex' : 'none' }}>
-                {/* Prominent Lock Button at top */}
-                <button
-                    onClick={handleLock}
-                    style={{
-                        width: '100%',
-                        padding: '12px',
-                        background: 'linear-gradient(135deg, #FF3B30, #FF6B6B)',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '12px',
-                        fontWeight: 'bold',
-                        fontSize: '1rem',
-                        marginBottom: '15px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '8px'
-                    }}
-                >
-                    🔒 Lock App for Child
-                </button>
-
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '5px' }}>
-                    <button className="primary" style={{ flex: 1 }} onClick={() => onAddItem('', '', 'button')}>+ Add Button</button>
-                    <button className="primary" style={{ flex: 1, background: '#34C759' }} onClick={() => onAddItem('', '', 'folder')}>+ Add Folder</button>
+        <div id="controls" className={isEditMode || isTrainingMode ? '' : 'collapsed'} onClick={(e) => {
+            if (e.target.id === 'controls') onToggleMenu();
+        }}>
+            <div id="controls-content">
+                <div id="parent-header">
+                    <span>Adult Settings</span>
+                    <button id="close-settings" onClick={onToggleMenu}>✕</button>
                 </div>
 
-                <div style={{ display: 'flex', gap: '10px' }}>
-                    <button style={{ flex: 1, fontSize: '13px' }} onClick={() => {
-                        const data = localStorage.getItem('kians-words-ios');
-                        const blob = new Blob([data], { type: 'application/json' });
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = 'kiwi-layout.json';
-                        a.click();
-                    }}>📂 Export Layout</button>
-                    <button style={{ flex: 1, fontSize: '13px' }} onClick={() => {
-                        const input = document.createElement('input');
-                        input.type = 'file';
-                        input.accept = '.json';
-                        input.onchange = (e) => {
-                            const file = e.target.files[0];
-                            const reader = new FileReader();
-                            reader.onload = (re) => {
-                                try {
-                                    const json = JSON.parse(re.target.result);
-                                    localStorage.setItem('kians-words-ios', JSON.stringify(json));
-                                    window.location.reload();
-                                } catch (err) { alert("Invalid JSON"); }
-                            };
-                            reader.readAsText(file);
-                        };
-                        input.click();
-                    }}>📤 Import Layout</button>
-                </div>
-
-                <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
+                {/* Edit Panel */}
+                <div id="edit-panel" style={{ display: (isEditMode && !isTrainingMode) ? 'flex' : 'none' }}>
+                    {/* Prominent Lock Button at top */}
                     <button
+                        onClick={handleLock}
                         style={{
                             width: '100%',
-                            fontSize: '13px',
-                            background: 'linear-gradient(135deg, #FFD700, #FFA500)',
+                            padding: '12px',
+                            background: 'linear-gradient(135deg, #FF3B30, #FF6B6B)',
                             color: 'white',
                             border: 'none',
-                            fontWeight: '600'
+                            borderRadius: '12px',
+                            fontWeight: 'bold',
+                            fontSize: '1rem',
+                            marginBottom: '15px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px'
                         }}
-                        onClick={() => setShowFavoritesPicker(true)}
                     >
-                        ⭐ Add More Favorites
+                        🔒 Lock App for Child
                     </button>
-                </div>
 
-                <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <span style={{ fontWeight: 600, color: '#333' }}>Communication Level</span>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
-                        {phases.map(p => (
+                    {/* Tab Navigation */}
+                    <div style={{
+                        display: 'flex',
+                        gap: '8px',
+                        marginBottom: '15px',
+                        background: '#F2F2F7',
+                        padding: '4px',
+                        borderRadius: '10px'
+                    }}>
+                        {[
+                            { id: 'basic', label: '⚡ Basic', icon: '⚡' },
+                            { id: 'character', label: '✨ Character', icon: '✨' },
+                            { id: 'advanced', label: '⚙️ Advanced', icon: '⚙️' },
+                            { id: 'data', label: '📊 Data', icon: '📊' }
+                        ].map(tab => (
                             <button
-                                key={p.id}
-                                onClick={() => onSetPhase(p.id)}
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
                                 style={{
-                                    padding: '8px 4px',
-                                    fontSize: '12px',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    gap: '4px',
-                                    background: currentPhase === p.id ? 'var(--primary)' : '#E5E5EA',
-                                    color: currentPhase === p.id ? 'white' : 'black',
-                                    borderRadius: '10px'
+                                    flex: 1,
+                                    padding: '10px',
+                                    background: activeTab === tab.id ? 'white' : 'transparent',
+                                    color: activeTab === tab.id ? '#007AFF' : '#666',
+                                    border: 'none',
+                                    borderRadius: '8px',
+                                    fontWeight: activeTab === tab.id ? 'bold' : 'normal',
+                                    fontSize: '13px',
+                                    cursor: 'pointer',
+                                    boxShadow: activeTab === tab.id ? '0 2px 4px rgba(0,0,0,0.1)' : 'none',
+                                    transition: 'all 0.2s'
                                 }}
                             >
-                                <span style={{ fontSize: '18px' }}>{p.icon}</span>
-                                <span>{p.id === 0 ? "Off" : p.id}</span>
+                                {tab.label}
                             </button>
                         ))}
                     </div>
-                    <p style={{ fontSize: '12px', color: '#666', margin: 0 }}>
-                        {phases.find(p => p.id === currentPhase)?.label}
-                    </p>
-                </div>
 
-                {/* Context/Location Selector */}
-                <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontWeight: 600, color: '#333' }}>📍 Locations</span>
-                        <button
-                            onClick={() => {
-                                const label = prompt("Location Name (e.g. Playground)");
-                                if (label) {
-                                    onOpenPicker((w, icon) => {
-                                        onAddContext(label, icon);
-                                    }, true);
-                                }
-                            }}
-                            style={{ padding: '4px 10px', background: 'var(--primary)', color: 'white', borderRadius: '8px', fontSize: '12px' }}
-                        >
-                            + New
-                        </button>
-                    </div>
-                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                        {contexts && contexts.map(ctx => (
-                            <div key={ctx.id} style={{ position: 'relative' }}>
-                                <button
-                                    onClick={() => onSetContext(ctx.id)}
-                                    style={{
-                                        padding: '8px 12px',
+                    {/* Basic Tab */}
+                    {activeTab === 'basic' && (<>
+                        <div style={{ display: 'flex', gap: '10px', marginBottom: '5px' }}>
+                            <button className="primary" style={{ flex: 1 }} onClick={() => onAddItem('', '', 'button')}>+ Add Button</button>
+                            <button className="primary" style={{ flex: 1, background: '#34C759' }} onClick={() => onAddItem('', '', 'folder')}>+ Add Folder</button>
+                        </div>
+
+                        <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                            <span style={{ fontWeight: 600, color: '#333' }}>Communication Level</span>
+
+                            {/* Stage Selector */}
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                                {Object.entries(STAGES).map(([stageNum, stage]) => {
+                                    const stageInt = parseInt(stageNum);
+                                    const isActive = Math.floor(currentLevel) === stageInt;
+                                    return (
+                                        <button
+                                            key={stageNum}
+                                            onClick={() => {
+                                                // Find first level of this stage
+                                                const firstLevel = LEVEL_ORDER.find(l => Math.floor(l) === stageInt);
+                                                if (firstLevel && onSetLevel) onSetLevel(firstLevel);
+                                            }}
+                                            style={{
+                                                padding: '8px 4px',
+                                                fontSize: '12px',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'center',
+                                                gap: '4px',
+                                                background: isActive ? stage.color : '#E5E5EA',
+                                                color: isActive ? 'white' : 'black',
+                                                borderRadius: '10px',
+                                                border: 'none',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            <span style={{ fontSize: '18px' }}>{stage.icon}</span>
+                                            <span>{stageInt}</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Sub-level Selector for current stage */}
+                            {currentLevel && (
+                                <div style={{
+                                    background: getStage(currentLevel).color + '15',
+                                    padding: '12px',
+                                    borderRadius: '10px',
+                                    border: `2px solid ${getStage(currentLevel).color}40`
+                                }}>
+                                    <div style={{
                                         fontSize: '12px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '4px',
-                                        background: currentContext === ctx.id ? 'var(--primary)' : '#E5E5EA',
-                                        color: currentContext === ctx.id ? 'white' : 'black',
-                                        borderRadius: '10px',
+                                        fontWeight: 600,
+                                        color: getStage(currentLevel).color,
+                                        marginBottom: '8px'
+                                    }}>
+                                        {getStage(currentLevel).icon} Stage {Math.floor(currentLevel)}: {getStage(currentLevel).name}
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                                        {LEVEL_ORDER.filter(l => Math.floor(l) === Math.floor(currentLevel)).map(lvl => {
+                                            const levelDef = getLevel(lvl);
+                                            const isSelected = currentLevel === lvl;
+                                            return (
+                                                <button
+                                                    key={lvl}
+                                                    onClick={() => onSetLevel && onSetLevel(lvl)}
+                                                    style={{
+                                                        padding: '8px 12px',
+                                                        fontSize: '11px',
+                                                        background: isSelected ? getStage(currentLevel).color : 'white',
+                                                        color: isSelected ? 'white' : '#333',
+                                                        borderRadius: '8px',
+                                                        border: isSelected ? 'none' : '1px solid #ddd',
+                                                        cursor: 'pointer',
+                                                        fontWeight: isSelected ? 600 : 400
+                                                    }}
+                                                    title={levelDef.description}
+                                                >
+                                                    {lvl} {levelDef.name}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
+                            <p style={{ fontSize: '12px', color: '#666', margin: 0 }}>
+                                {getLevel(currentLevel)?.description}
+                            </p>
+
+                            {/* Quick swap for Level 1 */}
+                            {currentPhase === 1 && (
+                                <div style={{ marginTop: '10px', padding: '12px', background: 'linear-gradient(135deg, #FFF5E1, #FFE4B5)', borderRadius: '10px', border: '2px solid #FFA500' }}>
+                                    <label style={{ fontSize: '13px', fontWeight: 700, color: '#D2691E', display: 'block', marginBottom: '5px' }}>
+                                        🎯 Choose Target Icon
+                                    </label>
+                                    <p style={{ fontSize: '11px', color: '#666', margin: '0 0 10px 0', lineHeight: '1.4' }}>
+                                        Select which item your child will practice requesting. This icon will appear on the screen during Level 1 training.
+                                    </p>
+                                    <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '5px' }}>
+                                        {rootItems.filter(i => {
+                                            // Only show these 5 essential icons for Level 1
+                                            const allowedIds = ['snack-generic', 'play-generic', 'toy-generic', 'mom', 'dad'];
+                                            return i.type === 'button' && allowedIds.includes(i.id);
+                                        }).map(item => {
+                                            const allowedIds = ['snack-generic', 'play-generic', 'toy-generic', 'mom', 'dad'];
+                                            const firstAllowedItem = rootItems.find(i => i.type === 'button' && allowedIds.includes(i.id));
+                                            const isSelected = phase1TargetId === item.id || (!phase1TargetId && firstAllowedItem?.id === item.id);
+                                            return (
+                                                <button
+                                                    key={item.id}
+                                                    onClick={() => onSetPhase1Target(item.id)}
+                                                    style={{
+                                                        minWidth: '60px',
+                                                        height: '60px',
+                                                        padding: '8px',
+                                                        borderRadius: '12px',
+                                                        background: isSelected ? 'var(--primary)' : 'white',
+                                                        border: isSelected ? '3px solid #007AFF' : '2px solid #DDD',
+                                                        fontSize: '1.5rem',
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        transform: isSelected ? 'scale(1.05)' : 'scale(1)',
+                                                        transition: 'all 0.2s',
+                                                        boxShadow: isSelected ? '0 4px 8px rgba(0,122,255,0.3)' : '0 1px 3px rgba(0,0,0,0.1)'
+                                                    }}
+                                                    title={item.word}
+                                                >
+                                                    <span>{typeof item.icon === 'string' && (item.icon.startsWith('/') || item.icon.startsWith('data:') || item.icon.includes('.')) ? '🖼️' : item.icon}</span>
+                                                    <span style={{ fontSize: '9px', fontWeight: '600', color: isSelected ? 'white' : '#666', overflow: 'hidden', width: '100%', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '2px' }}>{item.word}</span>
+                                                    {isSelected && <span style={{ fontSize: '10px', color: 'white', marginTop: '2px' }}>✓</span>}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Context/Location Selector */}
+                        <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <span style={{ fontWeight: 600, color: '#333' }}>📍 Locations</span>
+                                <button
+                                    onClick={() => {
+                                        const label = prompt("Location Name (e.g. Playground)");
+                                        if (label) {
+                                            onOpenPicker((w, icon) => {
+                                                onAddContext(label, icon);
+                                            }, true);
+                                        }
+                                    }}
+                                    style={{
+                                        padding: '4px 10px',
+                                        background: contexts?.length >= 5 ? 'linear-gradient(135deg, #FFD700, #FFA500)' : 'var(--primary)',
+                                        color: 'white',
+                                        borderRadius: '8px',
+                                        fontSize: '12px',
                                         border: 'none',
                                         cursor: 'pointer'
                                     }}
                                 >
-                                    <span>{ctx.icon}</span>
-                                    <span>{ctx.label}</span>
+                                    {contexts?.length >= 5 ? '👑 + New' : '+ New'}
                                 </button>
-                                {isEditMode && (
-                                    <div
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            const newLabel = prompt("Rename location:", ctx.label);
-                                            if (newLabel) {
-                                                onRenameContext(ctx.id, newLabel, ctx.icon);
+                            </div>
+                            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                                {contexts && contexts.map(ctx => (
+                                    <div key={ctx.id} style={{ position: 'relative' }}>
+                                        <button
+                                            onClick={() => onSetContext(ctx.id)}
+                                            style={{
+                                                padding: '8px 12px',
+                                                fontSize: '12px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '4px',
+                                                background: currentContext === ctx.id ? 'var(--primary)' : '#E5E5EA',
+                                                color: currentContext === ctx.id ? 'white' : 'black',
+                                                borderRadius: '10px',
+                                                border: 'none',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            <span>{ctx.icon}</span>
+                                            <span>{ctx.label}</span>
+                                        </button>
+                                        {isEditMode && (
+                                            <div
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    const newLabel = prompt("Rename location:", ctx.label);
+                                                    if (newLabel) {
+                                                        onRenameContext(ctx.id, newLabel, ctx.icon);
+                                                    }
+                                                }}
+                                                style={{
+                                                    position: 'absolute', top: '-5px', right: '-5px',
+                                                    background: '#fff', borderRadius: '50%', width: '15px', height: '15px',
+                                                    fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)', border: '1px solid #ddd'
+                                                }}
+                                            >
+                                                ✎
+                                            </div>
+                                        )}
+                                        {isEditMode && contexts.length > 1 && (
+                                            <div
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    onDeleteContext(ctx.id);
+                                                }}
+                                                style={{
+                                                    position: 'absolute', bottom: '-5px', right: '-5px',
+                                                    background: '#fff', borderRadius: '50%', width: '15px', height: '15px',
+                                                    fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)', border: '1px solid #ddd', color: 'red'
+                                                }}
+                                            >
+                                                ×
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                            <p style={{ fontSize: '11px', color: '#888', margin: 0 }}>
+                                {contexts?.length >= 5
+                                    ? `📍 ${contexts?.length}/5 locations (Premium for unlimited)`
+                                    : `📍 ${contexts?.length || 0}/5 free locations`}
+                            </p>
+                        </div>
+
+                        {/* Grid Accessibility */}
+                        <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            <span style={{ fontWeight: 600, color: '#333' }}>📐 Grid Layout</span>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                                {[
+                                    { id: 'super-big', label: '🐘 2x2\nLarge', description: '4 items' },
+                                    { id: 'big', label: '🦒 3x3\nMedium', description: '9 items' },
+                                    { id: 'standard', label: '🐕 4x4\nStandard', description: '16 items' },
+                                ].map(size => (
+                                    <button
+                                        key={size.id}
+                                        onClick={() => onUpdateGridSize(size.id)}
+                                        style={{
+                                            padding: '12px 8px',
+                                            fontSize: '13px',
+                                            background: gridSize === size.id ? 'var(--primary)' : '#E5E5EA',
+                                            color: gridSize === size.id ? 'white' : 'black',
+                                            borderRadius: '10px',
+                                            border: 'none',
+                                            whiteSpace: 'pre-line',
+                                            lineHeight: '1.3'
+                                        }}
+                                    >
+                                        {size.label}
+                                    </button>
+                                ))}
+                            </div>
+                            {gridSize === 'super-big' && (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '5px' }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={localStorage.getItem('kiwi-force-strip') === 'true'}
+                                        onChange={(e) => {
+                                            localStorage.setItem('kiwi-force-strip', e.target.checked);
+                                            window.dispatchEvent(new Event('storage')); // Simple hack to force refresh
+                                            location.reload(); // Safer for this complexity
+                                        }}
+                                    />
+                                    <span style={{ fontSize: '11px', color: '#666' }}>Force sentence strip in Super Big mode</span>
+                                </div>
+                            )}
+                        </div>
+
+
+                        {/* Voice Settings */}
+                        <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                            <span style={{ fontWeight: 600, color: '#333' }}>🗣️ Voice Settings</span>
+
+                            <div>
+                                <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Speed: {voiceSettings.rate}x</label>
+                                <input
+                                    type="range" min="0.5" max="1.5" step="0.1"
+                                    value={voiceSettings.rate}
+                                    onChange={(e) => onUpdateVoiceSettings({ ...voiceSettings, rate: parseFloat(e.target.value) })}
+                                    style={{ width: '100%' }}
+                                />
+                            </div>
+                        </div>
+
+                        {currentPhase === 5 && (
+                            <div className="input-row">
+                                <button className="primary" style={{ flexGrow: 1, background: '#FF9500' }} onClick={() => {
+                                    const synth = window.speechSynthesis;
+                                    const u = new SpeechSynthesisUtterance("What do you want?");
+                                    u.rate = 0.8;
+                                    synth.speak(u);
+                                }}>
+                                    🗣️ Play Question Prompt
+                                </button>
+                            </div>
+                        )}
+                    </>)}
+
+                    {/* Character Tab */}
+                    {activeTab === 'character' && (
+                        <div style={{ background: 'white', padding: '15px', borderRadius: '12px' }}>
+                            <CharacterBuilder
+                                isTab={true}
+                                triggerPaywall={triggerPaywall}
+                                onSelect={(url, config) => {
+                                    onAddItem(config.name || 'Me', url, 'button');
+                                    alert(`${config.name || 'Character'} added to your library! You can find it in the Home screen.`);
+                                    setActiveTab('basic');
+                                }}
+                            />
+                        </div>
+                    )}
+
+                    {/* Advanced Tab */}
+                    {activeTab === 'advanced' && (<>
+                        <div className="input-row">
+                            <button
+                                style={{ flexGrow: 1, background: '#E5E5EA', color: '#007AFF' }}
+                                onClick={() => {
+                                    onToggleMenu(); // Close settings
+                                    onRedoCalibration();
+                                }}
+                            >
+                                👆 Redo Touch Calibration
+                            </button>
+                        </div>
+
+                        {/* Color Theme Selector - Premium Feature */}
+                        <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '10px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <span style={{ fontWeight: 600, color: '#333' }}>🎨 Color Theme</span>
+                                <span style={{ fontSize: '11px', color: '#999' }}>👑 Premium</span>
+                            </div>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                                {COLOR_THEMES.map(theme => (
+                                    <button
+                                        key={theme.id}
+                                        onClick={async () => {
+                                            if (theme.premium && colorTheme !== theme.id) {
+                                                try {
+                                                    const result = await Superwall.register({ event: 'colorThemes' });
+                                                    if (result.result === 'userIsSubscribed' || result.result === 'noRuleMatch') {
+                                                        onSetColorTheme(theme.id);
+                                                    }
+                                                } catch (error) {
+                                                    console.error('Paywall error:', error);
+                                                    onSetColorTheme(theme.id);
+                                                }
+                                            } else {
+                                                onSetColorTheme(theme.id);
                                             }
                                         }}
                                         style={{
-                                            position: 'absolute', top: '-5px', right: '-5px',
-                                            background: '#fff', borderRadius: '50%', width: '15px', height: '15px',
-                                            fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            boxShadow: '0 1px 3px rgba(0,0,0,0.2)', border: '1px solid #ddd'
+                                            padding: '10px 8px',
+                                            borderRadius: '12px',
+                                            border: colorTheme === theme.id ? '3px solid #007AFF' : '2px solid rgba(0,0,0,0.1)',
+                                            background: `linear-gradient(135deg, ${theme.bg} 60%, ${theme.primary}40 100%)`,
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            gap: '4px',
+                                            cursor: 'pointer',
+                                            position: 'relative',
+                                            transform: colorTheme === theme.id ? 'scale(1.02)' : 'scale(1)',
+                                            transition: 'all 0.2s',
+                                            boxShadow: colorTheme === theme.id ? '0 4px 12px rgba(0,122,255,0.25)' : 'none'
                                         }}
                                     >
-                                        ✎
-                                    </div>
-                                )}
-                                {isEditMode && contexts.length > 1 && (
-                                    <div
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            onDeleteContext(ctx.id);
-                                        }}
-                                        style={{
-                                            position: 'absolute', bottom: '-5px', right: '-5px',
-                                            background: '#fff', borderRadius: '50%', width: '15px', height: '15px',
-                                            fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            boxShadow: '0 1px 3px rgba(0,0,0,0.2)', border: '1px solid #ddd', color: 'red'
-                                        }}
-                                    >
-                                        ×
-                                    </div>
-                                )}
+                                        <span style={{ fontSize: '1.5rem' }}>{theme.icon}</span>
+                                        <span style={{ fontSize: '11px', fontWeight: 600, color: '#333' }}>{theme.label}</span>
+                                        {theme.premium && colorTheme !== theme.id && (
+                                            <span style={{
+                                                position: 'absolute',
+                                                top: '-6px',
+                                                right: '-6px',
+                                                fontSize: '12px'
+                                            }}>👑</span>
+                                        )}
+                                        {colorTheme === theme.id && (
+                                            <span style={{
+                                                position: 'absolute',
+                                                top: '-6px',
+                                                right: '-6px',
+                                                background: '#007AFF',
+                                                color: 'white',
+                                                borderRadius: '50%',
+                                                width: '18px',
+                                                height: '18px',
+                                                fontSize: '10px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center'
+                                            }}>✓</span>
+                                        )}
+                                    </button>
+                                ))}
                             </div>
-                        ))}
-                    </div>
-                    <p style={{ fontSize: '11px', color: '#888', margin: 0 }}>
-                        {isEditMode ? "Tap ✎ to rename or × to delete" : "Each location has its own set of icons"}
-                    </p>
-                </div>
+                        </div>
 
-                {/* Grid Accessibility */}
-                <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <span style={{ fontWeight: 600, color: '#333' }}>📐 Grid Layout</span>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
-                        {[
-                            { id: 'auto', label: '📱 Auto' },
-                            { id: 'super-big', label: '🐘 Super Big' },
-                            { id: 'big', label: '🦒 Big' },
-                            { id: 'standard', label: '🐕 Standard' },
-                            { id: 'dense', label: '🐜 Dense' },
-                        ].map(size => (
+                        {/* Advanced Settings Collapsible */}
+                        <div style={{ marginTop: '10px' }}>
                             <button
-                                key={size.id}
-                                onClick={() => onUpdateGridSize(size.id)}
+                                onClick={() => setShowAdvanced(!showAdvanced)}
                                 style={{
+                                    width: '100%',
                                     padding: '10px',
+                                    background: '#F2F2F7',
+                                    border: 'none',
+                                    borderRadius: '8px',
                                     fontSize: '13px',
-                                    background: gridSize === size.id ? 'var(--primary)' : '#E5E5EA',
-                                    color: gridSize === size.id ? 'white' : 'black',
-                                    borderRadius: '10px',
-                                    border: 'none'
+                                    color: '#666',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center'
                                 }}
                             >
-                                {size.label}
+                                <span>📂 Export/Import Data</span>
+                                <span>{showAdvanced ? '▼' : '▶'}</span>
                             </button>
-                        ))}
-                    </div>
-                    {gridSize === 'super-big' && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '5px' }}>
-                            <input
-                                type="checkbox"
-                                checked={localStorage.getItem('kiwi-force-strip') === 'true'}
-                                onChange={(e) => {
-                                    localStorage.setItem('kiwi-force-strip', e.target.checked);
-                                    window.dispatchEvent(new Event('storage')); // Simple hack to force refresh
-                                    location.reload(); // Safer for this complexity
-                                }}
-                            />
-                            <span style={{ fontSize: '11px', color: '#666' }}>Force sentence strip in Super Big mode</span>
+
+                            {showAdvanced && (
+                                <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                                    <button style={{ flex: 1, fontSize: '13px' }} onClick={() => {
+                                        const data = localStorage.getItem('kians-words-ios');
+                                        const blob = new Blob([data], { type: 'application/json' });
+                                        const url = URL.createObjectURL(blob);
+                                        const a = document.createElement('a');
+                                        a.href = url;
+                                        a.download = 'kiwi-layout.json';
+                                        a.click();
+                                    }}>📂 Export Layout</button>
+                                    <button style={{ flex: 1, fontSize: '13px' }} onClick={() => {
+                                        const input = document.createElement('input');
+                                        input.type = 'file';
+                                        input.accept = '.json';
+                                        input.onchange = (e) => {
+                                            const file = e.target.files[0];
+                                            const reader = new FileReader();
+                                            reader.onload = (re) => {
+                                                try {
+                                                    const json = JSON.parse(re.target.result);
+                                                    localStorage.setItem('kians-words-ios', JSON.stringify(json));
+                                                    window.location.reload();
+                                                } catch (err) { alert("Invalid JSON"); }
+                                            };
+                                            reader.readAsText(file);
+                                        };
+                                        input.click();
+                                    }}>📤 Import Layout</button>
+                                </div>
+                            )}
                         </div>
-                    )}
-                </div>
 
-                {/* Trial Type Selector */}
-                <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <span style={{ fontWeight: 600, color: '#333' }}>Next Trial Mode</span>
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                        <button
-                            onClick={() => onSetPrompted(false)}
-                            style={{
-                                flex: 1,
-                                padding: '10px',
-                                borderRadius: '10px',
-                                background: !isPrompted ? 'var(--primary)' : '#E5E5EA',
-                                color: !isPrompted ? 'white' : 'black',
-                                border: 'none',
-                                fontWeight: !isPrompted ? 'bold' : 'normal'
-                            }}
-                        >
-                            Independent
-                        </button>
-                        <button
-                            onClick={() => onSetPrompted(true)}
-                            style={{
-                                flex: 1,
-                                padding: '10px',
-                                borderRadius: '10px',
-                                background: isPrompted ? '#FF9500' : '#E5E5EA',
-                                color: isPrompted ? 'white' : 'black',
-                                border: 'none',
-                                fontWeight: isPrompted ? 'bold' : 'normal'
-                            }}
-                        >
-                            Prompted
-                        </button>
-                    </div>
-                </div>
+                        {isIOS && (
+                            <div className="input-row">
+                                <button
+                                    style={{ flexGrow: 1, background: '#E5E5EA', color: '#007AFF', fontSize: '0.9rem' }}
+                                    onClick={() => setShowGuidedAccess(true)}
+                                >
+                                    📱 How to Lock Screen (iOS)
+                                </button>
+                            </div>
+                        )}
 
-                {/* Skin Tone Selector */}
-                <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <span style={{ fontWeight: 600, color: '#333' }}>Skin Tone</span>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: '5px' }}>
-                        {[
-                            { id: 'default', color: '#FFD700', label: 'Default' }, // Gold for standard emoji
-                            { id: 'light', color: '#F7DECE', label: 'Light' },
-                            { id: 'mediumLight', color: '#E0C8A9', label: 'Medium-Light' },
-                            { id: 'medium', color: '#C29770', label: 'Medium' },
-                            { id: 'mediumDark', color: '#976C43', label: 'Medium-Dark' },
-                            { id: 'dark', color: '#5C3E2F', label: 'Dark' },
-                        ].map(tone => (
+                        <div className="input-row">
+                            <button className="danger" style={{ flexGrow: 1 }} onClick={onReset}>
+                                Reset All
+                            </button>
+                        </div>
+                    </>)}
+
+                    {/* Data Tab */}
+                    {activeTab === 'data' && (<>
+                        <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
                             <button
-                                key={tone.id}
-                                onClick={() => onSetSkinTone(tone.id)}
                                 style={{
-                                    width: '32px',
-                                    height: '32px',
-                                    borderRadius: '50%',
-                                    border: skinTone === tone.id ? '3px solid #007AFF' : '1px solid rgba(0,0,0,0.1)',
-                                    background: tone.color,
-                                    padding: 0,
-                                    margin: 0,
-                                    cursor: 'pointer'
+                                    width: '100%',
+                                    fontSize: '13px',
+                                    background: 'linear-gradient(135deg, #FFD700, #FFA500)',
+                                    color: 'white',
+                                    border: 'none',
+                                    fontWeight: '600',
+                                    padding: '12px',
+                                    borderRadius: '12px'
                                 }}
-                                title={tone.label}
-                                aria-label={tone.label}
-                            />
-                        ))}
-                    </div>
-                </div>
-
-                {/* Voice Settings */}
-                <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <span style={{ fontWeight: 600, color: '#333' }}>🗣️ Voice Settings</span>
-
-                    <div>
-                        <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Voice</label>
-                        <select
-                            value={voiceSettings.voiceURI || ''}
-                            onChange={(e) => onUpdateVoiceSettings({ ...voiceSettings, voiceURI: e.target.value })}
-                            style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '14px' }}
-                        >
-                            <option value="">Default System Voice</option>
-                            {availableVoices.map(v => (
-                                <option key={v.voiceURI} value={v.voiceURI}>{v.name}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div style={{ display: 'flex', gap: '15px' }}>
-                        <div style={{ flex: 1 }}>
-                            <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Speed: {voiceSettings.rate}x</label>
-                            <input
-                                type="range" min="0.5" max="1.5" step="0.1"
-                                value={voiceSettings.rate}
-                                onChange={(e) => onUpdateVoiceSettings({ ...voiceSettings, rate: parseFloat(e.target.value) })}
-                                style={{ width: '100%' }}
-                            />
+                                onClick={() => setShowFavoritesPicker(true)}
+                            >
+                                ⭐ Add More Favorites
+                            </button>
                         </div>
-                        <div style={{ flex: 1 }}>
-                            <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>Pitch: {voiceSettings.pitch}</label>
-                            <input
-                                type="range" min="0.5" max="1.5" step="0.1"
-                                value={voiceSettings.pitch}
-                                onChange={(e) => onUpdateVoiceSettings({ ...voiceSettings, pitch: parseFloat(e.target.value) })}
-                                style={{ width: '100%' }}
-                            />
+
+                        <div className="input-row" style={{ marginTop: '10px' }}>
+                            <button className="primary" style={{ flexGrow: 1, background: '#007AFF' }} onClick={onToggleDashboard}>
+                                📊 View Progress Dashboard
+                            </button>
                         </div>
-                    </div>
+                        <div className="input-row">
+                            <button className="primary" style={{ flexGrow: 1, background: '#5856D6' }} onClick={onStartTraining}>
+                                🧠 Training Mode
+                            </button>
+                        </div>
+                        <div className="input-row">
+                            <button style={{ flexGrow: 1, background: '#34C759', color: 'white' }} onClick={onToggleLock}>
+                                🔒 Enable Child Mode
+                            </button>
+                        </div>
+                    </>)}
 
-                    <button
-                        onClick={() => {
-                            const synth = window.speechSynthesis;
-                            if (synth.speaking) synth.cancel();
-                            const u = new SpeechSynthesisUtterance("Hello, I am your new voice.");
-                            u.rate = voiceSettings.rate;
-                            u.pitch = voiceSettings.pitch;
-                            if (voiceSettings.voiceURI) {
-                                const v = synth.getVoices().find(v => v.voiceURI === voiceSettings.voiceURI);
-                                if (v) u.voice = v;
-                            }
-                            synth.speak(u);
-                        }}
-                        style={{ padding: '8px', background: '#f0f0f0', borderRadius: '8px', border: 'none', fontSize: '12px', cursor: 'pointer' }}
-                    >
-                        ▶️ Preview Voice
-                    </button>
-                </div>
+                    {/* Compliance Section */}
+                    <div style={{
+                        marginTop: '20px',
+                        padding: '15px',
+                        background: '#f8f8f8',
+                        borderRadius: '12px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '10px'
+                    }}>
+                        <span style={{ fontWeight: 600, color: '#666', fontSize: '12px', textTransform: 'uppercase' }}>Subscription & Legal</span>
 
-                {currentPhase === 5 && (
-                    <div className="input-row">
-                        <button className="primary" style={{ flexGrow: 1, background: '#FF9500' }} onClick={() => {
-                            const synth = window.speechSynthesis;
-                            const u = new SpeechSynthesisUtterance("What do you want?");
-                            u.rate = 0.8;
-                            synth.speak(u);
-                        }}>
-                            🗣️ Play Question Prompt
-                        </button>
-                    </div>
-                )}
-
-                <div className="input-row" style={{ marginTop: '5px' }}>
-                    <button className="primary" style={{ flexGrow: 1, background: '#007AFF' }} onClick={onToggleDashboard}>
-                        📊 View Progress Dashboard
-                    </button>
-                </div>
-                <div className="input-row">
-                    <button className="primary" style={{ flexGrow: 1, background: '#5856D6' }} onClick={onStartTraining}>
-                        🧠 Training Mode
-                    </button>
-                </div>
-                <div className="input-row">
-                    <button style={{ flexGrow: 1, background: '#34C759', color: 'white' }} onClick={onToggleLock}>
-                        🔒 Enable Child Mode
-                    </button>
-                </div>
-                
-                {isIOS && (
-                    <div className="input-row">
-                        <button 
-                            style={{ flexGrow: 1, background: '#E5E5EA', color: '#007AFF', fontSize: '0.9rem' }} 
-                            onClick={() => setShowGuidedAccess(true)}
+                        <button
+                            onClick={handleRestore}
+                            disabled={isRestoring}
+                            style={{
+                                width: '100%',
+                                padding: '10px',
+                                background: 'white',
+                                border: '1px solid #ddd',
+                                borderRadius: '8px',
+                                fontSize: '13px',
+                                fontWeight: '600'
+                            }}
                         >
-                            📱 How to Lock Screen (iOS)
+                            {isRestoring ? 'Restoring...' : 'Restore Purchases'}
                         </button>
+
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '5px' }}>
+                            <a href="/privacy.html" target="_blank" style={{ fontSize: '12px', color: '#007AFF', textDecoration: 'none' }}>Privacy Policy</a>
+                            <a href="/terms.html" target="_blank" style={{ fontSize: '12px', color: '#007AFF', textDecoration: 'none' }}>Terms of Use</a>
+                        </div>
+
+                        <p style={{ fontSize: '10px', color: '#999', textAlign: 'center', margin: 0 }}>
+                            © 2024 Behavior School LLC. All rights reserved.
+                        </p>
                     </div>
-                )}
 
-                <div className="input-row">
-                    <button className="danger" style={{ flexGrow: 1 }} onClick={onReset}>
-                        Reset All
-                    </button>
-                </div>
-                <div className="input-row">
-                    <button
-                        style={{ flexGrow: 1, background: '#5856D6', color: 'white', fontSize: '0.85rem' }}
-                        onClick={() => {
-                            document.body.classList.toggle('screenshot-mode');
-                        }}
-                    >
-                        📸 Toggle Screenshot Mode
-                    </button>
-                </div>
-                <div className="input-row">
-                    <button
-                        style={{ flexGrow: 1, background: '#FF9500', color: 'white', fontSize: '0.85rem' }}
-                        onClick={() => {
-                            if (confirm("This will clear everything and restart from onboarding. Continue?")) {
-                                localStorage.clear();
-                                location.reload();
-                            }
-                        }}
-                    >
-                        🧪 Restart Onboarding (Testing)
-                    </button>
                 </div>
 
-                {/* Compliance Section */}
-                <div style={{ 
-                    marginTop: '20px', 
-                    padding: '15px', 
-                    background: '#f8f8f8', 
-                    borderRadius: '12px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '10px'
-                }}>
-                    <span style={{ fontWeight: 600, color: '#666', fontSize: '12px', textTransform: 'uppercase' }}>Subscription & Legal</span>
-                    
-                    <button 
-                        onClick={handleRestore}
-                        disabled={isRestoring}
-                        style={{ 
-                            width: '100%', 
-                            padding: '10px', 
-                            background: 'white', 
-                            border: '1px solid #ddd', 
-                            borderRadius: '8px', 
-                            fontSize: '13px',
-                            fontWeight: '600'
-                        }}
-                    >
-                        {isRestoring ? 'Restoring...' : 'Restore Purchases'}
-                    </button>
-
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '5px' }}>
-                        <a href="/privacy.html" target="_blank" style={{ fontSize: '12px', color: '#007AFF', textDecoration: 'none' }}>Privacy Policy</a>
-                        <a href="/terms.html" target="_blank" style={{ fontSize: '12px', color: '#007AFF', textDecoration: 'none' }}>Terms of Use</a>
+                {/* Training Panel */}
+                <div id="training-panel" style={{ display: isTrainingMode ? 'flex' : 'none' }}>
+                    <h3 style={{ margin: 0, textAlign: 'center' }}>Select 2+ items</h3>
+                    <div className="input-row">
+                        <button className="primary" onClick={onShuffle}>🔀 Shuffle</button>
+                        <button onClick={onStopTraining}>Done</button>
                     </div>
-                    
-                    <p style={{ fontSize: '10px', color: '#999', textAlign: 'center', margin: 0 }}>
-                        © 2024 Behavior School LLC. All rights reserved.
-                    </p>
                 </div>
 
-            </div>
-
-            {/* Training Panel */}
-            <div id="training-panel" style={{ display: isTrainingMode ? 'flex' : 'none' }}>
-                <h3 style={{ margin: 0, textAlign: 'center' }}>Select 2+ items</h3>
-                <div className="input-row">
-                    <button className="primary" onClick={onShuffle}>🔀 Shuffle</button>
-                    <button onClick={onStopTraining}>Done</button>
-                </div>
             </div>
 
             {showGuidedAccess && (

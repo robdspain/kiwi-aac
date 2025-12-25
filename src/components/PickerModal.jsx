@@ -58,8 +58,8 @@ const PickerModal = ({ isOpen, onClose, onSelect }) => {
                     downloadLocation: p.links.download_location,
                     // Unsplash compliance: photographer attribution
                     photographerName: p.user.name,
-                    photographerLink: `${p.user.links.html}?utm_source=kiwi_aac&utm_medium=referral`,
-                    unsplashLink: `${p.links.html}?utm_source=kiwi_aac&utm_medium=referral`
+                    photographerLink: `${p.user.links.html}?utm_source=kiwi_talk&utm_medium=referral`,
+                    unsplashLink: `${p.links.html}?utm_source=kiwi_talk&utm_medium=referral`
                 })));
             } else {
                 // Fallback: use picsum.photos
@@ -312,7 +312,7 @@ const PickerModal = ({ isOpen, onClose, onSelect }) => {
                                 ))}
                                 {/* Unsplash compliance: attribution link */}
                                 <div style={{ gridColumn: '1/-1', textAlign: 'center', fontSize: '0.7rem', color: '#888', marginTop: '10px' }}>
-                                    Photos from <a href="https://unsplash.com?utm_source=kiwi_aac&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+                                    Photos from <a href="https://unsplash.com?utm_source=kiwi_talk&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
                                 </div>
                             </>
                         ) : (
