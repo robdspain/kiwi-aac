@@ -545,7 +545,7 @@ const Controls = ({
 
                     {/* Character Tab */}
                     {activeTab === 'character' && (
-                        <div style={{ background: 'white', padding: '15px', borderRadius: '12px' }}>
+                        <div style={{ padding: '5px' }}>
                             <CharacterBuilder
                                 isTab={true}
                                 triggerPaywall={triggerPaywall}

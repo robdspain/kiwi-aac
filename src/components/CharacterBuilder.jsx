@@ -156,13 +156,10 @@ const CharacterBuilder = ({ initialConfig, onSelect, onClose, isTab = false, tri
             borderRadius: isTab ? '0' : '24px',
             padding: isTab ? '0' : '20px',
             width: '100%',
-            maxWidth: isTab ? 'none' : '500px',
-            maxHeight: isTab ? 'none' : '90vh',
             display: 'flex',
             flexDirection: 'column',
             gap: '15px',
-            boxShadow: isTab ? 'none' : '0 20px 60px rgba(0,0,0,0.3)',
-            minHeight: '400px' // Ensure it's visible
+            boxShadow: isTab ? 'none' : '0 20px 60px rgba(0,0,0,0.3)'
         }}>
             {/* Header */}
             {!isTab && (

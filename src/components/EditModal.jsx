@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { translateWord } from '../utils/translate';
 import VoiceRecorder from './VoiceRecorder';
 import CharacterBuilder from './CharacterBuilder';
 
@@ -10,7 +9,6 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
     const [viewMode, setViewMode] = useState('grid');
     const [customAudio, setCustomAudio] = useState(null);
     const [isImage, setIsImage] = useState(false);
-    const [isTranslating, setIsTranslating] = useState(false);
     const [showCharacterBuilder, setShowCharacterBuilder] = useState(false);
     const [characterConfig, setCharacterConfig] = useState(null);
     const fileInputRef = useRef(null);
@@ -68,24 +66,6 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
             };
             reader.readAsDataURL(file);
         }
-    };
-
-    const handleTranslate = async () => {
-        if (!word.trim()) return;
-        setIsTranslating(true);
-        try {
-            const translated = await translateWord(word);
-            setWord(translated);
-        } catch (error) {
-            console.error('Translation failed:', error);
-        } finally {
-            setIsTranslating(false);
-        }
-    };
-
-    const handleSave = () => {
-        onSave(word, icon, bgColor, viewMode, customAudio, characterConfig);
-        onClose();
     };
 
     const handleDelete = () => {
@@ -177,30 +157,12 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
 
                 <div>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Label</label>
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                        <input
-                            type="text"
-                            value={word}
-                            onChange={(e) => setWord(e.target.value)}
-                            style={{ flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid #ccc', boxSizing: 'border-box', fontSize: '1.2rem' }}
-                        />
-                        <button
-                            onClick={handleTranslate}
-                            disabled={isTranslating || !word.trim()}
-                            style={{
-                                padding: '10px',
-                                background: '#E5E5EA',
-                                border: 'none',
-                                borderRadius: '10px',
-                                cursor: (isTranslating || !word.trim()) ? 'default' : 'pointer',
-                                fontSize: '0.9rem',
-                                opacity: (isTranslating || !word.trim()) ? 0.6 : 1,
-                                whiteSpace: 'nowrap'
-                            }}
-                        >
-                            {isTranslating ? '...' : '🇺🇸➡️🇪🇸'}
-                        </button>
-                    </div>
+                    <input
+                        type="text"
+                        value={word}
+                        onChange={(e) => setWord(e.target.value)}
+                        style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #ccc', boxSizing: 'border-box', fontSize: '1.2rem' }}
+                    />
                 </div>
 
                 <div>
