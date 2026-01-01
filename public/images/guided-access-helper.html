@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Guided Access Instructions</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: white;
+        }
+        svg {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <svg width="1200" height="1200" viewBox="0 0 1200 1200" xmlns="http://www.w3.org/2000/svg">
+        <!-- Background -->
+        <rect width="1200" height="1200" fill="#F8F9FA"/>
+
+        <!-- iPad illustration -->
+        <g transform="translate(300, 150)">
+            <!-- iPad body -->
+            <rect x="0" y="0" width="600" height="800" rx="40" fill="#F5E6D3" stroke="#8B4513" stroke-width="8"/>
+
+            <!-- iPad screen -->
+            <rect x="30" y="30" width="540" height="740" rx="20" fill="#E8F5E9"/>
+
+            <!-- Colorful gradient background on screen -->
+            <defs>
+                <linearGradient id="screenGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#FFE5E5;stop-opacity:1" />
+                    <stop offset="25%" style="stop-color:#E5D4FF;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#D4F1FF;stop-opacity:1" />
+                    <stop offset="75%" style="stop-color:#D4FFE5;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#FFFFD4;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <rect x="30" y="30" width="540" height="740" rx="20" fill="url(#screenGradient)"/>
+
+            <!-- Home button (older iPad) -->
+            <circle cx="300" cy="760" r="25" fill="#D0D0D0" stroke="#8B4513" stroke-width="4"/>
+
+            <!-- Side button indicator -->
+            <rect x="605" y="120" width="15" height="120" rx="7" fill="#D0D0D0" stroke="#8B4513" stroke-width="4"/>
+        </g>
+
+        <!-- Triple-click indicator on side button -->
+        <g transform="translate(920, 270)">
+            <!-- Click burst 1 -->
+            <circle cx="0" cy="0" r="35" fill="#4ECDC4" opacity="0.4"/>
+            <text x="0" y="10" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="white" text-anchor="middle">1</text>
+
+            <!-- Click burst 2 -->
+            <circle cx="0" cy="80" r="35" fill="#4ECDC4" opacity="0.6"/>
+            <text x="0" y="90" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="white" text-anchor="middle">2</text>
+
+            <!-- Click burst 3 -->
+            <circle cx="0" cy="160" r="35" fill="#4ECDC4" opacity="0.8"/>
+            <text x="0" y="170" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="white" text-anchor="middle">3</text>
+        </g>
+
+        <!-- Hand pointing to side button -->
+        <g transform="translate(750, 300)">
+            <!-- Finger -->
+            <ellipse cx="0" cy="0" rx="25" ry="35" fill="#FFD4A3" stroke="#8B4513" stroke-width="3"/>
+            <!-- Hand -->
+            <path d="M -20,20 Q -40,50 -30,80 L -10,85 L 10,80 Q 0,50 -5,30 Z" fill="#FFD4A3" stroke="#8B4513" stroke-width="3"/>
+            <!-- Thumb -->
+            <ellipse cx="-15" cy="60" rx="15" ry="25" fill="#FFD4A3" stroke="#8B4513" stroke-width="3" transform="rotate(-30 -15 60)"/>
+        </g>
+
+        <!-- Guided Access modal on screen -->
+        <g transform="translate(380, 300)">
+            <!-- Modal background -->
+            <rect x="0" y="0" width="440" height="400" rx="20" fill="white" stroke="#4ECDC4" stroke-width="6" opacity="0.95"/>
+
+            <!-- Lock icon -->
+            <g transform="translate(220, 60)">
+                <rect x="-30" y="10" width="60" height="50" rx="8" fill="#5856D6"/>
+                <circle cx="0" cy="-10" r="25" fill="none" stroke="#5856D6" stroke-width="8"/>
+                <circle cx="0" cy="30" r="8" fill="#FFD700"/>
+            </g>
+
+            <!-- Title -->
+            <text x="220" y="140" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="28" font-weight="bold" fill="#2C3E50" text-anchor="middle">Guided Access</text>
+
+            <!-- Options text -->
+            <text x="220" y="190" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="20" fill="#5A6C7D" text-anchor="middle">✓ Lock to This App</text>
+            <text x="220" y="230" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="20" fill="#5A6C7D" text-anchor="middle">✓ Disable Touch Areas</text>
+            <text x="220" y="270" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="20" fill="#5A6C7D" text-anchor="middle">✓ Prevent Exits</text>
+
+            <!-- Start button -->
+            <rect x="120" y="310" width="200" height="60" rx="30" fill="#4ECDC4"/>
+            <text x="220" y="350" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="24" font-weight="bold" fill="white" text-anchor="middle">Start</text>
+        </g>
+
+        <!-- Instruction text at bottom -->
+        <g transform="translate(600, 1000)">
+            <text x="0" y="0" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="36" font-weight="bold" fill="#2C3E50" text-anchor="middle">Triple-Click Side Button</text>
+            <text x="0" y="50" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="28" fill="#5A6C7D" text-anchor="middle">to Enable Guided Access</text>
+            <text x="0" y="100" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="24" fill="#5A6C7D" text-anchor="middle">(Settings → Accessibility → Guided Access)</text>
+        </g>
+
+        <!-- Cute decorative elements -->
+        <!-- Star 1 -->
+        <g transform="translate(200, 200)">
+            <path d="M 0,-20 L 5,-5 L 20,0 L 5,5 L 0,20 L -5,5 L -20,0 L -5,-5 Z" fill="#FFD700" opacity="0.6"/>
+        </g>
+
+        <!-- Star 2 -->
+        <g transform="translate(1000, 900)">
+            <path d="M 0,-15 L 4,-4 L 15,0 L 4,4 L 0,15 L -4,4 L -15,0 L -4,-4 Z" fill="#4ECDC4" opacity="0.6"/>
+        </g>
+
+        <!-- Heart -->
+        <g transform="translate(150, 950)">
+            <path d="M 0,-10 C -20,-25 -40,-15 -40,5 C -40,20 -20,35 0,45 C 20,35 40,20 40,5 C 40,-15 20,-25 0,-10 Z" fill="#FF6B6B" opacity="0.4"/>
+        </g>
+    </svg>
+</body>
+</html>
