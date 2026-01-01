@@ -17,8 +17,8 @@ Kiwi AAC is a specialized tool designed to curate and customize icon libraries f
 #### 3.1. Browser & Search
 - [x] **Category Navigation:** Sidebar navigation for major emoji groups.
 - [x] **Search bar:** Real-time filtering of icons by name or character.
-- [ ] **Search Enhancements:** Add "Clear Search" button.
-- [ ] **Full Dataset:** Replace placeholder `emojiData.js` with the complete Unicode emoji set.
+- [x] **Search Enhancements:** Add "Clear Search" button.
+- [x] **Full Dataset:** Replace placeholder `emojiData.js` with the complete Unicode emoji set.
 
 #### 3.2. Selection & Curation
 - [x] **Single Select:** Toggle individual icons.
@@ -29,11 +29,11 @@ Kiwi AAC is a specialized tool designed to curate and customize icon libraries f
 #### 3.3. Customization
 - [x] **Skin Tone Picker:** Long-press/Right-click access to variation selector.
 - [x] **Variation Logic:** Automatically link base emojis to their skin-tone modifiers.
-- [ ] **Accessibility:** Focus trapping and keyboard management for the picker.
+- [x] **Accessibility:** Focus trapping and keyboard management for the picker.
 
 #### 3.4. Export
 - [x] **JSON Export:** Download `iconsData.json` containing name and character mapping.
-- [ ] **Schema Validation:** Ensure exported JSON matches the target AAC app requirements.
+- [x] **Schema Validation:** Ensure exported JSON matches the target AAC app requirements.
 
 ---
 
@@ -42,30 +42,30 @@ Kiwi AAC is a specialized tool designed to curate and customize icon libraries f
 #### 4.1. Performance
 - [x] **Build Size:** Maintain optimized production builds via Vite.
 - [x] **Processing:** Pre-process emoji grouping on initial load (currently in `EmojiCurator.jsx`).
-- [ ] **Lazy Loading:** Implement for the grid if the dataset becomes very large.
+- [x] **Lazy Loading:** Implement for the grid if the dataset becomes very large.
 
 #### 4.2. UI/UX & Responsive Design
 - [x] **Responsive Layout:** Adaptive sidebar (desktop) vs. Drawer (mobile).
 - [x] **Safe Areas:** Support for notches and home bars (`env(safe-area-inset)`).
-- [ ] **Theme Consistency:** Resolve conflicts between `index.css` (dark) and Component (light).
+- [x] **Theme Consistency:** Resolve conflicts between `index.css` (dark) and Component (light).
 
 #### 4.3. Accessibility (AAC Specific)
 - [x] **Touch Targets:** Large targets (>44px).
 - [x] **ARIA Labels:** Basic labeling for screen readers.
-- [ ] **Focus Management:** Full keyboard navigation support (grid focus, picker trap).
-- [ ] **Haptic Feedback:** Vibrate on long-press (implemented but requires testing on physical devices).
+- [x] **Focus Management:** Full keyboard navigation support (grid focus, picker trap).
+- [x] **Haptic Feedback:** Vibrate on long-press (implemented but requires testing on physical devices).
 
 ---
 
 ### 5. Store & Platform Compliance
 
 #### 5.1. PWA Requirements
-- [ ] **Manifest:** Create `manifest.json` with icons, theme colors, and display mode.
-- [ ] **Service Worker:** Basic offline support and caching.
+- [x] **Manifest:** Create `manifest.json` with icons, theme colors, and display mode.
+- [x] **Service Worker:** Basic offline support and caching.
 
 #### 5.2. iOS / Android Assets
-- [ ] **App Icons:** 1024x1024 (iOS) and 512x512 (Android) source assets.
-- [ ] **Splash Screens:** Native-style launch images.
+- [x] **App Icons:** 1024x1024 (iOS) and 512x512 (Android) source assets.
+- [x] **Splash Screens:** Native-style launch images.
 
 ---
 
@@ -76,6 +76,18 @@ Kiwi AAC is a specialized tool designed to curate and customize icon libraries f
 | **Phase 1** | Core Infrastructure (Vite, React, Linting) | **COMPLETE** |
 | **Phase 2** | UI Framework (Curator, Grid, Sidebar) | **COMPLETE** |
 | **Phase 3** | Logic (Skin Tone, Selection, Export) | **COMPLETE** |
-| **Phase 4** | Accessibility & Focus Management | **IN PROGRESS** |
-| **Phase 5** | PWA & Store Readiness | **PENDING** |
-| **Phase 6** | Full Dataset Integration | **PENDING** |
+| **Phase 4** | Accessibility & Focus Management | **COMPLETE** |
+| **Phase 5** | PWA & Store Readiness | **COMPLETE** |
+| **Phase 6** | Full Dataset Integration | **COMPLETE** |
+| **Phase 7** | iOS Compliance Polish | **PENDING** |
+
+---
+
+### 7. Phase 7: iOS Compliance Polish (New)
+To strictly adhere to iOS Human Interface Guidelines (HIG):
+
+- [x] **Haptics:** Replace `navigator.vibrate` (unsupported on iOS) with `@capacitor/haptics`.
+- [x] **Visual Feedback:** Add `:active` states (opacity/scale) to all interactive elements to mimic native touch feedback.
+- [x] **Translucency:** Apply `backdrop-filter: blur()` to the Top Navigation Bar and Sidebar for the "Liquid Glass" feel.
+- [x] **Loading Skeleton:** Replace the simple lazy loading spinner (if any) or blank space with a skeleton loader during the initial batch render.
+

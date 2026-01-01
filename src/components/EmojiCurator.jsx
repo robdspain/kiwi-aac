@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { EMOJI_DATA } from '../utils/emojiData';
+import { triggerHaptic } from '../utils/haptics';
 
 const TONE_CATEGORIES = [
   "Tone: Pale",
@@ -179,6 +180,11 @@ const EmojiCurator = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [pickerTarget, setPickerTarget] = useState(null); // { item, x, y }
   
+  // Lazy Loading State
+  const BATCH_SIZE = 100;
+  const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
+  const gridRef = useRef(null);
+
   // Responsive State
   const [isMobile, setIsMobile] = useState(window.innerWidth < 850);
   const [showSidebar, setShowSidebar] = useState(!isMobile);
@@ -193,6 +199,18 @@ const EmojiCurator = () => {
       window.addEventListener('resize', handleResize);
       return () => window.removeEventListener('resize', handleResize);
   }, [showSidebar]);
+
+  useEffect(() => {
+    setVisibleCount(BATCH_SIZE);
+    if (gridRef.current) gridRef.current.scrollTop = 0;
+  }, [activeCategory, searchQuery]);
+
+  const handleScroll = (e) => {
+    const { scrollTop, clientHeight, scrollHeight } = e.currentTarget;
+    if (scrollHeight - scrollTop - clientHeight < 500) {
+      setVisibleCount(prev => prev + BATCH_SIZE);
+    }
+  };
 
   const [selectedEmojis, setSelectedEmojis] = useState(() => {
     const initial = {};
@@ -236,6 +254,55 @@ const EmojiCurator = () => {
   // Long Press Handling
   const longPressTimer = useRef(null);
   const isLongPress = useRef(false);
+  const pickerRef = useRef(null);
+  const previousFocus = useRef(null);
+
+  // Accessibility: Focus Management for Picker
+  useEffect(() => {
+    if (pickerTarget) {
+      previousFocus.current = document.activeElement;
+      // Small timeout to allow render
+      const timer = setTimeout(() => {
+        const firstButton = pickerRef.current?.querySelector('button');
+        firstButton?.focus();
+      }, 50);
+
+      const handleKeyDown = (e) => {
+        if (e.key === 'Escape') {
+          setPickerTarget(null);
+        }
+        if (e.key === 'Tab') {
+           const buttons = pickerRef.current?.querySelectorAll('button');
+           if (!buttons || buttons.length === 0) return;
+           const first = buttons[0];
+           const last = buttons[buttons.length - 1];
+
+           if (e.shiftKey) {
+             if (document.activeElement === first) {
+               e.preventDefault();
+               last.focus();
+             }
+           } else {
+             if (document.activeElement === last) {
+               e.preventDefault();
+               first.focus();
+             }
+           }
+        }
+      };
+
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+        clearTimeout(timer);
+      };
+    } else {
+      if (previousFocus.current) {
+        previousFocus.current.focus();
+        previousFocus.current = null;
+      }
+    }
+  }, [pickerTarget]);
 
   const speak = (text) => {
     if (!window.speechSynthesis) return;
@@ -299,6 +366,8 @@ const EmojiCurator = () => {
 
     const exportSelected = () => {
       const output = {};
+      let validationErrors = [];
+
       Object.keys(selectedEmojis).forEach(category => {
         if (selectedEmojis[category] && selectedEmojis[category].length > 0) {
           output[category] = selectedEmojis[category].map(emojiChar => {
@@ -314,10 +383,21 @@ const EmojiCurator = () => {
                   }
                   return false;
               });
+
+              if (foundName === "Unknown") {
+                validationErrors.push({ category, emoji: emojiChar, error: "Name not found" });
+              }
+              
               return { w: foundName, i: emojiChar };
           });
         }
       });
+
+      if (validationErrors.length > 0) {
+        console.error("Export Validation Failed:", validationErrors);
+        alert(`Export failed! Found ${validationErrors.length} items with missing names. Check console for details.`);
+        return;
+      }
 
       const jsonString = JSON.stringify(output, null, 2);
       const blob = new Blob([jsonString], { type: 'application/json' });
@@ -339,7 +419,7 @@ const EmojiCurator = () => {
             y: rect.top
         });
         speak(item.name);
-        if (navigator.vibrate) navigator.vibrate(50);
+        triggerHaptic('medium');
     };
 
     const handleStart = (e, item) => {
@@ -407,13 +487,18 @@ const EmojiCurator = () => {
         {/* Top Navigation Bar */}
         <div style={{ 
           padding: isMobile ? '10px 15px' : '15px 30px', 
-          background: '#1a1a1a', 
+          background: 'rgba(26, 26, 26, 0.85)', 
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
           color: 'white',
           display: 'flex', 
           justifyContent: 'space-between', 
           alignItems: 'center',
           flexShrink: 0,
-          boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+          boxShadow: '0 1px 0 rgba(255,255,255,0.1)',
+          position: 'sticky',
+          top: 0,
+          zIndex: 1000
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
             {isMobile && (
@@ -466,8 +551,10 @@ const EmojiCurator = () => {
             width: '280px',
             height: '100%',
             overflowY: 'auto',
-            background: 'white',
-            borderRight: '1px solid #ddd',
+            background: 'rgba(255, 255, 255, 0.85)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderRight: '1px solid rgba(0,0,0,0.1)',
             padding: '20px 10px',
             display: 'flex',
             flexDirection: 'column',
@@ -491,13 +578,36 @@ const EmojiCurator = () => {
                       onChange={(e) => setSearchQuery(e.target.value)}
                       style={{
                           width: '100%',
-                          padding: '8px 10px 8px 30px',
+                          padding: '8px 30px 8px 30px',
                           borderRadius: '6px',
                           border: '1px solid #ddd',
                           fontSize: '0.85rem'
                       }}
                   />
                   <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', fontSize: '0.8rem' }} aria-hidden="true">🔍</span>
+                  {searchQuery && (
+                      <button
+                          onClick={() => setSearchQuery('')}
+                          aria-label="Clear search"
+                          style={{
+                              position: 'absolute',
+                              right: '5px',
+                              top: '50%',
+                              transform: 'translateY(-50%)',
+                              background: 'transparent',
+                              border: 'none',
+                              color: '#999',
+                              fontSize: '1rem',
+                              cursor: 'pointer',
+                              padding: '0 5px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'
+                          }}
+                      >
+                          ×
+                      </button>
+                  )}
               </div>
             </div>
 
@@ -618,7 +728,11 @@ const EmojiCurator = () => {
               )}
             </div>
 
-            <div style={{ flex: 1, overflowY: 'auto', padding: isMobile ? '15px' : '30px', paddingBottom: 'env(safe-area-inset-bottom)' }}>
+            <div 
+              ref={gridRef}
+              onScroll={handleScroll}
+              style={{ flex: 1, overflowY: 'auto', padding: isMobile ? '15px' : '30px', paddingBottom: 'env(safe-area-inset-bottom)' }}
+            >
               <div 
                 role="grid"
                 aria-label="Emoji Grid"
@@ -628,7 +742,7 @@ const EmojiCurator = () => {
                   gap: isMobile ? '10px' : '20px'
                 }}
               >
-                {(filteredEmojis || []).map((item, idx) => {
+                {(filteredEmojis || []).slice(0, visibleCount).map((item, idx) => {
                   const cat = item.category || activeCategory;
                   const selectedEmoji = getSelectedInGroup(cat, item);
                   const isChecked = !!selectedEmoji;
@@ -639,6 +753,7 @@ const EmojiCurator = () => {
                     <button
                       key={`${item.emoji}-${idx}`}
                       role="gridcell"
+                      className="emoji-btn"
                       aria-pressed={isChecked}
                       aria-label={`${item.name}${isChecked ? ', selected' : ''}`}
                       onMouseDown={(e) => handleStart(e, item)}
@@ -735,6 +850,19 @@ const EmojiCurator = () => {
                     </button>
                   );
                 })}
+                
+                {/* Skeleton Loader for Lazy Loading */}
+                {visibleCount < (filteredEmojis || []).length && Array.from({ length: 8 }).map((_, i) => (
+                    <div 
+                        key={`skeleton-${i}`} 
+                        className="skeleton-pulse"
+                        style={{
+                             height: isMobile ? '110px' : '160px',
+                             width: '100%',
+                             background: 'rgba(255,255,255,0.5)'
+                        }}
+                    />
+                ))}
               </div>
             </div>
           </div>
@@ -751,6 +879,10 @@ const EmojiCurator = () => {
                 onClick={() => setPickerTarget(null)}
             >
                 <div 
+                    ref={pickerRef}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label="Choose skin tone"
                     style={{
                         position: 'absolute',
                         top: Math.max(20, pickerTarget.y - 80), // Show above
@@ -814,6 +946,20 @@ const EmojiCurator = () => {
                     @keyframes popIn {
                         from { opacity: 0; transform: scale(0.8); }
                         to { opacity: 1; transform: scale(1); }
+                    }
+                    .emoji-btn:active {
+                        transform: scale(0.95);
+                        opacity: 0.7;
+                    }
+                    .skeleton-pulse {
+                        animation: pulse 1.5s infinite ease-in-out;
+                        background: #eee;
+                        border-radius: 12px;
+                    }
+                    @keyframes pulse {
+                        0% { opacity: 1; }
+                        50% { opacity: 0.5; }
+                        100% { opacity: 1; }
                     }
                 `}</style>
             </div>
