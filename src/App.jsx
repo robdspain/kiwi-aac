@@ -267,13 +267,32 @@ function App() {
     if (customAudio) { new Audio(customAudio).play(); return; }
     if (!synth) return;
     if (synth.speaking) synth.cancel();
+    
     const u = new SpeechSynthesisUtterance(text);
     u.rate = voiceSettings.rate; u.pitch = voiceSettings.pitch;
-    if (voiceSettings.voiceURI) {
-      const voices = synth.getVoices();
-      const selectedVoice = voices.find(v => v.voiceURI === voiceSettings.voiceURI);
-      if (selectedVoice) u.voice = selectedVoice;
+    
+    // Auto-select best natural voice if none selected or if selected is unavailable
+    const voices = synth.getVoices();
+    let selectedVoice = voices.find(v => v.voiceURI === voiceSettings.voiceURI);
+    
+    if (!selectedVoice) {
+        // Priority list for natural sounding voices
+        const priorityPatterns = [
+            /premium/i, /google/i, /neural/i, /enhanced/i, /samantha/i, /alex/i, /aria/i
+        ];
+        
+        const englishVoices = voices.filter(v => v.lang.startsWith('en'));
+        
+        for (const pattern of priorityPatterns) {
+            selectedVoice = englishVoices.find(v => pattern.test(v.name));
+            if (selectedVoice) break;
+        }
+        
+        // Fallback to first English voice
+        if (!selectedVoice) selectedVoice = englishVoices[0];
     }
+    
+    if (selectedVoice) u.voice = selectedVoice;
     synth.speak(u);
   };
 

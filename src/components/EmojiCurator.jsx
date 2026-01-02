@@ -5,7 +5,7 @@ import { CORE_VOCABULARY, TEMPLATES, CONTEXT_DEFINITIONS } from '../data/aacData
 import { AAC_LEXICON, getFitzgeraldColor } from '../data/aacLexicon';
 import CharacterBuilder from './CharacterBuilder';
 import AvatarRenderer from './AvatarRenderer';
-import { Camera, CameraResultType, CameraSource } from '@capacitor-camera';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import SplashScreen from './SplashScreen';
 import LZString from 'lz-string';
 import { QRCodeCanvas } from 'qrcode.react';
@@ -87,11 +87,10 @@ const EmojiCurator = () => {
   const [activeCategory, setActiveCategory] = useState(categories[0] || '');
   const [searchQuery, setSearchQuery] = useState('');
   const [pickerTarget, setPickerTarget] = useState(null);
-  const [visibleCount, setVisibleCount] = useState(100);
-  const gridRef = useRef(null);
-  const [emojiMetadata, setEmojiMetadata] = useState({});
-  const blacklistedEmojis = useMemo(() => [], []);
-  const [customItems, setCustomItems] = useState([
+      const [visibleCount, setVisibleCount] = useState(100);
+      const gridRef = useRef(null);
+      const blacklistedEmojis = useMemo(() => [], []);
+    const [customItems, setCustomItems] = useState([
     { id: 'avatar-mom', name: 'Mom', category: 'My People', type: 'avatar', recipe: { head: 'round', skin: '#F1C27D', hair: 'short', hairColor: '#2C222B', eyeColor: '#333333', facialHair: 'none', eyes: 'happy', mouth: 'smile', accessory: 'none' }, emoji: 'avatar-mom' },
     { id: 'avatar-dad', name: 'Dad', category: 'My People', type: 'avatar', recipe: { head: 'round', skin: '#F1C27D', hair: 'short', hairColor: '#A56B46', eyeColor: '#2e536f', facialHair: 'short_beard', eyes: 'happy', mouth: 'smile', accessory: 'none' }, emoji: 'avatar-dad' },
     { id: 'avatar-ms-rachel', name: 'Ms Rachel', category: 'My People', type: 'avatar', recipe: { head: 'round', skin: '#F1C27D', hair: 'medium', hairColor: '#A56B46', eyeColor: '#333333', facialHair: 'none', eyes: 'happy', mouth: 'smile', accessory: 'none' }, emoji: 'avatar-ms-rachel' },
@@ -115,27 +114,7 @@ const EmojiCurator = () => {
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
   const [tempMeta, setTempMeta] = useState({ label: '', wordClass: 'noun', backgroundColor: '#ffffff', skill: 'none' });
-
-  // Deep Linking / Import Logic
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const boardData = params.get('board');
-    if (boardData) {
-      try {
-        const decompressed = LZString.decompressFromEncodedURIComponent(boardData);
-        if (decompressed) {
-          const parsed = JSON.parse(decompressed);
-          if (parsed.selected) setSelectedEmojis(parsed.selected);
-          if (parsed.meta) setEmojiMetadata(parsed.meta);
-          alert("Board imported successfully! 🥝");
-          // Clear URL without refresh
-          window.history.replaceState({}, document.title, window.location.pathname);
-        }
-      } catch (e) {
-        console.error("Failed to import board:", e);
-      }
-    }
-  }, []);
+  const [activeContext] = useState('Default');
 
   const generateShareUrl = () => {
     const data = JSON.stringify({
@@ -176,6 +155,18 @@ const EmojiCurator = () => {
   const handleScroll = (e) => { const { scrollTop, clientHeight, scrollHeight } = e.currentTarget; if (scrollHeight - scrollTop - clientHeight < 500) setVisibleCount(prev => prev + 100); };
 
   const [selectedEmojis, setSelectedEmojis] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const boardData = params.get('board');
+    if (boardData) {
+      try {
+        const decompressed = LZString.decompressFromEncodedURIComponent(boardData);
+        if (decompressed) {
+          const parsed = JSON.parse(decompressed);
+          if (parsed.selected) return parsed.selected;
+        }
+      } catch (e) { console.error(e); }
+    }
+
     const initial = {}; categories.forEach(category => { initial[category] = []; });
     initial['My People'] = ['avatar-mom', 'avatar-dad', 'avatar-ms-rachel'];
     initial['Characters'] = ['🔴', '🎵', '🕷️'];
@@ -187,6 +178,33 @@ const EmojiCurator = () => {
     });
     return initial;
   });
+
+  const [emojiMetadata, setEmojiMetadata] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const boardData = params.get('board');
+    if (boardData) {
+      try {
+        const decompressed = LZString.decompressFromEncodedURIComponent(boardData);
+        if (decompressed) {
+          const parsed = JSON.parse(decompressed);
+          if (parsed.meta) return parsed.meta;
+        }
+      } catch (e) { console.error(e); }
+    }
+    return {};
+  });
+
+  // Deep Linking / Import Logic - URL Cleanup
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const boardData = params.get('board');
+    if (boardData) {
+      // Decompression check already done in initializers, just notify and clean up
+      setTimeout(() => alert("Board imported successfully! 🥝"), 100);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
 
   const filteredEmojis = useMemo(() => {
     let list = groupedEmojiData[activeCategory] || [];

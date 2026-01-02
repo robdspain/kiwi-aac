@@ -57,6 +57,7 @@ const Controls = ({
 
     const [showGuidedAccess, setShowGuidedAccess] = useState(false);
     const [showFavoritesPicker, setShowFavoritesPicker] = useState(false);
+    const [availableVoices, setAvailableVoices] = useState([]);
     const [isRestoring, setIsRestoring] = useState(false);
     const [showAdvanced, setShowAdvanced] = useState(false);
     const [activeTab, setActiveTab] = useState('basic');
@@ -71,6 +72,15 @@ const Controls = ({
 
     // Detect iOS to show relevant help
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    useEffect(() => {
+        const loadVoices = () => {
+            const voices = window.speechSynthesis.getVoices();
+            setAvailableVoices(voices.filter(v => v.lang.startsWith('en')));
+        };
+        loadVoices();
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+    }, []);
 
     const handleRestore = async () => {
         setIsRestoring(true);
@@ -399,6 +409,19 @@ const Controls = ({
                                             style={{ width: '100%', height: '44px' }}
                                         />
                                     </div>
+                                </div>
+                                <div className="ios-row">
+                                    <span>🗣️ Voice</span>
+                                    <select
+                                        value={voiceSettings.voiceURI || ''}
+                                        onChange={(e) => onUpdateVoiceSettings({ ...voiceSettings, voiceURI: e.target.value })}
+                                        style={{ border: 'none', background: 'transparent', fontSize: '14px', fontWeight: 600, color: '#007AFF', textAlign: 'right', maxWidth: '150px' }}
+                                    >
+                                        <option value="">Default Natural</option>
+                                        {availableVoices.map(v => (
+                                            <option key={v.voiceURI} value={v.voiceURI}>{v.name}</option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div className="ios-row" style={{ padding: '15px' }}>
                                     <div style={{ width: '100%' }}>
