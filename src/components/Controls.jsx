@@ -139,6 +139,7 @@ const Controls = ({
             if (e.target.id === 'controls') onToggleMenu();
         }}>
             <div id="controls-content">
+                <div className="drag-handle"></div>
                 <div id="parent-header">
                     <span>Adult Settings</span>
                     <button id="close-settings" onClick={onToggleMenu}>✕</button>
@@ -240,7 +241,7 @@ const Controls = ({
                                     onAddItem(word, icon, 'button');
                                 })}
                             >
-                                + Add Icon
+                                + Add Button
                             </button>
                             <button className="primary" style={{ flex: 1, background: '#34C759' }} onClick={() => onAddItem('', '', 'folder')}>+ Add Folder</button>
                         </div>

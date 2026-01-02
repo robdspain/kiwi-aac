@@ -12,12 +12,38 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
     const [activeTab, setActiveTab] = useState('symbol'); // 'emoji' is 'symbol' in this version, representing built-in library
     const [activeCategory, setActiveCategory] = useState('Smileys & Emotion');
     const [searchQuery, setSearchQuery] = useState('');
-    const [photos, setPhotos] = useState([]);
     const [symbols, setSymbols] = useState([]);
-    const [isLoadingPhotos, setIsLoadingPhotos] = useState(false);
     const [isLoadingSymbols, setIsLoadingSymbols] = useState(false);
     const [isOnline, setIsOnline] = useState(navigator.onLine);
+    const [customizingItem, setCustomizingItem] = useState(null); // { word, icon, isImage }
+    const [customName, setCustomName] = useState('');
     const fileInputRef = useRef(null);
+
+    // Get only photos/images from user's current board
+    const userPhotos = (userItems || [])
+        .filter(item => item.type === 'button' && typeof item.icon === 'string' && (item.icon.startsWith('data:') || item.icon.startsWith('http')))
+        .map(item => ({
+            w: item.word,
+            i: item.icon
+        }));
+
+    useEffect(() => {
+        if (customizingItem) {
+            setCustomName(customizingItem.word);
+        }
+    }, [customizingItem]);
+
+    const handleConfirmSelection = () => {
+        if (customizingItem) {
+            onSelect(customName || customizingItem.word, customizingItem.icon, customizingItem.isImage);
+            setCustomizingItem(null);
+            setSearchQuery('');
+        }
+    };
+
+    const handleItemSelect = (word, icon, isImage) => {
+        setCustomizingItem({ word, icon, isImage });
+    };
 
     useEffect(() => {
         const handleOnline = () => setIsOnline(true);
@@ -31,13 +57,6 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
     }, []);
 
     useEffect(() => {
-        if (!isOnline) return;
-        if (activeTab === 'photo' && searchQuery.length > 2) {
-            const timer = setTimeout(() => {
-                searchUnsplash(searchQuery);
-            }, 500);
-            return () => clearTimeout(timer);
-        }
         if (activeTab === 'symbol' && searchQuery.length > 2) {
             const timer = setTimeout(() => {
                 searchSymbols(searchQuery);
@@ -46,50 +65,6 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
         }
     }, [searchQuery, activeTab]);
 
-    const searchUnsplash = async (query) => {
-        setIsLoadingPhotos(true);
-        try {
-            const accessKey = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
-            const response = await fetch(`https://api.unsplash.com/search/photos?query=${query}&per_page=12&client_id=${accessKey}`);
-            if (response.ok) {
-                const data = await response.json();
-                // Store full photo data for proper attribution and download tracking
-                setPhotos(data.results.map(p => ({
-                    w: query,
-                    i: p.urls.small,
-                    // Unsplash compliance: track download_location for when user selects
-                    downloadLocation: p.links.download_location,
-                    // Unsplash compliance: photographer attribution
-                    photographerName: p.user.name,
-                    photographerLink: `${p.user.links.html}?utm_source=kiwi_talk&utm_medium=referral`,
-                    unsplashLink: `${p.links.html}?utm_source=kiwi_talk&utm_medium=referral`
-                })));
-            } else {
-                // Fallback: use picsum.photos
-                const simulatedResults = Array.from({ length: 8 }).map((_, i) => ({
-                    w: query,
-                    i: `https://picsum.photos/seed/${query}${i}/200`
-                }));
-                setPhotos(simulatedResults);
-            }
-        } catch (error) {
-            console.error('Photo search failed:', error);
-        } finally {
-            setIsLoadingPhotos(false);
-        }
-    };
-
-    // Unsplash compliance: trigger download tracking when photo is selected
-    const trackUnsplashDownload = async (downloadLocation) => {
-        if (!downloadLocation) return;
-        const accessKey = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
-        try {
-            await fetch(`${downloadLocation}?client_id=${accessKey}`);
-        } catch (error) {
-            console.log('Unsplash download tracking failed:', error);
-        }
-    };
-
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -97,7 +72,7 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
             reader.onload = (event) => {
                 // Return just the filename as word, and dataURL as icon, isImage=true
                 const fileName = file.name.split('.')[0];
-                onSelect(fileName, event.target.result, true);
+                handleItemSelect(fileName, event.target.result, true);
                 setSearchQuery('');
             };
             reader.readAsDataURL(file);
@@ -141,6 +116,90 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
     }, [searchQuery, activeTab]);
 
     if (!isOpen) return null;
+
+    if (customizingItem) {
+        return (
+            <div id="picker-modal" style={{ display: 'flex' }}>
+                <div id="picker-content" style={{ justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+                    <div style={{ marginBottom: '30px' }}>
+                        <h2 style={{ marginBottom: '10px' }}>Customize Icon</h2>
+                        <p style={{ color: '#666' }}>What should this icon say?</p>
+                    </div>
+
+                    <div style={{ 
+                        width: '120px', height: '120px', 
+                        background: 'white', borderRadius: '24px', 
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+                        marginBottom: '30px',
+                        fontSize: '4rem',
+                        overflow: 'hidden'
+                    }}>
+                        {customizingItem.isImage ? (
+                            <img src={customizingItem.icon} alt="Selected" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : (
+                            <span>{customizingItem.icon}</span>
+                        )}
+                    </div>
+
+                    <div style={{ width: '100%', maxWidth: '300px', marginBottom: '40px' }}>
+                        <label style={{ display: 'block', textAlign: 'left', fontSize: '0.8rem', fontWeight: 'bold', color: '#999', marginBottom: '8px', textTransform: 'uppercase' }}>Icon Label</label>
+                        <input 
+                            type="text"
+                            value={customName}
+                            onChange={(e) => setCustomName(e.target.value)}
+                            placeholder="Enter name..."
+                            autoFocus
+                            style={{
+                                width: '100%',
+                                padding: '16px',
+                                borderRadius: '16px',
+                                border: '2px solid #4ECDC4',
+                                fontSize: '1.2rem',
+                                outline: 'none',
+                                boxSizing: 'border-box',
+                                textAlign: 'center'
+                            }}
+                        />
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '15px', width: '100%', maxWidth: '300px' }}>
+                        <button 
+                            onClick={() => setCustomizingItem(null)}
+                            style={{
+                                flex: 1,
+                                padding: '16px',
+                                borderRadius: '16px',
+                                background: '#f0f0f0',
+                                border: 'none',
+                                fontWeight: 'bold',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            Back
+                        </button>
+                        <button 
+                            onClick={handleConfirmSelection}
+                            style={{
+                                flex: 2,
+                                padding: '16px',
+                                borderRadius: '16px',
+                                background: '#4ECDC4',
+                                color: 'white',
+                                border: 'none',
+                                fontWeight: 'bold',
+                                fontSize: '1rem',
+                                cursor: 'pointer',
+                                boxShadow: '0 4px 12px rgba(78, 205, 196, 0.3)'
+                            }}
+                        >
+                            Save to Board
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
 
     return (
@@ -207,12 +266,6 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
                         }}
                     />
                 </div>
-
-                {!isOnline && activeTab !== 'emoji' && (
-                    <div style={{ background: '#FFF3CD', color: '#856404', padding: '10px', borderRadius: '10px', marginBottom: '10px', fontSize: '0.9rem', textAlign: 'center' }}>
-                        📡 You are offline. Online search is unavailable.
-                    </div>
-                )}
 
                 {activeTab === 'emoji' ? (
                     <>
@@ -295,8 +348,7 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
                                         key={`${item.w}-${index}`}
                                         className="picker-btn"
                                         onClick={() => {
-                                            onSelect(item.w, item.i, typeof item.i === 'string' && (item.i.startsWith('http') || item.i.startsWith('data:')));
-                                            setSearchQuery('');
+                                            handleItemSelect(item.w, item.i, typeof item.i === 'string' && (item.i.startsWith('http') || item.i.startsWith('data:')));
                                         }}
                                         style={{ position: 'relative' }}
                                     >
@@ -367,8 +419,7 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
                                         key={`${item.name || item.w}-${index}`}
                                         className="picker-btn"
                                         onClick={() => {
-                                            onSelect(item.name || item.w, item.emoji || item.i, false);
-                                            setSearchQuery('');
+                                            handleItemSelect(item.name || item.w, item.emoji || item.i, false);
                                         }}
                                     >
                                         <span style={{ fontSize: '32px' }}>{item.emoji || item.i}</span>
@@ -408,43 +459,31 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
                                 style={{ display: 'none' }}
                             />
                         </div>
-                        {isLoadingPhotos ? (
-                            <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px' }}>Searching...</div>
-                        ) : photos.length > 0 ? (
-                            <>
-                                {photos.map((photo, index) => (
-                                    <button
-                                        key={index}
-                                        className="picker-btn"
-                                        onClick={() => {
-                                            // Unsplash compliance: track download when photo is selected
-                                            if (photo.downloadLocation) {
-                                                trackUnsplashDownload(photo.downloadLocation);
-                                            }
-                                            onSelect(photo.w, photo.i, true);
-                                            setSearchQuery('');
-                                        }}
-                                        style={{ padding: '5px', position: 'relative' }}
-                                    >
-                                        <img src={photo.i} alt={photo.w} style={{ width: '100%', height: '60px', objectFit: 'cover', borderRadius: '8px' }} />
-                                        {/* Unsplash compliance: photographer attribution */}
-                                        {photo.photographerName && (
-                                            <span style={{ fontSize: '8px', opacity: 0.6, display: 'block' }}>
-                                                by {photo.photographerName}
-                                            </span>
-                                        )}
-                                    </button>
-                                ))}
-                                {/* Unsplash compliance: attribution link */}
-                                <div style={{ gridColumn: '1/-1', textAlign: 'center', fontSize: '0.7rem', color: '#888', marginTop: '10px' }}>
-                                    Photos from <a href="https://unsplash.com?utm_source=kiwi_talk&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
-                                </div>
-                            </>
-                        ) : (
-                            <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px', opacity: 0.5 }}>
-                                {searchQuery.length < 3 ? "Type 3+ characters to search photos" : "No photos found"}
-                            </div>
-                        )}
+                        {(() => {
+                            const filteredPhotos = searchQuery
+                                ? userPhotos.filter(p => p.w.toLowerCase().includes(searchQuery.toLowerCase()))
+                                : userPhotos;
+
+                            if (filteredPhotos.length === 0) {
+                                return (
+                                    <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px', opacity: 0.5 }}>
+                                        {searchQuery ? "No matching photos found" : "No uploaded photos yet. Tap 'Upload from Device' to add one!"}
+                                    </div>
+                                );
+                            }
+
+                            return filteredPhotos.map((photo, index) => (
+                                <button
+                                    key={index}
+                                    className="picker-btn"
+                                    onClick={() => handleItemSelect(photo.w, photo.i, true)}
+                                    style={{ padding: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                                >
+                                    <img src={photo.i} alt={photo.w} style={{ width: '100%', height: '60px', objectFit: 'cover', borderRadius: '8px' }} />
+                                    <span style={{ fontSize: '10px', marginTop: '4px', opacity: 0.8, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '100%' }}>{photo.w}</span>
+                                </button>
+                            ));
+                        })()}
                     </div>
                 )}
 

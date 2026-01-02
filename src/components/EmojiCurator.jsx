@@ -169,7 +169,7 @@ const { categories, groupedEmojiData, allEmojisFlat } = (() => {
       }
   });
 
-  const finalCategories = ['My People', ...Object.keys(groupedData)];
+  const finalCategories = ['Characters', 'My People', ...Object.keys(groupedData)];
 
   return { categories: finalCategories, groupedEmojiData: groupedData, allEmojisFlat: flatList };
 })();
@@ -231,6 +231,42 @@ const EmojiCurator = () => {
             accessory: 'none'
         },
         emoji: 'avatar-dad'
+    },
+    {
+        id: 'avatar-ms-rachel',
+        name: 'Ms Rachel',
+        category: 'My People',
+        type: 'avatar',
+        recipe: {
+            head: 'round',
+            skin: '#F1C27D',
+            hair: 'medium',
+            hairColor: '#A56B46',
+            eyeColor: '#333333',
+            facialHair: 'none',
+            eyes: 'happy',
+            mouth: 'smile',
+            accessory: 'none'
+        },
+        emoji: 'avatar-ms-rachel'
+    },
+    {
+        id: 'char-elmo',
+        name: 'Elmo',
+        category: 'Characters',
+        emoji: '🔴'
+    },
+    {
+        id: 'char-simple-songs',
+        name: 'Super Simple Songs',
+        category: 'Characters',
+        emoji: '🎵'
+    },
+    {
+        id: 'char-spiderman',
+        name: 'Spiderman',
+        category: 'Characters',
+        emoji: '🕷️'
     }
   ]); // [{ id, name, category, image: base64 }]
   const [showCoreOnly, setShowCoreOnly] = useState(false);
@@ -295,8 +331,9 @@ const EmojiCurator = () => {
       initial[category] = [];
     });
 
-    // Add Default People
-    initial['My People'] = ['avatar-mom', 'avatar-dad'];
+    // Add Default People & Characters
+    initial['My People'] = ['avatar-mom', 'avatar-dad', 'avatar-ms-rachel'];
+    initial['Characters'] = ['🔴', '🎵', '🕷️'];
     
     Object.keys(CURRENT_ICONS).forEach(cat => {
         (CURRENT_ICONS[cat] || []).forEach(emoji => {

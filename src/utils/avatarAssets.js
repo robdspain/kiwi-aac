@@ -43,6 +43,8 @@ export const ASSETS = {
     },
     hair: {
         short: (color) => `<path d="M30 80 Q30 20 100 20 Q170 20 170 80" fill="${color}" />`,
+        medium: (color) => `<path d="M30 80 Q30 20 100 20 Q170 20 170 80 L170 130 Q100 130 30 130 Z" fill="${color}" />`,
+        long: (color) => `<path d="M30 80 Q30 20 100 20 Q170 20 170 80 L180 180 Q100 160 20 180 Z" fill="${color}" />`,
         pigtails: (color) => `<circle cx="30" cy="60" r="25" fill="${color}" /><circle cx="170" cy="60" r="25" fill="${color}" /><path d="M40 70 Q100 20 160 70" fill="${color}" />`,
         curly: (color) => `<path d="M30 100 Q30 10 100 10 Q170 10 170 100" fill="none" stroke="${color}" stroke-width="20" stroke-linecap="round" stroke-dasharray="1 30" />`,
         hijab: (color) => `<path d="M30 100 Q30 10 100 10 Q170 10 170 100 L180 180 L20 180 Z" fill="${color}" />`,
