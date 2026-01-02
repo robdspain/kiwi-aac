@@ -49,6 +49,12 @@
 	<true/>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Kiwi Voice needs microphone access to record custom voice prompts for communication buttons.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Kiwi Voice needs camera access to take photos for custom communication icons.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Kiwi Voice needs photo library access to select photos for custom communication icons.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Kiwi Voice needs photo library access to save photos for custom communication icons.</string>
 	<key>SuperwallAPIKey</key>
 	<string>pk_pdrADqfJ3XjhkUUMC92zI</string>
 </dict>

@@ -4,6 +4,8 @@ import { triggerHaptic } from '../utils/haptics';
 import { CORE_VOCABULARY, WORD_CLASSES, TEMPLATES, SKILLS, CONTEXT_DEFINITIONS } from '../data/aacData';
 import CharacterBuilder from './CharacterBuilder';
 import AvatarRenderer from './AvatarRenderer';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import SplashScreen from './SplashScreen';
 
 const TONE_CATEGORIES = [
   "Tone: Pale",
@@ -193,7 +195,44 @@ const EmojiCurator = () => {
   // AAC Features State
   const [emojiMetadata, setEmojiMetadata] = useState({}); // { char: { label, wordClass, backgroundColor } }
   const [blacklistedEmojis, setBlacklistedEmojis] = useState([]); // Array of excluded emoji chars
-  const [customItems, setCustomItems] = useState([]); // [{ id, name, category, image: base64 }]
+  const [customItems, setCustomItems] = useState([
+    {
+        id: 'avatar-mom',
+        name: 'Mom',
+        category: 'My People',
+        type: 'avatar',
+        recipe: {
+            head: 'round',
+            skin: '#F1C27D',
+            hair: 'short',
+            hairColor: '#2C222B', // Black
+            eyeColor: '#333333',
+            facialHair: 'none',
+            eyes: 'happy',
+            mouth: 'smile',
+            accessory: 'none'
+        },
+        emoji: 'avatar-mom'
+    },
+    {
+        id: 'avatar-dad',
+        name: 'Dad',
+        category: 'My People',
+        type: 'avatar',
+        recipe: {
+            head: 'round',
+            skin: '#F1C27D',
+            hair: 'short',
+            hairColor: '#A56B46', // Brown
+            eyeColor: '#2e536f', // Blue
+            facialHair: 'short_beard',
+            eyes: 'happy',
+            mouth: 'smile',
+            accessory: 'none'
+        },
+        emoji: 'avatar-dad'
+    }
+  ]); // [{ id, name, category, image: base64 }]
   const [showCoreOnly, setShowCoreOnly] = useState(false);
   const [editingItem, setEditingItem] = useState(null); // Item being edited
   const [showTemplates, setShowTemplates] = useState(false);
@@ -204,6 +243,7 @@ const EmojiCurator = () => {
   const [showPhraseCreator, setShowPhraseCreator] = useState(false);
   const [showVisualSceneCreator, setShowVisualSceneCreator] = useState(false);
   const [showCharacterBuilder, setShowCharacterBuilder] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
   const [searchQueryImage, setSearchQueryImage] = useState('');
   const [showToolsMenu, setShowToolsMenu] = useState(false);
   const [tempMeta, setTempMeta] = useState({ label: '', wordClass: 'noun', backgroundColor: '#ffffff', skill: 'none' });
@@ -254,6 +294,9 @@ const EmojiCurator = () => {
     categories.forEach(category => {
       initial[category] = [];
     });
+
+    // Add Default People
+    initial['My People'] = ['avatar-mom', 'avatar-dad'];
     
     Object.keys(CURRENT_ICONS).forEach(cat => {
         (CURRENT_ICONS[cat] || []).forEach(emoji => {
@@ -418,6 +461,35 @@ const EmojiCurator = () => {
           [char]: { label, wordClass, backgroundColor, skill }
       }));
       setEditingItem(null);
+  };
+
+  const handleGetPhoto = async (source) => {
+    try {
+      const image = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: true,
+        resultType: CameraResultType.DataUrl,
+        source: source 
+      });
+
+      if (image && image.dataUrl) {
+        const name = prompt("Enter name for this icon:", "My Photo");
+        if (name) {
+          const newItem = {
+            id: `custom-${Date.now()}`,
+            name,
+            category: activeCategory,
+            image: image.dataUrl,
+            emoji: `custom-${Date.now()}`
+          };
+          setCustomItems(prev => [newItem, ...prev]);
+          toggleEmoji(activeCategory, newItem.emoji, newItem);
+          setShowImageSearch(false);
+        }
+      }
+    } catch (err) {
+      console.error('Camera error:', err);
+    }
   };
 
   try {
@@ -605,30 +677,31 @@ const EmojiCurator = () => {
         return <div style={{padding: '50px', background: 'white'}}>No categories found in EMOJI_DATA. Check src/utils/emojiData.js</div>;
     }
 
-    return (
-      <div style={{
-        padding: '0',
-        paddingTop: 'env(safe-area-inset-top)',
-        paddingBottom: 'env(safe-area-inset-bottom)',
-        paddingLeft: 'env(safe-area-inset-left)',
-        paddingRight: 'env(safe-area-inset-right)',
-        width: '100vw',
-        height: '100dvh',
-        margin: '0',
-        fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-        display: 'flex',
-        flexDirection: 'column',
-        background: '#f0f2f5',
-        color: '#000',
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        zIndex: 9999,
-        userSelect: 'none',
-        overflow: 'hidden'
-      }}>
-              {/* Top Navigation Bar */}
-              <div className="emoji-curator-header">
+        return (
+          <div style={{
+            padding: '0',
+            paddingTop: 'env(safe-area-inset-top)',
+            paddingBottom: 'env(safe-area-inset-bottom)',
+            paddingLeft: 'env(safe-area-inset-left)',
+            paddingRight: 'env(safe-area-inset-right)',
+            width: '100vw',
+            height: '100dvh',
+            margin: '0',
+            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+            display: 'flex',
+            flexDirection: 'column',
+            background: '#f0f2f5',
+            color: '#000',
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            zIndex: 9999,
+            userSelect: 'none',
+            overflow: 'hidden'
+          }}>
+            {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
+            
+            {/* Top Navigation Bar */}              <div className="emoji-curator-header">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                   {isMobile && (
                       <button 
@@ -1466,52 +1539,39 @@ const EmojiCurator = () => {
                     <h3 style={{ marginTop: 0 }}>Add Custom Icon</h3>
                     
                     <div style={{ marginBottom: '20px', padding: '15px', background: '#f9f9f9', borderRadius: '10px', textAlign: 'center' }}>
-                        <p style={{ margin: '0 0 10px 0', fontWeight: 'bold' }}>Upload from Device</p>
-                        <div style={{ display: 'flex', gap: '10px' }}>
-                            <input 
-                                type="file" 
-                                accept="image/*" 
-                                style={{ flex: 1 }}
-                                onChange={(e) => {
-                                    const file = e.target.files[0];
-                                    if (file) {
-                                        const reader = new FileReader();
-                                        reader.onload = (re) => {
-                                            const name = prompt("Enter name for this icon:", file.name.split('.')[0]);
-                                            if (name) {
-                                                const newItem = {
-                                                    id: `custom-${Date.now()}`,
-                                                    name,
-                                                    category: activeCategory,
-                                                    image: re.target.result,
-                                                    emoji: `custom-${Date.now()}`
-                                                };
-                                                setCustomItems(prev => [newItem, ...prev]);
-                                                toggleEmoji(activeCategory, newItem.emoji, newItem);
-                                                setShowImageSearch(false);
-                                            }
-                                        };
-                                        reader.readAsDataURL(file);
-                                    }
-                                }}
-                            />
+                        <p style={{ margin: '0 0 15px 0', fontWeight: 'bold' }}>Add from Device</p>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                            <button 
+                                onClick={() => handleGetPhoto(CameraSource.Camera)}
+                                style={{ padding: '15px', background: '#007AFF', color: 'white', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.9rem' }}
+                            >
+                                📸 Take Photo
+                            </button>
+                            <button 
+                                onClick={() => handleGetPhoto(CameraSource.Photos)}
+                                style={{ padding: '15px', background: '#34C759', color: 'white', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.9rem' }}
+                            >
+                                🖼️ Library
+                            </button>
+                        </div>
+                        <div style={{ marginTop: '15px', display: 'flex', gap: '10px' }}>
                             <button 
                                 onClick={() => {
                                     setShowImageSearch(false);
                                     setShowVisualSceneCreator(true);
                                 }}
-                                style={{ padding: '8px 12px', background: '#5856D6', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem' }}
+                                style={{ flex: 1, padding: '10px', background: '#5856D6', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem' }}
                             >
-                                JIT Scene
+                                Create JIT Scene
                             </button>
                             <button 
                                 onClick={() => {
                                     setShowImageSearch(false);
                                     setShowCharacterBuilder(true);
                                 }}
-                                style={{ padding: '8px 12px', background: '#FF9500', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem' }}
+                                style={{ flex: 1, padding: '10px', background: '#FF9500', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem' }}
                             >
-                                Avatar
+                                Create Avatar
                             </button>
                         </div>
                     </div>

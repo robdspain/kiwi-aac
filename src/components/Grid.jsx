@@ -1,6 +1,7 @@
 import React from 'react';
 import AppItem from './AppItem';
 import VisualSchedule from './VisualSchedule';
+import AvatarRenderer from './AvatarRenderer';
 import {
     SortableContext,
     rectSortingStrategy
@@ -124,10 +125,14 @@ const Grid = ({
             >
                 {items.map((item, index) => {
                     const isSelected = trainingSelection.includes(index);
+                    const displayIcon = item.characterConfig ? (
+                        <AvatarRenderer recipe={item.characterConfig} size={useLargeGrid ? 120 : 80} />
+                    ) : item.icon;
+
                     return (
                         <AppItem
                             key={item.id || index}
-                            item={item}
+                            item={{ ...item, icon: displayIcon }}
                             index={index}
                             isEditMode={isEditMode}
                             isTrainingMode={isTrainingMode}

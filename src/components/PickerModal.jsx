@@ -9,8 +9,8 @@ const iconsData = {
 };
 
 const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall }) => {
-    const [activeTab, setActiveTab] = useState('emoji'); // 'emoji', 'photo', or 'symbol'
-    const [activeCategory, setActiveCategory] = useState('TV');
+    const [activeTab, setActiveTab] = useState('symbol'); // 'emoji' is 'symbol' in this version, representing built-in library
+    const [activeCategory, setActiveCategory] = useState('Smileys & Emotion');
     const [searchQuery, setSearchQuery] = useState('');
     const [photos, setPhotos] = useState([]);
     const [symbols, setSymbols] = useState([]);

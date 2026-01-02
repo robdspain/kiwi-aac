@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import AvatarRenderer from './AvatarRenderer';
-import { SKIN_TONES, HAIR_COLORS, ASSETS } from '../utils/avatarAssets';
+import { SKIN_TONES, HAIR_COLORS, EYE_COLORS, ASSETS } from '../utils/avatarAssets';
 
 const CharacterBuilder = ({ onSave, onClose }) => {
     const [recipe, setRecipe] = useState({
@@ -8,6 +8,7 @@ const CharacterBuilder = ({ onSave, onClose }) => {
         skin: SKIN_TONES[1].color,
         hair: 'short',
         hairColor: HAIR_COLORS[1].color,
+        eyeColor: EYE_COLORS[0].id,
         facialHair: 'none',
         eyes: 'happy',
         mouth: 'smile',
@@ -21,6 +22,7 @@ const CharacterBuilder = ({ onSave, onClose }) => {
         { label: 'Skin', key: 'skin', options: SKIN_TONES.map(s => ({ id: s.color, color: s.color, label: s.label })) },
         { label: 'Hair Style', key: 'hair', options: Object.keys(ASSETS.hair).map(h => ({ id: h, label: h })) },
         { label: 'Hair Color', key: 'hairColor', options: HAIR_COLORS.map(c => ({ id: c.color, color: c.color })) },
+        { label: 'Eye Color', key: 'eyeColor', options: EYE_COLORS.map(c => ({ id: c.id, color: c.id, label: c.label })) },
         { label: 'Head Shape', key: 'head', options: Object.keys(ASSETS.heads).map(h => ({ id: h, label: h })) },
         { label: 'Facial Hair', key: 'facialHair', options: Object.keys(ASSETS.facial_hair).map(h => ({ id: h, label: h })) },
         { label: 'Eyes', key: 'eyes', options: Object.keys(ASSETS.eyes).map(h => ({ id: h, label: h })) },
@@ -41,20 +43,38 @@ const CharacterBuilder = ({ onSave, onClose }) => {
                 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
                     <h2 style={{ margin: 0 }}>Create "Circle of Support" Person</h2>
-                    <button onClick={onClose} style={{ border: 'none', background: 'none', fontSize: '1.5rem', cursor: 'pointer' }}>×</button>
+                    <button 
+                        onClick={onClose} 
+                        aria-label="Close"
+                        style={{ 
+                            border: 'none', 
+                            background: '#f0f0f0', 
+                            fontSize: '1.2rem', 
+                            cursor: 'pointer',
+                            width: '44px',
+                            height: '44px',
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            transition: 'var(--transition-pop)'
+                        }}
+                    >
+                        ×
+                    </button>
                 </div>
 
                 <div style={{ flex: 1, display: 'flex', gap: '30px', overflow: 'hidden' }}>
                     {/* Preview Area */}
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#F8F9FA', borderRadius: '20px' }}>
-                        <div style={{ background: 'white', borderRadius: '50%', padding: '20px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
+                        <div style={{ background: 'white', borderRadius: '50%', padding: '20px', boxShadow: 'var(--shadow-card)' }}>
                             <AvatarRenderer recipe={recipe} size={250} />
                         </div>
                         <input 
                             placeholder="Person's Name (e.g. Dad)" 
                             value={name}
                             onChange={e => setName(e.target.value)}
-                            style={{ marginTop: '30px', padding: '12px 20px', borderRadius: '12px', border: '2px solid #ddd', width: '80%', fontSize: '1.2rem', textAlign: 'center' }}
+                            style={{ marginTop: '30px', padding: '12px 20px', borderRadius: 'var(--radius-md)', border: '2px solid #ddd', width: '80%', fontSize: '1.2rem', textAlign: 'center' }}
                         />
                     </div>
 
@@ -62,24 +82,27 @@ const CharacterBuilder = ({ onSave, onClose }) => {
                     <div style={{ flex: 1, overflowY: 'auto', paddingRight: '10px' }}>
                         {sections.map(sec => (
                             <div key={sec.key} style={{ marginBottom: '25px' }}>
-                                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '10px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#999' }}>{sec.label}</label>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '10px', textTransform: 'uppercase', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{sec.label}</label>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
                                     {sec.options.map(opt => (
                                         <button
                                             key={opt.id}
                                             onClick={() => update(sec.key, opt.id)}
                                             style={{
-                                                width: opt.color ? '40px' : 'auto',
-                                                height: opt.color ? '40px' : 'auto',
-                                                padding: opt.color ? '0' : '8px 15px',
-                                                borderRadius: opt.color ? '50%' : '10px',
-                                                background: opt.color || (recipe[sec.key] === opt.id ? '#4ECDC4' : '#eee'),
-                                                color: opt.color ? 'transparent' : (recipe[sec.key] === opt.id ? 'white' : '#333'),
+                                                width: opt.color ? '48px' : 'auto',
+                                                height: '48px',
+                                                minWidth: '48px',
+                                                padding: opt.color ? '0' : '10px 15px',
+                                                borderRadius: opt.color ? '50%' : '12px',
+                                                background: opt.color || (recipe[sec.key] === opt.id ? 'var(--primary)' : '#eee'),
+                                                color: opt.color ? 'transparent' : (recipe[sec.key] === opt.id ? 'white' : 'var(--text-primary)'),
                                                 border: recipe[sec.key] === opt.id ? '3px solid #000' : '2px solid transparent',
                                                 cursor: 'pointer',
-                                                fontSize: '0.8rem',
+                                                fontSize: '0.85rem',
                                                 fontWeight: 'bold',
-                                                transition: 'all 0.2s'
+                                                transition: 'var(--transition-pop)',
+                                                transform: recipe[sec.key] === opt.id ? 'scale(1.1)' : 'scale(1)',
+                                                boxShadow: recipe[sec.key] === opt.id ? 'var(--shadow-soft)' : 'none'
                                             }}
                                         >
                                             {opt.label}

@@ -7,6 +7,7 @@ const AvatarRenderer = ({ recipe, size = 100 }) => {
         skin = '#F1C27D', 
         hair = 'short', 
         hairColor = '#4B2C20', 
+        eyeColor = '#333333',
         facialHair = 'none', 
         eyes = 'happy', 
         mouth = 'smile',
@@ -14,7 +15,9 @@ const AvatarRenderer = ({ recipe, size = 100 }) => {
     } = recipe;
 
     const headSvg = ASSETS.heads[head] || ASSETS.heads.round;
-    const eyesSvg = ASSETS.eyes[eyes] || ASSETS.eyes.happy;
+    const eyesSvg = typeof ASSETS.eyes[eyes] === 'function'
+        ? ASSETS.eyes[eyes](eyeColor)
+        : ASSETS.eyes.happy(eyeColor);
     const mouthSvg = ASSETS.mouths[mouth] || ASSETS.mouths.smile;
     const hairSvg = typeof ASSETS.hair[hair] === 'function' 
         ? ASSETS.hair[hair](hairColor) 

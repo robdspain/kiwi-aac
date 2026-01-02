@@ -18,6 +18,13 @@ export const HAIR_COLORS = [
     { id: 'grey', color: '#D6D6D6' }
 ];
 
+export const EYE_COLORS = [
+    { id: '#333333', label: 'Dark' },
+    { id: '#634e34', label: 'Brown' },
+    { id: '#2e536f', label: 'Blue' },
+    { id: '#3d671d', label: 'Green' }
+];
+
 export const ASSETS = {
     heads: {
         round: '<circle cx="100" cy="100" r="80" />',
@@ -25,9 +32,9 @@ export const ASSETS = {
         square: '<rect x="30" y="20" width="140" height="160" rx="40" />'
     },
     eyes: {
-        happy: '<circle cx="70" cy="90" r="8" fill="#333" /><circle cx="130" cy="90" r="8" fill="#333" />',
-        neutral: '<rect x="60" y="88" width="20" height="4" rx="2" fill="#333" /><rect x="120" y="88" width="20" height="4" rx="2" fill="#333" />',
-        large: '<circle cx="70" cy="90" r="12" fill="#fff" stroke="#333" stroke-width="2" /><circle cx="70" cy="90" r="5" fill="#333" /><circle cx="130" cy="90" r="12" fill="#fff" stroke="#333" stroke-width="2" /><circle cx="130" cy="90" r="5" fill="#333" />'
+        happy: (color) => `<circle cx="70" cy="90" r="8" fill="${color}" /><circle cx="130" cy="90" r="8" fill="${color}" />`,
+        neutral: (color) => `<rect x="60" y="88" width="20" height="4" rx="2" fill="${color}" /><rect x="120" y="88" width="20" height="4" rx="2" fill="${color}" />`,
+        large: (color) => `<circle cx="70" cy="90" r="12" fill="#fff" stroke="#333" stroke-width="1" /><circle cx="70" cy="90" r="6" fill="${color}" /><circle cx="130" cy="90" r="12" fill="#fff" stroke="#333" stroke-width="1" /><circle cx="130" cy="90" r="6" fill="${color}" />`
     },
     mouths: {
         smile: '<path d="M60 130 Q100 160 140 130" fill="none" stroke="#333" stroke-width="6" stroke-linecap="round" />',
@@ -44,6 +51,7 @@ export const ASSETS = {
     facial_hair: {
         none: '',
         stubble: '<path d="M60 150 Q100 180 140 150" fill="none" stroke="#000" stroke-width="10" opacity="0.1" />',
+        short_beard: '<path d="M45 130 Q100 190 155 130 L155 140 Q100 200 45 140 Z" fill="#4B2C20" opacity="0.9" />',
         beard: '<path d="M40 120 Q100 200 160 120 L160 140 Q100 210 40 140 Z" fill="#4B2C20" opacity="0.8" />',
         mustache: '<path d="M70 125 Q100 115 130 125" fill="none" stroke="#333" stroke-width="8" stroke-linecap="round" />'
     },

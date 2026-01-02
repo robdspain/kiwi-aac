@@ -233,7 +233,15 @@ const Controls = ({
                     {/* Basic Tab */}
                     {activeTab === 'basic' && (<>
                         <div style={{ display: 'flex', gap: '10px', marginBottom: '5px' }}>
-                            <button className="primary" style={{ flex: 1 }} onClick={() => onAddItem('', '', 'button')}>+ Add Button</button>
+                            <button 
+                                className="primary" 
+                                style={{ flex: 1 }} 
+                                onClick={() => onOpenPicker((word, icon, isImage) => {
+                                    onAddItem(word, icon, 'button');
+                                })}
+                            >
+                                + Add Icon
+                            </button>
                             <button className="primary" style={{ flex: 1, background: '#34C759' }} onClick={() => onAddItem('', '', 'folder')}>+ Add Folder</button>
                         </div>
 

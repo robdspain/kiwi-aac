@@ -120,8 +120,37 @@ const homeDefaultData = [
   { id: 'toy-generic', type: 'button', word: "Toy", icon: "🧸" },
   { id: 'snack-generic', type: 'button', word: "Snack", icon: "🥨" },
   { id: 'play-generic', type: 'button', word: "Play", icon: "🏃" },
-  { id: 'mom', type: 'button', word: "Mom", icon: "👩🏾‍🦱" },
-  { id: 'dad', type: 'button', word: "Dad", icon: "🧔🏻‍♂️" },
+  { 
+    id: 'mom', 
+    type: 'button', 
+    word: "Mom", 
+    icon: "👤", 
+    characterConfig: {
+        head: 'round',
+        skin: '#8D5524',
+        hair: 'curly',
+        hairColor: '#2C222B',
+        eyes: 'happy',
+        mouth: 'smile',
+        eyeColor: '#333333'
+    }
+  },
+  { 
+    id: 'dad', 
+    type: 'button', 
+    word: "Dad", 
+    icon: "👤",
+    characterConfig: {
+        head: 'square',
+        skin: '#E0AC69',
+        hair: 'short',
+        hairColor: '#4B2C20',
+        facialHair: 'short_beard',
+        eyes: 'happy',
+        mouth: 'smile',
+        eyeColor: '#2e536f'
+    }
+  },
   { id: 'more', type: 'button', word: "More", icon: "➕" },
   {
     id: 'food-folder', type: 'folder', word: "Foods", icon: "🍎", contents: [
@@ -329,7 +358,7 @@ function App() {
     return !localStorage.getItem('kiwi-onboarding-complete');
   });
 
-  const [showSplash, setShowSplash] = useState(false); // Disabled for screenshots
+  const [showSplash, setShowSplash] = useState(true); 
   const [showLevelIntro, setShowLevelIntro] = useState(false);
 
   const [showPhase1Selector, setShowPhase1Selector] = useState(false);

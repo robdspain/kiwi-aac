@@ -422,38 +422,45 @@ body.literacy-mode .app-icon {
 .del-badge,
 .edit-badge {
   position: absolute;
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10;
-  min-width: 44px;
-  min-height: 44px;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+}
+
+.del-badge:active,
+.edit-badge:active {
+  transform: scale(1.2);
 }
 
 .del-badge {
-  top: -8px;
-  left: -8px;
-  background: rgba(255, 107, 107, 0.95);
-  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
+  top: -12px;
+  left: -12px;
+  background: #FF3B30;
+  box-shadow: 0 4px 12px rgba(255, 59, 48, 0.3);
+  border: 3px solid white;
 }
 
 .del-badge::after {
   content: "×";
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: 800;
   color: white;
 }
 
 .edit-badge {
-  top: -8px;
-  right: -8px;
+  top: -12px;
+  right: -12px;
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  box-shadow: 0 2px 8px rgba(78, 205, 196, 0.4);
+  box-shadow: 0 4px 12px rgba(78, 205, 196, 0.3);
   color: white;
-  font-size: 14px;
+  font-size: 18px;
+  border: 3px solid white;
 }
 
 /* Jiggle Mode */
