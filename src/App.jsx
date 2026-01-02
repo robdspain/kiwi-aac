@@ -664,7 +664,8 @@ function App() {
 
   const handleToggleTraining = (index) => { if (trainingSelection.includes(index)) setTrainingSelection(trainingSelection.filter(i => i !== index)); else setTrainingSelection([...trainingSelection, index]); };
   const handleShuffle = () => {
-    const list = currentPath.length === 0 ? rootItems : currentPath.reduce((acc, i) => acc[i].contents, rootItems);
+    const currentPageItems = rootItems[currentPageIndex]?.items || [];
+    const list = currentPath.length === 0 ? currentPageItems : currentPath.reduce((acc, i) => acc[i].contents, currentPageItems);
     const selected = trainingSelection.map(i => ({ item: list[i], originalIndex: i }));
     selected.sort(() => Math.random() - 0.5);
     setShuffledItems(selected);
@@ -709,9 +710,10 @@ function App() {
     }
   };
 
+  const currentPageItems = rootItems[currentPageIndex]?.items || [];
   let itemsToShow = currentPath.length === 0 
-    ? (rootItems[currentPageIndex]?.items || []) 
-    : currentPath.reduce((acc, i) => acc[i].contents, rootItems[currentPageIndex]?.items || []);
+    ? currentPageItems 
+    : currentPath.reduce((acc, i) => acc[i].contents, currentPageItems);
   
   // Dynamic Core Overlay: Prepend core words if at root (and not in Training Mode)
   if (currentPath.length === 0 && !isTrainingMode && currentPhase > 2) {
@@ -725,14 +727,14 @@ function App() {
   if (isTrainingMode && shuffledItems) {
     itemsToShow = shuffledItems.map(obj => obj.item);
   } else if (currentPhase === 1 || currentPhase === 2) {
-    let target = phase1TargetId ? rootItems.find(i => i.id === phase1TargetId) : null;
+    let target = phase1TargetId ? currentPageItems.find(i => i.id === phase1TargetId) : null;
     if (!target) { 
       const allowedIds = ['snack-generic', 'play-generic', 'toy-generic', 'mom', 'dad']; 
-      target = rootItems.find(i => i.type === 'button' && allowedIds.includes(i.id)); 
+      target = currentPageItems.find(i => i.type === 'button' && allowedIds.includes(i.id)); 
     }
     itemsToShow = target ? [target] : [];
   } else if (currentPhase === 3) {
-    itemsToShow = rootItems.filter(i => i.type === 'button' && i.category !== 'starter').slice(0, 20);
+    itemsToShow = currentPageItems.filter(i => i.type === 'button' && i.category !== 'starter').slice(0, 20);
   } else if (currentPhase > 0 && currentPhase < 6) {
     itemsToShow = itemsToShow.filter(i => i.category !== 'starter');
   }
@@ -836,9 +838,9 @@ function App() {
             onEdit={handleEdit} 
             onAddItem={handleAddItem} 
             onToggleTraining={handleToggleTraining} 
-            hasBack={currentPath.length > 0} 
-            trainingPanelVisible={!shuffledItems} 
-            folder={currentPath.length > 0 ? currentPath.reduce((acc, i) => acc[i].contents, rootItems) : null} 
+            hasBack={currentPath.length > 0}
+            trainingPanelVisible={!shuffledItems}
+            folder={currentPath.length > 0 ? currentPath.reduce((acc, i) => acc[i].contents, (rootItems[currentPageIndex]?.items || [])) : null} 
             scanIndex={scanIndex} 
             isLayoutLocked={isLayoutLocked} 
             isColorCodingEnabled={isColorCodingEnabled}
@@ -874,9 +876,9 @@ function App() {
           <span style={{ fontSize: '12px', color: '#666', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}><span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>🔒 Child Mode Active</span>{showUnlockHint ? <span style={{ color: 'var(--primary)', fontWeight: 600 }}>{3 - lockTapCount} more taps to unlock</span> : <span style={{ opacity: 0.8 }}>Tap 3x here to unlock</span>}</span>
         </div>
       )}
-      <EditModal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} onSave={handleSaveEdit} onDelete={() => { if (editingItemIndex !== null) { handleDelete(editingItemIndex); setEditModalOpen(false); } }} onOpenEmojiPicker={handlePickerOpen} item={editingItemIndex !== null ? (currentPath.length === 0 ? rootItems : currentPath.reduce((acc, i) => acc[i].contents, rootItems))[editingItemIndex] : null} triggerPaywall={triggerPaywall}/>
-      <PickerModal isOpen={pickerOpen} onClose={() => setPickerOpen(false)} userItems={rootItems} triggerPaywall={triggerPaywall} onSelect={(w, i, isImage) => { if (pickerCallback) pickerCallback(w, i, isImage); }}/>
-      {showPhase1Selector && <Phase1TargetSelector rootItems={rootItems} onSelect={(id) => { setPhase1TargetId(id); setShowPhase1Selector(false); }}/>}
+      <EditModal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} onSave={handleSaveEdit} onDelete={() => { if (editingItemIndex !== null) { handleDelete(editingItemIndex); setEditModalOpen(false); } }} onOpenEmojiPicker={handlePickerOpen} item={editingItemIndex !== null ? (currentPath.length === 0 ? (rootItems[currentPageIndex]?.items || []) : currentPath.reduce((acc, i) => acc[i].contents, (rootItems[currentPageIndex]?.items || [])))[editingItemIndex] : null} triggerPaywall={triggerPaywall}/>
+      <PickerModal isOpen={pickerOpen} onClose={() => setPickerOpen(false)} userItems={rootItems[currentPageIndex]?.items || []} triggerPaywall={triggerPaywall} onSelect={(w, i, isImage) => { if (pickerCallback) pickerCallback(w, i, isImage); }}/>
+      {showPhase1Selector && <Phase1TargetSelector rootItems={rootItems[currentPageIndex]?.items || []} onSelect={(id) => { setPhase1TargetId(id); setShowPhase1Selector(false); }}/>}
       {showAdvancementModal && <AdvancementModal currentPhase={currentPhase} onAdvance={handleAdvance} onWait={handleWait}/>}
       <A2HSModal />
       {inflectionData && (
@@ -923,7 +925,7 @@ function App() {
           }}>✕</button>
         </div>
       )}
-      {showDashboard && <Suspense fallback={null}><Dashboard onClose={() => setShowDashboard(false)} progressData={progressData} currentPhase={currentPhase} currentLevel={currentLevel} rootItems={rootItems}/></Suspense>}
+      {showDashboard && <Suspense fallback={null}><Dashboard onClose={() => setShowDashboard(false)} progressData={progressData} currentPhase={currentPhase} currentLevel={currentLevel} rootItems={rootItems[currentPageIndex]?.items || []}/></Suspense>}
       {showCalibration && <TouchCalibration onComplete={() => setShowCalibration(false)}/>}
       {showOnboarding && (
         <Onboarding onComplete={(recommendedPhase, favorites, canRead, learnerProfile) => {
@@ -938,10 +940,14 @@ function App() {
           if (favorites && Array.isArray(favorites) && favorites.length > 0) {
             const now = new Date().getTime();
             const newFavs = favorites.map((fav, i) => ({ id: `fav-${now}-${i}`, type: 'button', word: fav.word || fav.label, icon: fav.icon, bgColor: '#FFF3E0' }));
-            const list = [...rootItems]; let insertIndex = 0; for (let i = 0; i < list.length; i++) if (list[i].category === 'starter') insertIndex = i + 1; else break;
+            const newRootItems = [...rootItems];
+            const list = [...(newRootItems[currentPageIndex]?.items || [])];
+            let insertIndex = 0;
+            for (let i = 0; i < list.length; i++) if (list[i].category === 'starter') insertIndex = i + 1; else break;
             list.splice(insertIndex, 0, ...newFavs);
             if (canRead === true) list.push({ id: 'keyboard-folder', type: 'folder', word: 'Keyboard', icon: '⌨️', contents: [ { id: 'type-word', type: 'button', word: 'Type a word', icon: '✏️' }, { id: 'abc', type: 'button', word: 'ABC', icon: '🔤' } ] });
-            setRootItems(list);
+            newRootItems[currentPageIndex] = { ...newRootItems[currentPageIndex], items: list };
+            setRootItems(newRootItems);
           }
           setShowOnboarding(false);
         }} />
