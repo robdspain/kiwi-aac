@@ -12,47 +12,177 @@ Kiwi Voice is a specialized tool designed to curate and customize icon libraries
 
 ---
 
-### 3. Functional Requirements
+### 3. Development Philosophy & Feature Prioritization
 
-#### 3.1. Browser & Search
+#### 3.1. Core-First Approach
+
+**Philosophy:** Kiwi Voice must excel at basic communication before adding innovative features.
+
+**SLP-Validated Must-Haves (Priority 1):**
+1. **Robust Vocabulary** - Comprehensive, easily customizable word library
+2. **Reliable Speech Output** - Consistent, high-quality text-to-speech
+3. **Intuitive Interface** - Simple, accessible UI that doesn't overwhelm
+4. **Access to Support** - Help resources and responsive assistance
+
+**Implementation Priority:**
+- ✅ Core features MUST be complete, tested, and stable
+- ⚠️ Advanced features should enhance, not complicate
+- 🧪 Innovative features require user validation before full investment
+
+#### 3.2. Anti-Overengineering Guidelines
+
+**User Testing Requirements:**
+- **Zen Animations:** Validate that calming animations don't distract from communication
+- **Avatar Builder:** Confirm users prefer custom avatars vs. real photos (children recognize real faces better)
+- **AI Vision:** Ensure object detection adds value vs. manual selection
+- **Visual Action Cues:** Test whether illustrative imagery improves learning vs. standard icons
+
+**Decision Framework:**
+```
+Feature Proposal
+    ↓
+Does it improve CORE communication?
+    ├─ Yes → Prioritize
+    └─ No → Is it frequently requested by SLPs/parents?
+        ├─ Yes → User test, then decide
+        └─ No → Defer or remove
+```
+
+**Red Flags:**
+- Feature sounds "cool" but no clear use case
+- Adds UI complexity without communication benefit
+- Limited use expected (nice-to-have vs. need-to-have)
+- Resource-intensive with uncertain ROI
+
+#### 3.3. Progressive Disclosure Strategy
+
+**Two-Tier Interface:**
+- **Basic Mode (Default):** Essential features only, optimized for first-time users
+  - Core vocabulary
+  - Simple grid
+  - Basic TTS
+  - Quick templates
+
+- **Advanced Mode (Opt-In):** Full feature set for power users
+  - AI scene builder
+  - Advanced analytics
+  - Custom voice presets
+  - Morphology engine
+
+**Benefits:**
+- New users not overwhelmed by complexity
+- Advanced users can unlock full power
+- Features validated through graduated adoption
+- Clear user segmentation for analytics
+
+#### 3.4. Modular Architecture
+
+**Separate Core from Extras:**
+- **Core Module:** Always loaded, always stable
+  - Grid system
+  - TTS engine
+  - Basic customization
+
+- **Optional Modules:** Load on demand
+  - AI Vision tool (separate section, not forced)
+  - Advanced analytics dashboard
+  - Cloud collaboration
+  - Multi-language mirroring
+
+**Implementation:**
+- Code splitting for performance
+- Feature flags for gradual rollout
+- A/B testing for validation
+- Easy disable for problematic features
+
+#### 3.5. PWA/Hybrid Compliance Considerations
+
+**Platform Constraints:**
+- **PWA Limitations:** Some native OS features unavailable
+  - Bluetooth communication
+  - Deep system integration
+  - Background app refresh (limited)
+
+- **Must Feel Native:** Despite PWA constraints
+  - Follow iOS Human Interface Guidelines (Phase 16)
+  - Android Material Design patterns where appropriate
+  - Native-feeling animations and interactions
+
+**Store Compliance:**
+- ✅ In-app purchases follow Apple/Google rules
+- ✅ Subscription pricing transparent and fair
+- ✅ Privacy policy and data handling clear
+- ✅ Accessibility guidelines met (WCAG 2.1 AA)
+
+**Competitive Advantage:**
+- ✅ Works on iOS, Android, and web (vs. iOS-only competitors)
+- ✅ Successful hybrid AAC apps exist (TouchChat, CoughDrop)
+- ✅ Cross-platform = larger addressable market
+- ⚠️ Must maintain quality parity with native apps
+
+#### 3.6. Validation Metrics
+
+**Core Feature Success Criteria:**
+- Communication success rate > 95%
+- Speech output delay < 200ms
+- Icon selection accuracy > 98%
+- App crash rate < 0.1%
+
+**Advanced Feature Adoption Gates:**
+- Feature used by > 20% of active users (within 30 days)
+- User satisfaction score > 4.0/5 for feature
+- Support tickets related to feature < 2% of total
+- Performance impact < 5% (load time, battery)
+
+**User Testing Requirements:**
+- Minimum 10 SLP reviews before Phase 22+ features
+- Parent/caregiver feedback sessions (n=20) per major feature
+- A/B testing with 1000+ users for UI changes
+- Accessibility testing with disabled users
+
+---
+
+### 4. Functional Requirements
+
+#### 4.1. Browser & Search
 - [x] **Category Navigation:** Sidebar navigation for major emoji groups.
 - [x] **Search bar:** Real-time filtering of icons by name or character.
 - [x] **Search Enhancements:** Add "Clear Search" button.
 - [x] **Full Dataset:** Replace placeholder `emojiData.js` with the complete Unicode emoji set.
 
-#### 3.2. Selection & Curation
+#### 4.2. Selection & Curation
 - [x] **Single Select:** Toggle individual icons.
 - [x] **Bulk Select:** "Select All" and "Deselect" buttons for current categories.
 - [x] **Customization Flow:** Selecting an icon triggers a polished customization screen to edit labels before saving.
 - [x] **Visual Feedback:** Clear selection badges and highlight states.
 - [x] **Persistence:** Track selected items across category switches.
 
-#### 3.3. Customization
+#### 4.3. Customization
 - [x] **Skin Tone Picker:** Long-press/Right-click access to variation selector.
 - [x] **Mimoji Aesthetic:** Avatars feature premium 3D-style gradients, highlights, and shadows.
 - [x] **Variation Logic:** Automatically link base emojis to their skin-tone modifiers.
 - [x] **Accessibility:** Focus trapping and keyboard management for the picker.
 
-#### 3.4. Export
+#### 4.4. Export
 - [x] **JSON Export:** Download `iconsData.json` containing name and character mapping.
 - [x] **Schema Validation:** Ensure exported JSON matches the target AAC app requirements.
 
 ---
 
-### 4. Non-Functional Requirements
+### 5. Non-Functional Requirements
 
-#### 4.1. Performance
+#### 5.1. Performance
 - [x] **Build Size:** Maintain optimized production builds via Vite.
 - [x] **Processing:** Pre-process emoji grouping on initial load (currently in `EmojiCurator.jsx`).
 - [x] **Lazy Loading:** Implement for the grid if the dataset becomes very large.
 
-#### 4.2. UI/UX & Responsive Design
+#### 5.2. UI/UX & Responsive Design
 - [x] **Responsive Layout:** Adaptive sidebar (desktop) vs. Drawer (mobile).
 - [x] **Navigation Flow:** Seamless "Back to Library" transitions and Enter-key support for rapid saving.
 - [x] **Safe Areas:** Support for notches and home bars (`env(safe-area-inset)`).
 - [x] **Theme Consistency:** Resolve conflicts between `index.css` (dark) and Component (light).
 
-#### 4.3. Accessibility (AAC Specific)
+#### 5.3. Accessibility (AAC Specific)
 - [x] **Touch Targets:** Large targets (>44px).
 - [x] **ARIA Labels:** Basic labeling for screen readers.
 - [x] **Focus Management:** Full keyboard navigation support (grid focus, picker trap).
@@ -60,22 +190,22 @@ Kiwi Voice is a specialized tool designed to curate and customize icon libraries
 
 ---
 
-### 5. Store & Platform Compliance
+### 6. Store & Platform Compliance
 
-#### 5.1. PWA Requirements
+#### 6.1. PWA Requirements
 - [x] **Manifest:** Create `manifest.json` with icons, theme colors, and display mode.
 - [x] **Service Worker:** Basic offline support and caching.
 - [x] **Installation UI:** iOS-specific instruction modal for adding the PWA to the home screen.
 
-#### 5.2. iOS / Android Assets
+#### 6.2. iOS / Android Assets
 - [x] **App Icons:** 1024x1024 (iOS) and 512x512 (Android) source assets.
 - [x] **Splash Screens:** Native-style launch images.
 
 ---
 
-### 6. Pricing & Monetization Strategy
+### 7. Pricing & Monetization Strategy
 
-#### 6.1. Market Analysis & Competitive Pricing
+#### 7.1. Market Analysis & Competitive Pricing
 
 **Competitor Pricing Landscape:**
 - **Proloquo2Go:** $249.99 (one-time, iOS only)
@@ -96,7 +226,7 @@ Kiwi Voice is a specialized tool designed to curate and customize icon libraries
 - **Accessible Entry Point:** Lower barrier to entry than premium competitors
 - **Freemium Model:** Core features free, premium features via subscription
 
-#### 6.2. Free Tier (Core AAC Functionality)
+#### 7.2. Free Tier (Core AAC Functionality)
 
 **Always Free - No Paywall:**
 - ✅ Core 50 word vocabulary
@@ -112,7 +242,7 @@ Kiwi Voice is a specialized tool designed to curate and customize icon libraries
 
 **Rationale:** Core communication should NEVER be paywalled. Every child deserves the ability to communicate regardless of ability to pay.
 
-#### 6.3. Premium Tier - "Kiwi Pro" ($4.99/month or $39.99/year)
+#### 7.3. Premium Tier - "Kiwi Pro" ($4.99/month or $39.99/year)
 
 **Premium Features (Superwall Integration):**
 
@@ -172,7 +302,7 @@ Kiwi Voice is a specialized tool designed to curate and customize icon libraries
    - Setup assistance
    - Direct access to AAC specialists
 
-#### 6.4. Institutional Pricing
+#### 7.4. Institutional Pricing
 
 **Kiwi Pro for Schools/Clinics:**
 - $99/year per organization (unlimited students)
@@ -187,7 +317,7 @@ Kiwi Voice is a specialized tool designed to curate and customize icon libraries
 - Session notes integration
 - Progress monitoring tools
 
-#### 6.5. Implementation Strategy
+#### 7.5. Implementation Strategy
 
 **Superwall Event Mapping:**
 
@@ -224,7 +354,7 @@ await Superwall.register({ event: 'multiProfiles' })
 await Superwall.register({ event: 'addProfile2' }) // Trigger when adding 2nd profile
 ```
 
-#### 6.6. Value Proposition & Positioning
+#### 7.6. Value Proposition & Positioning
 
 **Compared to Proloquo2Go ($249.99):**
 - ✅ $39.99/year = **84% cheaper**
@@ -245,7 +375,7 @@ await Superwall.register({ event: 'addProfile2' }) // Trigger when adding 2nd pr
 4. **Transparent Pricing:** No hidden costs or surprise add-ons
 5. **Subscription Flexibility:** Cancel anytime, keep your data
 
-#### 6.7. Revenue Projections & Success Metrics
+#### 7.7. Revenue Projections & Success Metrics
 
 **Target Market Size:**
 - 2M+ AAC users in US alone
@@ -270,7 +400,7 @@ await Superwall.register({ event: 'addProfile2' }) // Trigger when adding 2nd pr
 
 ---
 
-### 7. Roadmap & Implementation Status
+### 8. Roadmap & Implementation Status
 
 > **Note:** For quarter-based roadmap and detailed feature timelines, see [ROADMAP.md](./ROADMAP.md). This section provides phase-based implementation tracking with detailed technical requirements for each feature.
 
