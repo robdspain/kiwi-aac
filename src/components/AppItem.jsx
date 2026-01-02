@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import AvatarRenderer from './AvatarRenderer';
 
 const AppItem = ({
   item,
@@ -89,7 +90,11 @@ const AppItem = ({
           <div className="folder-grid">
             {item.contents.slice(0, 4).map((subItem, i) => (
               <span key={i} className="mini-icon">
-                {typeof subItem.icon === 'string' && (subItem.icon.startsWith('/') || subItem.icon.startsWith('data:') || subItem.icon.includes('.')) ? (
+                {subItem.type === 'custom_avatar' ? (
+                  <div style={{ transform: 'scale(0.3)' }}>
+                    <AvatarRenderer recipe={subItem.recipe} size={100} />
+                  </div>
+                ) : typeof subItem.icon === 'string' && (subItem.icon.startsWith('/') || subItem.icon.startsWith('data:') || subItem.icon.includes('.')) ? (
                   <img src={subItem.icon} alt={subItem.word} className="sub-icon-img" />
                 ) : (
                   subItem.icon

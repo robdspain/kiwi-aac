@@ -803,6 +803,9 @@ const EmojiCurator = () => {
                               <button onClick={() => { setSequenceMode(!sequenceMode); setShowToolsMenu(false); }} style={{ textAlign: 'left', padding: '10px', background: sequenceMode ? '#FFF3E0' : 'none', border: 'none', cursor: 'pointer', fontSize: '0.9rem', color: '#333', fontWeight: sequenceMode ? 'bold' : 'normal' }}>
                                   {sequenceMode ? 'Finish Sequence' : '✨ Builder Mode'}
                               </button>
+                              <button onClick={() => { setGuideMode(!guideMode); setShowToolsMenu(false); }} style={{ textAlign: 'left', padding: '10px', background: guideMode ? '#FFF3E0' : 'none', border: 'none', cursor: 'pointer', fontSize: '0.9rem', color: '#333', fontWeight: guideMode ? 'bold' : 'normal' }}>
+                                  {guideMode ? 'Stop Guide' : '🎯 Guide Mode'}
+                              </button>
                               <hr style={{ margin: '5px 0', border: 'none', borderTop: '1px solid #eee' }} />
                               <button onClick={() => {
                                   const id = Math.random().toString(36).substring(7);
