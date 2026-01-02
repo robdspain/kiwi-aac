@@ -713,8 +713,6 @@ function App() {
     ? (rootItems[currentPageIndex]?.items || []) 
     : currentPath.reduce((acc, i) => acc[i].contents, rootItems[currentPageIndex]?.items || []);
   
-  if (currentPath.length === 0) {
-  
   // Dynamic Core Overlay: Prepend core words if at root (and not in Training Mode)
   if (currentPath.length === 0 && !isTrainingMode && currentPhase > 2) {
     // Only prepend if they aren't already there (to avoid duplication if they were saved in rootItems)

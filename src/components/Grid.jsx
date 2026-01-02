@@ -306,6 +306,7 @@ const Grid = ({
                 })}
             </AnimatePresence>
         </div>
+    </div>
     );
 };
 
