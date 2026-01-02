@@ -148,20 +148,38 @@ body.literacy-mode {
 }
 
 .phase-large-grid .app-item {
-  width: 60vw;
-  height: 60vw;
-  max-width: none;
+  flex-direction: row;
+  width: 85vw;
+  height: auto;
+  max-width: 600px;
+  background: white;
+  border-radius: 40px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.15);
+  padding: 40px;
+  gap: 30px;
+  border: 2px solid #F2F2F7;
 }
 
 .phase-large-grid .app-icon {
-  width: 100%;
-  height: 100%;
-  font-size: 15vw;
+  width: 35vw;
+  height: 35vw;
+  max-width: 250px;
+  max-height: 250px;
+  background: transparent;
+  box-shadow: none;
+  font-size: 28vw;
 }
 
 .phase-large-grid .app-label {
-  font-size: 4vw;
-  margin-top: 10px;
+  font-size: 10vw;
+  font-weight: 800;
+  color: #333;
+  text-align: left;
+  flex: 1;
+}
+
+.phase-large-grid {
+  padding-bottom: 20px !important;
 }
 
 /* Floating Settings Button */
@@ -590,14 +608,14 @@ body.literacy-mode {
   font-size: 1rem;
 }
 
-.dashboard-btn.primary { background: var(--primary); color: white; }
-.dashboard-btn.success { background: var(--success); color: white; }
+.dashboard-btn.primary { background: var(--primary); color: var(--text-primary); }
+.dashboard-btn.success { background: var(--success); color: var(--text-primary); }
 .dashboard-btn.secondary { background: var(--gray-light); color: var(--text-secondary); }
 
 /* Common UI Elements */
 .primary-button {
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: white;
+  color: var(--text-primary);
   border: none;
   padding: 16px 32px;
   border-radius: var(--radius-md);

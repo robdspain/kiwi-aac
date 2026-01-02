@@ -244,7 +244,21 @@ const EmojiCurator = () => {
               )}
           </div>
           <div style={{ background: '#333', padding: '8px 15px', borderRadius: '8px', fontSize: '0.9rem', color: 'white' }}><span style={{ color: '#4ECDC4', fontWeight: 'bold' }}>{totalSelected}</span> selected</div>
-          <button onClick={() => { const output = {}; Object.keys(selectedEmojis).forEach(cat => { if (selectedEmojis[cat]?.length) output[cat] = selectedEmojis[cat].map(char => { const custom = customItems.find(c => c.emoji === char); if (custom) return custom.type === 'avatar' ? { w: custom.name, type: 'custom_avatar', recipe: custom.recipe, i: '👤' } : { w: custom.name, i: custom.image, isCustom: true }; const base = allEmojisFlat.find(e => e.emoji === char) || allEmojisFlat.reduce((acc, b) => acc || b.variations.find(v => v.emoji === char), null); const meta = emojiMetadata[char] || {}; return { w: meta.label || base?.name || "Unknown", i: char, wc: meta.wordClass || 'noun', bg: meta.backgroundColor || '#ffffff', skill: meta.skill || 'none' }; }); }); const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(output, null, 2)], { type: 'application/json' })); a.download = 'iconsData.json'; a.click(); }} style={{ padding: '10px 20px', background: '#4ECDC4', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>SAVE</button>
+            <button
+              onClick={exportSelected}
+              style={{
+                padding: isMobile ? '8px 15px' : '10px 25px',
+                background: '#4ECDC4',
+                color: '#2D3436',
+                border: 'none',
+                borderRadius: '8px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                fontSize: isMobile ? '0.8rem' : '0.9rem'
+              }}
+            >
+              {isMobile ? 'SAVE' : 'SAVE iconsData.json'}
+            </button>
         </div>
       </div>
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
@@ -253,7 +267,21 @@ const EmojiCurator = () => {
             <div style={{ fontSize: '0.7rem', color: '#999', fontWeight: 'bold', marginBottom: '10px' }}>CATEGORIES</div>
             <div style={{ position: 'relative' }}><input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} style={{ width: '100%', padding: '8px 30px', borderRadius: '6px', border: '1px solid #ddd' }} /><span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }}>🔍</span></div>
           </div>
-          {!searchQuery && categories.map(cat => ( <button key={cat} onClick={() => { setActiveCategory(cat); if (isMobile) setShowSidebar(false); }} style={{ textAlign: 'left', padding: '10px 15px', borderRadius: '6px', border: 'none', background: activeCategory === cat ? '#f0f7ff' : 'transparent', color: activeCategory === cat ? '#007AFF' : '#555', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><span>{cat}</span>{selectedEmojis[cat]?.length > 0 && <span style={{ background: '#4ECDC4', color: 'white', width: '20px', height: '20px', borderRadius: '50%', fontSize: '0.7rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{selectedEmojis[cat].length}</span>}</button> ))}
+          {!searchQuery && categories.map(cat => ( <button key={cat} onClick={() => { setActiveCategory(cat); if (isMobile) setShowSidebar(false); }} style={{ textAlign: 'left', padding: '10px 15px', borderRadius: '6px', border: 'none', background: activeCategory === cat ? '#f0f7ff' : 'transparent', color: activeCategory === cat ? '#007AFF' : '#555', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><span>{cat}</span>                {selectedEmojis[category]?.length > 0 && (
+                  <span style={{ 
+                    background: '#4ECDC4',
+                    color: '#2D3436',
+                    width: '20px',
+                    height: '20px',
+                    borderRadius: '50%',
+                    fontSize: '0.7rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    {selectedEmojis[category].length}
+                  </span>
+                )}</button> ))}
         </div>
         {isMobile && showSidebar && <div onClick={() => setShowSidebar(false)} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', zIndex: 90, backdropFilter: 'blur(2px)' }}/>} 
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#f8f9fa' }}>
@@ -270,7 +298,29 @@ const EmojiCurator = () => {
                   <button key={`${item.emoji}-${idx}`} onMouseDown={(e) => handleStart(e, item)} onMouseUp={handleCleanup} onMouseLeave={handleCleanup} onClick={() => { if (!isLongPress.current && !pickerTarget) { if (sequenceMode) setSequence(prev => [...prev, { ...item, id: new Date().getTime() }]); else toggleEmoji(activeCategory, item.emoji, item); } }} style={{ padding: '15px', borderRadius: '12px', border: 'none', background: 'white', boxShadow: isTarg ? '0 0 15px #FFD700' : '0 2px 6px rgba(0,0,0,0.05)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', position: 'relative' }}>
                     {item.image ? <img src={item.image} alt={item.name} style={{ width: '3rem', height: '3rem', objectFit: 'cover' }} /> : item.type === 'avatar' ? <div style={{ pointerEvents: 'none' }}><AvatarRenderer recipe={item.recipe} size={80} /></div> : <span style={{ fontSize: '2.5rem' }}>{disp}</span>}
                     <span style={{ fontSize: '0.8rem', color: '#333' }}>{item.name}</span>
-                    {isChecked && <div style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#4ECDC4', color: 'white', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✓</div>}
+                      {/* Selection Badge */}                      {isChecked && (
+                        <div 
+                          aria-hidden="true"
+                          style={{
+                            position: 'absolute',
+                            top: '-10px',
+                            right: '-10px',
+                            background: '#4ECDC4',
+                            color: '#2D3436',
+                            width: '28px',
+                            height: '28px',
+                            borderRadius: '50%',
+                            fontSize: '14px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                            border: '2px solid white'
+                          }}
+                        >
+                          ✓
+                        </div>
+                      )}
                     {isChecked && <div onClick={(e) => { e.stopPropagation(); openEditModal(item, disp); }} style={{ position: 'absolute', top: '5px', left: '5px', background: 'white', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>✏️</div>}
                   </button>
                 );
