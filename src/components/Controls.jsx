@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
 import GuidedAccessModal from './GuidedAccessModal';
 import FavoritesPickerModal from './FavoritesPickerModal';
+import PronunciationEditor from './PronunciationEditor';
 import MemojiPicker from './MemojiPicker';
 import Superwall from '../plugins/superwall';
 import { STAGES, LEVEL_ORDER, getLevel, getStage } from '../data/levelDefinitions';
 import { BELL_SOUNDS, playBellSound } from '../utils/sounds';
+import { useProfile } from '../context/ProfileContext';
+
+import BackupRestore from './BackupRestore';
 
 const Controls = ({
     isEditMode,
@@ -41,6 +45,16 @@ const Controls = ({
     onUpdateBellSound,
     speechDelay,
     onUpdateSpeechDelay,
+    autoSpeak,
+    onUpdateAutoSpeak,
+    isScanning,
+    onToggleScanning,
+    scanSpeed,
+    onUpdateScanSpeed,
+    isLayoutLocked,
+    onToggleLayoutLock,
+    isColorCodingEnabled,
+    onToggleColorCoding,
     onAddFavorites,
     progressData = {}
 }) => {
@@ -56,6 +70,8 @@ const Controls = ({
 
     const [showGuidedAccess, setShowGuidedAccess] = useState(false);
     const [showFavoritesPicker, setShowFavoritesPicker] = useState(false);
+    const [showPronunciationEditor, setShowPronunciationEditor] = useState(false);
+    const [showBackupRestore, setShowBackupRestore] = useState(false);
     const [availableVoices, setAvailableVoices] = useState([]);
     const [isRestoring, setIsRestoring] = useState(false);
     const [showAdvanced, setShowAdvanced] = useState(false);
@@ -69,17 +85,75 @@ const Controls = ({
     ];
     const activeTabIndex = tabs.findIndex(t => t.id === activeTab);
 
+    const { pronunciations } = useProfile();
+
+    const testVoice = () => {
+        const text = "Hello, I am ready to talk.";
+        const words = text.split(/\s+/);
+        const processedWords = words.map(w => {
+            const cleanWord = w.toLowerCase().replace(/[.,!?;:]/g, '');
+            return pronunciations[cleanWord] || w;
+        });
+        const processedText = processedWords.join(' ');
+        
+        const u = new SpeechSynthesisUtterance(processedText);
+        u.rate = voiceSettings.rate;
+        u.pitch = voiceSettings.pitch || 1;
+        u.volume = voiceSettings.volume || 1;
+        
+        if (voiceSettings.voiceURI) {
+            const voices = window.speechSynthesis.getVoices();
+            const selectedVoice = voices.find(v => v.voiceURI === voiceSettings.voiceURI);
+            if (selectedVoice) u.voice = selectedVoice;
+        }
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(u);
+    };
+
     // Detect iOS to show relevant help
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    const [selectedLang, setSelectedLang] = useState('en');
 
     useEffect(() => {
         const loadVoices = () => {
             const voices = window.speechSynthesis.getVoices();
-            setAvailableVoices(voices.filter(v => v.lang.startsWith('en')));
+            setAvailableVoices(voices);
+            
+            // Default to first available language if 'en' not found
+            if (voices.length > 0 && !voices.some(v => v.lang.startsWith('en'))) {
+                setSelectedLang(voices[0].lang.split('-')[0]);
+            }
         };
         loadVoices();
         window.speechSynthesis.onvoiceschanged = loadVoices;
     }, []);
+
+    const VOICE_PRESETS = [
+        { id: 'child', label: '👧 Child', pitch: 1.2, rate: 0.8 },
+        { id: 'adult', label: '👩 Adult', pitch: 1.0, rate: 1.0 },
+        { id: 'clear', label: '🗣️ Clear', pitch: 1.0, rate: 0.7 }
+    ];
+
+    const applyPreset = (preset) => {
+        onUpdateVoiceSettings({
+            ...voiceSettings,
+            pitch: preset.pitch,
+            rate: preset.rate
+        });
+    };
+
+    const filteredVoices = availableVoices
+        .filter(v => v.lang.startsWith(selectedLang))
+        .sort((a, b) => {
+            const aHigh = a.name.includes('Enhanced') || a.name.includes('Premium') || a.name.includes('Siri');
+            const bHigh = b.name.includes('Enhanced') || b.name.includes('Premium') || b.name.includes('Siri');
+            if (aHigh && !bHigh) return -1;
+            if (!aHigh && bHigh) return 1;
+            return a.name.localeCompare(b.name);
+        });
+
+    const languages = Array.from(new Set(availableVoices.map(v => v.lang.split('-')[0]))).sort();
 
     const handleRestore = async () => {
         setIsRestoring(true);
@@ -126,7 +200,7 @@ const Controls = ({
                 <div id="edit-panel" style={{ display: (isEditMode && !isTrainingMode) ? 'flex' : 'none', flexDirection: 'column' }}>
                     
                     {/* Action Section */}
-                    <div style={{ marginBottom: '20px' }}>
+                    <div style={{ marginBottom: '1.25rem' }}>
                         <button onClick={handleLock} className="apple-red-button">
                             🔒 Lock App for Child
                         </button>
@@ -146,7 +220,7 @@ const Controls = ({
                         <div 
                             className="selection-pill" 
                             style={{ 
-                                width: `calc(${100 / tabs.length}% - 4px)`,
+                                width: `calc(${100 / tabs.length}% - 0.25rem)`,
                                 transform: `translateX(${activeTabIndex * 100}%)` 
                             }} 
                         />
@@ -163,7 +237,7 @@ const Controls = ({
 
                     {/* Basic Tab */}
                     {activeTab === 'basic' && (
-                        <div style={{ background: '#F2F2F7', margin: '0 -24px', padding: '0 24px 24px', flex: 1 }}>
+                        <div style={{ background: '#F2F2F7', margin: '0 -1.5rem', padding: '0 1.5rem 1.5rem', flex: 1 }}>
                             
                             <div className="ios-setting-group-header">Library Building</div>
                             <div className="ios-setting-card">
@@ -178,8 +252,8 @@ const Controls = ({
                             </div>
 
                             <div className="ios-setting-group-header">Communication Level</div>
-                            <div className="ios-setting-card" style={{ padding: '15px' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '15px' }}>
+                            <div className="ios-setting-card" style={{ padding: '0.9375rem' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', marginBottom: '0.9375rem' }}>
                                     {Object.entries(STAGES).map(([stageNum, stage]) => {
                                         const stageInt = parseInt(stageNum);
                                         const isActive = Math.floor(currentLevel) === stageInt;
@@ -191,21 +265,21 @@ const Controls = ({
                                                     if (firstLevel && onSetLevel) onSetLevel(firstLevel);
                                                 }}
                                                 style={{
-                                                    height: '50px',
-                                                    fontSize: '12px',
+                                                    height: '3.125rem',
+                                                    fontSize: '0.75rem',
                                                     display: 'flex',
                                                     flexDirection: 'column',
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
-                                                    gap: '2px',
+                                                    gap: '0.125rem',
                                                     background: isActive ? stage.color : '#E5E5EA',
                                                     color: isActive ? 'white' : 'black',
-                                                    borderRadius: '10px',
+                                                    borderRadius: '0.625rem',
                                                     border: 'none',
                                                     cursor: 'pointer'
                                                 }}
                                             >
-                                                <span style={{ fontSize: '18px' }}>{stage.icon}</span>
+                                                <span style={{ fontSize: '1.125rem' }}>{stage.icon}</span>
                                                 <span style={{ fontWeight: 700 }}>Stage {stageInt}</span>
                                             </button>
                                         );
@@ -215,14 +289,14 @@ const Controls = ({
                                 {currentLevel && (
                                     <div style={{
                                         background: getStage(currentLevel).color + '15',
-                                        padding: '12px',
-                                        borderRadius: '10px',
-                                        border: `1px solid ${getStage(currentLevel).color}40`
+                                        padding: '0.75rem',
+                                        borderRadius: '0.625rem',
+                                        border: `0.0625rem solid ${getStage(currentLevel).color}40`
                                     }}>
-                                        <div style={{ fontSize: '11px', fontWeight: 700, color: getStage(currentLevel).color, marginBottom: '8px', textTransform: 'uppercase' }}>
+                                        <div style={{ fontSize: '0.6875rem', fontWeight: 700, color: getStage(currentLevel).color, marginBottom: '0.5rem', textTransform: 'uppercase' }}>
                                             {getStage(currentLevel).icon} {getStage(currentLevel).name}
                                         </div>
-                                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                                        <div style={{ display: 'flex', gap: '0.375rem', flexWrap: 'wrap' }}>
                                             {LEVEL_ORDER.filter(l => Math.floor(l) === Math.floor(currentLevel)).map(lvl => {
                                                 const levelDef = getLevel(lvl);
                                                 const isSelected = currentLevel === lvl;
@@ -231,13 +305,13 @@ const Controls = ({
                                                         key={lvl}
                                                         onClick={() => onSetLevel && onSetLevel(lvl)}
                                                         style={{
-                                                            minHeight: '36px',
-                                                            padding: '0 12px',
-                                                            fontSize: '11px',
+                                                            minHeight: '2.25rem',
+                                                            padding: '0 0.75rem',
+                                                            fontSize: '0.6875rem',
                                                             background: isSelected ? getStage(currentLevel).color : 'white',
                                                             color: isSelected ? 'white' : '#333',
-                                                            borderRadius: '8px',
-                                                            border: isSelected ? 'none' : '1px solid #ddd',
+                                                            borderRadius: '0.5rem',
+                                                            border: isSelected ? 'none' : '0.0625rem solid #ddd',
                                                             cursor: 'pointer',
                                                             fontWeight: isSelected ? 700 : 400
                                                         }}
@@ -252,11 +326,11 @@ const Controls = ({
 
                                 {/* Quick swap for Level 1 */}
                                 {currentPhase === 1 && (
-                                    <div style={{ marginTop: '15px', padding: '12px', background: 'linear-gradient(135deg, #FFF5E1, #FFE4B5)', borderRadius: '10px', border: '1px solid #FFA500' }}>
-                                        <div style={{ fontSize: '11px', fontWeight: 700, color: '#D2691E', marginBottom: '8px', textTransform: 'uppercase' }}>
+                                    <div style={{ marginTop: '0.9375rem', padding: '0.75rem', background: 'linear-gradient(135deg, #FFF5E1, #FFE4B5)', borderRadius: '0.625rem', border: '0.0625rem solid #FFA500' }}>
+                                        <div style={{ fontSize: '0.6875rem', fontWeight: 700, color: '#D2691E', marginBottom: '0.5rem', textTransform: 'uppercase' }}>
                                             🎯 Choose Target Icon
                                         </div>
-                                        <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '5px' }}>
+                                        <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.3125rem' }}>
                                             {rootItems.filter(i => {
                                                 const allowedIds = ['snack-generic', 'play-generic', 'toy-generic', 'mom', 'dad'];
                                                 return i.type === 'button' && allowedIds.includes(i.id);
@@ -269,12 +343,12 @@ const Controls = ({
                                                         key={item.id}
                                                         onClick={() => onSetPhase1Target(item.id)}
                                                         style={{
-                                                            minWidth: '50px',
-                                                            height: '50px',
-                                                            padding: '4px',
-                                                            borderRadius: '10px',
+                                                            minWidth: '3.125rem',
+                                                            height: '3.125rem',
+                                                            padding: '0.25rem',
+                                                            borderRadius: '0.625rem',
                                                             background: isSelected ? 'var(--primary)' : 'white',
-                                                            border: isSelected ? '2px solid #007AFF' : '1px solid #DDD',
+                                                            border: isSelected ? '0.125rem solid #007AFF' : '0.0625rem solid #DDD',
                                                             fontSize: '1.2rem',
                                                             cursor: 'pointer',
                                                             display: 'flex',
@@ -282,11 +356,11 @@ const Controls = ({
                                                             alignItems: 'center',
                                                             justifyContent: 'center',
                                                             transition: 'all 0.2s',
-                                                            boxShadow: isSelected ? '0 2px 6px rgba(0,122,255,0.3)' : 'none'
+                                                            boxShadow: isSelected ? '0 0.125rem 0.375rem rgba(0,122,255,0.3)' : 'none'
                                                         }}
                                                     >
                                                         <span>{typeof item.icon === 'string' && (item.icon.startsWith('/') || item.icon.startsWith('data:') || item.icon.includes('.')) ? '🖼️' : item.icon}</span>
-                                                        <span style={{ fontSize: '8px', fontWeight: '700', color: isSelected ? 'white' : '#666', overflow: 'hidden', width: '100%', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.word}</span>
+                                                        <span style={{ fontSize: '0.5rem', fontWeight: '700', color: isSelected ? 'white' : '#666', overflow: 'hidden', width: '100%', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.word}</span>
                                                     </button>
                                                 );
                                             })}
@@ -299,18 +373,18 @@ const Controls = ({
                             <div className="ios-setting-card">
                                 {contexts && contexts.map(ctx => (
                                     <div key={ctx.id} className="ios-row" onClick={() => onSetContext(ctx.id)}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                            <span style={{ fontSize: '20px' }}>{ctx.icon}</span>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                            <span style={{ fontSize: '1.25rem' }}>{ctx.icon}</span>
                                             <span style={{ fontWeight: currentContext === ctx.id ? 700 : 400 }}>{ctx.label}</span>
                                         </div>
-                                        <div style={{ display: 'flex', gap: '10px' }}>
+                                        <div style={{ display: 'flex', gap: '0.625rem' }}>
                                             <button 
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     const newLabel = prompt("Rename location:", ctx.label);
                                                     if (newLabel) onRenameContext(ctx.id, newLabel, ctx.icon);
                                                 }}
-                                                style={{ border: 'none', background: '#F2F2F7', borderRadius: '6px', padding: '4px 8px', fontSize: '12px' }}
+                                                style={{ border: 'none', background: '#F2F2F7', borderRadius: '0.375rem', padding: '0.25rem 0.5rem', fontSize: '0.75rem', minHeight: '2.75rem', minWidth: '2.75rem' }}
                                             >✎</button>
                                             {contexts.length > 1 && (
                                                 <button 
@@ -318,7 +392,7 @@ const Controls = ({
                                                         e.stopPropagation();
                                                         onDeleteContext(ctx.id);
                                                     }}
-                                                    style={{ border: 'none', background: '#FFE5E5', color: '#FF3B30', borderRadius: '6px', padding: '4px 8px', fontSize: '12px' }}
+                                                    style={{ border: 'none', background: '#FFE5E5', color: '#FF3B30', borderRadius: '0.375rem', padding: '0.25rem 0.5rem', fontSize: '0.75rem', minHeight: '2.75rem', minWidth: '2.75rem' }}
                                                 >×</button>
                                             )}
                                             {currentContext === ctx.id && <span style={{ color: 'var(--primary)', fontWeight: 800 }}>✓</span>}
@@ -338,7 +412,7 @@ const Controls = ({
 
                     {/* Character Tab */}
                     {activeTab === 'character' && (
-                        <div style={{ background: '#F2F2F7', margin: '0 -24px', padding: '24px', flex: 1 }}>
+                        <div style={{ background: '#F2F2F7', margin: '0 -1.5rem', padding: '1.5rem', flex: 1 }}>
                             <MemojiPicker
                                 onSelect={(url, config) => {
                                     onAddItem(config.name || 'Character', url, 'button');
@@ -352,18 +426,128 @@ const Controls = ({
 
                     {/* Extra Settings Tab */}
                     {activeTab === 'advanced' && (
-                        <div style={{ background: '#F2F2F7', margin: '0 -24px', padding: '0 24px 24px', flex: 1 }}>
+                        <div style={{ background: '#F2F2F7', margin: '0 -1.5rem', padding: '0 1.5rem 1.5rem', flex: 1 }}>
                             
                             <div className="ios-setting-group-header">Accessibility</div>
                             <div className="ios-setting-card">
+                                <div className="ios-row" onClick={onToggleScanning}>
+                                    <span>♿ Auto-Scanning (Switch Access)</span>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <span style={{ fontSize: '0.875rem', fontWeight: 600, color: isScanning ? '#007AFF' : '#8E8E93' }}>
+                                            {isScanning ? 'On' : 'Off'}
+                                        </span>
+                                        <div style={{ 
+                                            width: '51px', 
+                                            height: '31px', 
+                                            background: isScanning ? '#007AFF' : '#E5E5EA', 
+                                            borderRadius: '15.5px', 
+                                            position: 'relative',
+                                            transition: 'background 0.2s'
+                                        }}>
+                                            <div style={{ 
+                                                width: '27px', 
+                                                height: '27px', 
+                                                background: 'white', 
+                                                borderRadius: '50%', 
+                                                position: 'absolute', 
+                                                top: '2px', 
+                                                left: isScanning ? '22px' : '2px',
+                                                transition: 'left 0.2s',
+                                                boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
+                                            }} />
+                                        </div>
+                                    </div>
+                                </div>
+                                {isScanning && (
+                                    <div className="ios-row" style={{ padding: '0.9375rem' }}>
+                                        <div style={{ width: '100%' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                                                <span style={{ fontSize: '0.875rem' }}>⏱️ Scan Speed</span>
+                                                <span style={{ fontSize: '0.875rem', fontWeight: 700 }}>{(scanSpeed / 1000).toFixed(1)}s</span>
+                                            </div>
+                                            <input
+                                                type="range" min="500" max="5000" step="100"
+                                                value={scanSpeed}
+                                                onChange={(e) => onUpdateScanSpeed(parseInt(e.target.value, 10))}
+                                                style={{ width: '100%', height: '2.75rem' }}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+                                <div className="ios-row" onClick={onToggleLayoutLock}>
+                                    <span>🔒 Lock Board Layout</span>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <span style={{ fontSize: '0.875rem', fontWeight: 600, color: isLayoutLocked ? '#AF52DE' : '#8E8E93' }}>
+                                            {isLayoutLocked ? 'Locked' : 'Unlocked'}
+                                        </span>
+                                        <div style={{ 
+                                            width: '51px', 
+                                            height: '31px', 
+                                            background: isLayoutLocked ? '#AF52DE' : '#E5E5EA', 
+                                            borderRadius: '15.5px', 
+                                            position: 'relative',
+                                            transition: 'background 0.2s'
+                                        }}>
+                                            <div style={{ 
+                                                width: '27px', 
+                                                height: '27px', 
+                                                background: 'white', 
+                                                borderRadius: '50%', 
+                                                position: 'absolute', 
+                                                top: '2px', 
+                                                left: isLayoutLocked ? '22px' : '2px',
+                                                transition: 'left 0.2s',
+                                                boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
+                                            }} />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="ios-row" style={{ minHeight: 'auto', padding: '0.5rem 0.9375rem', background: '#F2F2F7' }}>
+                                    <p style={{ fontSize: '0.625rem', color: '#8E8E93', margin: 0 }}>
+                                        Prevents icons from being moved or deleted, ensuring consistent motor planning.
+                                    </p>
+                                </div>
+                                <div className="ios-row" onClick={onToggleColorCoding}>
+                                    <span>🎨 Color Coding (Fitzgerald Key)</span>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <span style={{ fontSize: '0.875rem', fontWeight: 600, color: isColorCodingEnabled ? '#34C759' : '#8E8E93' }}>
+                                            {isColorCodingEnabled ? 'On' : 'Off'}
+                                        </span>
+                                        <div style={{ 
+                                            width: '51px', 
+                                            height: '31px', 
+                                            background: isColorCodingEnabled ? '#34C759' : '#E5E5EA', 
+                                            borderRadius: '15.5px', 
+                                            position: 'relative',
+                                            transition: 'background 0.2s'
+                                        }}>
+                                            <div style={{ 
+                                                width: '27px', 
+                                                height: '27px', 
+                                                background: 'white', 
+                                                borderRadius: '50%', 
+                                                position: 'absolute', 
+                                                top: '2px', 
+                                                left: isColorCodingEnabled ? '22px' : '2px',
+                                                transition: 'left 0.2s',
+                                                boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
+                                            }} />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="ios-row" style={{ minHeight: 'auto', padding: '0.5rem 0.9375rem', background: '#F2F2F7' }}>
+                                    <p style={{ fontSize: '0.625rem', color: '#8E8E93', margin: 0 }}>
+                                        Automatically colors icons by part of speech (Nouns: Yellow, Verbs: Green, etc.)
+                                    </p>
+                                </div>
                                 <div className="ios-row" onClick={onRedoCalibration}>
                                     <span>👆 Redo Touch Calibration</span>
                                     <span className="ios-chevron">›</span>
                                 </div>
-                                <div className="ios-row" style={{ minHeight: 'auto', padding: '15px' }}>
+                                <div className="ios-row" style={{ minHeight: 'auto', padding: '0.9375rem' }}>
                                     <div style={{ width: '100%' }}>
-                                        <div className="ios-setting-group-header" style={{ margin: '0 0 10px 0' }}>Grid Layout</div>
-                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                                        <div className="ios-setting-group-header" style={{ margin: '0 0 0.625rem 0' }}>Grid Layout</div>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
                                             {[ 
                                                 { id: 'super-big', label: '🐘 2x2' },
                                                 { id: 'big', label: '🦒 3x3' },
@@ -373,10 +557,10 @@ const Controls = ({
                                                     key={size.id}
                                                     onClick={() => onUpdateGridSize(size.id)}
                                                     style={{
-                                                        height: '44px',
+                                                        height: '2.75rem',
                                                         background: gridSize === size.id ? 'var(--primary)' : '#E5E5EA',
                                                         color: gridSize === size.id ? 'white' : 'black',
-                                                        borderRadius: '10px',
+                                                        borderRadius: '0.625rem',
                                                         border: 'none',
                                                         fontWeight: 600
                                                     }}
@@ -391,46 +575,168 @@ const Controls = ({
 
                             <div className="ios-setting-group-header">Speech & Sound</div>
                             <div className="ios-setting-card">
-                                <div className="ios-row" style={{ padding: '15px' }}>
+                                <div className="ios-row" style={{ padding: '0.9375rem', flexDirection: 'column', alignItems: 'flex-start', gap: '0.75rem' }}>
+                                    <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>🎭 Voice Presets</span>
+                                    <div style={{ display: 'flex', gap: '0.5rem', width: '100%' }}>
+                                        {VOICE_PRESETS.map(preset => (
+                                            <button
+                                                key={preset.id}
+                                                onClick={() => applyPreset(preset)}
+                                                style={{
+                                                    flex: 1,
+                                                    padding: '0.5rem',
+                                                    fontSize: '0.75rem',
+                                                    background: (voiceSettings.pitch === preset.pitch && voiceSettings.rate === preset.rate) ? 'var(--primary)' : '#E5E5EA',
+                                                    color: (voiceSettings.pitch === preset.pitch && voiceSettings.rate === preset.rate) ? 'white' : 'black',
+                                                    borderRadius: '0.5rem',
+                                                    border: 'none',
+                                                    fontWeight: 600,
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                {preset.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="ios-row" style={{ padding: '0.9375rem' }}>
                                     <div style={{ width: '100%' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                                            <span style={{ fontSize: '14px' }}>🗣️ Speaking Speed</span>
-                                            <span style={{ fontSize: '14px', fontWeight: 700 }}>{voiceSettings.rate}x</span>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                                            <span style={{ fontSize: '0.875rem' }}>🗣️ Speed (Rate)</span>
+                                            <span style={{ fontSize: '0.875rem', fontWeight: 700 }}>{voiceSettings.rate}x</span>
                                         </div>
                                         <input
-                                            type="range" min="0.5" max="1.5" step="0.1"
+                                            type="range" min="0.1" max="2.0" step="0.1"
                                             value={voiceSettings.rate}
                                             onChange={(e) => onUpdateVoiceSettings({ ...voiceSettings, rate: parseFloat(e.target.value) })}
-                                            style={{ width: '100%', height: '44px' }}
+                                            style={{ width: '100%', height: '2.75rem' }}
                                         />
                                     </div>
+                                </div>
+                                <div className="ios-row" style={{ padding: '0.9375rem' }}>
+                                    <div style={{ width: '100%' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                                            <span style={{ fontSize: '0.875rem' }}>🎼 Pitch</span>
+                                            <span style={{ fontSize: '0.875rem', fontWeight: 700 }}>{voiceSettings.pitch || 1}x</span>
+                                        </div>
+                                        <input
+                                            type="range" min="0.1" max="2.0" step="0.1"
+                                            value={voiceSettings.pitch || 1}
+                                            onChange={(e) => onUpdateVoiceSettings({ ...voiceSettings, pitch: parseFloat(e.target.value) })}
+                                            style={{ width: '100%', height: '2.75rem' }}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="ios-row" style={{ padding: '0.9375rem' }}>
+                                    <div style={{ width: '100%' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                                            <span style={{ fontSize: '0.875rem' }}>🔊 Volume</span>
+                                            <span style={{ fontSize: '0.875rem', fontWeight: 700 }}>{Math.round((voiceSettings.volume || 1) * 100)}%</span>
+                                        </div>
+                                        <input
+                                            type="range" min="0" max="1" step="0.1"
+                                            value={voiceSettings.volume || 1}
+                                            onChange={(e) => onUpdateVoiceSettings({ ...voiceSettings, volume: parseFloat(e.target.value) })}
+                                            style={{ width: '100%', height: '2.75rem' }}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="ios-row">
+                                    <span>🌐 Language</span>
+                                    <select
+                                        value={selectedLang}
+                                        onChange={(e) => setSelectedLang(e.target.value)}
+                                        style={{ border: 'none', background: 'transparent', fontSize: '0.875rem', fontWeight: 600, color: '#007AFF', textAlign: 'right' }}
+                                    >
+                                        {languages.map(lang => (
+                                            <option key={lang} value={lang}>
+                                                {lang === 'en' ? '🇺🇸 English' : 
+                                                 lang === 'es' ? '🇪🇸 Spanish' : 
+                                                 lang === 'fr' ? '🇫🇷 French' : 
+                                                 lang === 'de' ? '🇩🇪 German' : 
+                                                 lang === 'it' ? '🇮🇹 Italian' : 
+                                                 lang === 'pt' ? '🇵🇹 Portuguese' :
+                                                 lang.toUpperCase()}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div className="ios-row">
                                     <span>🗣️ Voice</span>
                                     <select
                                         value={voiceSettings.voiceURI || ''}
                                         onChange={(e) => onUpdateVoiceSettings({ ...voiceSettings, voiceURI: e.target.value })}
-                                        style={{ border: 'none', background: 'transparent', fontSize: '14px', fontWeight: 600, color: '#007AFF', textAlign: 'right', maxWidth: '150px' }}
+                                        style={{ border: 'none', background: 'transparent', fontSize: '0.875rem', fontWeight: 600, color: '#007AFF', textAlign: 'right', maxWidth: '11.25rem' }}
                                     >
                                         <option value="">Default Natural</option>
-                                        {availableVoices.map(v => (
-                                            <option key={v.voiceURI} value={v.voiceURI}>{v.name}</option>
+                                        {Array.from(new Set(filteredVoices.map(v => v.lang))).sort().map(lang => (
+                                            <optgroup key={lang} label={lang}>
+                                                {filteredVoices.filter(v => v.lang === lang).map(v => (
+                                                    <option key={v.voiceURI} value={v.voiceURI}>
+                                                        {(v.name.includes('Enhanced') || v.name.includes('Premium') || v.name.includes('Siri')) ? '✨ ' : ''}
+                                                        {v.name.replace(/System |Apple |Microsoft |\(Enhanced\)|Premium /g, '').trim()}
+                                                    </option>
+                                                ))}
+                                            </optgroup>
                                         ))}
                                     </select>
                                 </div>
-                                <div className="ios-row" style={{ padding: '15px' }}>
+                                {isIOS && (
+                                    <div className="ios-row" style={{ minHeight: 'auto', padding: '0.5rem 0.9375rem' }}>
+                                        <p style={{ fontSize: '0.625rem', color: '#8E8E93', margin: 0 }}>
+                                            💡 Tip: Download "Enhanced" voices in iOS Settings → Accessibility → Spoken Content → Voices for better quality.
+                                        </p>
+                                    </div>
+                                )}
+                                <div className="ios-row" onClick={testVoice}>
+                                    <span style={{ color: '#007AFF', fontWeight: 600 }}>▶️ Test Voice Preview</span>
+                                    <span className="ios-chevron">›</span>
+                                </div>
+                                <div className="ios-row" onClick={() => setShowPronunciationEditor(true)}>
+                                    <span style={{ color: '#5856D6', fontWeight: 600 }}>📖 Pronunciation Editor</span>
+                                    <span className="ios-chevron">›</span>
+                                </div>
+                                <div className="ios-row" onClick={() => onUpdateAutoSpeak(!autoSpeak)}>
+                                    <span>🗣️ Auto-Speak on Tap</span>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <span style={{ fontSize: '0.875rem', fontWeight: 600, color: autoSpeak ? '#34C759' : '#8E8E93' }}>
+                                            {autoSpeak ? 'On' : 'Off'}
+                                        </span>
+                                        <div style={{ 
+                                            width: '51px', 
+                                            height: '31px', 
+                                            background: autoSpeak ? '#34C759' : '#E5E5EA', 
+                                            borderRadius: '15.5px', 
+                                            position: 'relative',
+                                            transition: 'background 0.2s'
+                                        }}>
+                                            <div style={{ 
+                                                width: '27px', 
+                                                height: '27px', 
+                                                background: 'white', 
+                                                borderRadius: '50%', 
+                                                position: 'absolute', 
+                                                top: '2px', 
+                                                left: autoSpeak ? '22px' : '2px',
+                                                transition: 'left 0.2s',
+                                                boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
+                                            }} />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="ios-row" style={{ padding: '0.9375rem' }}>
                                     <div style={{ width: '100%' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                                            <span style={{ fontSize: '14px' }}>⏱️ Repetition Delay</span>
-                                            <span style={{ fontSize: '14px', fontWeight: 700 }}>{speechDelay}s</span>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                                            <span style={{ fontSize: '0.875rem' }}>⏱️ Repetition Delay</span>
+                                            <span style={{ fontSize: '0.875rem', fontWeight: 700 }}>{speechDelay}s</span>
                                         </div>
                                         <input
                                             type="range" min="0" max="15" step="1"
                                             value={speechDelay}
                                             onChange={(e) => onUpdateSpeechDelay(parseInt(e.target.value, 10))}
-                                            style={{ width: '100%', height: '44px' }}
+                                            style={{ width: '100%', height: '2.75rem' }}
                                         />
-                                        <p style={{ fontSize: '11px', color: '#888', margin: '5px 0 0 0' }}>
+                                        <p style={{ fontSize: '0.6875rem', color: '#888', margin: '0.3125rem 0 0 0' }}>
                                             Time before the same word can be spoken again.
                                         </p>
                                     </div>
@@ -443,7 +749,7 @@ const Controls = ({
                                             onUpdateBellSound(e.target.value);
                                             playBellSound(e.target.value);
                                         }}
-                                        style={{ border: 'none', background: 'transparent', fontSize: '14px', fontWeight: 600, color: '#007AFF', textAlign: 'right' }}
+                                        style={{ border: 'none', background: 'transparent', fontSize: '0.875rem', fontWeight: 600, color: '#007AFF', textAlign: 'right' }}
                                     >
                                         {BELL_SOUNDS.map(sound => (
                                             <option key={sound.id} value={sound.id}>{sound.name}</option>
@@ -453,8 +759,8 @@ const Controls = ({
                             </div>
 
                             <div className="ios-setting-group-header">Appearance</div>
-                            <div className="ios-setting-card" style={{ padding: '15px' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                            <div className="ios-setting-card" style={{ padding: '0.9375rem' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.625rem' }}>
                                     {COLOR_THEMES.map(theme => (
                                         <div 
                                             key={theme.id}
@@ -467,9 +773,9 @@ const Controls = ({
                                                 } else onSetColorTheme(theme.id);
                                             }}
                                             style={{
-                                                height: '60px',
-                                                borderRadius: '12px',
-                                                border: colorTheme === theme.id ? '2px solid #007AFF' : '1px solid #ddd',
+                                                height: '3.75rem',
+                                                borderRadius: '0.75rem',
+                                                border: colorTheme === theme.id ? '0.125rem solid #007AFF' : '0.0625rem solid #ddd',
                                                 background: theme.bg,
                                                 display: 'flex',
                                                 flexDirection: 'column',
@@ -479,9 +785,9 @@ const Controls = ({
                                                 cursor: 'pointer'
                                             }}
                                         >
-                                            <span style={{ fontSize: '20px' }}>{theme.icon}</span>
-                                            <span style={{ fontSize: '10px', fontWeight: 700 }}>{theme.label}</span>
-                                            {theme.premium && <span style={{ position: 'absolute', top: 2, right: 2, fontSize: '10px' }}>👑</span>}
+                                            <span style={{ fontSize: '1.25rem' }}>{theme.icon}</span>
+                                            <span style={{ fontSize: '0.625rem', fontWeight: 700 }}>{theme.label}</span>
+                                            {theme.premium && <span style={{ position: 'absolute', top: 2, right: 2, fontSize: '0.625rem' }}>👑</span>}
                                         </div>
                                     ))}
                                 </div>
@@ -489,38 +795,10 @@ const Controls = ({
 
                             <div className="ios-setting-group-header">Advanced</div>
                             <div className="ios-setting-card">
-                                <div className="ios-row" onClick={() => setShowAdvanced(!showAdvanced)}>
-                                    <span>📂 Layout Export/Import</span>
-                                    <span className="ios-chevron">{showAdvanced ? '▾' : '›'}</span>
+                                <div className="ios-row" onClick={() => setShowBackupRestore(true)}>
+                                    <span>💾 Backup & Restore All Data</span>
+                                    <span className="ios-chevron">›</span>
                                 </div>
-                                {showAdvanced && (
-                                    <div style={{ padding: '15px', display: 'flex', gap: '10px' }}>
-                                        <button className="primary-button" style={{ flex: 1, padding: '10px', fontSize: '12px' }} onClick={() => {
-                                            const data = localStorage.getItem('kians-words-ios');
-                                            const blob = new Blob([data], { type: 'application/json' });
-                                            const url = URL.createObjectURL(blob);
-                                            const a = document.createElement('a');
-                                            a.href = url; a.download = 'kiwi-layout.json'; a.click();
-                                        }}>Export</button>
-                                        <button className="primary-button" style={{ flex: 1, padding: '10px', fontSize: '12px', background: '#5856D6' }} onClick={() => {
-                                            const input = document.createElement('input');
-                                            input.type = 'file'; input.accept = '.json';
-                                            input.onchange = (e) => {
-                                                const file = e.target.files[0];
-                                                const reader = new FileReader();
-                                                reader.onload = (re) => {
-                                                    try {
-                                                        const json = JSON.parse(re.target.result);
-                                                        localStorage.setItem('kians-words-ios', JSON.stringify(json));
-                                                        window.location.reload();
-                                                    } catch { alert("Invalid JSON"); }
-                                                };
-                                                reader.readAsText(file);
-                                            };
-                                            input.click();
-                                        }}>Import</button>
-                                    </div>
-                                )}
                                 <div className="ios-row" onClick={onReset}>
                                     <span style={{ color: '#FF3B30', fontWeight: 600 }}>Reset All Data</span>
                                     <span className="ios-chevron">›</span>
@@ -531,24 +809,24 @@ const Controls = ({
 
                     {/* Data Tab */}
                     {activeTab === 'data' && (
-                        <div style={{ background: '#F2F2F7', margin: '0 -24px', padding: '0 24px 24px', flex: 1 }}>
+                        <div style={{ background: '#F2F2F7', margin: '0 -1.5rem', padding: '0 1.5rem 1.5rem', flex: 1 }}>
                             
                             <div className="ios-setting-group-header">Overview</div>
-                            <div className="ios-setting-card" style={{ padding: '15px' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
-                                    <div style={{ background: '#F2F2F7', padding: '10px', borderRadius: '8px', textAlign: 'center' }}>
-                                        <div style={{ fontSize: '20px' }}>{STAGES[Math.floor(currentLevel)]?.icon || '📱'}</div>
-                                        <div style={{ fontSize: '10px', color: '#666', marginTop: '4px', fontWeight: 700 }}>Level {Math.floor(currentLevel)}</div>
+                            <div className="ios-setting-card" style={{ padding: '0.9375rem' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.625rem' }}>
+                                    <div style={{ background: '#F2F2F7', padding: '0.625rem', borderRadius: '0.5rem', textAlign: 'center' }}>
+                                        <div style={{ fontSize: '1.25rem' }}>{STAGES[Math.floor(currentLevel)]?.icon || '📱'}</div>
+                                        <div style={{ fontSize: '0.625rem', color: '#666', marginTop: '0.25rem', fontWeight: 700 }}>Level {Math.floor(currentLevel)}</div>
                                     </div>
-                                    <div style={{ background: '#F2F2F7', padding: '10px', borderRadius: '8px', textAlign: 'center' }}>
-                                        <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#007AFF' }}>{rootItems.length}</div>
-                                        <div style={{ fontSize: '10px', color: '#666', marginTop: '4px', fontWeight: 700 }}>Icons</div>
+                                    <div style={{ background: '#F2F2F7', padding: '0.625rem', borderRadius: '0.5rem', textAlign: 'center' }}>
+                                        <div style={{ fontSize: '1.125rem', fontWeight: 'bold', color: '#007AFF' }}>{rootItems.length}</div>
+                                        <div style={{ fontSize: '0.625rem', color: '#666', marginTop: '0.25rem', fontWeight: 700 }}>Icons</div>
                                     </div>
-                                    <div style={{ background: '#F2F2F7', padding: '10px', borderRadius: '8px', textAlign: 'center' }}>
-                                        <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#34C759' }}>
+                                    <div style={{ background: '#F2F2F7', padding: '0.625rem', borderRadius: '0.5rem', textAlign: 'center' }}>
+                                        <div style={{ fontSize: '1.125rem', fontWeight: 'bold', color: '#34C759' }}>
                                             {Object.values(progressData || {}).reduce((acc, curr) => acc + (curr.totalUses || 0), 0) || 0}
                                         </div>
-                                        <div style={{ fontSize: '10px', color: '#666', marginTop: '4px', fontWeight: 700 }}>Total Taps</div>
+                                        <div style={{ fontSize: '0.625rem', color: '#666', marginTop: '0.25rem', fontWeight: 700 }}>Total Taps</div>
                                     </div>
                                 </div>
                             </div>
@@ -585,7 +863,7 @@ const Controls = ({
                                 </div>
                             </div>
                             
-                            <p style={{ fontSize: '10px', color: '#999', textAlign: 'center', marginTop: '10px' }}>
+                            <p style={{ fontSize: '0.625rem', color: '#999', textAlign: 'center', marginTop: '0.625rem' }}>
                                 © 2024 Behavior School LLC. All rights reserved.
                             </p>
                         </div>
@@ -622,6 +900,19 @@ const Controls = ({
                         }
                     }}
                     existingFavorites={[]} // We'll pass this from App
+                />
+            )}
+
+            {showPronunciationEditor && (
+                <PronunciationEditor
+                    onClose={() => setShowPronunciationEditor(false)}
+                />
+            )}
+
+            {showBackupRestore && (
+                <BackupRestore
+                    isOpen={showBackupRestore}
+                    onClose={() => setShowBackupRestore(false)}
                 />
             )}
         </div>

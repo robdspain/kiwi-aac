@@ -36,35 +36,35 @@ const FavoritesPickerModal = ({ onClose, onAddFavorites, existingFavorites = [] 
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '20px'
+            padding: '1.25rem'
         }}>
             <div style={{
                 background: 'white',
-                borderRadius: '24px',
-                padding: '24px',
+                borderRadius: '1.5rem',
+                padding: '1.5rem',
                 width: '100%',
-                maxWidth: '440px',
+                maxWidth: '27.5rem',
                 maxHeight: '90vh',
                 overflowY: 'auto',
-                boxShadow: '0 20px 50px rgba(0,0,0,0.3)'
+                boxShadow: '0 1.25rem 3.125rem rgba(0,0,0,0.3)'
             }}>
-                <div style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '16px' }}>
+                <div style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '1rem' }}>
                     ⭐
                 </div>
 
-                <h2 style={{ margin: '0 0 8px 0', fontSize: '1.5rem', color: '#333', textAlign: 'center' }}>
+                <h2 style={{ margin: '0 0 0.5rem 0', fontSize: '1.5rem', color: '#333', textAlign: 'center' }}>
                     Add More Favorites
                 </h2>
 
-                <p style={{ color: '#666', textAlign: 'center', marginBottom: '24px', fontSize: '0.9rem' }}>
+                <p style={{ color: '#666', textAlign: 'center', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
                     Select items to add to the home screen
                 </p>
 
                 <div style={{
                     display: 'grid',
                     gridTemplateColumns: 'repeat(3, 1fr)',
-                    gap: '12px',
-                    marginBottom: '24px'
+                    gap: '0.75rem',
+                    marginBottom: '1.5rem'
                 }}>
                     {favoriteOptions.map(fav => {
                         const isSelected = selectedFavorites.find(f => f.id === fav.id);
@@ -82,24 +82,25 @@ const FavoritesPickerModal = ({ onClose, onAddFavorites, existingFavorites = [] 
                                         ? '#F0F0F0'
                                         : 'white',
                                     border: isSelected
-                                        ? '3px solid #FF8C00'
+                                        ? '0.1875rem solid #FF8C00'
                                         : alreadyExists
-                                        ? '2px solid #D0D0D0'
-                                        : '2px solid #E5E5EA',
-                                    borderRadius: '16px',
-                                    padding: '16px 8px',
+                                        ? '0.125rem solid #D0D0D0'
+                                        : '0.125rem solid #E5E5EA',
+                                    borderRadius: '1rem',
+                                    padding: '1rem 0.5rem',
                                     cursor: alreadyExists ? 'not-allowed' : 'pointer',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
-                                    gap: '8px',
+                                    gap: '0.5rem',
                                     transition: 'all 0.2s ease',
                                     transform: isSelected ? 'scale(1.05)' : 'scale(1)',
                                     boxShadow: isSelected
-                                        ? '0 8px 20px rgba(255, 165, 0, 0.4)'
-                                        : '0 2px 8px rgba(0, 0, 0, 0.1)',
+                                        ? '0 0.5rem 1.25rem rgba(255, 165, 0, 0.4)'
+                                        : '0 0.125rem 0.5rem rgba(0, 0, 0, 0.1)',
                                     opacity: alreadyExists ? 0.5 : 1,
-                                    position: 'relative'
+                                    position: 'relative',
+                                    minHeight: '4.5rem'
                                 }}
                             >
                                 <span style={{ fontSize: '2.5rem' }}>{fav.icon}</span>
@@ -114,8 +115,8 @@ const FavoritesPickerModal = ({ onClose, onAddFavorites, existingFavorites = [] 
                                     <span style={{
                                         fontSize: '1.2rem',
                                         position: 'absolute',
-                                        top: '4px',
-                                        right: '4px'
+                                        top: '0.25rem',
+                                        right: '0.25rem'
                                     }}>
                                         ✓
                                     </span>
@@ -125,8 +126,8 @@ const FavoritesPickerModal = ({ onClose, onAddFavorites, existingFavorites = [] 
                                         fontSize: '0.7rem',
                                         color: '#999',
                                         position: 'absolute',
-                                        bottom: '4px',
-                                        right: '4px'
+                                        bottom: '0.25rem',
+                                        right: '0.25rem'
                                     }}>
                                         Added
                                     </span>
@@ -140,26 +141,27 @@ const FavoritesPickerModal = ({ onClose, onAddFavorites, existingFavorites = [] 
                     textAlign: 'center',
                     color: '#636E72',
                     fontSize: '0.9rem',
-                    marginBottom: '16px'
+                    marginBottom: '1rem'
                 }}>
                     {selectedFavorites.length === 0 && '👆 Tap to select favorites'}
                     {selectedFavorites.length > 0 &&
                         `✨ ${selectedFavorites.length} selected`}
                 </div>
 
-                <div style={{ display: 'flex', gap: '10px' }}>
+                <div style={{ display: 'flex', gap: '0.625rem' }}>
                     <button
                         onClick={onClose}
                         style={{
                             flex: 1,
-                            padding: '14px',
+                            padding: '0.875rem',
                             background: '#F5F5F7',
                             color: '#2D3436',
                             border: 'none',
-                            borderRadius: '14px',
+                            borderRadius: '0.875rem',
                             fontSize: '1rem',
                             fontWeight: 600,
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            minHeight: '2.75rem'
                         }}
                     >
                         Cancel
@@ -175,19 +177,20 @@ const FavoritesPickerModal = ({ onClose, onAddFavorites, existingFavorites = [] 
                         disabled={selectedFavorites.length === 0}
                         style={{
                             flex: 1,
-                            padding: '14px',
+                            padding: '0.875rem',
                             background: selectedFavorites.length > 0
                                 ? 'linear-gradient(135deg, #4ECDC4, #3DB8B0)'
                                 : '#D1D5DB',
                             color: 'white',
                             border: 'none',
-                            borderRadius: '14px',
+                            borderRadius: '0.875rem',
                             fontSize: '1rem',
                             fontWeight: 700,
                             cursor: selectedFavorites.length > 0 ? 'pointer' : 'not-allowed',
                             boxShadow: selectedFavorites.length > 0
                                 ? '0 6px 20px rgba(78, 205, 196, 0.3)'
-                                : 'none'
+                                : 'none',
+                            minHeight: '2.75rem'
                         }}
                     >
                         Add {selectedFavorites.length > 0 ? `(${selectedFavorites.length})` : ''}

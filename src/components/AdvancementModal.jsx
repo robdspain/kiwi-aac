@@ -166,39 +166,39 @@ const AdvancementModal = ({ currentPhase, onAdvance, onWait }) => {
     if (!details) return null;
 
     return (
-        <div id="picker-modal" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div id="picker-modal" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.25rem' }}>
             <div id="picker-content" style={{
                 height: 'auto',
                 maxHeight: '90vh',
-                margin: '20px',
-                borderRadius: '25px',
+                margin: '1.25rem',
+                borderRadius: '1.5rem',
                 textAlign: 'center',
                 overflowY: 'auto'
             }}>
-                <div style={{ fontSize: '3rem', marginBottom: '10px' }}>🚀</div>
-                <h1 style={{ margin: '0 0 10px 0' }}>Great Progress!</h1>
+                <div style={{ fontSize: '3rem', marginBottom: '0.625rem' }}>🚀</div>
+                <h1 style={{ margin: '0 0 0.625rem 0', fontSize: '2rem' }}>Great Progress!</h1>
                 <p style={{ color: '#666', fontSize: '1.1rem' }}>
                     Your child has successfully completed 3 trials a day for 3 days in a row. They may be ready for the next level!
                 </p>
 
                 <div style={{
                     background: 'white',
-                    padding: '20px',
-                    borderRadius: '15px',
-                    margin: '20px 0',
+                    padding: '1.25rem',
+                    borderRadius: '1rem',
+                    margin: '1.25rem 0',
                     textAlign: 'left',
                     boxShadow: '0 4px 10px rgba(0,0,0,0.05)'
                 }}>
-                    <h3 style={{ margin: '0 0 5px 0', color: 'var(--primary)' }}>Next: {details.nextGoal}</h3>
+                    <h3 style={{ margin: '0 0 0.3125rem 0', color: 'var(--primary)' }}>Next: {details.nextGoal}</h3>
                     <p style={{ margin: 0, fontSize: '1rem' }}>{details.nextSummary}</p>
                 </div>
 
                 {showFullInstructions && (
                     <div style={{
                         background: 'linear-gradient(135deg, #f8f9fa, #e9ecef)',
-                        padding: '20px',
-                        borderRadius: '15px',
-                        marginBottom: '20px',
+                        padding: '1.25rem',
+                        borderRadius: '1rem',
+                        marginBottom: '1.25rem',
                         textAlign: 'left',
                         fontSize: '0.9rem'
                     }}>
@@ -209,7 +209,7 @@ const AdvancementModal = ({ currentPhase, onAdvance, onWait }) => {
                         {/* Instructional illustration */}
                         {details.image && (
                             <div style={{
-                                margin: '15px 0',
+                                margin: '0.9375rem 0',
                                 textAlign: 'center'
                             }}>
                                 <img
@@ -218,7 +218,7 @@ const AdvancementModal = ({ currentPhase, onAdvance, onWait }) => {
                                     style={{
                                         maxWidth: '100%',
                                         height: 'auto',
-                                        borderRadius: '12px',
+                                        borderRadius: '0.75rem',
                                         boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                                     }}
                                 />
@@ -226,7 +226,7 @@ const AdvancementModal = ({ currentPhase, onAdvance, onWait }) => {
                         )}
 
                         <pre style={{
-                            margin: '15px 0',
+                            margin: '0.9375rem 0',
                             whiteSpace: 'pre-wrap',
                             fontFamily: 'inherit',
                             fontSize: '0.85rem',
@@ -240,28 +240,28 @@ const AdvancementModal = ({ currentPhase, onAdvance, onWait }) => {
                         <div style={{
                             display: 'flex',
                             flexWrap: 'wrap',
-                            gap: '8px',
-                            marginTop: '15px',
+                            gap: '0.5rem',
+                            marginTop: '0.9375rem',
                             justifyContent: 'center'
                         }}>
                             {details.teachingPoints.map((point, i) => (
                                 <div key={i} style={{
                                     background: 'white',
-                                    padding: '10px 14px',
-                                    borderRadius: '20px',
+                                    padding: '0.625rem 0.875rem',
+                                    borderRadius: '1.25rem',
                                     fontSize: '0.8rem',
                                     fontWeight: 600,
                                     color: 'var(--primary)',
                                     boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '6px'
+                                    gap: '0.375rem'
                                 }}>
                                     <span style={{
                                         background: 'var(--primary)',
                                         color: 'white',
-                                        width: '20px',
-                                        height: '20px',
+                                        width: '1.25rem',
+                                        height: '1.25rem',
                                         borderRadius: '50%',
                                         display: 'flex',
                                         alignItems: 'center',
@@ -275,14 +275,14 @@ const AdvancementModal = ({ currentPhase, onAdvance, onWait }) => {
                     </div>
                 )}
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <button className="primary" onClick={onAdvance}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
+                    <button className="primary" onClick={onAdvance} style={{ minHeight: '2.75rem' }}>
                         Advance to Level {currentPhase + 1}
                     </button>
-                    <button onClick={() => setShowFullInstructions(!showFullInstructions)}>
+                    <button onClick={() => setShowFullInstructions(!showFullInstructions)} style={{ minHeight: '2.75rem' }}>
                         {showFullInstructions ? "Hide" : "📖 Show"} Teaching Instructions
                     </button>
-                    <button style={{ color: '#FF3B30' }} onClick={onWait}>
+                    <button style={{ color: '#FF3B30', minHeight: '2.75rem' }} onClick={onWait}>
                         Stay in Level {currentPhase} for now
                     </button>
                 </div>

@@ -13,8 +13,12 @@ const Dashboard = lazy(() => import('./components/Dashboard'));
 const EditModal = lazy(() => import('./components/EditModal'));
 const Onboarding = lazy(() => import('./components/Onboarding'));
 const TouchCalibration = lazy(() => import('./components/TouchCalibration'));
+import { Dashboard } from './components/Dashboard';
+import { EditModal } from './components/EditModal';
+import { Onboarding } from './components/Onboarding';
+import { TouchCalibration } from './components/TouchCalibration';
 import { playBellSound } from './utils/sounds';
-import { trackSentence } from './utils/AnalyticsService';
+import { trackSentence, trackItemClick } from './utils/AnalyticsService';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { InAppReview } from '@capacitor-community/in-app-review';
 import {
@@ -36,6 +40,8 @@ import {
   arrayMove
 } from '@dnd-kit/sortable';
 import { AAC_LEXICON } from './data/aacLexicon';
+import { CORE_WORDS_LAYOUT } from './data/aacData';
+import { useProfile } from './context/ProfileContext';
 
 const synth = window.speechSynthesis || null;
 
@@ -46,6 +52,19 @@ const INITIAL_CONTEXTS = [
   { id: 'store', label: 'Store', icon: '🛒' },
   { id: 'outside', label: 'Outside', icon: '🌳' },
 ];
+
+const CORE_WORDS_DATA = CORE_WORDS_LAYOUT.map(item => {
+  const lexiconEntry = AAC_LEXICON[item.word.toLowerCase()];
+  return {
+    id: `core-${item.word.toLowerCase()}`,
+    type: 'button',
+    word: item.word,
+    icon: lexiconEntry?.emoji || '⚪',
+    pos: item.pos,
+    wc: item.wc || lexiconEntry?.type,
+    category: 'core'
+  };
+});
 
 const attributesFolder = {
   id: 'attributes-folder', type: 'folder', word: "Describe", icon: "🎨", contents: [
@@ -88,23 +107,35 @@ const attributesFolder = {
 };
 
 const homeDefaultData = [
-  { id: 'starter-want', type: 'button', word: "I want", icon: "🙋", category: 'starter' },
-  { id: 'starter-see', type: 'button', word: "I see", icon: "👀", category: 'starter' },
-  { id: 'starter-feel', type: 'button', word: "I feel", icon: "😊", category: 'starter' },
-  { id: 'starter-have', type: 'button', word: "I have", icon: "🤲", category: 'starter' },
-  { id: 'starter-like', type: 'button', word: "I like", icon: "❤️", category: 'starter' },
+  ...CORE_WORDS_DATA,
+  { id: 'starter-want', type: 'button', word: "I want", icon: "🙋", category: 'starter', isPhrase: true, phraseIcons: ["🙋", "➕"] },
+  { id: 'starter-see', type: 'button', word: "I see", icon: "👀", category: 'starter', isPhrase: true, phraseIcons: ["👀", "✨"] },
+  { id: 'starter-feel', type: 'button', word: "I feel", icon: "😊", category: 'starter', isPhrase: true, phraseIcons: ["😊", "🧠"] },
+  { id: 'starter-have', type: 'button', word: "I have", icon: "🤲", category: 'starter', isPhrase: true, phraseIcons: ["🤲", "📦"] },
+  { id: 'starter-like', type: 'button', word: "I like", icon: "❤️", category: 'starter', isPhrase: true, phraseIcons: ["❤️", "👍"] },
   { id: 'nicety-please', type: 'button', word: "Please", icon: "🙏", category: 'nicety' },
   { id: 'nicety-thanks', type: 'button', word: "Thank you", icon: "😊", category: 'nicety' },
   { id: 'toy-generic', type: 'button', word: "Toy", icon: "🧸" },
   { id: 'snack-generic', type: 'button', word: "Snack", icon: "🥨" },
   { id: 'play-generic', type: 'button', word: "Play", icon: "🏃" },
-  { id: 'mom', type: 'button', word: "Mom", icon: "👤", characterConfig: { head: 'round', skin: '#8D5524', hair: 'curly', hairColor: '#2C222B', eyes: 'happy', mouth: 'smile', eyeColor: '#333333' } },
-  { id: 'dad', type: 'button', word: "Dad", icon: "👤", characterConfig: { head: 'square', skin: '#E0AC69', hair: 'short', hairColor: '#4B2C20', facialHair: 'short_beard', eyes: 'happy', mouth: 'smile', eyeColor: '#2e536f' } },
+  { id: 'mom', type: 'button', word: "Mom", icon: "/images/memojis/1.png" },
+  { id: 'dad', type: 'button', word: "Dad", icon: "/images/memojis/2.png" },
   { id: 'more', type: 'button', word: "More", icon: "➕" },
   { id: 'food-folder', type: 'folder', word: "Foods", icon: "🍎", contents: [ { id: 'banana', type: 'button', word: "Banana", icon: "🍌" }, { id: 'apple', type: 'button', word: "Apple", icon: "🍎" }, { id: 'cracker', type: 'button', word: "Cracker", icon: "🍘" }, { id: 'water', type: 'button', word: "Water", icon: "💧" }, { id: 'broccoli', type: 'button', word: "Broccoli", icon: "🥦" }, { id: 'strawberry', type: 'button', word: "Strawberry", icon: "🍓" }, { id: 'pizza', type: 'button', word: "Pizza", icon: "🍕" }, { id: 'chicken', type: 'button', word: "Chicken", icon: "🍗" }, { id: 'juice', type: 'button', word: "Juice", icon: "🧃" }, { id: 'milk', type: 'button', word: "Milk", icon: "🥛" }, { id: 'cookie', type: 'button', word: "Cookie", icon: "🍪" }, { id: 'yogurt', type: 'button', word: "Yogurt", icon: "🍦" }, { id: 'carrot', type: 'button', word: "Carrot", icon: "🥕" }, { id: 'grape', type: 'button', word: "Grape", icon: "🍇" }, { id: 'real-apple', type: 'button', word: "Healthy Snack", icon: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=200&h=200&fit=crop", bgColor: "#E3F2FD" }, { id: 'custom-photo', type: 'button', word: "My Snack", icon: "📷", bgColor: "#E3F2FD" } ] },
   { id: 'toys-folder', type: 'folder', word: "Toys", icon: "⚽", contents: [ { id: 'ball', type: 'button', word: "Ball", icon: "⚽" }, { id: 'bubbles', type: 'button', word: "Bubbles", icon: "🫧" }, { id: 'blocks', type: 'button', word: "Blocks", icon: "🧱" }, { id: 'car', type: 'button', word: "Car", icon: "🚗" }, { id: 'mouse', type: 'button', word: "Mouse", icon: "🐭" } ] },
   { id: 'tv-folder', type: 'folder', word: "TV", icon: "📺", contents: [ { id: 'elmo', type: 'button', word: "Elmo", icon: "🔴" }, { id: 'bluey', type: 'button', word: "Bluey", icon: "🐶" }, { id: 'music', type: 'button', word: "Music", icon: "🎵" }, { id: 'book', type: 'button', word: "Book", icon: "📚" } ] },
   { id: 'feelings-folder', type: 'folder', word: "Feelings", icon: "😄", contents: [ { id: 'happy', type: 'button', word: "Happy", icon: "😄" }, { id: 'sad', type: 'button', word: "Sad", icon: "😢" }, { id: 'mad', type: 'button', word: "Mad", icon: "😠" } ] },
+  { 
+    id: 'phrases-folder', 
+    type: 'folder', 
+    word: "My Phrases", 
+    icon: "🗣️", 
+    contents: [ 
+      { id: 'phrase-love', type: 'button', word: "I love you", icon: "❤️", bgColor: '#FDF2F8' }, 
+      { id: 'phrase-help', type: 'button', word: "Can you help me?", icon: "🤝", bgColor: '#FDF2F8' }, 
+      { id: 'phrase-break', type: 'button', word: "I need a break", icon: "🧘", bgColor: '#FDF2F8' } 
+    ] 
+  },
   attributesFolder
 ];
 
@@ -168,12 +199,23 @@ function App() {
   const [voiceSettings, setVoiceSettings] = useState(() => {
     try {
       const saved = localStorage.getItem('kiwi-voice-settings');
-      return saved ? JSON.parse(saved) : { rate: 1, pitch: 1, voiceURI: null };
-    } catch { return { rate: 1, pitch: 1, voiceURI: null }; }
+      return saved ? JSON.parse(saved) : { rate: 1, pitch: 1, volume: 1, voiceURI: null };
+    } catch { return { rate: 1, pitch: 1, volume: 1, voiceURI: null }; }
   });
 
   const [isTrainingMode, setIsTrainingMode] = useState(false);
   const [trainingSelection, setTrainingSelection] = useState([]);
+  const [isScanning, setIsScanning] = useState(() => localStorage.getItem('kiwi-is-scanning') === 'true');
+  const [isLayoutLocked, setIsLayoutLocked] = useState(() => localStorage.getItem('kiwi-layout-locked') === 'true');
+  const [isColorCodingEnabled, setIsColorCodingEnabled] = useState(() => {
+    const saved = localStorage.getItem('kiwi-color-coding-enabled');
+    return saved !== null ? saved === 'true' : true;
+  });
+  const [scanIndex, setScanIndex] = useState(-1);
+  const [scanSpeed, setScanSpeed] = useState(() => {
+    const saved = localStorage.getItem('kiwi-scan-speed');
+    return saved ? parseInt(saved, 10) : 2000;
+  });
   const [shuffledItems, setShuffledItems] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -205,11 +247,17 @@ function App() {
     return valid.includes(saved) ? saved : 'big';
   });
   const [colorTheme, setColorTheme] = useState(() => localStorage.getItem('kiwi-color-theme') || 'default');
+  const [autoSpeak, setAutoSpeak] = useState(() => {
+    const saved = localStorage.getItem('kiwi-auto-speak');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
   const [speechDelay, setSpeechDelay] = useState(() => {
     const saved = localStorage.getItem('kiwi-speech-delay');
-    return saved !== null ? parseInt(saved, 10) : 5;
+    return saved ? parseInt(saved, 10) : 0;
   });
   const [inflectionData, setInflectionData] = useState(null);
+
   const lastSpeakTimeRef = useRef({});
 
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
@@ -220,6 +268,58 @@ function App() {
   useEffect(() => { localStorage.setItem('kiwi-speech-delay', speechDelay.toString()); }, [speechDelay]);
   useEffect(() => { if (phase1TargetId) localStorage.setItem('kiwi-phase1-target', phase1TargetId); }, [phase1TargetId]);
   useEffect(() => { localStorage.setItem('kiwi-bell-sound', bellSound); }, [bellSound]);
+  useEffect(() => { localStorage.setItem('kiwi-auto-speak', JSON.stringify(autoSpeak)); }, [autoSpeak]);
+  useEffect(() => { localStorage.setItem('kiwi-is-scanning', isScanning.toString()); }, [isScanning]);
+  useEffect(() => { localStorage.setItem('kiwi-scan-speed', scanSpeed.toString()); }, [scanSpeed]);
+  useEffect(() => { localStorage.setItem('kiwi-layout-locked', isLayoutLocked.toString()); }, [isLayoutLocked]);
+  useEffect(() => { localStorage.setItem('kiwi-color-coding-enabled', isColorCodingEnabled.toString()); }, [isColorCodingEnabled]);
+
+  // Auto-scanning Logic
+  useEffect(() => {
+    const anyModalOpen = editModalOpen || pickerOpen || showDashboard || showOnboarding || showLevelIntro || showAdvancementModal || showCalibration;
+    
+    if (!isScanning || anyModalOpen) {
+      if (!anyModalOpen) setScanIndex(-1);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setScanIndex(prev => {
+        if (itemsToShow.length === 0) return -1;
+        return (prev + 1) % itemsToShow.length;
+      });
+    }, scanSpeed);
+
+    return () => clearInterval(interval);
+  }, [isScanning, scanSpeed, itemsToShow.length, editModalOpen, pickerOpen, showDashboard, showOnboarding, showLevelIntro, showAdvancementModal, showCalibration]);
+
+  // Global Switch Listener (Space/Enter or Screen Tap when scanning)
+  useEffect(() => {
+    const handleGlobalSwitch = (e) => {
+      if (!isScanning) return;
+      
+      // If it's a keyboard event, check for Space or Enter
+      if (e.type === 'keydown' && e.key !== ' ' && e.key !== 'Enter') return;
+      
+      // If it's a click, we only trigger if it's NOT on a settings button or modal
+      if (e.type === 'click') {
+        if (e.target.closest('#settings-button') || e.target.closest('#controls-content') || e.target.closest('.ios-bottom-sheet')) return;
+      }
+
+      if (scanIndex >= 0 && scanIndex < itemsToShow.length) {
+        e.preventDefault();
+        e.stopPropagation();
+        handleItemClick(itemsToShow[scanIndex], scanIndex);
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalSwitch);
+    window.addEventListener('click', handleGlobalSwitch, true); // Use capture phase
+    return () => {
+      window.removeEventListener('keydown', handleGlobalSwitch);
+      window.removeEventListener('click', handleGlobalSwitch, true);
+    };
+  }, [isScanning, scanIndex, itemsToShow]);
 
   useEffect(() => {
     if (typeof currentLevel === 'number' && !isNaN(currentLevel)) {
@@ -263,37 +363,78 @@ function App() {
     }
   };
 
+  const { pronunciations } = useProfile();
+
   const speak = (text, customAudio = null) => {
     if (customAudio) { new Audio(customAudio).play(); return; }
     if (!synth) return;
     if (synth.speaking) synth.cancel();
-    
-    const u = new SpeechSynthesisUtterance(text);
-    u.rate = voiceSettings.rate; u.pitch = voiceSettings.pitch;
-    
-    // Auto-select best natural voice if none selected or if selected is unavailable
-    const voices = synth.getVoices();
-    let selectedVoice = voices.find(v => v.voiceURI === voiceSettings.voiceURI);
-    
-    if (!selectedVoice) {
-        // Priority list for natural sounding voices
-        const priorityPatterns = [
-            /premium/i, /google/i, /neural/i, /enhanced/i, /samantha/i, /alex/i, /aria/i
-        ];
-        
-        const englishVoices = voices.filter(v => v.lang.startsWith('en'));
-        
-        for (const pattern of priorityPatterns) {
-            selectedVoice = englishVoices.find(v => pattern.test(v.name));
-            if (selectedVoice) break;
-        }
-        
-        // Fallback to first English voice
-        if (!selectedVoice) selectedVoice = englishVoices[0];
+
+    // Phonetic Override Logic
+    let processedText = text;
+    if (pronunciations) {
+        const words = text.split(/\s+/);
+        const processedWords = words.map(w => {
+            const cleanWord = w.toLowerCase().replace(/[.,!?;:]/g, '');
+            return pronunciations[cleanWord] || w;
+        });
+        processedText = processedWords.join(' ');
     }
+
+    const u = new SpeechSynthesisUtterance(processedText);
+    u.rate = voiceSettings.rate; 
+    u.pitch = voiceSettings.pitch;
+    u.volume = voiceSettings.volume || 1;
     
-    if (selectedVoice) u.voice = selectedVoice;
+    if (voiceSettings.voiceURI) {
+      const voices = synth.getVoices();
+      const selectedVoice = voices.find(v => v.voiceURI === voiceSettings.voiceURI);
+      if (selectedVoice) u.voice = selectedVoice;
+    }
     synth.speak(u);
+  };
+
+  const speakSentence = async (items) => {
+    if (synth) synth.cancel();
+    
+    for (const item of items) {
+        await new Promise((resolve) => {
+            if (item.customAudio) {
+                const audio = new Audio(item.customAudio);
+                audio.onended = resolve;
+                audio.onerror = resolve; // Don't get stuck if audio fails
+                audio.play();
+            } else {
+                // Phonetic Override Logic
+                let processedText = item.word;
+                if (pronunciations) {
+                    const words = item.word.split(/\s+/);
+                    const processedWords = words.map(w => {
+                        const cleanWord = w.toLowerCase().replace(/[.,!?;:]/g, '');
+                        return pronunciations[cleanWord] || w;
+                    });
+                    processedText = processedWords.join(' ');
+                }
+
+                const u = new SpeechSynthesisUtterance(processedText);
+                u.rate = voiceSettings.rate;
+                u.pitch = voiceSettings.pitch;
+                u.volume = voiceSettings.volume || 1;
+                
+                if (voiceSettings.voiceURI) {
+                    const voices = synth.getVoices();
+                    const selectedVoice = voices.find(v => v.voiceURI === voiceSettings.voiceURI);
+                    if (selectedVoice) u.voice = selectedVoice;
+                }
+                
+                u.onend = resolve;
+                u.onerror = resolve;
+                synth.speak(u);
+            }
+        });
+        // Small gap between words
+        await new Promise(r => setTimeout(r, 100));
+    }
   };
 
   const triggerSuccess = () => {
@@ -347,7 +488,23 @@ function App() {
   };
 
   const handleItemClick = async (item, index) => {
-    try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch { /* Ignore */ }
+    // Analytics tracking
+    trackItemClick(item.id || item.word, item.word);
+
+    // Smart Haptics
+    try { 
+      let hapticStyle = ImpactStyle.Medium;
+      const lowerWord = item.word?.toLowerCase();
+      const lexiconEntry = lowerWord ? AAC_LEXICON[lowerWord] : null;
+      const wc = item.wc || lexiconEntry?.type;
+
+      if (lowerWord === 'stop' || lowerWord === 'no') hapticStyle = ImpactStyle.Heavy;
+      else if (wc === 'social' || wc === 'pronoun') hapticStyle = ImpactStyle.Light;
+      else if (wc === 'misc') hapticStyle = ImpactStyle.Soft;
+
+      await Haptics.impact({ style: hapticStyle }); 
+    } catch { /* Ignore */ }
+
     if (item.bgColor === '#FFF3E0') {
       const updatedItems = rootItems.map(i => i.id === item.id ? { ...i, usageCount: (i.usageCount || 0) + 1, lastUsed: new Date().getTime() } : i);
       setRootItems(updatedItems);
@@ -375,18 +532,39 @@ function App() {
           }
       }
 
-      if (currentPhase === 1 || currentPhase === 2) { speak(item.word); triggerSuccess(); return; }
+      if (currentPhase === 1 || currentPhase === 2) { speak(item.word, item.customAudio); triggerSuccess(); return; }
       if (currentPhase === 4 && stripItems.length === 0) {
-        if (item.word === "I want") { setStripItems([item]); speak(item.word); }
+        if (item.word === "I want") { setStripItems([item]); if (autoSpeak) speak(item.word, item.customAudio); }
         else {
           const iWantRoot = rootItems.find(i => i.word === "I want");
-          if (iWantRoot) { setStripItems([iWantRoot, item]); speak("I want " + item.word); triggerSuccess(); }
+          if (iWantRoot) { 
+            setStripItems([iWantRoot, item]); 
+            if (autoSpeak) {
+                if (iWantRoot.customAudio) {
+                    speakSentence([iWantRoot, item]);
+                } else {
+                    speak("I want " + item.word, item.customAudio); 
+                }
+            }
+            triggerSuccess(); 
+          }
         }
         return;
       }
-      if (showStrip) { setStripItems([...stripItems, item]); speak(item.word); if (currentPhase >= 3) triggerSuccess(); }
-      else { speak(item.word); triggerSuccess(); }
+      if (showStrip) { 
+        setStripItems([...stripItems, item]); 
+        if (autoSpeak) speak(item.word, item.customAudio); 
+        if (currentPhase >= 3) triggerSuccess(); 
+      }
+      else { speak(item.word, item.customAudio); triggerSuccess(); }
     }
+  };
+
+  const handleDeleteItemFromStrip = (index) => {
+    const newItems = [...stripItems];
+    newItems.splice(index, 1);
+    setStripItems(newItems);
+    try { Haptics.impact({ style: ImpactStyle.Light }); } catch { /* Ignore */ }
   };
 
   const handleBack = () => setCurrentPath(currentPath.slice(0, -1));
@@ -452,6 +630,7 @@ function App() {
   const handlePickerOpen = (setWord, setIcon) => { setPickerCallback(() => (w, i, isImage) => { setWord(w); setIcon(i, isImage); setPickerOpen(false); }); setPickerOpen(true); };
 
   const handleDragEnd = (event) => {
+    if (isLayoutLocked) return;
     const { active, over } = event;
     if (over && active.id !== over.id) {
       const oldIndex = itemsToShow.findIndex(i => (i.id || i.word) === active.id);
@@ -471,6 +650,7 @@ function App() {
   };
 
   let itemsToShow = currentPath.length === 0 ? rootItems : currentPath.reduce((acc, i) => acc[i].contents, rootItems);
+  
   if (isTrainingMode && shuffledItems) itemsToShow = shuffledItems.map(obj => obj.item);
   else if (currentPhase === 1 || currentPhase === 2) {
     let target = phase1TargetId ? rootItems.find(i => i.id === phase1TargetId) : null;
@@ -478,6 +658,14 @@ function App() {
     itemsToShow = target ? [target] : [];
   } else if (currentPhase === 3) itemsToShow = rootItems.filter(i => i.type === 'button' && i.category !== 'starter').slice(0, 20);
   else if (currentPhase > 0 && currentPhase < 6) itemsToShow = itemsToShow.filter(i => i.category !== 'starter');
+
+  // Dynamic Core Overlay: Prepend core words if at root (and not in Training Mode)
+  if (currentPath.length === 0 && !isTrainingMode) {
+    // Only prepend if they aren't already there (to avoid duplication if they were saved in rootItems)
+    const coreIds = new Set(CORE_WORDS_DATA.map(c => c.id));
+    const fringeItems = itemsToShow.filter(i => !coreIds.has(i.id));
+    itemsToShow = [...CORE_WORDS_DATA, ...fringeItems];
+  }
 
   if (showSplash) {
     return <SplashScreen onComplete={() => setShowSplash(false)} />;
@@ -487,7 +675,16 @@ function App() {
     <div id="main-area">
       {showLevelIntro && <Suspense fallback={null}><LevelIntro level={currentLevel} onComplete={() => { localStorage.setItem(`kiwi-intro-seen-level-${currentLevel}`, 'true'); setShowLevelIntro(false); if (currentStage <= 2 && !phase1TargetId) setShowPhase1Selector(true); }} onChangeLevel={() => { setShowLevelIntro(false); setIsEditMode(true); }}/></Suspense>}
       {showStrip && (gridSize !== 'super-big' || localStorage.getItem('kiwi-force-strip') === 'true') && (
-        <SentenceStrip stripItems={stripItems} onClear={() => setStripItems([])} onPlay={() => { const sentence = stripItems.map(i => i.word).join(" "); trackSentence(sentence); speak(sentence); }}/>
+        <SentenceStrip 
+          stripItems={stripItems} 
+          onClear={() => setStripItems([])} 
+          onPlay={() => { 
+            const sentence = stripItems.map(i => i.word).join(" "); 
+            trackSentence(sentence); 
+            speakSentence(stripItems); 
+          }}
+          onDeleteItem={handleDeleteItemFromStrip}
+        />
       )}
       
       {/* iOS Navigation Header */}
@@ -524,10 +721,12 @@ function App() {
       )}
       {callActive && <div className="call-overlay" style={{ background: 'rgba(255,255,255,0.95)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1000 }}><button onClick={() => { setCallActive(false); setIsCommunicating(true); }} style={{ background: '#FF3B30', color: 'white', border: 'none', borderRadius: '30px', padding: '40px 80px', fontSize: '2.5rem', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 10px 40px rgba(255, 59, 48, 0.4)', transition: 'transform 0.2s ease' }}>Let&apos;s talk!</button></div>}
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <Grid items={itemsToShow} currentPhase={currentPhase} gridSize={gridSize} isTrainingMode={isTrainingMode} trainingSelection={trainingSelection} isEditMode={isEditMode} onItemClick={handleItemClick} onBack={handleBack} onDelete={handleDelete} onEdit={handleEdit} onAddItem={handleAddItem} onToggleTraining={handleToggleTraining} hasBack={currentPath.length > 0} trainingPanelVisible={!shuffledItems} folder={currentPath.length > 0 ? currentPath.reduce((acc, i) => acc[i].contents, rootItems) : null}/>
+        <div id="main-grid" role="main" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+          <Grid items={itemsToShow} currentPhase={currentPhase} gridSize={gridSize} isTrainingMode={isTrainingMode} trainingSelection={trainingSelection} isEditMode={isEditMode} onItemClick={handleItemClick} onBack={handleBack} onDelete={handleDelete} onEdit={handleEdit} onAddItem={handleAddItem} onToggleTraining={handleToggleTraining} hasBack={currentPath.length > 0} trainingPanelVisible={!shuffledItems} folder={currentPath.length > 0 ? currentPath.reduce((acc, i) => acc[i].contents, rootItems) : null} scanIndex={scanIndex} isLayoutLocked={isLayoutLocked} isColorCodingEnabled={isColorCodingEnabled}/>
+        </div>
       </DndContext>
       {!isLocked && !isEditMode && !isTrainingMode && <button id="settings-button" onClick={() => setIsEditMode(true)} aria-label="Open Settings">⚙️</button>}
-      {!isLocked && <Controls isEditMode={isEditMode} isTrainingMode={isTrainingMode} currentPhase={currentPhase} currentLevel={currentLevel} showStrip={showStrip} currentContext={currentContext} contexts={contexts} onSetContext={handleSetContext} onToggleMenu={() => setIsEditMode(!isEditMode)} onAddItem={handleAddItem} onAddContext={handleAddContext} onRenameContext={handleRenameContext} onDeleteContext={handleDeleteContext} onSetLevel={handleSetLevel} onStartTraining={() => { setIsTrainingMode(true); setTrainingSelection([]); }} onReset={() => { if (confirm("Reset everything?")) { localStorage.clear(); location.reload(); } }} onShuffle={handleShuffle} onStopTraining={handleStopTraining} onOpenPicker={handlePickerOpen} onToggleDashboard={() => setShowDashboard(true)} onRedoCalibration={() => setShowCalibration(true)} onToggleLock={() => setIsLocked(true)} voiceSettings={voiceSettings} onUpdateVoiceSettings={setVoiceSettings} gridSize={gridSize} onUpdateGridSize={setGridSize} phase1TargetId={phase1TargetId} onSetPhase1Target={setPhase1TargetId} rootItems={rootItems} colorTheme={colorTheme} onSetColorTheme={setColorTheme} triggerPaywall={triggerPaywall} bellSound={bellSound} onUpdateBellSound={setBellSound} speechDelay={speechDelay} onUpdateSpeechDelay={setSpeechDelay}           onAddFavorites={(favorites) => {
+      {!isLocked && <Controls isEditMode={isEditMode} isTrainingMode={isTrainingMode} currentPhase={currentPhase} currentLevel={currentLevel} showStrip={showStrip} currentContext={currentContext} contexts={contexts} onSetContext={handleSetContext} onToggleMenu={() => setIsEditMode(!isEditMode)} onAddItem={handleAddItem} onAddContext={handleAddContext} onRenameContext={handleRenameContext} onDeleteContext={handleDeleteContext} onSetLevel={handleSetLevel} onStartTraining={() => { setIsTrainingMode(true); setTrainingSelection([]); }} onReset={() => { if (confirm("Reset everything?")) { localStorage.clear(); location.reload(); } }} onShuffle={handleShuffle} onStopTraining={handleStopTraining} onOpenPicker={handlePickerOpen} onToggleDashboard={() => setShowDashboard(true)} onRedoCalibration={() => setShowCalibration(true)} onToggleLock={() => setIsLocked(true)} voiceSettings={voiceSettings} onUpdateVoiceSettings={setVoiceSettings} gridSize={gridSize} onUpdateGridSize={setGridSize} phase1TargetId={phase1TargetId} onSetPhase1Target={setPhase1TargetId} rootItems={rootItems} colorTheme={colorTheme} onSetColorTheme={setColorTheme} triggerPaywall={triggerPaywall} bellSound={bellSound} onUpdateBellSound={setBellSound} speechDelay={speechDelay} onUpdateSpeechDelay={setSpeechDelay} autoSpeak={autoSpeak} onUpdateAutoSpeak={setAutoSpeak} isScanning={isScanning} onToggleScanning={() => setIsScanning(!isScanning)} scanSpeed={scanSpeed} onUpdateScanSpeed={setScanSpeed} isLayoutLocked={isLayoutLocked} onToggleLayoutLock={() => setIsLayoutLocked(!isLayoutLocked)} isColorCodingEnabled={isColorCodingEnabled} onToggleColorCoding={() => setIsColorCodingEnabled(!isColorCodingEnabled)}           onAddFavorites={(favorites) => {
             const nowTime = new Date().getTime();
             const newFavs = favorites.map((fav, i) => ({ id: `fav-${nowTime}-${i}`, type: 'button', word: fav.word || fav.label, icon: fav.icon, bgColor: '#FFF3E0' })); const list = [...rootItems]; let insertIndex = 0; for (let i = 0; i < list.length; i++) if (list[i].category === 'starter') insertIndex = i + 1; else break; list.splice(insertIndex, 0, ...newFavs); setRootItems(list); }} progressData={progressData}/>}
       {isLocked && (

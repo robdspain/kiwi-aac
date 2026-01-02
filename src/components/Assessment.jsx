@@ -152,15 +152,15 @@ const Assessment = ({ onComplete }) => {
                 background: 'linear-gradient(135deg, #FFF5E1, #FFE4B5)',
                 display: 'flex',
                 flexDirection: 'column',
-                padding: '24px',
+                padding: '1.5rem',
                 zIndex: 1000,
                 overflowY: 'auto'
             }}>
                 <div style={{
                     fontSize: '3rem',
                     textAlign: 'center',
-                    marginBottom: '16px',
-                    marginTop: '20px'
+                    marginBottom: '1rem',
+                    marginTop: '1.25rem'
                 }}>
                     ⭐
                 </div>
@@ -170,7 +170,7 @@ const Assessment = ({ onComplete }) => {
                     fontWeight: 800,
                     color: '#2D3436',
                     textAlign: 'center',
-                    marginBottom: '8px'
+                    marginBottom: '0.5rem'
                 }}>
                     What does your child LOVE?
                 </h1>
@@ -179,8 +179,8 @@ const Assessment = ({ onComplete }) => {
                     color: '#636E72',
                     fontSize: '0.95rem',
                     textAlign: 'center',
-                    marginBottom: '24px',
-                    padding: '0 20px'
+                    marginBottom: '1.5rem',
+                    padding: '0 1.25rem'
                 }}>
                     Pick 1-3 favorites we&apos;ll add to the home screen
                 </p>
@@ -188,8 +188,8 @@ const Assessment = ({ onComplete }) => {
                 <div style={{
                     display: 'grid',
                     gridTemplateColumns: 'repeat(3, 1fr)',
-                    gap: '12px',
-                    marginBottom: '24px'
+                    gap: '0.75rem',
+                    marginBottom: '1.5rem'
                 }}>
                     {favoriteOptions.map(fav => {
                         const isSelected = selectedFavorites.find(f => f.id === fav.id);
@@ -202,20 +202,21 @@ const Assessment = ({ onComplete }) => {
                                         ? 'linear-gradient(135deg, #FFD700, #FFA500)'
                                         : 'white',
                                     border: isSelected
-                                        ? '3px solid #FF8C00'
-                                        : '2px solid #E5E5EA',
-                                    borderRadius: '16px',
-                                    padding: '16px 8px',
+                                        ? '0.1875rem solid #FF8C00'
+                                        : '0.125rem solid #E5E5EA',
+                                    borderRadius: '1rem',
+                                    padding: '1rem 0.5rem',
                                     cursor: 'pointer',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
-                                    gap: '8px',
+                                    gap: '0.5rem',
                                     transition: 'all 0.2s ease',
                                     transform: isSelected ? 'scale(1.05)' : 'scale(1)',
                                     boxShadow: isSelected
-                                        ? '0 8px 20px rgba(255, 165, 0, 0.4)'
-                                        : '0 2px 8px rgba(0, 0, 0, 0.1)'
+                                        ? '0 0.5rem 1.25rem rgba(255, 165, 0, 0.4)'
+                                        : '0 0.125rem 0.5rem rgba(0, 0, 0, 0.1)',
+                                    minHeight: '4.5rem'
                                 }}
                             >
                                 <span style={{ fontSize: '2.5rem' }}>{fav.icon}</span>
@@ -230,8 +231,8 @@ const Assessment = ({ onComplete }) => {
                                     <span style={{
                                         fontSize: '1.2rem',
                                         position: 'absolute',
-                                        top: '4px',
-                                        right: '4px'
+                                        top: '0.25rem',
+                                        right: '0.25rem'
                                     }}>
                                         ✓
                                     </span>
@@ -245,7 +246,7 @@ const Assessment = ({ onComplete }) => {
                     textAlign: 'center',
                     color: '#636E72',
                     fontSize: '0.9rem',
-                    marginBottom: '16px'
+                    marginBottom: '1rem'
                 }}>
                     {selectedFavorites.length === 0 && '👆 Tap to select favorites'}
                     {selectedFavorites.length > 0 && selectedFavorites.length < 1 &&
@@ -266,15 +267,16 @@ const Assessment = ({ onComplete }) => {
                             : '#D1D5DB',
                         color: 'white',
                         border: 'none',
-                        padding: '18px',
-                        borderRadius: '16px',
+                        padding: '1.125rem',
+                        borderRadius: '1rem',
                         fontSize: '1.1rem',
                         fontWeight: 700,
                         cursor: selectedFavorites.length >= 1 ? 'pointer' : 'not-allowed',
                         boxShadow: selectedFavorites.length >= 1
-                            ? '0 6px 20px rgba(78, 205, 196, 0.3)'
+                            ? '0 0.375rem 1.25rem rgba(78, 205, 196, 0.3)'
                             : 'none',
-                        marginBottom: '16px'
+                        marginBottom: '1rem',
+                        minHeight: '3.5rem'
                     }}
                 >
                     Continue →
@@ -292,7 +294,8 @@ const Assessment = ({ onComplete }) => {
                         color: '#636E72',
                         fontSize: '0.85rem',
                         cursor: 'pointer',
-                        textDecoration: 'underline'
+                        textDecoration: 'underline',
+                        minHeight: '2.75rem'
                     }}
                 >
                     Skip this step
@@ -312,12 +315,12 @@ const Assessment = ({ onComplete }) => {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '24px',
+                padding: '1.5rem',
                 zIndex: 1000
             }}>
                 <div style={{
                     fontSize: '4rem',
-                    marginBottom: '20px'
+                    marginBottom: '1.25rem'
                 }}>
                     📚
                 </div>
@@ -327,7 +330,7 @@ const Assessment = ({ onComplete }) => {
                     fontWeight: 800,
                     color: '#2D3436',
                     textAlign: 'center',
-                    marginBottom: '12px'
+                    marginBottom: '0.75rem'
                 }}>
                     Can your child read?
                 </h1>
@@ -336,8 +339,8 @@ const Assessment = ({ onComplete }) => {
                     color: '#636E72',
                     fontSize: '0.95rem',
                     textAlign: 'center',
-                    marginBottom: '40px',
-                    padding: '0 20px',
+                    marginBottom: '2.5rem',
+                    padding: '0 1.25rem',
                     lineHeight: 1.5
                 }}>
                     Even simple words like &quot;COOKIE&quot; or &quot;PLAY&quot;?<br />
@@ -347,9 +350,9 @@ const Assessment = ({ onComplete }) => {
                 <div style={{
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '12px',
+                    gap: '0.75rem',
                     width: '100%',
-                    maxWidth: '340px'
+                    maxWidth: '21.25rem'
                 }}>
                     <button
                         onClick={() => {
@@ -361,16 +364,17 @@ const Assessment = ({ onComplete }) => {
                             background: 'linear-gradient(135deg, #4ECDC4, #3DB8B0)',
                             color: 'white',
                             border: 'none',
-                            padding: '20px',
-                            borderRadius: '16px',
+                            padding: '1.25rem',
+                            borderRadius: '1rem',
                             fontSize: '1.1rem',
                             fontWeight: 700,
                             cursor: 'pointer',
-                            boxShadow: '0 6px 20px rgba(78, 205, 196, 0.3)',
+                            boxShadow: '0 0.375rem 1.25rem rgba(78, 205, 196, 0.3)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            gap: '10px'
+                            gap: '0.625rem',
+                            minHeight: '4.5rem'
                         }}
                     >
                         <span style={{ fontSize: '1.5rem' }}>✓</span>
@@ -389,16 +393,17 @@ const Assessment = ({ onComplete }) => {
                         style={{
                             background: 'white',
                             color: '#2D3436',
-                            border: '2px solid #E5E5EA',
-                            padding: '20px',
-                            borderRadius: '16px',
+                            border: '0.125rem solid #E5E5EA',
+                            padding: '1.25rem',
+                            borderRadius: '1rem',
                             fontSize: '1.1rem',
                             fontWeight: 700,
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            gap: '10px'
+                            gap: '0.625rem',
+                            minHeight: '4.5rem'
                         }}
                     >
                         <span style={{ fontSize: '1.5rem' }}>✗</span>
@@ -418,15 +423,16 @@ const Assessment = ({ onComplete }) => {
                             background: '#FFF3CD',
                             color: '#856404',
                             border: 'none',
-                            padding: '16px',
-                            borderRadius: '16px',
+                            padding: '1rem',
+                            borderRadius: '1rem',
                             fontSize: '0.95rem',
                             fontWeight: 600,
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            gap: '8px'
+                            gap: '0.5rem',
+                            minHeight: '3.5rem'
                         }}
                     >
                         <span style={{ fontSize: '1.3rem' }}>🤔</span>
@@ -447,7 +453,8 @@ const Assessment = ({ onComplete }) => {
                         fontSize: '0.85rem',
                         cursor: 'pointer',
                         textDecoration: 'underline',
-                        marginTop: '20px'
+                        marginTop: '1.25rem',
+                        minHeight: '2.75rem'
                     }}
                 >
                     Skip this question
@@ -467,7 +474,7 @@ const Assessment = ({ onComplete }) => {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '24px',
+                padding: '1.5rem',
                 zIndex: 1000
             }}>
                 {showIntro && (
@@ -489,7 +496,7 @@ const Assessment = ({ onComplete }) => {
 
                 <div style={{
                     fontSize: '4rem',
-                    marginBottom: '20px',
+                    marginBottom: '1.25rem',
                     animation: 'bounceIn 0.5s ease'
                 }}>
                     🎉
@@ -500,7 +507,7 @@ const Assessment = ({ onComplete }) => {
                     fontWeight: 800,
                     color: '#2D3436',
                     textAlign: 'center',
-                    marginBottom: '12px'
+                    marginBottom: '0.75rem'
                 }}>
                     Great! We found the right level
                 </h1>
@@ -508,19 +515,19 @@ const Assessment = ({ onComplete }) => {
                 <div style={{
                     background: 'linear-gradient(135deg, #4ECDC4, #3DB8B0)',
                     color: 'white',
-                    padding: '20px 28px',
-                    borderRadius: '20px',
+                    padding: '1.25rem 1.75rem',
+                    borderRadius: '1.25rem',
                     textAlign: 'center',
-                    marginBottom: '20px',
-                    boxShadow: '0 8px 24px rgba(78, 205, 196, 0.3)',
+                    marginBottom: '1.25rem',
+                    boxShadow: '0 0.5rem 1.5rem rgba(78, 205, 196, 0.3)',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center'
                 }}>
-                    <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '8px' }}>
+                    <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.5rem' }}>
                         {phaseInfo.name}
                     </div>
-                    <div style={{ fontSize: '0.9rem', opacity: 0.9, marginBottom: '12px' }}>
+                    <div style={{ fontSize: '0.9rem', opacity: 0.9, marginBottom: '0.75rem' }}>
                         {phaseInfo.description}
                     </div>
 
@@ -529,16 +536,17 @@ const Assessment = ({ onComplete }) => {
                             onClick={() => setShowIntro(true)}
                             style={{
                                 background: 'rgba(255,255,255,0.2)',
-                                border: '1px solid rgba(255,255,255,0.4)',
+                                border: '0.0625rem solid rgba(255,255,255,0.4)',
                                 color: 'white',
-                                padding: '8px 16px',
-                                borderRadius: '20px',
+                                padding: '0.5rem 1rem',
+                                borderRadius: '1.25rem',
                                 fontSize: '0.85rem',
                                 cursor: 'pointer',
                                 display: 'inline-flex',
                                 alignItems: 'center',
-                                gap: '6px',
-                                fontWeight: 600
+                                gap: '0.375rem',
+                                fontWeight: 600,
+                                minHeight: '2.75rem'
                             }}
                         >
                             📖 Show me how
@@ -552,13 +560,14 @@ const Assessment = ({ onComplete }) => {
                         background: 'linear-gradient(135deg, #4ECDC4, #3DB8B0)',
                         color: 'white',
                         border: 'none',
-                        padding: '18px 48px',
-                        borderRadius: '16px',
+                        padding: '1.125rem 3rem',
+                        borderRadius: '1rem',
                         fontSize: '1.1rem',
                         fontWeight: 700,
                         cursor: 'pointer',
-                        boxShadow: '0 6px 20px rgba(78, 205, 196, 0.3)',
-                        marginBottom: '16px'
+                        boxShadow: '0 0.375rem 1.25rem rgba(78, 205, 196, 0.3)',
+                        marginBottom: '1rem',
+                        minHeight: '3.5rem'
                     }}
                 >
                     Start Learning! →
@@ -576,7 +585,8 @@ const Assessment = ({ onComplete }) => {
                         color: '#636E72',
                         fontSize: '0.9rem',
                         cursor: 'pointer',
-                        textDecoration: 'underline'
+                        textDecoration: 'underline',
+                        minHeight: '2.75rem'
                     }}
                 >
                     Retake assessment
@@ -592,7 +602,7 @@ const Assessment = ({ onComplete }) => {
             background: 'linear-gradient(135deg, #FDF8F3, #F5F0EB)',
             display: 'flex',
             flexDirection: 'column',
-            padding: '24px',
+            padding: '1.5rem',
             zIndex: 1000
         }}>
             {/* Back Button */}
@@ -601,15 +611,17 @@ const Assessment = ({ onComplete }) => {
                     onClick={handleBack}
                     style={{
                         position: 'absolute',
-                        top: '20px',
-                        left: '20px',
+                        top: '1.25rem',
+                        left: '1.25rem',
                         background: 'transparent',
                         border: 'none',
                         fontSize: '1.5rem',
                         cursor: 'pointer',
                         color: '#636E72',
-                        padding: '10px',
-                        zIndex: 10
+                        padding: '0.625rem',
+                        zIndex: 10,
+                        minWidth: '2.75rem',
+                        minHeight: '2.75rem'
                     }}
                 >
                     ←
@@ -620,17 +632,17 @@ const Assessment = ({ onComplete }) => {
             <div style={{
                 display: 'flex',
                 justifyContent: 'center',
-                gap: '8px',
-                marginBottom: '32px',
-                marginTop: '20px'
+                gap: '0.5rem',
+                marginBottom: '2rem',
+                marginTop: '1.25rem'
             }}>
                 {questions.map((_, i) => (
                     <div
                         key={i}
                         style={{
-                            width: i === currentQuestion ? '24px' : '10px',
-                            height: '10px',
-                            borderRadius: '10px',
+                            width: i === currentQuestion ? '1.5rem' : '0.625rem',
+                            height: '0.625rem',
+                            borderRadius: '0.625rem',
                             background: i <= currentQuestion
                                 ? 'linear-gradient(135deg, #4ECDC4, #3DB8B0)'
                                 : '#D1D5DB',
@@ -645,7 +657,7 @@ const Assessment = ({ onComplete }) => {
                 textAlign: 'center',
                 color: '#636E72',
                 fontSize: '0.85rem',
-                marginBottom: '8px'
+                marginBottom: '0.5rem'
             }}>
                 Question {currentQuestion + 1} of {questions.length}
             </div>
@@ -654,7 +666,7 @@ const Assessment = ({ onComplete }) => {
             <div style={{
                 fontSize: '5rem',
                 textAlign: 'center',
-                marginBottom: '24px'
+                marginBottom: '1.5rem'
             }}>
                 {question.emoji}
             </div>
@@ -665,9 +677,9 @@ const Assessment = ({ onComplete }) => {
                 fontWeight: 700,
                 color: '#2D3436',
                 textAlign: 'center',
-                marginBottom: '12px',
+                marginBottom: '0.75rem',
                 lineHeight: 1.3,
-                padding: '0 10px'
+                padding: '0 0.625rem'
             }}>
                 {question.question}
             </h2>
@@ -677,8 +689,8 @@ const Assessment = ({ onComplete }) => {
                 color: '#636E72',
                 fontSize: '0.9rem',
                 textAlign: 'center',
-                marginBottom: '40px',
-                padding: '0 20px'
+                marginBottom: '2.5rem',
+                padding: '0 1.25rem'
             }}>
                 {question.hint}
             </p>
@@ -687,9 +699,9 @@ const Assessment = ({ onComplete }) => {
             <div style={{
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '12px',
+                gap: '0.75rem',
                 marginTop: 'auto',
-                marginBottom: '24px'
+                marginBottom: '1.5rem'
             }}>
                 <button
                     onClick={() => handleAnswer(true)}
@@ -697,16 +709,17 @@ const Assessment = ({ onComplete }) => {
                         background: 'linear-gradient(135deg, #4ECDC4, #3DB8B0)',
                         color: 'white',
                         border: 'none',
-                        padding: '18px',
-                        borderRadius: '16px',
+                        padding: '1.125rem',
+                        borderRadius: '1rem',
                         fontSize: '1.1rem',
                         fontWeight: 700,
                         cursor: 'pointer',
-                        boxShadow: '0 6px 20px rgba(78, 205, 196, 0.3)',
+                        boxShadow: '0 0.375rem 1.25rem rgba(78, 205, 196, 0.3)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        gap: '10px'
+                        gap: '0.625rem',
+                        minHeight: '3.5rem'
                     }}
                 >
                     ✓ Yes
@@ -717,16 +730,17 @@ const Assessment = ({ onComplete }) => {
                     style={{
                         background: 'white',
                         color: '#2D3436',
-                        border: '2px solid #E5E5EA',
-                        padding: '18px',
-                        borderRadius: '16px',
+                        border: '0.125rem solid #E5E5EA',
+                        padding: '1.125rem',
+                        borderRadius: '1rem',
                         fontSize: '1.1rem',
                         fontWeight: 700,
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        gap: '10px'
+                        gap: '0.625rem',
+                        minHeight: '3.5rem'
                     }}
                 >
                     ✗ Not yet
@@ -738,15 +752,16 @@ const Assessment = ({ onComplete }) => {
                         background: '#FFF3CD',
                         color: '#856404',
                         border: 'none',
-                        padding: '14px',
-                        borderRadius: '16px',
+                        padding: '0.875rem',
+                        borderRadius: '1rem',
                         fontSize: '0.95rem',
                         fontWeight: 600,
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        gap: '8px'
+                        gap: '0.5rem',
+                        minHeight: '2.75rem'
                     }}
                 >
                     🤔 I&apos;m not sure
@@ -763,17 +778,17 @@ const Assessment = ({ onComplete }) => {
                     alignItems: 'center',
                     justifyContent: 'center',
                     zIndex: 1100,
-                    padding: '20px'
+                    padding: '1.25rem'
                 }}>
                     <div style={{
                         background: 'white',
-                        borderRadius: '24px',
-                        padding: '24px',
-                        maxWidth: '340px',
+                        borderRadius: '1.5rem',
+                        padding: '1.5rem',
+                        maxWidth: '21.25rem',
                         width: '100%',
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: '16px'
+                        gap: '1rem'
                     }}>
                         <h3 style={{ margin: 0, fontSize: '1.2rem', textAlign: 'center', color: '#2D3436' }}>
                             No problem! 👍
@@ -792,15 +807,16 @@ const Assessment = ({ onComplete }) => {
                                 background: 'linear-gradient(135deg, #4ECDC4, #3DB8B0)',
                                 color: 'white',
                                 border: 'none',
-                                padding: '16px',
-                                borderRadius: '14px',
+                                padding: '1rem',
+                                borderRadius: '0.875rem',
                                 fontSize: '1rem',
                                 fontWeight: 700,
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                gap: '8px'
+                                gap: '0.5rem',
+                                minHeight: '3rem'
                             }}
                         >
                             🚀 Start at Level 1
@@ -821,11 +837,12 @@ const Assessment = ({ onComplete }) => {
                                 background: '#F5F5F7',
                                 color: '#2D3436',
                                 border: 'none',
-                                padding: '14px',
-                                borderRadius: '14px',
+                                padding: '0.875rem',
+                                borderRadius: '0.875rem',
                                 fontSize: '0.95rem',
                                 fontWeight: 600,
-                                cursor: 'pointer'
+                                cursor: 'pointer',
+                                minHeight: '2.75rem'
                             }}
                         >
                             ⏭️ Skip this question
@@ -839,7 +856,8 @@ const Assessment = ({ onComplete }) => {
                                 color: '#636E72',
                                 fontSize: '0.85rem',
                                 cursor: 'pointer',
-                                padding: '8px'
+                                padding: '0.5rem',
+                                minHeight: '2.75rem'
                             }}
                         >
                             Go back
@@ -858,7 +876,8 @@ const Assessment = ({ onComplete }) => {
                     fontSize: '0.85rem',
                     cursor: 'pointer',
                     textAlign: 'center',
-                    marginBottom: '20px'
+                    marginBottom: '1.25rem',
+                    minHeight: '2.75rem'
                 }}
             >
                 Skip assessment entirely

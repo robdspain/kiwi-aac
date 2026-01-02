@@ -10,13 +10,18 @@ export const CORE_VOCABULARY = [
     "now", "later", "today"
 ];
 
-// Word Classes for Fitzgerald Key
-export const WORD_CLASSES = [
-    { id: 'noun', label: 'Noun (Yellow)', color: '#FFEB3B', textColor: '#2D3436' },
-    { id: 'verb', label: 'Verb (Green)', color: '#2E7D32', textColor: '#FFFFFF' },
-    { id: 'adj', label: 'Adjective (Blue)', color: '#1565C0', textColor: '#FFFFFF' },
-    { id: 'social', label: 'Social (Pink)', color: '#C2185B', textColor: '#FFFFFF' },
-    { id: 'misc', label: 'Misc (Orange)', color: '#E65100', textColor: '#FFFFFF' }
+export const CORE_WORDS_LAYOUT = [
+    { word: "I", pos: { r: 0, c: 0 }, wc: "pronoun" },
+    { word: "want", pos: { r: 0, c: 1 }, wc: "verb" },
+    { word: "more", pos: { r: 0, c: 2 }, wc: "misc" },
+    { word: "stop", pos: { r: 0, c: 3 }, wc: "verb" },
+    { word: "you", pos: { r: 1, c: 0 }, wc: "pronoun" },
+    { word: "go", pos: { r: 1, c: 1 }, wc: "verb" },
+    { word: "yes", pos: { r: 1, c: 2 }, wc: "social" },
+    { word: "no", pos: { r: 1, c: 3 }, wc: "social" },
+    { word: "help", pos: { r: 2, c: 0 }, wc: "verb" },
+    { word: "please", pos: { r: 2, c: 2 }, wc: "social" },
+    { word: "thanks", pos: { r: 2, c: 3 }, wc: "social" }
 ];
 
 export const TEMPLATES = {
@@ -31,13 +36,6 @@ export const TEMPLATES = {
         "help", "bathroom", "music", "art", "gym", "recess"
     ]
 };
-
-export const SKILLS = [
-    { id: 'fcr', label: 'FCR (Functional Communication)', color: '#9C27B0' },
-    { id: 'wait', label: 'Wait / Tolerance', color: '#FF5722' },
-    { id: 'denial', label: 'Denial Acceptance', color: '#795548' },
-    { id: 'none', label: 'None', color: '#ccc' }
-];
 
 export const CONTEXT_DEFINITIONS = {
     "School": ["Teacher", "Friend", "Backpack", "Pencil", "Recess", "Bus", "Desk"],

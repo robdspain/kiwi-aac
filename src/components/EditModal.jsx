@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import VoiceRecorder from './VoiceRecorder';
 import MemojiPicker from './MemojiPicker';
 
@@ -9,6 +10,7 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
     const [viewMode, setViewMode] = useState('grid');
     const [customAudio, setCustomAudio] = useState(null);
     const [isImage, setIsImage] = useState(false);
+    const [processing, setProcessing] = useState(false);
     const [showMemojiPicker, setShowMemojiPicker] = useState(false);
     const [characterConfig, setCharacterConfig] = useState(null);
     const fileInputRef = useRef(null);
@@ -21,6 +23,7 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
             setTimeout(() => {
                 setWord(item.word); setIcon(item.icon); setBgColor(item.bgColor || ''); setViewMode(item.viewMode || 'grid'); setCustomAudio(item.customAudio || null); setCharacterConfig(item.characterConfig || null);
                 setIsImage(typeof item.icon === 'string' && (item.icon.startsWith('/') || item.icon.startsWith('data:') || item.icon.includes('.')));
+                setProcessing(false);
             }, 0);
         }
     }, [isOpen, item]);
@@ -28,19 +31,71 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
+            processImage(file);
+        }
+    };
+
+    const processImage = (source) => {
+        if (source instanceof Blob) {
+            setProcessing(true);
             const reader = new FileReader();
             reader.onload = (event) => {
                 const img = new Image();
                 img.onload = () => {
-                    const canvas = document.createElement('canvas'); const maxSize = 256; let width = img.width, height = img.height;
+                    const canvas = document.createElement('canvas');
+                    const maxSize = 512; // Increased for better quality
+                    let width = img.width, height = img.height;
                     if (width > height) { if (width > maxSize) { height *= maxSize / width; width = maxSize; } }
                     else { if (height > maxSize) { width *= maxSize / height; height = maxSize; } }
-                    canvas.width = width; canvas.height = height; canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-                    setIcon(canvas.toDataURL('image/jpeg', 0.8)); setIsImage(true);
+                    canvas.width = width; canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    setIcon(canvas.toDataURL('image/jpeg', 0.7)); // Balanced compression
+                    setIsImage(true);
+                    setProcessing(false);
                 };
+                img.onerror = () => setProcessing(false);
                 img.src = event.target.result;
             };
-            reader.readAsDataURL(file);
+            reader.onerror = () => setProcessing(false);
+            reader.readAsDataURL(source);
+        } else {
+            // If it's already a data URL or path
+            setIcon(source);
+            setIsImage(true);
+        }
+    };
+
+    const takePhoto = async (source = CameraSource.Prompt) => {
+        try {
+            const image = await Camera.getPhoto({
+                quality: 90,
+                allowEditing: true,
+                resultType: CameraResultType.DataUrl,
+                source: source
+            });
+            if (image && image.dataUrl) {
+                setProcessing(true);
+                // Process the image to ensure it's resized correctly for performance
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const maxSize = 512;
+                    let width = img.width, height = img.height;
+                    if (width > height) { if (width > maxSize) { height *= maxSize / width; width = maxSize; } }
+                    else { if (height > maxSize) { width *= maxSize / height; height = maxSize; } }
+                    canvas.width = width; canvas.height = height;
+                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                    setIcon(canvas.toDataURL('image/jpeg', 0.7));
+                    setIsImage(true);
+                    setProcessing(false);
+                };
+                img.onerror = () => setProcessing(false);
+                img.src = image.dataUrl;
+            }
+        } catch (error) {
+            console.error('Camera error:', error);
+            setProcessing(false);
         }
     };
 
@@ -52,7 +107,14 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                 <div className="ios-sheet-header">
                     <button className="ios-cancel-button" onClick={onClose}>Cancel</button>
                     <h2 className="ios-sheet-title">{item?.type === 'folder' ? 'Edit Folder' : 'Edit Button'}</h2>
-                    <button className="ios-done-button" onClick={() => { onSave(word, icon, bgColor, viewMode, customAudio, characterConfig); onClose(); }}>Done</button>
+                    <button 
+                        className="ios-done-button" 
+                        onClick={() => { onSave(word, icon, bgColor, viewMode, customAudio, characterConfig); onClose(); }}
+                        disabled={processing}
+                        style={{ opacity: processing ? 0.5 : 1 }}
+                    >
+                        {processing ? '...' : 'Done'}
+                    </button>
                 </div>
                 
                 <div className="ios-sheet-content" style={{ background: '#F2F2F7' }}>
@@ -64,13 +126,13 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                                 type="text" 
                                 value={word} 
                                 onChange={(e) => setWord(e.target.value)} 
-                                style={{ border: 'none', textAlign: 'right', fontSize: '17px', outline: 'none', background: 'transparent', flex: 1 }}
+                                style={{ border: 'none', textAlign: 'right', fontSize: '1.0625rem', outline: 'none', background: 'transparent', flex: 1, minHeight: '2.75rem' }}
                                 placeholder="Enter label"
                             />
                         </div>
                         {item?.type === 'folder' && (
-                            <div className="ios-row" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '10px', padding: '15px' }}>
-                                <span style={{ fontWeight: 600, fontSize: '13px', textTransform: 'uppercase', color: '#6e6e73' }}>View Mode</span>
+                            <div className="ios-row" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.625rem', padding: '1rem' }}>
+                                <span style={{ fontWeight: 600, fontSize: '0.8125rem', textTransform: 'uppercase', color: '#6e6e73' }}>View Mode</span>
                                 <div className="ios-segmented-control" style={{ marginBottom: 0 }}>
                                     <div 
                                         className="selection-pill" 
@@ -79,8 +141,8 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                                             transform: viewMode === 'grid' ? 'translateX(0)' : 'translateX(100%)' 
                                         }} 
                                     />
-                                    <button onClick={() => setViewMode('grid')}>Grid</button>
-                                    <button onClick={() => setViewMode('schedule')}>Schedule</button>
+                                    <button onClick={() => setViewMode('grid')} style={{ minHeight: '2.75rem' }}>Grid</button>
+                                    <button onClick={() => setViewMode('schedule')} style={{ minHeight: '2.75rem' }}>Schedule</button>
                                 </div>
                             </div>
                         )}
@@ -88,18 +150,18 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
 
                     <div className="ios-setting-group-header">Appearance</div>
                     <div className="ios-setting-card">
-                        <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
-                            <div style={{ width: '100px', height: '100px', borderRadius: '22%', background: bgColor || 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3.5rem', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                        <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+                            <div style={{ width: '6.25rem', height: '6.25rem', borderRadius: '22%', background: bgColor || 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3.5rem', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
                                 {isImage ? <img src={icon} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} /> : icon}
                             </div>
                             
-                            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                                 {['', '#FF3B30', '#FF9500', '#FFCC00', '#34C759', '#007AFF', '#5556D6', '#AF52DE'].map(color => (
                                     <button 
                                         key={color} 
                                         onClick={() => setBgColor(color)} 
                                         style={{ 
-                                            width: '36px', height: '36px', borderRadius: '50%', 
+                                            width: '2.75rem', height: '2.75rem', borderRadius: '50%', 
                                             background: color || 'white', 
                                             border: bgColor === color ? '3px solid #007AFF' : '1px solid #ddd', 
                                             cursor: 'pointer',
@@ -109,32 +171,36 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                                 ))}
                             </div>
                         </div>
-                        <div className="ios-row" onClick={() => onOpenEmojiPicker(setWord, (ni, isImg) => { setIcon(ni); setIsImage(!!isImg); })}>
+                        <div className="ios-row" onClick={() => onOpenEmojiPicker(setWord, (ni, isImg) => { setIcon(ni); setIsImage(!!isImg); })} style={{ minHeight: '3rem' }}>
                             <span>Choose from Library</span>
                             <span className="ios-chevron">›</span>
                         </div>
-                        <div className="ios-row" onClick={() => setShowMemojiPicker(true)}>
+                        <div className="ios-row" onClick={() => setShowMemojiPicker(true)} style={{ minHeight: '3rem' }}>
                             <span>Select Character</span>
                             <span className="ios-chevron">›</span>
                         </div>
-                        <div className="ios-row" onClick={() => triggerPaywall ? triggerPaywall('upload_photo', () => fileInputRef.current.click()) : fileInputRef.current.click()}>
-                            <span>Upload Photo</span>
+                        <div className="ios-row" onClick={() => takePhoto(CameraSource.Camera)} style={{ minHeight: '3rem' }}>
+                            <span>📷 Take Photo</span>
+                            <span className="ios-chevron">›</span>
+                        </div>
+                        <div className="ios-row" onClick={() => takePhoto(CameraSource.Photos)} style={{ minHeight: '3rem' }}>
+                            <span>🖼️ Choose from Gallery</span>
                             <span className="ios-chevron">›</span>
                         </div>
                     </div>
 
                     <div className="ios-setting-group-header">Media</div>
                     <div className="ios-setting-card">
-                        <div style={{ padding: '5px' }}>
+                        <div style={{ padding: '0.3125rem' }}>
                             {item?.type !== 'folder' && <VoiceRecorder currentAudio={customAudio} onSave={(audio) => setCustomAudio(audio)} onRemove={() => setCustomAudio(null)}/>}
                         </div>
                     </div>
 
-                    <div style={{ marginTop: '20px' }}>
+                    <div style={{ marginTop: '1.25rem' }}>
                         <button 
                             onClick={() => { if (window.confirm("Delete this item?")) { onDelete(); onClose(); } }} 
                             className="ios-row" 
-                            style={{ width: '100%', border: 'none', borderRadius: '12px', justifyContent: 'center' }}
+                            style={{ width: '100%', border: 'none', borderRadius: '0.75rem', justifyContent: 'center', minHeight: '3rem' }}
                         >
                             <span style={{ color: '#FF3B30', fontWeight: 600 }}>Delete Item</span>
                         </button>

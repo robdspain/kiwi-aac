@@ -30,22 +30,22 @@ const Phase1TargetSelector = ({ onSelect, rootItems = [] }) => {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '20px'
+            padding: '1.25rem'
         }}>
             <div style={{
-                maxWidth: '600px',
+                maxWidth: '37.5rem',
                 width: '100%',
                 textAlign: 'center'
             }}>
-                <h1 style={{ color: '#2D3436', marginBottom: '10px' }}>Choose a Target Item</h1>
-                <p style={{ fontSize: '1.1rem', color: '#636E72', marginBottom: '40px', lineHeight: 1.5 }}>
+                <h1 style={{ color: '#2D3436', marginBottom: '0.625rem', fontSize: '2rem' }}>Choose a Target Item</h1>
+                <p style={{ fontSize: '1.1rem', color: '#636E72', marginBottom: '2.5rem', lineHeight: 1.5 }}>
                     Pick one item that is highly motivating and can have multiple meanings (e.g. &quot;Play&quot; can mean tickles, chase, or ball).
                 </p>
 
                 <div style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-                    gap: '20px',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(8.75rem, 1fr))',
+                    gap: '1.25rem',
                     width: '100%'
                 }}>
                     {options.map(item => (
@@ -56,15 +56,16 @@ const Phase1TargetSelector = ({ onSelect, rootItems = [] }) => {
                                 display: 'flex',
                                 flexDirection: 'column',
                                 alignItems: 'center',
-                                padding: '20px',
-                                border: '2px solid #E5E5EA',
-                                borderRadius: '20px',
+                                padding: '1.25rem',
+                                border: '0.125rem solid #E5E5EA',
+                                borderRadius: '1.25rem',
                                 background: 'white',
                                 cursor: 'pointer',
-                                transition: 'all 0.2s'
+                                transition: 'all 0.2s',
+                                minHeight: '4.5rem'
                             }}
                         >
-                            <span style={{ fontSize: '4rem', marginBottom: '10px' }}>{item.icon}</span>
+                            <span style={{ fontSize: '4rem', marginBottom: '0.625rem' }}>{item.icon}</span>
                             <span style={{ fontSize: '1.2rem', fontWeight: 700, color: '#2D3436' }}>{item.word}</span>
                         </button>
                     ))}

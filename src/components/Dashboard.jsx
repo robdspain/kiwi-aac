@@ -122,16 +122,16 @@ Communication is growing! 🥝
                     }
 
                     return (
-                        <div style={{ marginBottom: '30px' }}>
+                        <div style={{ marginBottom: '1.875rem' }}>
                             {/* Current Level Card */}
                             {currentLevel && (
                                 <div className="dashboard-card" style={{
                                     background: `linear-gradient(135deg, ${getStage(currentLevel).color}15, ${getStage(currentLevel).color}30)`,
-                                    border: `2px solid ${getStage(currentLevel).color}`
+                                    border: `0.125rem solid ${getStage(currentLevel).color}`
                                 }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <div>
-                                            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>Current Level</div>
+                                            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>Current Level</div>
                                             <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: getStage(currentLevel).color }}>
                                                 {getStage(currentLevel).icon} Level {currentLevel}
                                             </div>
@@ -149,11 +149,11 @@ Communication is growing! 🥝
                                     {levelProgress[currentLevel] && (
                                         <div style={{
                                             display: 'flex',
-                                            gap: '15px',
-                                            marginTop: '15px',
+                                            gap: '0.9375rem',
+                                            marginTop: '0.9375rem',
                                             background: 'white',
-                                            padding: '12px',
-                                            borderRadius: '10px'
+                                            padding: '0.75rem',
+                                            borderRadius: '0.625rem'
                                         }}>
                                             <div style={{ flex: 1, textAlign: 'center' }}>
                                                 <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--success)' }}>
@@ -182,8 +182,8 @@ Communication is growing! 🥝
 
                             {/* All Levels Progress */}
                             <div className="dashboard-card" style={{ background: 'var(--gray-light)' }}>
-                                <h3 style={{ margin: '0 0 15px 0', fontSize: '1rem' }}>Level History</h3>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                <h3 style={{ margin: '0 0 0.9375rem 0', fontSize: '1rem' }}>Level History</h3>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
                                     {sortedLevels.map(lvl => {
                                         const progress = levelProgress[lvl];
                                         const levelDef = getLevel(lvl);
@@ -203,17 +203,17 @@ Communication is growing! 🥝
                                                 key={lvl}
                                                 style={{
                                                     background: 'white',
-                                                    padding: '12px 15px',
-                                                    borderRadius: '10px',
+                                                    padding: '0.75rem 0.9375rem',
+                                                    borderRadius: '0.625rem',
                                                     display: 'flex',
                                                     alignItems: 'center',
-                                                    gap: '12px',
-                                                    border: isCurrent ? `2px solid ${stageDef?.color || '#007AFF'}` : '1px solid #eee'
+                                                    gap: '0.75rem',
+                                                    border: isCurrent ? `0.125rem solid ${stageDef?.color || '#007AFF'}` : '0.0625rem solid #eee'
                                                 }}
                                             >
                                                 <div style={{
-                                                    width: '36px',
-                                                    height: '36px',
+                                                    width: '2.25rem',
+                                                    height: '2.25rem',
                                                     borderRadius: '50%',
                                                     background: isPassed ? 'var(--success)' : (stageDef?.color || '#E5E5EA') + '30',
                                                     display: 'flex',
@@ -238,8 +238,8 @@ Communication is growing! 🥝
                                                         <span style={{
                                                             background: 'var(--success)',
                                                             color: 'white',
-                                                            padding: '4px 10px',
-                                                            borderRadius: '12px',
+                                                            padding: '0.25rem 0.625rem',
+                                                            borderRadius: '0.75rem',
                                                             fontSize: '0.75rem',
                                                             fontWeight: '600'
                                                         }}>Passed</span>
@@ -247,8 +247,8 @@ Communication is growing! 🥝
                                                         <span style={{
                                                             background: stageDef?.color || 'var(--primary)',
                                                             color: 'white',
-                                                            padding: '4px 10px',
-                                                            borderRadius: '12px',
+                                                            padding: '0.25rem 0.625rem',
+                                                            borderRadius: '0.75rem',
                                                             fontSize: '0.75rem',
                                                             fontWeight: '600'
                                                         }}>Current</span>
@@ -256,8 +256,8 @@ Communication is growing! 🥝
                                                         <span style={{
                                                             background: '#E5E5EA',
                                                             color: '#666',
-                                                            padding: '4px 10px',
-                                                            borderRadius: '12px',
+                                                            padding: '0.25rem 0.625rem',
+                                                            borderRadius: '0.75rem',
                                                             fontSize: '0.75rem'
                                                         }}>In Progress</span>
                                                     )}
@@ -294,18 +294,18 @@ Communication is growing! 🥝
 
                 {/* Weekly Activity Chart */}
                 <div className="dashboard-card" style={{ background: 'var(--gray-light)' }}>
-                    <h3 style={{ margin: '0 0 15px 0' }}>Weekly Activity</h3>
-                    <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', height: '100px' }}>
+                    <h3 style={{ margin: '0 0 0.9375rem 0', fontSize: '1rem' }}>Weekly Activity</h3>
+                    <div style={{ display: 'flex', alignItems: 'flex-end', gap: '0.5rem', height: '6.25rem' }}>
                         {dailyStats.map((day, i) => (
                             <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                 <div style={{
                                     width: '100%',
-                                    height: `${(day.clicks / maxDaily) * 80}px`,
+                                    height: `${(day.clicks / maxDaily) * 5}rem`,
                                     background: 'linear-gradient(180deg, var(--primary), var(--primary-dark))',
-                                    borderRadius: '5px 5px 0 0',
-                                    minHeight: '4px'
+                                    borderRadius: '0.3125rem 0.3125rem 0 0',
+                                    minHeight: '0.25rem'
                                 }} />
-                                <span style={{ fontSize: '0.7rem', marginTop: '5px' }}>{day.label}</span>
+                                <span style={{ fontSize: '0.7rem', marginTop: '0.3125rem' }}>{day.label}</span>
                             </div>
                         ))}
                     </div>
@@ -313,8 +313,8 @@ Communication is growing! 🥝
 
                 {/* Independence Trend Chart */}
                 {trials.length > 5 && (
-                    <div className="dashboard-card" style={{ background: 'white', border: '1px solid #eee' }}>
-                        <h3 style={{ margin: '0 0 15px 0', color: 'var(--text-primary)' }}>📈 Independence Trend (Last 7 Days)</h3>
+                    <div className="dashboard-card" style={{ background: 'white', border: '0.0625rem solid #eee' }}>
+                        <h3 style={{ margin: '0 0 0.9375rem 0', color: 'var(--text-primary)', fontSize: '1rem' }}>📈 Independence Trend (Last 7 Days)</h3>
                         {(() => {
                             // Calculate daily independence rates
                             const days = [];
@@ -338,7 +338,7 @@ Communication is growing! 🥝
                             }).join(' ');
 
                             return (
-                                <div style={{ position: 'relative', height: '120px', width: '100%' }}>
+                                <div style={{ position: 'relative', height: '7.5rem', width: '100%' }}>
                                     <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
                                         {/* Grid lines */}
                                         <line x1="0" y1="0" x2="100" y2="0" stroke="#eee" strokeWidth="0.5" />
@@ -368,7 +368,7 @@ Communication is growing! 🥝
                                     </svg>
 
                                     {/* Labels */}
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px', fontSize: '0.7rem', color: '#666' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.3125rem', fontSize: '0.7rem', color: '#666' }}>
                                         {days.map((d, i) => (
                                             <span key={i}>{d.label}</span>
                                         ))}
@@ -382,12 +382,12 @@ Communication is growing! 🥝
                 {/* Top Items */}
                 {topItems.length > 0 && (
                     <div className="dashboard-card" style={{ background: '#f0f0ff' }}>
-                        <h3 style={{ margin: '0 0 15px 0' }}>🏆 Most Used Items</h3>
+                        <h3 style={{ margin: '0 0 0.625rem 0', fontSize: '1rem' }}>🏆 Most Used Items</h3>
                         {topItems.map((item, i) => (
-                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                                <span style={{ width: '24px', fontWeight: 'bold', color: '#666' }}>#{i + 1}</span>
+                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '0.5rem' }}>
+                                <span style={{ width: '1.5rem', fontWeight: 'bold', color: '#666' }}>#{i + 1}</span>
                                 <span style={{ flex: 1 }}>{item.word}</span>
-                                <span style={{ background: 'var(--primary)', color: 'white', padding: '4px 12px', borderRadius: '10px', fontSize: '0.9rem' }}>{item.count}</span>
+                                <span style={{ background: 'var(--primary)', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '0.625rem', fontSize: '0.9rem' }}>{item.count}</span>
                             </div>
                         ))}
                     </div>
@@ -395,40 +395,40 @@ Communication is growing! 🥝
 
                 {/* Favorites Usage */}
                 {favorites.length > 0 && (
-                    <div className="dashboard-card" style={{ background: 'linear-gradient(135deg, #FFF5E1, #FFE4B5)', border: '2px solid #FFD700' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
-                            <h3 style={{ margin: 0 }}>⭐ Favorite Usage</h3>
-                            <span style={{ background: '#FFD700', color: 'white', padding: '4px 12px', borderRadius: '10px', fontSize: '0.85rem', fontWeight: 'bold' }}>
+                    <div className="dashboard-card" style={{ background: 'linear-gradient(135deg, #FFF5E1, #FFE4B5)', border: '0.125rem solid #FFD700' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '0.9375rem' }}>
+                            <h3 style={{ margin: 0, fontSize: '1rem' }}>⭐ Favorite Usage</h3>
+                            <span style={{ background: '#FFD700', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '0.625rem', fontSize: '0.85rem', fontWeight: 'bold' }}>
                                 {totalFavoriteUses} total uses
                             </span>
                         </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '12px' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(11.25rem, 1fr))', gap: '0.75rem' }}>
                             {favorites.map((fav, i) => {
                                 const usagePercent = totalFavoriteUses > 0 ? ((fav.usageCount || 0) / totalFavoriteUses * 100).toFixed(0) : 0;
                                 const lastUsedDate = fav.lastUsed ? new Date(fav.lastUsed).toLocaleDateString() : 'Never';
                                 return (
                                     <div key={i} style={{
                                         background: 'white',
-                                        padding: '16px',
-                                        borderRadius: '12px',
-                                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                                        padding: '1rem',
+                                        borderRadius: '0.75rem',
+                                        boxShadow: '0 0.125rem 0.5rem rgba(0,0,0,0.1)',
                                         display: 'flex',
                                         flexDirection: 'column',
-                                        gap: '8px'
+                                        gap: '0.5rem'
                                     }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                             <span style={{ fontSize: '2rem' }}>{fav.icon}</span>
                                             <div style={{ flex: 1 }}>
                                                 <div style={{ fontWeight: 'bold', fontSize: '0.95rem' }}>{fav.word}</div>
                                                 <div style={{ fontSize: '0.75rem', color: '#666' }}>Last: {lastUsedDate}</div>
                                             </div>
                                         </div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                             <div style={{
                                                 flex: 1,
-                                                height: '8px',
+                                                height: '0.5rem',
                                                 background: '#E5E5EA',
-                                                borderRadius: '4px',
+                                                borderRadius: '0.25rem',
                                                 overflow: 'hidden'
                                             }}>
                                                 <div style={{
@@ -442,7 +442,7 @@ Communication is growing! 🥝
                                                 fontSize: '0.85rem',
                                                 fontWeight: 'bold',
                                                 color: '#FF8C00',
-                                                minWidth: '40px',
+                                                minWidth: '2.5rem',
                                                 textAlign: 'right'
                                             }}>
                                                 {fav.usageCount}
@@ -453,7 +453,7 @@ Communication is growing! 🥝
                             })}
                         </div>
                         {favorites.length === 0 && (
-                            <p style={{ textAlign: 'center', color: '#666', margin: '20px 0', fontStyle: 'italic' }}>
+                            <p style={{ textAlign: 'center', color: '#666', margin: '1.25rem 0', fontStyle: 'italic', fontSize: '0.875rem' }}>
                                 No favorites used yet. Tap ⭐ Add More Favorites in Adult Settings!
                             </p>
                         )}
@@ -478,16 +478,16 @@ Communication is growing! 🥝
 
                 {trials.length > 0 && (
                     <div className="dashboard-card" style={{ background: '#f0efff' }}>
-                        <h3 style={{ margin: '0 0 10px 0' }}>Trial History</h3>
-                        <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                        <h3 style={{ margin: '0 0 0.625rem 0', fontSize: '1rem' }}>Trial History</h3>
+                        <div style={{ display: 'flex', gap: '0.3125rem', flexWrap: 'wrap' }}>
                             {trials.slice(-20).map((t, i) => (
                                 <div
                                     key={i}
                                     style={{
-                                        width: '12px',
-                                        height: '24px',
+                                        width: '0.75rem',
+                                        height: '1.5rem',
                                         background: t.isPrompted ? '#FBC02D' : '#9C27B0',
-                                        borderRadius: '3px'
+                                        borderRadius: '0.1875rem'
                                     }}
                                 />
                             ))}

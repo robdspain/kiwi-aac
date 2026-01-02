@@ -19,6 +19,11 @@ export const ProfileProvider = ({ children }) => {
         return localStorage.getItem('kiwi-current-profile') || 'default';
     });
 
+    const [pronunciations, setPronunciations] = useState(() => {
+        const saved = localStorage.getItem('kiwi-pronunciations');
+        return saved ? JSON.parse(saved) : {};
+    });
+
     useEffect(() => {
         localStorage.setItem('kiwi-profiles', JSON.stringify(profiles));
     }, [profiles]);
@@ -27,10 +32,26 @@ export const ProfileProvider = ({ children }) => {
         localStorage.setItem('kiwi-current-profile', currentProfileId);
     }, [currentProfileId]);
 
+    useEffect(() => {
+        localStorage.setItem('kiwi-pronunciations', JSON.stringify(pronunciations));
+    }, [pronunciations]);
+
     const currentProfile = profiles.find(p => p.id === currentProfileId) || DEFAULT_PROFILE;
 
     const getStorageKey = (key) => {
         return `kiwi-${currentProfileId}-${key}`;
+    };
+
+    const addPronunciation = (word, phonetic) => {
+        setPronunciations(prev => ({ ...prev, [word.toLowerCase()]: phonetic }));
+    };
+
+    const deletePronunciation = (word) => {
+        setPronunciations(prev => {
+            const next = { ...prev };
+            delete next[word.toLowerCase()];
+            return next;
+        });
     };
 
     const addProfile = (name, avatar) => {
@@ -76,11 +97,14 @@ export const ProfileProvider = ({ children }) => {
             profiles,
             currentProfile,
             currentProfileId,
+            pronunciations,
             getStorageKey,
             addProfile,
             updateProfile,
             deleteProfile,
-            switchProfile
+            switchProfile,
+            addPronunciation,
+            deletePronunciation
         }}>
             {children}
         </ProfileContext.Provider>

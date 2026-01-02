@@ -76,10 +76,10 @@ const TouchCalibration = ({ onComplete }) => {
     };
 
     const getButtonSize = () => {
-        if (phase === 1) return 180;
-        if (phase === 2) return 100;
-        if (phase === 3) return 60;
-        return 100;
+        if (phase === 1) return 11.25; // 180px
+        if (phase === 2) return 6.25;  // 100px
+        if (phase === 3) return 3.75;  // 60px
+        return 6.25;
     };
 
     const getButtonLabel = () => {
@@ -94,18 +94,19 @@ const TouchCalibration = ({ onComplete }) => {
             <div style={{
                 position: 'fixed', inset: 0, background: '#FDF8F3',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                padding: '20px', textAlign: 'center', zIndex: 1200
+                padding: '1.25rem', textAlign: 'center', zIndex: 1200
             }}>
-                <div style={{ fontSize: '4rem', marginBottom: '20px' }}>🎯</div>
-                <h1 style={{ marginBottom: '10px' }}>Let&apos;s check your touch</h1>
-                <p style={{ color: '#666', marginBottom: '30px', maxWidth: '300px' }}>
+                <div style={{ fontSize: '4rem', marginBottom: '1.25rem' }}>🎯</div>
+                <h1 style={{ marginBottom: '0.625rem', fontSize: '2rem' }}>Let&apos;s check your touch</h1>
+                <p style={{ color: '#666', marginBottom: '1.875rem', maxWidth: '18.75rem', fontSize: '1rem' }}>
                     We&apos;ll play a quick game to see which button size works best for you.
                 </p>
                 <button
                     onClick={() => handleTap(true)}
                     style={{
-                        padding: '16px 32px', background: '#007AFF', color: 'white',
-                        border: 'none', borderRadius: '16px', fontSize: '1.2rem', fontWeight: 'bold'
+                        padding: '1rem 2rem', background: '#007AFF', color: 'white',
+                        border: 'none', borderRadius: '1rem', fontSize: '1.2rem', fontWeight: 'bold',
+                        minHeight: '3.5rem'
                     }}
                 >
                     Start Game
@@ -128,7 +129,7 @@ const TouchCalibration = ({ onComplete }) => {
                 }
             }}
         >
-            <div style={{ position: 'absolute', top: 20, width: '100%', textAlign: 'center', color: '#999' }}>
+            <div style={{ position: 'absolute', top: '1.25rem', width: '100%', textAlign: 'center', color: '#999', fontSize: '1rem' }}>
                 Tap the picture! {attempts + 1}/{MAX_ATTEMPTS}
             </div>
 
@@ -142,13 +143,13 @@ const TouchCalibration = ({ onComplete }) => {
                     left: `${targetPos.x}%`,
                     top: `${targetPos.y}%`,
                     transform: 'translate(-50%, -50%)',
-                    width: `${getButtonSize()}px`,
-                    height: `${getButtonSize()}px`,
-                    borderRadius: '20px',
+                    width: `${getButtonSize()}rem`,
+                    height: `${getButtonSize()}rem`,
+                    borderRadius: '1.25rem',
                     background: 'white',
                     border: 'none',
-                    boxShadow: '0 10px 20px rgba(0,0,0,0.15)',
-                    fontSize: `${getButtonSize() * 0.6}px`,
+                    boxShadow: '0 0.625rem 1.25rem rgba(0,0,0,0.15)',
+                    fontSize: `${getButtonSize() * 0.6}rem`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     cursor: 'pointer',
                     transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'

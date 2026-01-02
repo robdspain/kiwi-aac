@@ -50,7 +50,10 @@ export const AAC_LEXICON = {
 
     // --- MISC/PREPOSITIONS (Orange) ---
     "in": { type: "misc" }, "on": { type: "misc" }, "up": { type: "misc" }, "down": { type: "misc" }, "out": { type: "misc" }, "off": { type: "misc" }, "with": { type: "misc" },
-    "more": { type: "misc" }, "all done": { type: "misc" }, "finished": { type: "misc" }, "now": { type: "misc" }, "later": { type: "misc" }
+    "more": { type: "misc" }, "all done": { type: "misc" }, "finished": { type: "misc" }, "now": { type: "misc" }, "later": { type: "misc" },
+
+    // --- QUESTIONS (Purple) ---
+    "what": { type: "question" }, "where": { type: "question" }, "who": { type: "question" }, "when": { type: "question" }, "why": { type: "question" }, "how": { type: "question" }
 };
 
 export const getFitzgeraldColor = (pos) => {
@@ -61,6 +64,7 @@ export const getFitzgeraldColor = (pos) => {
         case 'social': return '#C2185B';
         case 'pronoun': return '#C2185B';
         case 'misc': return '#E65100';
+        case 'question': return '#6A1B9A';
         default: return '#ffffff';
     }
 };
