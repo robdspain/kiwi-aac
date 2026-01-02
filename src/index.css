@@ -112,19 +112,57 @@ body.literacy-mode {
   border: 1.5px solid #8E8E93;
 }
 
-/* Grid - Optimized for minimal scrolling and side-grip safety */
+/* Grid - Absolute Centering and Size Control */
 #grid-container {
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
   align-content: center;
-  gap: 15px;
+  flex: 1; /* Fill all remaining space in main-area */
   padding: 20px;
-  padding-bottom: 120px;
+  gap: 15px;
   overflow-y: auto;
-  overscroll-behavior-y: auto;
   -webkit-overflow-scrolling: touch;
-  min-height: 100%;
+}
+
+/* Touch Target Size Definitions */
+.size-standard .app-item { width: calc(25% - 15px); max-width: 140px; }
+.size-big .app-item { width: calc(33.33% - 15px); max-width: 180px; }
+.size-super-big .app-item { width: calc(50% - 15px); max-width: 240px; }
+
+/* Level 1/2 Refined Centered Card */
+.phase-large-grid .app-item {
+  flex-direction: row;
+  width: 90vw;
+  height: auto;
+  max-width: 420px; /* Aligned with "Super Big" feel but for horizontal layout */
+  background: white;
+  border-radius: 32px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+  padding: 30px;
+  gap: 20px;
+  border: 1px solid rgba(0,0,0,0.05);
+  margin: auto; /* Force center within flex container */
+}
+
+.phase-large-grid .app-icon {
+  width: 120px;
+  height: 120px;
+  background: transparent;
+  box-shadow: none;
+  font-size: 80px;
+  flex-shrink: 0;
+}
+
+.phase-large-grid .app-label {
+  font-size: 42px;
+  font-weight: 800;
+  color: #333;
+  text-align: left;
+  flex: 1;
+  white-space: normal; /* Allow wrap for long labels in Level 1 */
 }
 
 @media (min-width: 768px) {
@@ -143,43 +181,6 @@ body.literacy-mode {
   position: relative;
   cursor: pointer;
   animation: fadeIn 0.3s ease;
-  width: calc(33.33% - 15px); /* Responsive width for Flexbox centering */
-  max-width: 160px;
-}
-
-.phase-large-grid .app-item {
-  flex-direction: row;
-  width: 85vw;
-  height: auto;
-  max-width: 600px;
-  background: white;
-  border-radius: 40px;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.15);
-  padding: 40px;
-  gap: 30px;
-  border: 2px solid #F2F2F7;
-}
-
-.phase-large-grid .app-icon {
-  width: 35vw;
-  height: 35vw;
-  max-width: 250px;
-  max-height: 250px;
-  background: transparent;
-  box-shadow: none;
-  font-size: 28vw;
-}
-
-.phase-large-grid .app-label {
-  font-size: 10vw;
-  font-weight: 800;
-  color: #333;
-  text-align: left;
-  flex: 1;
-}
-
-.phase-large-grid {
-  padding-bottom: 20px !important;
 }
 
 /* Floating Settings Button */

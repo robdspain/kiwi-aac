@@ -34,7 +34,7 @@ const Grid = ({
     // Phase 3: 2x2 if <= 4 items, otherwise standard shrink
     const useLargeGrid = (currentPhase === 1 || currentPhase === 2) || (currentPhase === 3 && items.length <= 4);
 
-    const gridClass = useLargeGrid ? 'phase-large-grid' : '';
+    const gridClass = `${useLargeGrid ? 'phase-large-grid' : ''} size-${gridSize}`;
 
     // Show empty state when no items to display
     if (items.length === 0) {

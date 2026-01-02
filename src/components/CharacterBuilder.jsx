@@ -95,7 +95,7 @@ const CharacterBuilder = ({ onSave, onClose }) => {
                                                 padding: opt.color ? '0' : '10px 15px',
                                                 borderRadius: opt.color ? '50%' : '12px',
                                                 background: opt.color || (recipe[sec.key] === opt.id ? 'var(--primary)' : '#eee'),
-                                                color: opt.color ? 'transparent' : (recipe[sec.key] === opt.id ? 'white' : 'var(--text-primary)'),
+                                                color: opt.color ? 'transparent' : (recipe[sec.key] === opt.id ? 'var(--text-primary)' : 'var(--text-primary)'),
                                                 border: recipe[sec.key] === opt.id ? '3px solid #000' : '2px solid transparent',
                                                 cursor: 'pointer',
                                                 fontSize: '0.85rem',

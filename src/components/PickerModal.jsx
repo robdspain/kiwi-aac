@@ -18,9 +18,23 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
     const fileInputRef = useRef(null);
     const lastCustomizingItemIdRef = useRef(null);
 
-    const userPhotos = (userItems || [])
-        .filter(item => item.type === 'button' && typeof item.icon === 'string' && (item.icon.startsWith('data:') || item.icon.startsWith('http')))
-        .map(item => ({ w: item.word, i: item.icon }));
+    // Get photos from global registry + current board
+    const getGlobalPhotos = () => {
+        const saved = localStorage.getItem('kiwi-user-photos');
+        const globalList = saved ? JSON.parse(saved) : [];
+        
+        // Also pull from current userItems just in case they aren't in registry yet
+        const currentBoardPhotos = (userItems || [])
+            .filter(item => item.type === 'button' && typeof item.icon === 'string' && (item.icon.startsWith('data:') || item.icon.startsWith('http')))
+            .map(item => ({ w: item.word, i: item.icon }));
+
+        // Merge and unique by icon string
+        const unique = new Map();
+        [...globalList, ...currentBoardPhotos].forEach(p => unique.set(p.i, p));
+        return Array.from(unique.values());
+    };
+
+    const userPhotos = getGlobalPhotos();
 
     useEffect(() => {
         if (customizingItem && (customizingItem.word !== lastCustomizingItemIdRef.current)) {
@@ -31,6 +45,15 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
 
     const handleConfirmSelection = () => {
         if (customizingItem) {
+            // Save to global registry
+            if (customizingItem.isImage) {
+                const photos = getGlobalPhotos();
+                if (!photos.find(p => p.i === customizingItem.icon)) {
+                    photos.unshift({ w: customName || customizingItem.word, i: customizingItem.icon });
+                    localStorage.setItem('kiwi-user-photos', JSON.stringify(photos.slice(0, 50))); // Keep last 50
+                }
+            }
+
             onSelect(customName || customizingItem.word, customizingItem.icon, customizingItem.isImage);
             setCustomizingItem(null); setSearchQuery('');
         }

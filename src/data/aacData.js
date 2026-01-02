@@ -12,11 +12,11 @@ export const CORE_VOCABULARY = [
 
 // Word Classes for Fitzgerald Key
 export const WORD_CLASSES = [
-    { id: 'noun', label: 'Noun (Yellow)', color: '#FFEB3B' },
-    { id: 'verb', label: 'Verb (Green)', color: '#4CAF50' },
-    { id: 'adj', label: 'Adjective (Blue)', color: '#2196F3' },
-    { id: 'social', label: 'Social (Pink)', color: '#E91E63' },
-    { id: 'misc', label: 'Misc (Orange)', color: '#FF9800' }
+    { id: 'noun', label: 'Noun (Yellow)', color: '#FFEB3B', textColor: '#2D3436' },
+    { id: 'verb', label: 'Verb (Green)', color: '#2E7D32', textColor: '#FFFFFF' },
+    { id: 'adj', label: 'Adjective (Blue)', color: '#1565C0', textColor: '#FFFFFF' },
+    { id: 'social', label: 'Social (Pink)', color: '#C2185B', textColor: '#FFFFFF' },
+    { id: 'misc', label: 'Misc (Orange)', color: '#E65100', textColor: '#FFFFFF' }
 ];
 
 export const TEMPLATES = {
