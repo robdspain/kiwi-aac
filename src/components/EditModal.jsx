@@ -126,50 +126,6 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                     </div>
                 )}
 
-                <div style={{ textAlign: 'center', position: 'relative' }}>
-                    <div style={{
-                        width: '100px', height: '100px', margin: '0 auto',
-                        borderRadius: '20%', background: bgColor || '#f0f0f0',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '3rem', overflow: 'hidden', border: '1px solid #ccc'
-                    }}>
-                        {isImage ? (
-                            <img src={icon} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                        ) : (
-                            icon
-                        )}
-                    </div>
-                </div>
-
-
-                <div>
-                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Background Color</label>
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                        {['', '#FF3B30', '#FF9500', '#FFCC00', '#34C759', '#007AFF', '#5856D6', '#AF52DE'].map(color => (
-                            <button
-                                key={color}
-                                onClick={() => setBgColor(color)}
-                                style={{
-                                    width: '30px', height: '30px', borderRadius: '50%',
-                                    background: color || '#f0f0f0',
-                                    border: bgColor === color ? '2px solid black' : '1px solid #ccc',
-                                    cursor: 'pointer'
-                                }}
-                            />
-                        ))}
-                    </div>
-                </div>
-
-                <div>
-                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Label</label>
-                    <input
-                        type="text"
-                        value={word}
-                        onChange={(e) => setWord(e.target.value)}
-                        style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #ccc', boxSizing: 'border-box', fontSize: '1.2rem' }}
-                    />
-                </div>
-
                 <div>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Icon Source</label>
                     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
@@ -234,6 +190,50 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                     </div>
                 </div>
 
+                <div>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Label</label>
+                    <input
+                        type="text"
+                        value={word}
+                        onChange={(e) => setWord(e.target.value)}
+                        style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #ccc', boxSizing: 'border-box', fontSize: '1.2rem' }}
+                    />
+                </div>
+
+                <div style={{ textAlign: 'center', position: 'relative' }}>
+                    <div style={{
+                        width: '100px', height: '100px', margin: '0 auto',
+                        borderRadius: '20%', background: bgColor || '#f0f0f0',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '3rem', overflow: 'hidden', border: '1px solid #ccc'
+                    }}>
+                        {isImage ? (
+                            <img src={icon} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                        ) : (
+                            icon
+                        )}
+                    </div>
+                </div>
+
+
+                <div>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Background Color</label>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        {['', '#FF3B30', '#FF9500', '#FFCC00', '#34C759', '#007AFF', '#5856D6', '#AF52DE'].map(color => (
+                            <button
+                                key={color}
+                                onClick={() => setBgColor(color)}
+                                style={{
+                                    width: '30px', height: '30px', borderRadius: '50%',
+                                    background: color || '#f0f0f0',
+                                    border: bgColor === color ? '2px solid black' : '1px solid #ccc',
+                                    cursor: 'pointer'
+                                }}
+                            />
+                        ))}
+                    </div>
+                </div>
+
                 {item?.type !== 'folder' && (
                     <VoiceRecorder
                         currentAudio={customAudio}
@@ -265,20 +265,19 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                     </button>
                 </div>
 
-                {showCharacterBuilder && (
-                    <CharacterBuilder
-                        initialConfig={characterConfig}
-                        triggerPaywall={triggerPaywall}
-                        onSelect={(newIcon, config) => {
-                            setIcon(newIcon);
-                            setCharacterConfig(config);
-                            if (config.name) setWord(config.name);
-                            setIsImage(true);
-                            setShowCharacterBuilder(false);
-                        }}
-                        onClose={() => setShowCharacterBuilder(false)}
-                    />
-                )}
+                <CharacterBuilder
+                    initialConfig={characterConfig}
+                    triggerPaywall={triggerPaywall}
+                    onSelect={(newIcon, config) => {
+                        setIcon(newIcon);
+                        setCharacterConfig(config);
+                        if (config.name) setWord(config.name);
+                        // Only treat as image if it was imported (photo), otherwise it's an emoji string
+                        setIsImage(!!config.isImported);
+                        setShowCharacterBuilder(false);
+                    }}
+                    onClose={() => setShowCharacterBuilder(false)}
+                />
             </div>
         </div>
     );

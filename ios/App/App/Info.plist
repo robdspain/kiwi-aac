@@ -49,5 +49,7 @@
 	<true/>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Kiwi Voice needs microphone access to record custom voice prompts for communication buttons.</string>
+	<key>SuperwallAPIKey</key>
+	<string>pk_pdrADqfJ3XjhkUUMC92zI</string>
 </dict>
 </plist>

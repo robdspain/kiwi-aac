@@ -1,4 +1,4 @@
-// Comprehensive emoji data for AAC app - covers common objects, foods, activities, feelings, people
+// Comprehensive emoji data for Kiwi Voice - covers common objects, foods, activities, feelings, people
 export const EMOJI_DATA = {
     'People': [
         { w: 'Mom', i: '👩' }, { w: 'Dad', i: '👨' }, { w: 'Baby', i: '👶' },

@@ -1177,6 +1177,7 @@ function App() {
           triggerPaywall={triggerPaywall}
           bellSound={bellSound}
           onUpdateBellSound={setBellSound}
+          progressData={progressData}
         />
       )}
 
@@ -1263,8 +1264,9 @@ function App() {
         isOpen={pickerOpen}
         onClose={() => setPickerOpen(false)}
         userItems={rootItems}
-        onSelect={(w, i) => {
-          if (pickerCallback) pickerCallback(w, i);
+        triggerPaywall={triggerPaywall}
+        onSelect={(w, i, isImage) => {
+          if (pickerCallback) pickerCallback(w, i, isImage);
         }}
       />
 

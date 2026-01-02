@@ -1,6 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { EMOJI_DATA } from '../utils/emojiData';
 import { triggerHaptic } from '../utils/haptics';
+import { CORE_VOCABULARY, WORD_CLASSES, TEMPLATES, SKILLS } from '../data/aacData';
 
 const TONE_CATEGORIES = [
   "Tone: Pale",
@@ -185,6 +186,31 @@ const EmojiCurator = () => {
   const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
   const gridRef = useRef(null);
 
+  // AAC Features State
+  const [emojiMetadata, setEmojiMetadata] = useState({}); // { char: { label, wordClass, backgroundColor } }
+  const [blacklistedEmojis, setBlacklistedEmojis] = useState([]); // Array of excluded emoji chars
+  const [customItems, setCustomItems] = useState([]); // [{ id, name, category, image: base64 }]
+  const [showCoreOnly, setShowCoreOnly] = useState(false);
+  const [editingItem, setEditingItem] = useState(null); // Item being edited
+  const [showTemplates, setShowTemplates] = useState(false);
+  const [sequenceMode, setSequenceMode] = useState(false);
+  const [sequence, setSequence] = useState([]); // Array of items
+  const [showImageSearch, setShowImageSearch] = useState(false);
+  const [searchQueryImage, setSearchQueryImage] = useState('');
+  const [tempMeta, setTempMeta] = useState({ label: '', wordClass: 'noun', backgroundColor: '#ffffff', skill: 'none' });
+
+  useEffect(() => {
+    if (editingItem) {
+        const existing = emojiMetadata[editingItem.emoji] || {};
+        setTempMeta({
+            label: existing.label || editingItem.name,
+            wordClass: existing.wordClass || 'noun',
+            backgroundColor: existing.backgroundColor || '#ffffff',
+            skill: existing.skill || 'none'
+        });
+    }
+  }, [editingItem]);
+
   // Responsive State
   const [isMobile, setIsMobile] = useState(window.innerWidth < 850);
   const [showSidebar, setShowSidebar] = useState(!isMobile);
@@ -242,14 +268,34 @@ const EmojiCurator = () => {
   });
 
   const filteredEmojis = useMemo(() => {
+    let list = groupedEmojiData[activeCategory] || [];
+    
+    // Merge Custom Items for this category
+    const relevantCustom = customItems.filter(i => i.category === activeCategory);
+    list = [...relevantCustom, ...list];
+
     if (searchQuery) {
-      return allEmojisFlat.filter(item => 
+      const allWithCustom = [...customItems, ...allEmojisFlat];
+      list = allWithCustom.filter(item => 
         (item.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.emoji.includes(searchQuery)
       );
     }
-    return groupedEmojiData[activeCategory] || [];
-  }, [searchQuery, activeCategory]);
+
+    // Apply Blacklist
+    if (blacklistedEmojis.length > 0) {
+        list = list.filter(item => !blacklistedEmojis.includes(item.emoji));
+    }
+
+    if (showCoreOnly) {
+        list = list.filter(item => {
+            const words = item.name.toLowerCase().split(/[ -]/); // Split by space or dash
+            return words.some(w => CORE_VOCABULARY.includes(w)) || CORE_VOCABULARY.includes(item.name.toLowerCase());
+        });
+    }
+
+    return list;
+  }, [searchQuery, activeCategory, showCoreOnly]);
 
   // Long Press Handling
   const longPressTimer = useRef(null);
@@ -313,6 +359,43 @@ const EmojiCurator = () => {
     window.speechSynthesis.speak(utterance);
   };
 
+  const applyTemplate = (templateName) => {
+      const words = TEMPLATES[templateName];
+      if (!words) return;
+      
+      const newSelection = { ...selectedEmojis };
+      let addedCount = 0;
+
+      words.forEach(word => {
+          // Find emoji by name (exact match preferred)
+          let match = allEmojisFlat.find(e => e.name.toLowerCase() === word.toLowerCase());
+          if (!match) {
+             match = allEmojisFlat.find(e => e.name.toLowerCase().includes(word.toLowerCase()));
+          }
+
+          if (match) {
+              if (!newSelection[match.category]) newSelection[match.category] = [];
+              if (!newSelection[match.category].includes(match.emoji)) {
+                  newSelection[match.category].push(match.emoji);
+                  addedCount++;
+              }
+          }
+      });
+      
+      setSelectedEmojis(newSelection);
+      setShowTemplates(false);
+      triggerHaptic('success');
+      alert(`Added ${addedCount} icons from "${templateName}" template.`);
+  };
+
+  const handleSaveMetadata = (char, label, wordClass, backgroundColor, skill) => {
+      setEmojiMetadata(prev => ({
+          ...prev,
+          [char]: { label, wordClass, backgroundColor, skill }
+      }));
+      setEditingItem(null);
+  };
+
   try {
     // Helper to check if an emoji is selected
     const isSelected = (cat, emojiChar) => {
@@ -371,24 +454,39 @@ const EmojiCurator = () => {
       Object.keys(selectedEmojis).forEach(category => {
         if (selectedEmojis[category] && selectedEmojis[category].length > 0) {
           output[category] = selectedEmojis[category].map(emojiChar => {
+              const custom = customItems.find(c => c.emoji === emojiChar);
+              if (custom) {
+                  return { w: custom.name, i: custom.image, isCustom: true };
+              }
+
               const base = allEmojisFlat.find(e => e.emoji === emojiChar);
-              if (base) return { w: base.name, i: base.emoji };
-              
               let foundName = "Unknown";
-              allEmojisFlat.some(b => {
-                  const v = b.variations.find(v => v.emoji === emojiChar);
-                  if (v) {
-                      foundName = v.name; 
-                      return true;
-                  }
-                  return false;
-              });
+              
+              if (base) {
+                  foundName = base.name;
+              } else {
+                  allEmojisFlat.some(b => {
+                      const v = b.variations.find(v => v.emoji === emojiChar);
+                      if (v) {
+                          foundName = v.name; 
+                          return true;
+                      }
+                      return false;
+                  });
+              }
 
               if (foundName === "Unknown") {
                 validationErrors.push({ category, emoji: emojiChar, error: "Name not found" });
               }
+
+              // Apply Metadata Overrides
+              const meta = emojiMetadata[emojiChar] || {};
+              const finalName = meta.label || foundName;
+              const wordClass = meta.wordClass || 'noun'; // Default to noun? Or maybe try to guess? 'noun' is a safe fallback for AAC.
+              const bgColor = meta.backgroundColor || '#ffffff';
+              const skill = meta.skill || 'none';
               
-              return { w: foundName, i: emojiChar };
+              return { w: finalName, i: emojiChar, wc: wordClass, bg: bgColor, skill };
           });
         }
       });
@@ -419,7 +517,7 @@ const EmojiCurator = () => {
             y: rect.top
         });
         speak(item.name);
-        triggerHaptic('medium');
+        if (navigator.vibrate) navigator.vibrate(50);
     };
 
     const handleStart = (e, item) => {
@@ -441,7 +539,13 @@ const EmojiCurator = () => {
 
     const handleClick = (e, cat, item) => {
         if (!isLongPress.current && !pickerTarget) {
-            toggleEmoji(cat, item.emoji, item);
+            if (sequenceMode) {
+                // Add to sequence
+                setSequence(prev => [...prev, { ...item, id: Date.now() }]); // Unique ID for sequence
+                triggerHaptic('light');
+            } else {
+                toggleEmoji(cat, item.emoji, item);
+            }
         }
     };
 
@@ -487,18 +591,13 @@ const EmojiCurator = () => {
         {/* Top Navigation Bar */}
         <div style={{ 
           padding: isMobile ? '10px 15px' : '15px 30px', 
-          background: 'rgba(26, 26, 26, 0.85)', 
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
+          background: '#1a1a1a', 
           color: 'white',
           display: 'flex', 
           justifyContent: 'space-between', 
           alignItems: 'center',
           flexShrink: 0,
-          boxShadow: '0 1px 0 rgba(255,255,255,0.1)',
-          position: 'sticky',
-          top: 0,
-          zIndex: 1000
+          boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
             {isMobile && (
@@ -523,6 +622,88 @@ const EmojiCurator = () => {
           </div>
 
           <div style={{ display: 'flex', gap: isMobile ? '10px' : '20px', alignItems: 'center' }}>
+            
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: isMobile ? '0.8rem' : '0.9rem' }}>
+                <input 
+                    type="checkbox" 
+                    checked={showCoreOnly} 
+                    onChange={(e) => setShowCoreOnly(e.target.checked)}
+                    style={{ accentColor: '#4ECDC4', width: '16px', height: '16px' }}
+                />
+                Core Only
+            </label>
+
+            <button
+                onClick={() => setShowTemplates(true)}
+                style={{
+                    padding: isMobile ? '8px 12px' : '10px 15px',
+                    background: '#333',
+                    border: '1px solid #555',
+                    borderRadius: '8px',
+                    color: 'white',
+                    cursor: 'pointer',
+                    fontSize: isMobile ? '0.8rem' : '0.9rem'
+                }}
+            >
+                Templates
+            </button>
+
+            <label style={{
+                padding: isMobile ? '8px 12px' : '10px 15px',
+                background: '#333',
+                border: '1px solid #555',
+                borderRadius: '8px',
+                color: 'white',
+                cursor: 'pointer',
+                fontSize: isMobile ? '0.8rem' : '0.9rem',
+                display: 'flex', alignItems: 'center', gap: '5px'
+            }}>
+                <span>📷</span>
+                <input 
+                    type="file" 
+                    accept="image/*" 
+                    style={{ display: 'none' }}
+                    onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (re) => {
+                                const name = prompt("Enter name for this icon:", "My Photo");
+                                if (name) {
+                                    const newItem = {
+                                        id: `custom-${Date.now()}`,
+                                        name,
+                                        category: activeCategory,
+                                        image: re.target.result,
+                                        emoji: `custom-${Date.now()}` // Use ID as emoji key
+                                    };
+                                    setCustomItems(prev => [newItem, ...prev]);
+                                    // Auto-select it?
+                                    toggleEmoji(activeCategory, newItem.emoji, newItem);
+                                }
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    }}
+                />
+            </label>
+
+            <button
+                onClick={() => setSequenceMode(!sequenceMode)}
+                style={{
+                    padding: isMobile ? '8px 12px' : '10px 15px',
+                    background: sequenceMode ? '#FF9500' : '#333',
+                    border: '1px solid #555',
+                    borderRadius: '8px',
+                    color: 'white',
+                    cursor: 'pointer',
+                    fontSize: isMobile ? '0.8rem' : '0.9rem',
+                    fontWeight: sequenceMode ? 'bold' : 'normal'
+                }}
+            >
+                {sequenceMode ? 'Finish Sequence' : 'Builder Mode'}
+            </button>
+
             <div style={{ background: '#333', padding: '8px 15px', borderRadius: '8px', fontSize: isMobile ? '0.8rem' : '0.9rem' }}>
               <span style={{ color: '#4ECDC4', fontWeight: 'bold' }}>{totalSelected}</span> {isMobile ? '' : 'icons selected'}
             </div>
@@ -551,10 +732,8 @@ const EmojiCurator = () => {
             width: '280px',
             height: '100%',
             overflowY: 'auto',
-            background: 'rgba(255, 255, 255, 0.85)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            borderRight: '1px solid rgba(0,0,0,0.1)',
+            background: 'white',
+            borderRight: '1px solid #ddd',
             padding: '20px 10px',
             display: 'flex',
             flexDirection: 'column',
@@ -653,6 +832,24 @@ const EmojiCurator = () => {
                 )}
               </button>
             ))}
+
+            {blacklistedEmojis.length > 0 && (
+                <div style={{ marginTop: 'auto', padding: '15px', borderTop: '1px solid #eee' }}>
+                    <div style={{ fontSize: '0.7rem', color: '#999', fontWeight: 'bold', marginBottom: '5px' }}>HIDDEN ITEMS</div>
+                    <button 
+                        onClick={() => {
+                            if (confirm(`Restore ${blacklistedEmojis.length} hidden items?`)) {
+                                setBlacklistedEmojis([]);
+                            }
+                        }}
+                        style={{
+                            width: '100%', padding: '8px', background: '#fff', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', color: '#666'
+                        }}
+                    >
+                        Restore All ({blacklistedEmojis.length})
+                    </button>
+                </div>
+            )}
           </div>
 
           {/* Mobile Sidebar Overlay */}
@@ -753,7 +950,6 @@ const EmojiCurator = () => {
                     <button
                       key={`${item.emoji}-${idx}`}
                       role="gridcell"
-                      className="emoji-btn"
                       aria-pressed={isChecked}
                       aria-label={`${item.name}${isChecked ? ', selected' : ''}`}
                       onMouseDown={(e) => handleStart(e, item)}
@@ -781,7 +977,12 @@ const EmojiCurator = () => {
                         WebkitTapHighlightColor: 'transparent'
                       }}
                     >
-                      <span style={{ fontSize: isMobile ? '2.5rem' : '3rem' }} aria-hidden="true">{displayEmoji}</span>
+                      {item.image ? (
+                          <img src={item.image} alt={item.name} style={{ width: isMobile ? '2.5rem' : '3rem', height: isMobile ? '2.5rem' : '3rem', objectFit: 'cover', borderRadius: '8px' }} />
+                      ) : (
+                          <span style={{ fontSize: isMobile ? '2.5rem' : '3rem' }} aria-hidden="true">{displayEmoji}</span>
+                      )}
+                      
                       <span style={{ 
                         fontSize: isMobile ? '0.7rem' : '0.8rem', 
                         textAlign: 'center', 
@@ -817,6 +1018,36 @@ const EmojiCurator = () => {
                         </div>
                       )}
 
+                      {/* Edit Button (Visible if selected) */}
+                      {isChecked && (
+                          <div
+                            role="button"
+                            aria-label="Edit Metadata"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingItem({ ...item, emoji: displayEmoji });
+                            }}
+                            style={{
+                                position: 'absolute',
+                                top: '5px',
+                                left: '5px',
+                                width: '24px',
+                                height: '24px',
+                                background: 'white',
+                                borderRadius: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+                                fontSize: '12px',
+                                cursor: 'pointer',
+                                zIndex: 5
+                            }}
+                          >
+                              ✏️
+                          </div>
+                      )}
+
                       {/* Variation Indicator */}
                       {hasVariations && (
                           <div 
@@ -850,23 +1081,72 @@ const EmojiCurator = () => {
                     </button>
                   );
                 })}
-                
-                {/* Skeleton Loader for Lazy Loading */}
-                {visibleCount < (filteredEmojis || []).length && Array.from({ length: 8 }).map((_, i) => (
-                    <div 
-                        key={`skeleton-${i}`} 
-                        className="skeleton-pulse"
-                        style={{
-                             height: isMobile ? '110px' : '160px',
-                             width: '100%',
-                             background: 'rgba(255,255,255,0.5)'
-                        }}
-                    />
-                ))}
               </div>
             </div>
           </div>
         </div>
+
+        {/* Sequence Builder Bar */}
+        {sequenceMode && (
+            <div style={{
+                position: 'fixed', bottom: 0, left: 0, width: '100%',
+                background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)',
+                borderTop: '1px solid #ddd', padding: '15px', zIndex: 5000,
+                display: 'flex', flexDirection: 'column', gap: '10px',
+                boxShadow: '0 -5px 20px rgba(0,0,0,0.1)'
+            }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: 'bold', color: '#333' }}>Visual Schedule Builder ({sequence.length} steps)</span>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <button onClick={() => setSequence([])} style={{ padding: '5px 10px', background: '#eee', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Clear</button>
+                        <button 
+                            onClick={() => {
+                                const name = prompt("Name this schedule (e.g. Morning Routine):");
+                                if (name) {
+                                    const data = {
+                                        name,
+                                        steps: sequence.map(s => ({ 
+                                            label: emojiMetadata[s.emoji]?.label || s.name, 
+                                            emoji: s.emoji,
+                                            // Include custom image if applicable
+                                            image: s.image
+                                        }))
+                                    };
+                                    const jsonString = JSON.stringify(data, null, 2);
+                                    const blob = new Blob([jsonString], { type: 'application/json' });
+                                    const url = URL.createObjectURL(blob);
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    a.download = `${name.replace(/\s+/g, '-')}-schedule.json`;
+                                    a.click();
+                                }
+                            }}
+                            style={{ padding: '5px 15px', background: '#4ECDC4', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}
+                        >
+                            Save Schedule
+                        </button>
+                    </div>
+                </div>
+                <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '10px' }}>
+                    {sequence.length === 0 && <div style={{ color: '#999', fontStyle: 'italic', padding: '10px' }}>Tap icons above to add steps...</div>}
+                    {sequence.map((step, idx) => (
+                        <div key={step.id} style={{
+                            minWidth: '60px', height: '60px', background: 'white',
+                            border: '1px solid #ddd', borderRadius: '8px',
+                            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                            position: 'relative'
+                        }}>
+                            <span style={{ fontSize: '1.5rem' }}>{step.image ? '📷' : step.emoji}</span>
+                            <span style={{ fontSize: '0.6rem', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '50px' }}>{step.name}</span>
+                            <div style={{
+                                position: 'absolute', top: -5, right: -5, background: '#333', color: 'white',
+                                width: '15px', height: '15px', borderRadius: '50%', fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                            }}>{idx + 1}</div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )}
 
         {/* Skin Tone Picker Overlay */}
         {pickerTarget && (
@@ -942,24 +1222,170 @@ const EmojiCurator = () => {
                         </button>
                     ))}
                 </div>
+        {/* Templates Modal */}
+        {showTemplates && (
+            <div style={{
+                position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+                background: 'rgba(0,0,0,0.5)', zIndex: 10001,
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }} onClick={() => setShowTemplates(false)}>
+                <div style={{
+                    background: 'white', padding: '20px', borderRadius: '16px',
+                    width: '90%', maxWidth: '400px',
+                    boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
+                }} onClick={e => e.stopPropagation()}>
+                    <h3 style={{ marginTop: 0 }}>Load Template</h3>
+                    <p style={{ color: '#666' }}>Add a curated set of icons to your library.</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {Object.keys(TEMPLATES).map(name => (
+                            <button key={name} onClick={() => applyTemplate(name)} style={{
+                                padding: '12px', borderRadius: '8px', border: '1px solid #ddd',
+                                background: '#f9f9f9', textAlign: 'left', cursor: 'pointer'
+                            }}>
+                                <strong>{name}</strong>
+                                <div style={{ fontSize: '0.8rem', color: '#888' }}>{TEMPLATES[name].length} icons</div>
+                            </button>
+                        ))}
+                    </div>
+                    <button onClick={() => setShowTemplates(false)} style={{
+                        marginTop: '15px', padding: '10px', width: '100%',
+                        background: '#eee', border: 'none', borderRadius: '8px', cursor: 'pointer'
+                    }}>Cancel</button>
+                </div>
+            </div>
+        )}
+
+        {/* Edit Metadata Modal */}
+        {editingItem && (
+            <div style={{
+                position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+                background: 'rgba(0,0,0,0.5)', zIndex: 10002,
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }}>
+                <div style={{
+                    background: 'white', padding: '20px', borderRadius: '16px',
+                    width: '90%', maxWidth: '350px',
+                    boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
+                }}>
+                    <h3 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span style={{ fontSize: '2rem' }}>{editingItem.emoji}</span>
+                        Edit Icon
+                    </h3>
+                    
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '0.9rem' }}>Display Label</label>
+                    <input 
+                        type="text" 
+                        value={tempMeta.label}
+                        onChange={(e) => setTempMeta({ ...tempMeta, label: e.target.value })}
+                        style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd', marginBottom: '15px' }}
+                    />
+
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '0.9rem' }}>Word Class (Fitzgerald Key)</label>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '20px' }}>
+                        {WORD_CLASSES.map(wc => {
+                            const isActive = tempMeta.wordClass === wc.id;
+                            return (
+                                <button 
+                                    key={wc.id}
+                                    onClick={() => setTempMeta({ ...tempMeta, wordClass: wc.id })}
+                                    style={{
+                                        padding: '5px 10px', borderRadius: '15px',
+                                        background: wc.color, color: 'white',
+                                        border: isActive ? '2px solid black' : '2px solid transparent',
+                                        cursor: 'pointer', fontSize: '0.8rem',
+                                        opacity: isActive ? 1 : 0.7,
+                                        transform: isActive ? 'scale(1.05)' : 'scale(1)',
+                                        transition: 'all 0.2s'
+                                    }}
+                                >
+                                    {wc.label}
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    {/* Hidden select to store value easily for save */}
+                    <select id="meta-wc" defaultValue={emojiMetadata[editingItem.emoji]?.wordClass || 'noun'} style={{ display: 'none' }}>
+                         {WORD_CLASSES.map(wc => <option key={wc.id} value={wc.id}>{wc.label}</option>)}
+                    </select>
+
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '0.9rem' }}>Background Color</label>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
+                        <input 
+                            type="color" 
+                            value={tempMeta.backgroundColor}
+                            onChange={(e) => setTempMeta({ ...tempMeta, backgroundColor: e.target.value })}
+                            style={{ width: '50px', height: '50px', border: 'none', cursor: 'pointer', padding: 0, background: 'none' }}
+                        />
+                        <span style={{ fontSize: '0.9rem', color: '#666' }}>{tempMeta.backgroundColor}</span>
+                        <button 
+                            onClick={() => setTempMeta({ ...tempMeta, backgroundColor: '#ffffff' })}
+                            style={{ fontSize: '0.8rem', padding: '5px 10px', background: '#f0f0f0', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer' }}
+                        >
+                            Reset
+                        </button>
+                    </div>
+
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '0.9rem' }}>Skill Tagging (Roadmap)</label>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '20px' }}>
+                        {SKILLS.map(sk => {
+                            const isActive = tempMeta.skill === sk.id;
+                            return (
+                                <button 
+                                    key={sk.id}
+                                    onClick={() => setTempMeta({ ...tempMeta, skill: sk.id })}
+                                    style={{
+                                        padding: '5px 10px', borderRadius: '15px',
+                                        background: 'white', color: sk.color,
+                                        border: `2px solid ${isActive ? sk.color : '#ddd'}`,
+                                        cursor: 'pointer', fontSize: '0.8rem',
+                                        opacity: isActive ? 1 : 0.7,
+                                        fontWeight: 'bold'
+                                    }}
+                                >
+                                    {sk.label}
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <button onClick={() => setEditingItem(null)} style={{
+                            flex: 1, padding: '12px', background: '#eee', border: 'none', borderRadius: '8px', cursor: 'pointer'
+                        }}>Cancel</button>
+                        <button onClick={() => {
+                            handleSaveMetadata(editingItem.emoji, tempMeta.label, tempMeta.wordClass, tempMeta.backgroundColor, tempMeta.skill);
+                        }} style={{
+                            flex: 1, padding: '12px', background: '#4ECDC4', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold'
+                        }}>Save</button>
+                    </div>
+
+                    <div style={{ marginTop: '15px', borderTop: '1px solid #eee', paddingTop: '15px' }}>
+                        <button 
+                            onClick={() => {
+                                if (confirm('Are you sure you want to exclude this item? It will be hidden from the grid.')) {
+                                    setBlacklistedEmojis(prev => [...prev, editingItem.emoji]);
+                                    setEditingItem(null);
+                                    // Also deselect it if selected? Maybe safer.
+                                    toggleEmoji(editingItem.category, editingItem.emoji); // Toggle effectively removes if selected
+                                }
+                            }}
+                            style={{
+                                width: '100%', padding: '10px', background: '#fff', 
+                                border: '1px solid #ff4d4f', color: '#ff4d4f', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem'
+                            }}
+                        >
+                            🚫 Exclude from Library
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )}
+
                 <style>{`
                     @keyframes popIn {
                         from { opacity: 0; transform: scale(0.8); }
                         to { opacity: 1; transform: scale(1); }
-                    }
-                    .emoji-btn:active {
-                        transform: scale(0.95);
-                        opacity: 0.7;
-                    }
-                    .skeleton-pulse {
-                        animation: pulse 1.5s infinite ease-in-out;
-                        background: #eee;
-                        border-radius: 12px;
-                    }
-                    @keyframes pulse {
-                        0% { opacity: 1; }
-                        50% { opacity: 0.5; }
-                        100% { opacity: 1; }
                     }
                 `}</style>
             </div>

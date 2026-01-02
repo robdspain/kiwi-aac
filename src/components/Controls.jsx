@@ -47,7 +47,8 @@ const Controls = ({
     onSetColorTheme,
     triggerPaywall,
     bellSound,
-    onUpdateBellSound
+    onUpdateBellSound,
+    progressData = {}
 }) => {
 
     // Theme definitions
@@ -743,6 +744,28 @@ const Controls = ({
 
                     {/* Data Tab */}
                     {activeTab === 'data' && (<>
+                        {/* Stats Overview */}
+                        <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '10px' }}>
+                            <span style={{ fontWeight: 600, color: '#333' }}>📊 Child's Progress</span>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                                <div style={{ background: '#F2F2F7', padding: '10px', borderRadius: '8px', textAlign: 'center' }}>
+                                    <div style={{ fontSize: '20px' }}>{STAGES[Math.floor(currentLevel)]?.icon || '📱'}</div>
+                                    <div style={{ fontSize: '10px', color: '#666', marginTop: '4px' }}>Level {Math.floor(currentLevel)}</div>
+                                </div>
+                                <div style={{ background: '#F2F2F7', padding: '10px', borderRadius: '8px', textAlign: 'center' }}>
+                                    <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#007AFF' }}>{rootItems.length}</div>
+                                    <div style={{ fontSize: '10px', color: '#666', marginTop: '4px' }}>Icons</div>
+                                </div>
+                                <div style={{ background: '#F2F2F7', padding: '10px', borderRadius: '8px', textAlign: 'center' }}>
+                                    <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#34C759' }}>
+                                        {/* Simple total interaction count derived from progress data if available, else a placeholder */}
+                                        {Object.values(progressData || {}).reduce((acc, curr) => acc + (curr.totalUses || 0), 0) || 0}
+                                    </div>
+                                    <div style={{ fontSize: '10px', color: '#666', marginTop: '4px' }}>Total Taps</div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
                             <button
                                 style={{

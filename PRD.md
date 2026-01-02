@@ -79,7 +79,10 @@ Kiwi AAC is a specialized tool designed to curate and customize icon libraries f
 | **Phase 4** | Accessibility & Focus Management | **COMPLETE** |
 | **Phase 5** | PWA & Store Readiness | **COMPLETE** |
 | **Phase 6** | Full Dataset Integration | **COMPLETE** |
-| **Phase 7** | iOS Compliance Polish | **PENDING** |
+| **Phase 7** | iOS Compliance Polish | **COMPLETE** |
+| **Phase 8** | Advanced AAC Features | **COMPLETE** |
+| **Phase 9** | Customization & Privacy | **COMPLETE** |
+| **Phase 10** | Roadmap Integration | **PENDING** |
 
 ---
 
@@ -90,4 +93,36 @@ To strictly adhere to iOS Human Interface Guidelines (HIG):
 - [x] **Visual Feedback:** Add `:active` states (opacity/scale) to all interactive elements to mimic native touch feedback.
 - [x] **Translucency:** Apply `backdrop-filter: blur()` to the Top Navigation Bar and Sidebar for the "Liquid Glass" feel.
 - [x] **Loading Skeleton:** Replace the simple lazy loading spinner (if any) or blank space with a skeleton loader during the initial batch render.
+
+---
+
+### 8. Phase 8: Advanced AAC Features (New)
+
+#### 8.1. Linguistic & Clinical Metadata
+- [x] **Part of Speech Tagging:** Add a `wordClass` attribute to the data model (Noun, Verb, Adjective, Social) to support Fitzgerald Key color-coding in the target app.
+- [x] **Label Customization:** Implement a "Display Label" override field in the curator. This allows renaming complex Unicode names (e.g., "Potable Water" → "Tap") for age-appropriate speech output.
+- [x] **Background Color:** Allow setting a specific background color per icon (hex/picker) for visual tracking or coding.
+
+#### 8.2. Guided Selection
+- [x] **Core Vocabulary Filter:** Add a "Core vs. Fringe" toggle to isolate high-frequency words (e.g., I, want, go, stop) that constitute 80% of daily speech.
+- [x] **Template Pre-sets:** Introduce a "Templates" modal or dropdown allowing users to load curated sets like "First 50 Words" or "School Day" instead of starting from scratch.
+
+---
+
+### 9. Phase 9: Customization & Privacy (New)
+
+#### 9.1. Advanced Selection Logic
+- [x] **Exclude List (Blacklist):** Allow therapists to flag specific icons as "Excluded" so they do not appear in search results or the grid, preventing distraction.
+- [x] **Image Upload:** Enable uploading custom images (e.g., "photo of Mom") which are encoded (Base64/URI) and stored in `iconsData.json` instead of a standard emoji.
+
+---
+
+### 10. Phase 10: Roadmap Integration (New)
+Integrating key features from the product roadmap:
+
+- [ ] **Visual Schedule Builder:** Allow users to create and export ordered sequences (e.g., "Morning Routine": Toilet -> Wash Hands -> Brush Teeth) as distinct entities.
+- [ ] **Web Image Search:** Integrate a third-party API (e.g., Unsplash) to allow searching for high-quality photos directly within the "Custom Image" workflow.
+- [ ] **Skill Tagging:** Add metadata tags for "Essential Skills" (FCR, Wait, Denial) to support the upcoming training modes in Kiwi Voice.
+
+
 

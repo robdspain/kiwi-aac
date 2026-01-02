@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { EMOJI_DATA } from '../utils/emojiData';
 
 const iconsData = {
@@ -8,7 +8,7 @@ const iconsData = {
     'Feelings': [{ w: 'Happy', i: '😄' }, { w: 'Sad', i: '😢' }, { w: 'Mad', i: '😠' }]
 };
 
-const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
+const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall }) => {
     const [activeTab, setActiveTab] = useState('emoji'); // 'emoji', 'photo', or 'symbol'
     const [activeCategory, setActiveCategory] = useState('TV');
     const [searchQuery, setSearchQuery] = useState('');
@@ -17,6 +17,7 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
     const [isLoadingPhotos, setIsLoadingPhotos] = useState(false);
     const [isLoadingSymbols, setIsLoadingSymbols] = useState(false);
     const [isOnline, setIsOnline] = useState(navigator.onLine);
+    const fileInputRef = useRef(null);
 
     useEffect(() => {
         const handleOnline = () => setIsOnline(true);
@@ -89,6 +90,28 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
         }
     };
 
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                // Return just the filename as word, and dataURL as icon, isImage=true
+                const fileName = file.name.split('.')[0];
+                onSelect(fileName, event.target.result, true);
+                setSearchQuery('');
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleUploadClick = () => {
+        if (triggerPaywall) {
+            triggerPaywall('upload_photo', () => fileInputRef.current?.click());
+        } else {
+            fileInputRef.current?.click();
+        }
+    };
+
     // Get all categories from the emoji data
     const getEmojiCategories = () => Object.keys(EMOJI_DATA);
 
@@ -123,7 +146,7 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
     return (
         <div id="picker-modal" style={{ display: 'flex' }}>
             <div id="picker-content">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexShrink: 0 }}>
                     <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
                         <h2 style={{ margin: 0 }}>Library</h2>
                         <div style={{ display: 'flex', background: '#e0e0e0', padding: '2px', borderRadius: '8px' }}>
@@ -166,10 +189,10 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                         ✕
                     </button>
                 </div>
-                <div style={{ marginBottom: '15px' }}>
+                <div style={{ marginBottom: '15px', flexShrink: 0 }}>
                     <input
                         type="text"
-                        placeholder={activeTab === 'emoji' ? "Search emojis..." : activeTab === 'symbol' ? "Search AAC symbols..." : "Search photos..."}
+                        placeholder={activeTab === 'emoji' ? "Search emojis..." : activeTab === 'symbol' ? "Search symbols..." : "Search photos..."}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
 
@@ -194,7 +217,7 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                 {activeTab === 'emoji' ? (
                     <>
                         {!searchQuery && (
-                            <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '10px' }}>
+                            <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '10px', flexShrink: 0 }}>
                                 <button
                                     key="my-icons"
                                     onClick={() => setActiveCategory('My Icons')}
@@ -303,7 +326,7 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                 ) : activeTab === 'symbol' ? (
                     <>
                         {!searchQuery && (
-                            <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '10px', flexWrap: 'nowrap' }}>
+                            <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '10px', flexWrap: 'nowrap', flexShrink: 0 }}>
                                 {getEmojiCategories().map(cat => (
                                     <button
                                         key={cat}
@@ -357,6 +380,34 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                     </>
                 ) : (
                     <div id="picker-grid" className="picker-grid">
+                        <div style={{ gridColumn: '1/-1', marginBottom: '10px' }}>
+                            <button
+                                onClick={handleUploadClick}
+                                style={{
+                                    width: '100%',
+                                    padding: '12px',
+                                    background: '#E5E5EA',
+                                    color: '#007AFF',
+                                    borderRadius: '12px',
+                                    border: 'none',
+                                    fontWeight: '600',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '8px',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                <span>📱</span> Upload from Device
+                            </button>
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                onChange={handleFileChange}
+                                accept="image/*"
+                                style={{ display: 'none' }}
+                            />
+                        </div>
                         {isLoadingPhotos ? (
                             <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px' }}>Searching...</div>
                         ) : photos.length > 0 ? (
