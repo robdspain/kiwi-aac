@@ -91,25 +91,67 @@ Kiwi Voice is a specialized tool designed to curate and customize icon libraries
 | **Phase 12** | Context-Aware Intelligence | **COMPLETE** |
 | **Phase 13** | Circle of Support (Avatar Builder) | **COMPLETE** |
 | **Phase 14** | Advanced Disruptor Refinements | **COMPLETE** |
-| **Phase 15** | High-Fidelity Voice Engine | **IN PROGRESS** |
-| **Phase 16** | Apple Design & Accessibility Standards | **PENDING** |
+| **Phase 15** | High-Fidelity Voice Engine | **COMPLETE** |
+| **Phase 16** | Apple Design & Accessibility Standards | **COMPLETE** |
+| **Phase 17** | AI Vision: JIT Visual Scene Automation | **PENDING** |
+| **Phase 18** | Linguistic Growth: Morphology & Visual Action Cues | **PENDING** |
+| **Phase 19** | Global Support: Multi-Language Mirroring | **PENDING** |
 
 ---
 
-### 7. Phase 7: iOS Compliance Polish (New)
-To strictly adhere to iOS Human Interface Guidelines (HIG):
+### 15. Phase 15: High-Fidelity Voice Engine (New)
 
-- [x] **Haptics:** Replace `navigator.vibrate` (unsupported on iOS) with `@capacitor/haptics`.
-- [x] **Visual Feedback:** Add `:active` states (opacity/scale) to all interactive elements to mimic native touch feedback.
-- [x] **Translucency:** Apply `backdrop-filter: blur()` to the Top Navigation Bar and Sidebar for the "Liquid Glass" feel.
-- [x] **Loading Skeleton:** Replace the simple lazy loading spinner (if any) or blank space with a skeleton loader during the initial batch render.
+#### 15.1. Multi-Voice Support
+- [x] **Voice Selector:** Implement a dropdown to browse and select from all available system voices (Neural, Siri, etc.) provided by the Web Speech API.
+- [x] **Voice Filtering:** Group voices by locale (e.g., English US vs English UK) and gender.
+
+#### 15.2. Expressive Personalization
+- [x] **Pitch & Rate Controls:** Add sliders in the Voice Settings modal to fine-tune the selected voice.
+- [x] **Voice Preview:** A "Test Voice" button to hear a sample sentence before applying changes.
+
+#### 15.3. Phonetic Pronunciation Editor
+- [x] **Custom Dictionary:** Allow users to define phonetic overrides for specific words (e.g., "Kiwi" -> "Kee-wee") to fix mispronunciations in neural engines.
+- [x] **Exportable Lexicon:** Include the pronunciation dictionary in `iconsData.json`.
+
+#### 15.4. Multi-Language Voice Support
+- [ ] **All Languages:** Show all system voices, not just English (currently filtered to English only).
+- [ ] **Language Selector:** Allow filtering by language preference in voice settings.
+- [ ] **Spanish Priority:** Ensure Spanish voices are easily accessible alongside English.
+- [ ] **Language-Aware Rate:** Provide guidance on optimal speaking rates for different languages.
+
+#### 15.5. Voice Quality Guidance
+- [ ] **Download Indicators:** Mark which voices require iOS Settings download for offline use.
+- [ ] **Quality Badges:** Clearly distinguish between Siri/Neural/Premium vs. basic system voices.
+- [ ] **Setup Instructions:** Provide in-app guidance to download high-quality voices if needed.
+- [ ] **Enhanced Voice Detection:** Automatically detect and prioritize Enhanced/Premium voices in the list.
+
+#### 15.6. Voice Presets
+- [ ] **Young Child Preset:** Higher pitch (1.2x), slower rate (0.8x) for child-like voice.
+- [ ] **Adult Preset:** Normal pitch (1.0x), normal rate (1.0x) for standard adult voice.
+- [ ] **Clear Speech Preset:** Normal pitch (1.0x), slower rate (0.7x) for maximum clarity.
+- [ ] **Custom Presets:** Allow users to save their own preset combinations.
+- [ ] **Quick Apply:** One-tap application of presets from voice settings.
+
+#### 15.7. Communication Interface (Message Bar)
+- [ ] **Sentence Strip:** Message bar at top where tapped icons accumulate into sentences.
+- [ ] **Speak All Button:** Play entire sentence from message bar with proper spacing.
+- [ ] **Clear Button:** Remove all icons from message bar at once.
+- [ ] **Individual Removal:** Tap icons in message bar to remove them selectively.
+- [ ] **Use Mode vs Edit Mode:** Dedicated communication mode separate from library editing.
+- [ ] **Auto-Speak Option:** Toggle to speak words immediately on tap vs. accumulating first.
+
+#### 15.8. Recorded Voice Integration
+- [x] **Custom Voice Recording:** Allow recording custom audio clips for specific buttons.
+- [x] **Playback Controls:** Play, re-record, and delete recorded audio.
+- [ ] **Parent Voice Library:** Curated collection of common phrases in parent's voice (e.g., "I love you").
+- [ ] **Mix TTS and Recordings:** Support both synthesized and recorded audio in the same sentence.
 
 ---
 
 ### 16. Phase 16: Apple Design & Accessibility Standards (New)
 
 #### 16.1. High-Contrast Color System (WCAG 2.1 AA)
-- [ ] **Contrast Remediation:** 
+- [x] **Contrast Remediation:** 
     - Update primary UI colors to ensure 4.5:1 ratio against text.
     - **Teal (#4ECDC4) ->** Switch to dark text (`#1A535C`) instead of white.
     - **Fitzgerald Key:** 
@@ -118,125 +160,53 @@ To strictly adhere to iOS Human Interface Guidelines (HIG):
         - Adjectives (Blue #2196F3) -> Increase saturation/darkness.
 
 #### 16.2. Typography & Layout Scaling
-- [ ] **Dynamic Type Implementation:** 
+- [x] **Dynamic Type Implementation:** 
     - Convert all hardcoded `px` font sizes to `rem`.
     - Use `clamp()` for responsive header text to prevent clipping on small devices.
-- [ ] **SF Pro Rounded Integration:** Ensure `font-family` strictly defaults to system rounded variant for better readability.
+- [x] **SF Pro Rounded Integration:** Ensure `font-family` strictly defaults to system rounded variant for better readability.
 
 #### 16.3. Motor & Hit-Area Standards
-- [ ] **Touch Target Audit:** 
+- [x] **Touch Target Audit:** 
     - Ensure all interactive elements (Close buttons, Search clears, Sidebar items) have a minimum hit area of `44x44px`.
-- [ ] **Pointer Cancellation:** 
+- [x] **Pointer Cancellation:** 
     - Standardize action triggers on `pointerup` events.
     - Implement a "Slide-to-Cancel" visual cue for long-press actions.
-- [ ] **Haptic Feedback Hierarchy:** 
+- [x] **Haptic Feedback Hierarchy:** 
     - **Light:** Item selection / Toggle.
     - **Medium:** Navigation / Level Change.
     - **Success:** Export / Save.
     - **Error:** Blacklist / Delete (Heavy).
 
+---
 
+### 17. Phase 17: AI Vision: JIT Visual Scene Automation (New)
+
+#### 17.1. On-Device Object Detection
+- [ ] **Vision Engine Integration:** Integrate an on-device vision model (e.g., TensorFlow.js) to process uploaded "Visual Scene" photos locally.
+- [ ] **Auto-Hotspot Suggestion:** Automatically identify common objects (cup, toy, snack) and suggest coordinate-based hotspots.
+
+#### 17.2. Intelligent Icon Mapping
+- [ ] **Semantic Linker:** Automatically map detected objects to existing icons in the library or suggest matching emojis from the dataset.
 
 ---
 
-### 8. Phase 8: Advanced AAC Features (New)
+### 18. Phase 18: Linguistic Growth: Morphology & Visual Action Cues (New)
 
-#### 8.1. Linguistic & Clinical Metadata
-- [x] **Part of Speech Tagging:** Add a `wordClass` attribute to the data model (Noun, Verb, Adjective, Social) to support Fitzgerald Key color-coding in the target app.
-- [x] **Label Customization:** Implement a "Display Label" override field in the curator. This allows renaming complex Unicode names (e.g., "Potable Water" → "Tap") for age-appropriate speech output.
-- [x] **Background Color:** Allow setting a specific background color per icon (hex/picker) for visual tracking or coding.
+#### 18.1. Advanced Morphology Engine
+- [ ] **Noun Expansion:** Add toggles for Plurals (e.g., "Cookie" -> "Cookies") and Possessives ("Mom" -> "Mom's") in the customization modal.
+- [ ] **Agreement Logic:** Implement automatic subject-verb agreement (e.g., "I want" vs "He wants") within the sentence strip logic.
 
-#### 8.2. Guided Selection
-- [x] **Core Vocabulary Filter:** Add a "Core vs. Fringe" toggle to isolate high-frequency words (e.g., I, want, go, stop) that constitute 80% of daily speech.
-- [x] **Template Pre-sets:** Introduce a "Templates" modal or dropdown allowing users to load curated sets like "First 50 Words" or "School Day" instead of starting from scratch.
-
----
-
-### 9. Phase 9: Customization & Privacy (New)
-
-#### 9.1. Advanced Selection Logic
-- [x] **Exclude List (Blacklist):** Allow therapists to flag specific icons as "Excluded" so they do not appear in search results or the grid, preventing distraction.
-- [x] **Image Upload:** Enable uploading custom images (e.g., photo of "Mom") which are encoded (Base64/URI) and stored in `iconsData.json` instead of a standard emoji.
+#### 18.2. Visual Action Cues (Zen Style)
+- [ ] **Illustrative Action Imagery:** Instead of video, create a set of high-quality illustrative images/icons that depict the *action* or *context* of a word, matching the unified Mimoji aesthetic.
+- [ ] **Zen Animations:** Implement beautiful, calming animations (e.g., soft scaling or path-drawing) to illustrate specific concepts or learning milestones, avoiding sensory overload.
 
 ---
 
-### 10. Phase 10: Roadmap Integration (New)
-Integrating key features from the product roadmap:
+### 19. Phase 19: Global Support: Multi-Language Mirroring (New)
 
-- [x] **Visual Schedule Builder:** Allow users to create and export ordered sequences (e.g., "Morning Routine": Toilet -> Wash Hands -> Brush Teeth) as distinct entities.
-- [x] **Local Photo Library:** A private, focused tab showing only previously imported user photos (Camera/Library) with local search.
-- [x] **Skill Tagging:** Add metadata tags for "Essential Skills" (FCR, Wait, Denial) to support the upcoming training modes in Kiwi Voice.
+#### 19.1. Decoupled Structure
+- [ ] **Schema Refactor:** Decouple the board layout (spatial positions) from the linguistic labels.
+- [ ] **Mirroring Engine:** Implement a toggle to switch the entire board between languages (e.g., English <-> Spanish) while keeping icon positions identical to preserve motor memory.
 
----
-
-### 11. Phase 11: Market Disruption & Kiwi Edge (New)
-
-#### 11.1. Zero-to-Hero Setup
-- [x] **Smart Import:** "Bulk Import" engine that takes a text list (e.g., "apple, sit, more") and automatically populates the library with matching icons, skin tones, and tags.
-- [x] **QR Code/Link Sync:** Generate a QR code or 6-digit link to instantly share the curated board with another device (e.g., Therapist desktop -> Parent iPad).
-
-#### 11.2. Gestalt Language Processor (GLP) Support
-- [x] **Phrase Buttons:** Support "Multi-Icon Gestalts" where a single button represents a full phrase/script (e.g., "Let's go to the park") with a storyboard-style visual.
-
-#### 11.3. Integrated Modeling Mode
-- [x] **Guide Mode:** A "Mirror" feature where parents can see a guide highlighting which icons to press, facilitating modeling. (Implementation note: This might be a toggle in the app to highlight core words or specific targets).
-
-#### 11.4. Semantic Intelligence
-- [x] **Grammar Inflection Cues:** When a user selects a Pronoun + Verb (e.g., "I" + "Eat"), logically suggest or popup inflection options ("Ate", "Eating"). (Implementation note: Requires basic grammar logic in the builder to tag verbs for inflection).
-
-#### 11.5. Distinguishable Haptics
-- [x] **Smart Haptics:** Implement distinct vibration patterns for different word classes (e.g., "Nudge" for Core, "Sharp" for Stop/No).
-
----
-
-### 12. Phase 12: Context-Aware Intelligence (New)
-
-#### 12.1. Dynamic Context Switching
-- [x] **Smart Sidebar (Geofencing):** Simulate context switching based on location (Home, School, Park). Implementation: Add a "Context Simulator" toggle to preview how the sidebar changes based on selected "Location".
-- [x] **Time-Based Triggers:** Surface folders based on time of day (Morning, Lunch, Evening). Implementation: Add a "Time Simulator" or rules engine to the builder.
-
-#### 12.2. Visual Intelligence
-- [x] **JIT Visual Scenes:** Allow uploading a photo and manually drawing "Hotspots" linked to icons/words (simulating AI object detection for now).
-
-#### 12.3. Predictive Logic
-- [x] **Semantic Prediction:** When "I want" is selected, visually highlight Noun categories (Food, Toys) in the sidebar.
-
-#### 12.4. Privacy
-- [x] **Privacy Firewall:** Ensure all "Context" data (Geo/Time) is processed locally. (Implementation: Store rules in `iconsData.json`, not on a server).
-
----
-
-### 13. Phase 13: Circle of Support (Avatar Builder) (New)
-
-#### 13.1. Personalized Representation
-- [x] **SVG Layering Engine:** Implement a high-performance system to layer head shapes, hair styles, eyes, and accessories.
-- [x] **Diversity Toggles:** Support 6+ skin tones, varied hair textures (curly, coily, straight), and facial hair options.
-- [x] **Accessibility Accessories:** Include options for hearing aids, glasses, and "AAC devices" in the avatar builder.
-- [x] **Recipe-Based Export:** Store avatars as "Recipes" (JSON objects) in `iconsData.json` rather than flat images to preserve scalability and editability.
-- [x] **Default Personas:** Pre-populate "My People" with default Mom (Black hair) and Dad (Brown hair, Blue eyes, Short beard) characters.
-
----
-
-### 14. Phase 14: Advanced Disruptor Refinements (New)
-
-#### 14.1. Intelligent Automation
-- [x] **Automated POS Tagging:** 
-    - **Data:** Integrate a 500-word linguistic lexicon (`aacLexicon.js`).
-    - **Logic:** Auto-assign `wordClass` during Bulk Import.
-    - **Visual:** Auto-apply Fitzgerald Key backgrounds: Noun (Yellow), Verb (Green), Adjective (Blue), Social (Pink).
-- [x] **Interactive Grammar Engine:** 
-    - **Trigger:** Sequence detection in Sentence Strip (Pronoun -> Verb).
-    - **UI:** floating "Inflection Bubble" above verb offering tense changes (e.g., "Eat" -> "Eating", "Ate").
-
-#### 14.2. Instant Sharing
-- [x] **QR/Board Sync:** 
-    - **Compression:** Use `lz-string` to compress library state into URL parameters.
-    - **QR Generation:** Display a QR code in the Share modal for instant device-to-device transfer.
-    - **Deep Linking:** Auto-import logic when the app is launched via a `?board=` link.
-
-#### 14.3. GLP Visuals
-- [x] **Storyboard Phrase Buttons:** 
-    - **Layout:** Render multi-icon "scripts" in a horizontal 3-icon storyboard visual to distinguish them from single-word Core vocabulary.
-
-
-
+#### 19.2. Automated Translation
+- [ ] **Local Lexicon Mapping:** Use an expanded `aacLexicon.js` to provide high-quality, clinical-grade translations for core and common fringe vocabulary.
