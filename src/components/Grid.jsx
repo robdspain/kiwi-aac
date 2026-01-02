@@ -111,14 +111,6 @@ const Grid = ({
 
     return (
         <div id="grid-container" className={gridClass} style={getGridStyle()}>
-            {hasBack && !isTrainingMode && (
-                <AppItem
-                    item={{ id: 'back-btn', word: 'Back', icon: '⬅️', type: 'button' }}
-                    isBack={true}
-                    onClick={onBack}
-                />
-            )}
-
             <SortableContext
                 items={items.map(i => i.id || i.word)}
                 strategy={rectSortingStrategy}

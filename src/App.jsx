@@ -456,7 +456,35 @@ function App() {
       {showStrip && (gridSize !== 'super-big' || localStorage.getItem('kiwi-force-strip') === 'true') && (
         <SentenceStrip stripItems={stripItems} onClear={() => setStripItems([])} onPlay={() => { const sentence = stripItems.map(i => i.word).join(" "); trackSentence(sentence); speak(sentence); }}/>
       )}
-      <div id="breadcrumbs">{currentPath.length === 0 ? "Home" : currentPath.reduce((acc, i, idx) => { if (idx === 0) return rootItems[i].word; let list = rootItems; for (let j=0; j<idx; j++) list = list[currentPath[j]].contents; return list[i].word; }, "")}{currentContext !== 'home' && <span className="phase-label-badge" style={{ background: '#5856D6' }}>{contexts.find(c => c.id === currentContext)?.icon} {contexts.find(c => c.id === currentContext)?.label}</span>}{currentPhase > 0 && <span className="phase-label-badge">Level {currentPhase}</span>}</div>
+      
+      {/* iOS Navigation Header */}
+      <header className="ios-nav-header">
+        <div className="ios-nav-top">
+          {currentPath.length > 0 && (
+            <button className="ios-back-button" onClick={handleBack}>
+              <span className="ios-chevron-left">‹</span>
+              {currentPath.length === 1 ? 'Home' : 'Back'}
+            </button>
+          )}
+          <div className="ios-nav-badges">
+            {currentContext !== 'home' && (
+              <span className="ios-context-badge">
+                {contexts.find(c => c.id === currentContext)?.icon} {contexts.find(c => c.id === currentContext)?.label}
+              </span>
+            )}
+            {currentPhase > 0 && <span className="ios-phase-badge">Level {currentPhase}</span>}
+          </div>
+        </div>
+        <h1 className="ios-large-title">
+          {currentPath.length === 0 ? "Home" : currentPath.reduce((acc, i, idx) => { 
+            if (idx === 0) return rootItems[i].word; 
+            let list = rootItems; 
+            for (let j=0; j<idx; j++) list = list[currentPath[j]].contents; 
+            return list[i].word; 
+          }, "")}
+        </h1>
+      </header>
+
       {showSuccess && <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10rem', zIndex: 300, pointerEvents: 'none', animation: 'zoomIn 0.5s ease' }}>{currentPhase === 3 ? "🎯" : "🌟"}</div>}
       {currentPhase === 2 && !callActive && !isCommunicating && (
         <div className="call-overlay"><h2>{timerRemaining > 0 ? "Wait for partner..." : "I have something to say"}</h2><button className={`call-btn ${bellCooldown ? 'cooldown' : ''}`} disabled={bellCooldown} onClick={() => { if (!bellCooldown) { playBellSound(bellSound); setBellCooldown(true); setTimerRemaining(5); const interval = setInterval(() => { setTimerRemaining(prev => { if (prev <= 1) { clearInterval(interval); setCallActive(true); setBellCooldown(false); return 0; } return prev - 1; }); }, 1000); } }}>{timerRemaining > 0 ? <div className="timer-display"><div className="timer-circle" style={{ background: `conic-gradient(var(--primary) ${timerRemaining * 72}deg, #eee 0deg)` }}><span className="timer-text">{timerRemaining}</span></div></div> : '🔔'}</button></div>

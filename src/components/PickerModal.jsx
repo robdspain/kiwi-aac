@@ -9,7 +9,7 @@ const iconsData = {
 };
 
 const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall }) => {
-    const [activeTab, setActiveTab] = useState('symbol');
+    const [activeTab, setActiveTab] = useState('emoji');
     const [activeCategory, setActiveCategory] = useState('Smileys & Emotion');
     const [searchQuery, setSearchQuery] = useState('');
     const [symbols, setSymbols] = useState([]);
@@ -78,89 +78,146 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
 
     if (customizingItem) {
         return (
-            <div id="picker-modal" style={{ display: 'flex' }}>
-                <div id="picker-content" style={{ justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-                    <div style={{ marginBottom: '30px' }}><h2>Customize Icon</h2><p style={{ color: '#666' }}>What should this icon say?</p></div>
-                    <div style={{ width: '120px', height: '120px', background: 'white', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 24px rgba(0,0,0,0.1)', marginBottom: '30px', fontSize: '4rem', overflow: 'hidden' }}>
-                        {customizingItem.isImage ? <img src={customizingItem.icon} alt="Selected" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span>{customizingItem.icon}</span>}
+            <div className="ios-bottom-sheet-overlay" onClick={() => setCustomizingItem(null)}>
+                <div className="ios-bottom-sheet" onClick={e => e.stopPropagation()} style={{ height: 'auto', minHeight: '400px' }}>
+                    <div className="ios-sheet-header">
+                        <button className="ios-cancel-button" onClick={() => setCustomizingItem(null)}>Back</button>
+                        <h2 className="ios-sheet-title">Customize Icon</h2>
+                        <button className="ios-done-button" onClick={handleConfirmSelection}>Save</button>
                     </div>
-                    <div style={{ width: '100%', maxWidth: '300px', marginBottom: '40px' }}>
-                        <label style={{ display: 'block', textAlign: 'left', fontSize: '0.8rem', fontWeight: 'bold', color: '#999', marginBottom: '8px', textTransform: 'uppercase' }}>Icon Label</label>
-                        <input type="text" value={customName} onChange={(e) => setCustomName(e.target.value)} placeholder="Enter name..." autoFocus style={{ width: '100%', padding: '16px', borderRadius: '16px', border: '2px solid #4ECDC4', fontSize: '1.2rem', outline: 'none', boxSizing: 'border-box', textAlign: 'center' }}/>
-                    </div>
-                    <div style={{ display: 'flex', gap: '15px', width: '100%', maxWidth: '300px' }}>
-                        <button onClick={() => setCustomizingItem(null)} style={{ flex: 1, padding: '16px', borderRadius: '16px', background: '#f0f0f0', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>Back</button>
-                        <button onClick={handleConfirmSelection} style={{ flex: 2, padding: '16px', borderRadius: '16px', background: '#4ECDC4', color: 'white', border: 'none', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(78, 205, 196, 0.3)' }}>Save to Board</button>
+                    <div className="ios-sheet-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', padding: '40px 20px' }}>
+                        <div style={{ width: '120px', height: '120px', background: 'white', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 24px rgba(0,0,0,0.1)', fontSize: '4rem', overflow: 'hidden' }}>
+                            {customizingItem.isImage ? <img src={customizingItem.icon} alt="Selected" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span>{customizingItem.icon}</span>}
+                        </div>
+                        <div className="ios-setting-card" style={{ width: '100%', maxWidth: '300px' }}>
+                            <div className="ios-row">
+                                <span style={{ fontWeight: 600 }}>Label</span>
+                                <input 
+                                    type="text" 
+                                    value={customName} 
+                                    onChange={(e) => setCustomName(e.target.value)} 
+                                    style={{ border: 'none', textAlign: 'right', fontSize: '17px', outline: 'none', background: 'transparent', flex: 1 }}
+                                    placeholder="Enter label"
+                                    autoFocus
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         );
     }
 
+    const tabs = [
+        { id: 'emoji', label: '😀' },
+        { id: 'symbol', label: '🖼️' },
+        { id: 'photo', label: '📷' }
+    ];
+    const activeTabIndex = tabs.findIndex(t => t.id === activeTab);
+
     return (
-        <div id="picker-modal" style={{ display: 'flex' }}>
-            <div id="picker-content">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexShrink: 0 }}>
-                    <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                        <h2 style={{ margin: 0 }}>Library</h2>
-                        <div style={{ display: 'flex', background: '#e0e0e0', padding: '2px', borderRadius: '8px' }}>
-                            <button onClick={() => setActiveTab('emoji')} style={{ padding: '4px 10px', border: 'none', borderRadius: '6px', background: activeTab === 'emoji' ? 'white' : 'transparent', fontSize: '0.8rem', cursor: 'pointer' }}>😀</button>
-                            <button onClick={() => setActiveTab('symbol')} style={{ padding: '4px 10px', border: 'none', borderRadius: '6px', background: activeTab === 'symbol' ? 'white' : 'transparent', fontSize: '0.8rem', cursor: 'pointer' }}>🖼️</button>
-                            <button onClick={() => setActiveTab('photo')} style={{ padding: '4px 10px', border: 'none', borderRadius: '6px', background: activeTab === 'photo' ? 'white' : 'transparent', fontSize: '0.8rem', cursor: 'pointer' }}>📷</button>
-                        </div>
+        <div className="ios-bottom-sheet-overlay" onClick={onClose}>
+            <div className="ios-bottom-sheet" onClick={e => e.stopPropagation()}>
+                <div className="ios-sheet-header" style={{ borderBottom: 'none' }}>
+                    <button className="ios-cancel-button" onClick={onClose}>Cancel</button>
+                    <div className="ios-segmented-control" style={{ marginBottom: 0, width: '140px' }}>
+                        <div 
+                            className="selection-pill" 
+                            style={{ 
+                                width: `calc(${100 / tabs.length}% - 4px)`,
+                                transform: `translateX(${activeTabIndex * 100}%)` 
+                            }} 
+                        />
+                        {tabs.map(tab => (
+                            <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{ padding: '6px 0' }}>{tab.label}</button>
+                        ))}
                     </div>
-                    <button onClick={onClose} style={{ background: 'rgba(0,0,0,0.1)', width: '40px', height: '40px', borderRadius: '50%', padding: 0 }}>✕</button>
+                    <div style={{ width: '50px' }}></div>
                 </div>
-                <div style={{ marginBottom: '15px', flexShrink: 0 }}><input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #ddd', fontSize: '16px', outline: 'none', boxSizing: 'border-box' }}/></div>
-                {activeTab === 'emoji' ? (
-                    <>
-                        {!searchQuery && (
-                            <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '10px', flexShrink: 0 }}>
-                                <button onClick={() => setActiveCategory('My Icons')} style={{ background: activeCategory === 'My Icons' ? '#34C759' : '#E8F5E9', color: activeCategory === 'My Icons' ? '#fff' : '#34C759', padding: '8px 16px', borderRadius: '20px', border: 'none', fontWeight: '600', whiteSpace: 'nowrap' }}>⭐ My Icons</button>
-                                {Object.keys(iconsData).map(cat => ( <button key={cat} onClick={() => setActiveCategory(cat)} style={{ background: activeCategory === cat ? '#007AFF' : '#f0f0f0', color: activeCategory === cat ? '#fff' : '#000', padding: '8px 16px', borderRadius: '20px', border: 'none', fontWeight: '500', whiteSpace: 'nowrap' }}>{cat}</button> ))}
+
+                <div style={{ padding: '0 20px 15px' }}>
+                    <div style={{ position: 'relative' }}>
+                        <input 
+                            type="text" 
+                            placeholder="Search icons..." 
+                            value={searchQuery} 
+                            onChange={(e) => setSearchQuery(e.target.value)} 
+                            style={{ width: '100%', padding: '10px 35px', borderRadius: '10px', border: 'none', background: '#E3E3E8', fontSize: '17px', outline: 'none' }}
+                        />
+                        <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', opacity: 0.4 }}>🔍</span>
+                    </div>
+                </div>
+
+                <div className="ios-sheet-content" style={{ paddingTop: 0 }}>
+                    {activeTab === 'emoji' ? (
+                        <>
+                            {!searchQuery && (
+                                <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '15px', paddingRight: '20px' }}>
+                                    <button onClick={() => setActiveCategory('My Icons')} style={{ background: activeCategory === 'My Icons' ? '#34C759' : '#F2F2F7', color: activeCategory === 'My Icons' ? '#fff' : '#34C759', padding: '8px 16px', borderRadius: '20px', border: 'none', fontWeight: '600', whiteSpace: 'nowrap', fontSize: '13px' }}>⭐ My Icons</button>
+                                    {Object.keys(iconsData).map(cat => ( 
+                                        <button key={cat} onClick={() => setActiveCategory(cat)} style={{ background: activeCategory === cat ? '#007AFF' : '#F2F2F7', color: activeCategory === cat ? '#fff' : '#000', padding: '8px 16px', borderRadius: '20px', border: 'none', fontWeight: '500', whiteSpace: 'nowrap', fontSize: '13px' }}>{cat}</button> 
+                                    ))}
+                                </div>
+                            )}
+                            <div className="picker-grid">
+                                {(() => {
+                                    const userIconsList = (userItems || []).filter(item => item.type === 'button').map(item => ({ w: item.word, i: item.icon, isUserIcon: true }));
+                                    const libraryIcons = Object.values(iconsData).flat();
+                                    let displayIcons = searchQuery ? [...userIconsList.filter(item => item.w.toLowerCase().includes(searchQuery.toLowerCase())), ...libraryIcons.filter(item => item.w.toLowerCase().includes(searchQuery.toLowerCase()))] : (activeCategory === 'My Icons' ? userIconsList : iconsData[activeCategory] || []);
+                                    if (displayIcons.length === 0) return <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px', color: '#666' }}>No icons found</div>;
+                                    return displayIcons.map((item, index) => (
+                                        <button key={`${item.w}-${index}`} className="picker-btn" onClick={() => handleItemSelect(item.word || item.w, item.icon || item.i, typeof item.i === 'string' && (item.i.startsWith('http') || item.i.startsWith('data:')))}>
+                                            {typeof item.i === 'string' && (item.i.startsWith('http') || item.i.startsWith('data:')) ? <img src={item.i} alt={item.w} style={{ width: '40px', height: '40px', objectFit: 'contain' }} /> : <span style={{ fontSize: '28px' }}>{item.i}</span>}
+                                            <span style={{ fontSize: '11px', marginTop: '4px', opacity: 0.8, fontWeight: 500 }}>{item.w}</span>
+                                            {item.isUserIcon && <span style={{ position: 'absolute', top: '2px', right: '2px', fontSize: '8px', background: '#34C759', color: 'white', borderRadius: '4px', padding: '1px 3px' }}>MY</span>}
+                                        </button>
+                                    ));
+                                })()}
                             </div>
-                        )}
-                        <div id="picker-grid" className="picker-grid">
+                        </>
+                    ) : activeTab === 'symbol' ? (
+                        <>
+                            {!searchQuery && (
+                                <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '15px', paddingRight: '20px' }}>
+                                    {Object.keys(EMOJI_DATA).map(cat => ( 
+                                        <button key={cat} onClick={() => setActiveCategory(cat)} style={{ background: activeCategory === cat ? '#5856D6' : '#F2F2F7', color: activeCategory === cat ? '#fff' : '#333', padding: '8px 16px', borderRadius: '20px', border: 'none', fontWeight: '500', fontSize: '13px', whiteSpace: 'nowrap', cursor: 'pointer' }}>{cat}</button> 
+                                    ))}
+                                </div>
+                            )}
+                            <div className="picker-grid">
+                                {(() => {
+                                    const displayEmojis = searchQuery.length >= 2 ? symbols : (EMOJI_DATA[activeCategory] || []);
+                                    if (displayEmojis.length === 0) return <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px', color: '#666' }}>{searchQuery.length >= 2 ? 'No emojis found' : 'Select a category'}</div>;
+                                    return displayEmojis.map((item, index) => ( 
+                                        <button key={`${item.name || item.w}-${index}`} className="picker-btn" onClick={() => handleItemSelect(item.name || item.w, item.emoji || item.i, false)}>
+                                            <span style={{ fontSize: '32px' }}>{item.emoji || item.i}</span>
+                                            <span style={{ fontSize: '10px', marginTop: '4px', opacity: 0.8, fontWeight: 500 }}>{item.name || item.w}</span>
+                                        </button> 
+                                    ));
+                                })()}
+                            </div>
+                        </>
+                    ) : (
+                        <div className="picker-grid">
+                            <div style={{ gridColumn: '1/-1', marginBottom: '15px' }}>
+                                <button onClick={handleUploadClick} className="ios-row" style={{ width: '100%', borderRadius: '12px', border: 'none', justifyContent: 'center' }}>
+                                    <span style={{ color: '#007AFF', fontWeight: 600 }}>📱 Upload from Device</span>
+                                </button>
+                                <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" style={{ display: 'none' }}/>
+                            </div>
                             {(() => {
-                                const userIconsList = (userItems || []).filter(item => item.type === 'button').map(item => ({ w: item.word, i: item.icon, isUserIcon: true }));
-                                const libraryIcons = Object.values(iconsData).flat();
-                                let displayIcons = searchQuery ? [...userIconsList.filter(item => item.w.toLowerCase().includes(searchQuery.toLowerCase())), ...libraryIcons.filter(item => item.w.toLowerCase().includes(searchQuery.toLowerCase()))] : (activeCategory === 'My Icons' ? userIconsList : iconsData[activeCategory] || []);
-                                if (displayIcons.length === 0) return <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px', color: '#666' }}>No icons found</div>;
-                                return displayIcons.map((item, index) => (
-                                    <button key={`${item.w}-${index}`} className="picker-btn" onClick={() => handleItemSelect(item.w, item.i, typeof item.i === 'string' && (item.i.startsWith('http') || item.i.startsWith('data:')))}>
-                                        {typeof item.i === 'string' && (item.i.startsWith('http') || item.i.startsWith('data:')) ? <img src={item.i} alt={item.w} style={{ width: '48px', height: '48px', objectFit: 'contain' }} /> : <span style={{ fontSize: '32px' }}>{item.i}</span>}
-                                        <span style={{ fontSize: '12px', marginTop: '4px', opacity: 0.8 }}>{item.w}</span>
-                                        {item.isUserIcon && <span style={{ position: 'absolute', top: '4px', right: '4px', fontSize: '10px', background: '#34C759', color: 'white', borderRadius: '4px', padding: '2px 4px' }}>My</span>}
-                                    </button>
+                                const filteredPhotos = searchQuery ? userPhotos.filter(p => p.w.toLowerCase().includes(searchQuery.toLowerCase())) : userPhotos;
+                                if (filteredPhotos.length === 0) return <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px', opacity: 0.5 }}>No uploaded photos yet.</div>;
+                                return filteredPhotos.map((photo, index) => ( 
+                                    <button key={index} className="picker-btn" onClick={() => handleItemSelect(photo.w, photo.i, true)}>
+                                        <img src={photo.i} alt={photo.w} style={{ width: '100%', height: '60px', objectFit: 'cover', borderRadius: '8px' }} />
+                                        <span style={{ fontSize: '10px', marginTop: '4px', opacity: 0.8, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '100%' }}>{photo.w}</span>
+                                    </button> 
                                 ));
                             })()}
                         </div>
-                    </>
-                ) : activeTab === 'symbol' ? (
-                    <>
-                        {!searchQuery && (
-                            <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '10px', flexWrap: 'nowrap', flexShrink: 0 }}>
-                                {Object.keys(EMOJI_DATA).map(cat => ( <button key={cat} onClick={() => setActiveCategory(cat)} style={{ background: activeCategory === cat ? '#5856D6' : '#f0f0f0', color: activeCategory === cat ? '#fff' : '#333', padding: '6px 12px', borderRadius: '16px', border: 'none', fontWeight: '500', fontSize: '0.75rem', whiteSpace: 'nowrap', cursor: 'pointer' }}>{cat}</button> ))}
-                            </div>
-                        )}
-                        <div id="picker-grid" className="picker-grid">
-                            {(() => {
-                                const displayEmojis = searchQuery.length >= 2 ? symbols : (EMOJI_DATA[activeCategory] || []);
-                                if (displayEmojis.length === 0) return <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px', color: '#666' }}>{searchQuery.length >= 2 ? 'No emojis found' : 'Select a category'}</div>;
-                                return displayEmojis.map((item, index) => ( <button key={`${item.name || item.w}-${index}`} className="picker-btn" onClick={() => handleItemSelect(item.name || item.w, item.emoji || item.i, false)}><span style={{ fontSize: '32px' }}>{item.emoji || item.i}</span><span style={{ fontSize: '10px', marginTop: '4px', opacity: 0.8 }}>{item.name || item.w}</span></button> ));
-                            })()}
-                        </div>
-                    </>
-                ) : (
-                    <div id="picker-grid" className="picker-grid">
-                        <div style={{ gridColumn: '1/-1', marginBottom: '10px' }}><button onClick={handleUploadClick} style={{ width: '100%', padding: '12px', background: '#E5E5EA', color: '#007AFF', borderRadius: '12px', border: 'none', fontWeight: '600', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer' }}><span>📱</span> Upload from Device</button><input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" style={{ display: 'none' }}/></div>
-                        {(() => {
-                            const filteredPhotos = searchQuery ? userPhotos.filter(p => p.w.toLowerCase().includes(searchQuery.toLowerCase())) : userPhotos;
-                            if (filteredPhotos.length === 0) return <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px', opacity: 0.5 }}>No uploaded photos yet.</div>;
-                            return filteredPhotos.map((photo, index) => ( <button key={index} className="picker-btn" onClick={() => handleItemSelect(photo.w, photo.i, true)} style={{ padding: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}><img src={photo.i} alt={photo.w} style={{ width: '100%', height: '60px', objectFit: 'cover', borderRadius: '8px' }} /><span style={{ fontSize: '10px', marginTop: '4px', opacity: 0.8, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '100%' }}>{photo.w}</span></button> ));
-                        })()}
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
         </div>
     );
