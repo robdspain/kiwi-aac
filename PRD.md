@@ -7,12 +7,25 @@ Kiwi Voice is a specialized tool designed to curate and customize icon libraries
 ### 2. Objectives
 - Provide a high-performance, mobile-first interface for emoji selection.
 - Support standard AAC requirements: high contrast, large touch targets, and skin tone diversity.
+- **Integrated Skill Training:** Provide native, evidence-based FCR (Functional Communication Response) and Denial Tolerance modes to bridge the gap between communication and clinical protocols.
 - Export selected icons in a standardized JSON format (`iconsData.json`).
 - Achieve full compliance for iOS App Store and Google Play Store deployment as a PWA/Hybrid app.
 
 ---
 
-### 3. Development Philosophy & Feature Prioritization
+### 3. Unique Advantages & Differentiators
+
+Kiwi Voice is designed to disrupt the high-cost AAC market by offering professional-grade features with a modern, high-fidelity experience.
+
+1.  **Modern Memoji Aesthetic:** Replaces dated 2D clip-art with engaging, high-fidelity 3D characters.
+2.  **Integrated Skill Training:** Native, evidence-based FCR (Functional Communication Response) and Denial Tolerance modes that usually require separate clinical protocols in other apps.
+3.  **Built-in Routine Builder:** A dedicated Visual Schedule mode that transforms standard folders into sequential, step-by-step guides.
+4.  **Price Accessibility:** Professional AAC for $39/year (vs. $249+ one-time) with 100% free core communication.
+5.  **True Cross-Platform Parity:** A consistent, high-fidelity experience across Web, iOS, and Android.
+
+---
+
+### 4. Development Philosophy & Feature Prioritization
 
 #### 3.1. Core-First Approach
 
