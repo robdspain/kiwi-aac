@@ -9,6 +9,12 @@
 
 ## DETECTED ERRORS:
 
+### CYCLE 37 - 2026-01-02 (SECURITY & CODE INTEGRITY)
+[2026-01-02T11:15:00] | SECURITY | CRITICAL | index.html | Content Security Policy (CSP) is missing 'https://static.arasaac.org' and 'https://api.arasaac.org'. ARASAAC search and images will be blocked in production. (RESOLVED: 2026-01-02)
+[2026-01-02T11:20:00] | SYSTEM | HIGH | src/components/PickerModal.jsx | ReferenceError: 'lastCustomizingItemIdRef' is not defined but used in useEffect. Component will crash on mount/update. (RESOLVED: 2026-01-02)
+[2026-01-02T11:25:00] | UI/UX | MEDIUM | src/components/PickerModal.jsx | Search results logic is flawed: Toggling 'selectedLibraries' does not re-trigger search correctly if searchQuery is unchanged, leading to empty states when a library is enabled. (RESOLVED: 2026-01-02)
+[2026-01-02T11:30:00] | STABILITY | LOW | src/components/PickerModal.jsx | 'symbols' state only stores built-in emojis but is used to decide if 'openmoji' should be displayed, causing mixed results. (RESOLVED: 2026-01-02)
+
 ### CYCLE 36 - 2026-01-02 (AAC FEATURES & STABILITY)
 [2026-01-02T10:00:00] | UI/UX | MEDIUM | src/components/PickerModal.jsx | ARASAAC search results are not cleared when a new search starts or fails, leading to residual/incorrect icons being displayed. (RESOLVED: 2026-01-02)
 [2026-01-02T10:05:00] | SYSTEM | MEDIUM | src/components/PickerModal.jsx | LocalStorage overflow risk: Storing 50 base64 images (~5MB) plus board data exceeds 5MB limit on many browsers. Recommended limit: 20-30 images. (RESOLVED: 2026-01-02)
@@ -40,13 +46,13 @@
 ---
 
 ## LEARNING LOOP METRICS:
-- Total Errors Detected: 126
-- Critical Issues: 0 (Fixed)
-- High Priority Issues: 0 (Fixed)
-- Medium Priority Issues: 0 (Fixed)
-- Low Priority Issues: 0 (Verified)
+- Total Errors Detected: 130
+- Critical Issues: 1 (CSP Blocked API)
+- High Priority Issues: 1 (ReferenceError in PickerModal)
+- Medium Priority Issues: 0
+- Low Priority Issues: 0
 - Errors Fixed (by other agent): 120
-- Detection Cycles Completed: 36
+- Detection Cycles Completed: 37
 
 ---
 
@@ -66,10 +72,22 @@
 
 ---
 
+
+
 ## RECOMMENDATIONS FOR FIXER AGENT:
-1. **PickerModal Fix:** Call `setArasaacSymbols([])` at the beginning of `searchARASAAC` to clear stale results.
-2. **Storage Optimization:** Reduce `localStorage` photo limit from 50 to 20 to prevent data loss.
-3. **Scanning Safety:** Pause the auto-scanning interval in `App.jsx` when any modal (`editModalOpen`, `pickerOpen`, etc.) is active.
-4. **Muscle Memory Fix:** Move the Dynamic Core Overlay logic in `App.jsx` to be the *last* filter applied to `itemsToShow` (unless in Training Mode).
-5. **EditModal Race Condition:** Add a `processing` state to `EditModal.jsx` and disable the "Done" button while an image is being resized.
-6. **Analytics Tracking:** Add `trackItemClick(item.id || item.word, item.word)` within `handleItemClick` in `App.jsx`.
+
+1. **CSP Fix (CRITICAL):** Update `index.html` CSP to allow `https://*.arasaac.org` for `img-src` and `connect-src`.
+
+2. **PickerModal Reference Fix:** Define `lastCustomizingItemIdRef = useRef(null)` at the top of the component.
+
+3. **PickerModal Search Logic:** Update the `useEffect` dependency array and logic in `PickerModal.jsx` to ensure searching happens whenever `searchQuery` OR `selectedLibraries` change.
+
+4. **Storage Optimization:** Reduce `localStorage` photo limit from 50 to 20 to prevent data loss.
+
+5. **Scanning Safety:** Pause the auto-scanning interval in `App.jsx` when any modal (`editModalOpen`, `pickerOpen`, etc.) is active.
+
+6. **Muscle Memory Fix:** Move the Dynamic Core Overlay logic in `App.jsx` to be the *last* filter applied to `itemsToShow` (unless in Training Mode).
+
+7. **EditModal Race Condition:** Add a `processing` state to `EditModal.jsx` and disable the "Done" button while an image is being resized.
+
+8. **Analytics Tracking:** Add `trackItemClick(item.id || item.word, item.word)` within `handleItemClick` in `App.jsx`.

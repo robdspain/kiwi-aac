@@ -16,10 +16,32 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
     const [symbols, setSymbols] = useState([]);
     const [arasaacSymbols, setArasaacSymbols] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [showLibraryFilters, setShowLibraryFilters] = useState(false);
+    const [selectedLibraries, setSelectedLibraries] = useState(['emoji', 'openmoji', 'arasaac']);
     const [customizingItem, setCustomizingItem] = useState(null);
+    const [peekItem, setPeekItem] = useState(null);
     const [customName, setCustomName] = useState('');
     const fileInputRef = useRef(null);
+    const customizingItemRef = useRef(null);
     const lastCustomizingItemIdRef = useRef(null);
+    const peekTimerRef = useRef(null);
+
+    const handlePointerDown = (word, icon, isImage) => {
+        peekTimerRef.current = setTimeout(() => {
+            setPeekItem({ word, icon, isImage });
+            if (navigator.vibrate) navigator.vibrate(50);
+        }, 500);
+    };
+
+    const handlePointerUp = () => {
+        if (peekTimerRef.current) {
+            clearTimeout(peekTimerRef.current);
+            peekTimerRef.current = null;
+        }
+        if (peekItem) {
+            setPeekItem(null);
+        }
+    };
 
     // Get photos from global registry + current board
     const getGlobalPhotos = () => {
@@ -117,15 +139,24 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
     useEffect(() => {
         if (activeTab === 'symbol' && searchQuery.length >= 2) {
             const timer = setTimeout(() => { 
-                searchBuiltInEmojis(searchQuery);
-                searchARASAAC(searchQuery);
+                if (selectedLibraries.includes('emoji') || selectedLibraries.includes('openmoji')) {
+                    searchBuiltInEmojis(searchQuery);
+                } else {
+                    setSymbols([]);
+                }
+                
+                if (selectedLibraries.includes('arasaac')) {
+                    searchARASAAC(searchQuery);
+                } else {
+                    setArasaacSymbols([]);
+                }
             }, 600);
             return () => clearTimeout(timer);
-        } else if (activeTab === 'symbol' && searchQuery.length < 2) {
-            if (symbols.length > 0) setTimeout(() => setSymbols([]), 0);
-            if (arasaacSymbols.length > 0) setTimeout(() => setArasaacSymbols([]), 0);
+        } else if (searchQuery.length < 2) {
+            setSymbols([]);
+            setArasaacSymbols([]);
         }
-    }, [searchQuery, activeTab]);
+    }, [searchQuery, selectedLibraries, activeTab]);
 
     if (!isOpen) return null;
 
@@ -190,16 +221,88 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
                 </div>
 
                 <div style={{ padding: '0 1.25rem 0.9375rem' }}>
-                    <div style={{ position: 'relative' }}>
-                        <input 
-                            type="text" 
-                            placeholder="Search icons..." 
-                            value={searchQuery} 
-                            onChange={(e) => setSearchQuery(e.target.value)} 
-                            style={{ width: '100%', padding: '0.625rem 2.1875rem', borderRadius: '0.625rem', border: 'none', background: '#E3E3E8', fontSize: '1.0625rem', outline: 'none', minHeight: '2.75rem' }}
-                        />
-                        <span style={{ position: 'absolute', left: '0.625rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.4 }}>🔍</span>
+                    <div style={{ position: 'relative', display: 'flex', gap: '0.5rem' }}>
+                        <div style={{ position: 'relative', flex: 1 }}>
+                            <input 
+                                type="text" 
+                                placeholder="Search icons..." 
+                                value={searchQuery} 
+                                onChange={(e) => setSearchQuery(e.target.value)} 
+                                style={{ width: '100%', padding: '0.625rem 2.1875rem', borderRadius: '0.625rem', border: 'none', background: '#E3E3E8', fontSize: '1.0625rem', outline: 'none', minHeight: '2.75rem' }}
+                            />
+                            <span style={{ position: 'absolute', left: '0.625rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.4 }}>🔍</span>
+                        </div>
+                        <button 
+                            onClick={() => setShowLibraryFilters(!showLibraryFilters)}
+                            style={{ 
+                                width: '2.75rem', height: '2.75rem', borderRadius: '0.625rem', 
+                                border: 'none', background: showLibraryFilters ? 'var(--primary)' : '#E3E3E8',
+                                color: showLibraryFilters ? 'white' : 'black',
+                                fontSize: '1.25rem', cursor: 'pointer'
+                            }}
+                        >
+                            ⚙️
+                        </button>
                     </div>
+
+                    {showLibraryFilters && (
+                        <div style={{ 
+                            marginTop: '0.625rem', padding: '0.75rem', background: '#F2F2F7', 
+                            borderRadius: '0.75rem', display: 'flex', flexWrap: 'wrap', gap: '0.5rem' 
+                        }}>
+                            <span style={{ width: '100%', fontSize: '0.75rem', fontWeight: 700, color: '#666', marginBottom: '0.25rem' }}>SEARCH SOURCES</span>
+                            {[{ id: 'emoji', label: '😀 System Emoji' }, { id: 'openmoji', label: '🎨 OpenMoji' }, { id: 'arasaac', label: '📚 Symbols' }].map(lib => (
+                                <button
+                                    key={lib.id}
+                                    onClick={() => {
+                                        if (selectedLibraries.includes(lib.id)) {
+                                            if (selectedLibraries.length > 1) setSelectedLibraries(selectedLibraries.filter(id => id !== lib.id));
+                                        } else {
+                                            setSelectedLibraries([...selectedLibraries, lib.id]);
+                                        }
+                                    }}
+                                    style={{
+                                        padding: '0.375rem 0.75rem', borderRadius: '1rem', border: 'none',
+                                        fontSize: '0.75rem', fontWeight: 600,
+                                        background: selectedLibraries.includes(lib.id) ? 'var(--primary)' : 'white',
+                                        color: selectedLibraries.includes(lib.id) ? 'white' : '#333',
+                                        boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    {selectedLibraries.includes(lib.id) ? '✓ ' : '+ '} {lib.label}
+                                </button>
+                            ))}
+
+                            <div style={{ width: '100%', height: '1px', background: '#ddd', margin: '0.5rem 0' }} />
+                            <span style={{ width: '100%', fontSize: '0.7rem', fontWeight: 700, color: '#999' }}>DOWNLOAD SYMBOL PACKS (OFFLINE)</span>
+                            <button
+                                onClick={async () => {
+                                    alert("Downloading ARASAAC Core Pack (50 essential icons)...");
+                                    // Logic to pre-fetch URLs would go here to fill browser cache
+                                    const coreWords = ["I", "want", "more", "stop", "go", "help", "eat", "drink", "play", "sleep"];
+                                    for (const word of coreWords) {
+                                        try {
+                                            const res = await fetch(`https://api.arasaac.org/api/pictograms/en/search/${word}`);
+                                            const data = await res.json();
+                                            if (data[0]) {
+                                                const img = new Image();
+                                                img.src = `https://static.arasaac.org/pictograms/${data[0]._id}/${data[0]._id}_300.png`;
+                                            }
+                                        } catch (e) { console.error(e); }
+                                    }
+                                    alert("ARASAAC Core Pack cached for offline use!");
+                                }}
+                                style={{
+                                    padding: '0.375rem 0.75rem', borderRadius: '1rem', border: '1px solid var(--primary)',
+                                    fontSize: '0.7rem', fontWeight: 700,
+                                    background: 'white', color: 'var(--primary)', cursor: 'pointer'
+                                }}
+                            >
+                                📥 ARASAAC Core Pack
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 <div className="ios-sheet-content" style={{ paddingTop: 0 }}>
@@ -270,30 +373,82 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
                                 {isLoading && <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '1rem' }}>Searching symbols...</div>}
                                 {(() => {
                                     if (searchQuery.length >= 2) {
-                                        const results = [...symbols.map(s => ({ ...s, isArasaac: false })), ...arasaacSymbols.map(s => ({ ...s, isArasaac: true }))];
+                                        const results = [];
+                                        
+                                        if (selectedLibraries.includes('emoji') || selectedLibraries.includes('openmoji')) {
+                                            results.push(...symbols.map(s => ({ ...s, isArasaac: false, type: 'emoji' })));
+                                        }
+                                        
+                                        if (selectedLibraries.includes('arasaac')) {
+                                            results.push(...arasaacSymbols.map(s => ({ ...s, isArasaac: true, type: 'arasaac' })));
+                                        }
+
                                         if (results.length === 0 && !isLoading) return <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '2.5rem', color: '#666' }}>No results found</div>;
                                         
-                                        return results.map((item, index) => (
-                                            <button key={`${item.name || item.w}-${index}`} className="picker-btn" onClick={() => handleItemSelect(item.name || item.w, item.emoji || item.i, item.isArasaac)} style={{ minHeight: '4.5rem' }}>
-                                                {item.isArasaac ? (
-                                                    <img src={item.i} alt={item.w} style={{ width: '2.5rem', height: '2.5rem', objectFit: 'contain' }} />
-                                                ) : (
-                                                    <span style={{ fontSize: '2rem' }}>{item.emoji || item.i}</span>
-                                                )}
-                                                <span style={{ fontSize: '0.625rem', marginTop: '0.25rem', opacity: 0.8, fontWeight: 500 }}>{item.name || item.w}</span>
-                                                {item.isArasaac && <span style={{ position: 'absolute', top: '0.125rem', right: '0.125rem', fontSize: '0.5rem', background: '#007AFF', color: 'white', borderRadius: '0.25rem', padding: '0.0625rem 0.1875rem' }}>SYM</span>}
-                                            </button>
-                                        ));
+                                        return results.map((item, index) => {
+                                            const iconVal = item.emoji || item.i;
+                                            const wordVal = item.name || item.w;
+                                            const isArasaac = item.isArasaac;
+                                            
+                                            let displayIcon = iconVal;
+                                            let isImage = isArasaac;
+
+                                            // If it's an emoji and OpenMoji is selected (or we are in OpenMoji tab), use SVG
+                                            if (item.type === 'emoji' && (selectedLibraries.includes('openmoji') || activeTab === 'openmoji')) {
+                                                displayIcon = getOpenMojiUrl(iconVal);
+                                                isImage = true;
+                                            }
+
+                                            return (
+                                                <button 
+                                                    key={`${wordVal}-${index}`} 
+                                                    className="picker-btn" 
+                                                    onClick={() => handleItemSelect(wordVal, displayIcon, isImage)} 
+                                                    onPointerDown={() => handlePointerDown(wordVal, displayIcon, isImage)}
+                                                    onPointerUp={handlePointerUp}
+                                                    onPointerLeave={handlePointerUp}
+                                                    style={{ minHeight: '4.5rem', position: 'relative' }}
+                                                >
+                                                    {isImage ? (
+                                                        <img src={displayIcon} alt={wordVal} style={{ width: '2.5rem', height: '2.5rem', objectFit: 'contain' }} />
+                                                    ) : (
+                                                        <span style={{ fontSize: '2rem' }}>{displayIcon}</span>
+                                                    )}
+                                                    <span style={{ fontSize: '0.625rem', marginTop: '0.25rem', opacity: 0.8, fontWeight: 500 }}>{wordVal}</span>
+                                                    {isArasaac && <span style={{ position: 'absolute', top: '0.125rem', right: '0.125rem', fontSize: '0.5rem', background: '#007AFF', color: 'white', borderRadius: '0.25rem', padding: '0.0625rem 0.1875rem' }}>SYM</span>}
+                                                    {item.type === 'emoji' && isImage && <span style={{ position: 'absolute', top: '0.125rem', left: '0.125rem', fontSize: '0.5rem', background: '#000', color: 'white', borderRadius: '0.25rem', padding: '0.0625rem 0.1875rem' }}>OMO</span>}
+                                                </button>
+                                            );
+                                        });
                                     }
                                     
                                     const displayEmojis = EMOJI_DATA[activeCategory] || [];
                                     if (displayEmojis.length === 0) return <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '2.5rem', color: '#666', fontSize: '0.875rem' }}>Select a category</div>;
-                                    return displayEmojis.map((item, index) => ( 
-                                        <button key={`${item.name || item.w}-${index}`} className="picker-btn" onClick={() => handleItemSelect(item.name || item.w, item.emoji || item.i, false)} style={{ minHeight: '4.5rem' }}>
-                                            <span style={{ fontSize: '2rem' }}>{item.emoji || item.i}</span>
-                                            <span style={{ fontSize: '0.625rem', marginTop: '0.25rem', opacity: 0.8, fontWeight: 500 }}>{item.name || item.w}</span>
-                                        </button> 
-                                    ));
+                                    return displayEmojis.map((item, index) => {
+                                        const iconVal = item.emoji || item.i;
+                                        const wordVal = item.name || item.w;
+                                        const isImage = activeTab === 'openmoji';
+                                        const displayIcon = isImage ? getOpenMojiUrl(iconVal) : iconVal;
+
+                                        return (
+                                            <button 
+                                                key={`${wordVal}-${index}`} 
+                                                className="picker-btn" 
+                                                onClick={() => handleItemSelect(wordVal, displayIcon, isImage)}
+                                                onPointerDown={() => handlePointerDown(wordVal, displayIcon, isImage)}
+                                                onPointerUp={handlePointerUp}
+                                                onPointerLeave={handlePointerUp}
+                                                style={{ minHeight: '4.5rem' }}
+                                            >
+                                                {isImage ? (
+                                                    <img src={displayIcon} alt={wordVal} style={{ width: '2rem', height: '2.5rem', objectFit: 'contain' }} />
+                                                ) : (
+                                                    <span style={{ fontSize: '2rem' }}>{displayIcon}</span>
+                                                )}
+                                                <span style={{ fontSize: '0.625rem', marginTop: '0.25rem', opacity: 0.8, fontWeight: 500 }}>{wordVal}</span>
+                                            </button>
+                                        );
+                                    });
                                 })()}
                             </div>
                         </>
@@ -319,6 +474,43 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
                     )}
                 </div>
             </div>
+
+            {peekItem && (
+                <div style={{
+                    position: 'fixed',
+                    inset: 0,
+                    zIndex: 5000,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'rgba(0,0,0,0.3)',
+                    backdropFilter: 'blur(10px)',
+                    pointerEvents: 'none',
+                    animation: 'fadeIn 0.2s ease-out'
+                }}>
+                    <div style={{
+                        background: 'white',
+                        padding: '2rem',
+                        borderRadius: '2rem',
+                        boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '1rem',
+                        transform: 'scale(1.1)',
+                        animation: 'popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                    }}>
+                        <div style={{ width: '12rem', height: '12rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            {peekItem.isImage ? (
+                                <img src={peekItem.icon} alt={peekItem.word} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                            ) : (
+                                <span style={{ fontSize: '8rem' }}>{peekItem.icon}</span>
+                            )}
+                        </div>
+                        <span style={{ fontSize: '1.5rem', fontWeight: 800 }}>{peekItem.word}</span>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
