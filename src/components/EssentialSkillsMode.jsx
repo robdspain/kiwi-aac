@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 const EssentialSkillsMode = ({ onExit, sensitivity = 0.4, onLogEvent }) => {
     // Steps: 'request', 'denial', 'tolerance', 'cooperation', 'reward'
@@ -6,22 +6,17 @@ const EssentialSkillsMode = ({ onExit, sensitivity = 0.4, onLogEvent }) => {
     const [step, setStep] = useState('request');
     const [toleranceEnabled, setToleranceEnabled] = useState(false);
 
-    // Research-based defaults: 
-    // Start with 100% reinforcement (toleranceEnabled = false)
-    // Then introduce denial ~40% of the time (sensitivity)
-
     const handleRequest = () => {
         onLogEvent('fcr_attempt');
 
         if (!toleranceEnabled) {
-            // 100% Reinforcement stage
             triggerReward("Yes! My way!");
             return;
         }
 
-        // Check for denial
-        if (Math.random() < sensitivity) {
-            // Trigger Denial
+        // eslint-disable-next-line react-hooks/purity
+        const isDenial = Math.random() < sensitivity;
+        if (isDenial) {
             setStep('denial');
             onLogEvent('denial_presented');
         } else {
@@ -40,7 +35,6 @@ const EssentialSkillsMode = ({ onExit, sensitivity = 0.4, onLogEvent }) => {
         const u = new SpeechSynthesisUtterance(msg);
         synth.speak(u);
 
-        // Visuals
         document.body.classList.add('success-flash');
 
         setTimeout(() => {
@@ -150,7 +144,7 @@ const EssentialSkillsMode = ({ onExit, sensitivity = 0.4, onLogEvent }) => {
             </div>
 
             <div style={{ padding: '20px', textAlign: 'center', color: '#8E8E93', fontSize: '0.8rem' }}>
-                Essential Skills Mode • Based on Dr. Hanley's SBT
+                Essential Skills Mode • Based on Dr. Hanley&apos;s SBT
             </div>
         </div>
     );

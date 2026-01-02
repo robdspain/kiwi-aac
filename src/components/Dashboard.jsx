@@ -1,12 +1,7 @@
 import { getTopItems, getDailyStats, getTotalStats, exportToCSV, getRecentSentences } from '../utils/AnalyticsService';
-import { getLevel, getStage, formatLevel, LEVEL_ORDER } from '../data/levelDefinitions';
+import { getLevel, getStage } from '../data/levelDefinitions';
 
-const Dashboard = ({ onClose, progressData, currentPhase, currentLevel, rootItems = [] }) => {
-    const stats = progressData?.essentialStats || {
-        fcr_attempts: 0,
-        denial_presented: 0,
-        tolerance_success: 0
-    };
+const Dashboard = ({ onClose, progressData, currentLevel, rootItems = [] }) => {
 
     const trials = progressData?.trials || [];
     const independentTrials = trials.filter(t => !t.isPrompted).length;

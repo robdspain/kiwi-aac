@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 const Toast = ({ message, type = 'info', onClose, duration = 3000 }) => {
     useEffect(() => {
@@ -58,7 +58,7 @@ export const ToastContainer = ({ toasts, removeToast }) => {
                     }
                 }
             `}</style>
-            {toasts.map((toast, index) => (
+            {toasts.map((toast) => (
                 <Toast
                     key={toast.id}
                     message={toast.message}

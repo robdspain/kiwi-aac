@@ -1,4 +1,4 @@
-import React from 'react';
+
 
 const SentenceStrip = ({ stripItems, onClear, onPlay }) => {
     return (

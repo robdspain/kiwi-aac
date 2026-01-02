@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import AvatarRenderer from './AvatarRenderer';
 import { SKIN_TONES, HAIR_COLORS, EYE_COLORS, ASSETS } from '../utils/avatarAssets';
 
@@ -42,7 +42,7 @@ const CharacterBuilder = ({ onSave, onClose }) => {
             }} onClick={e => e.stopPropagation()}>
                 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
-                    <h2 style={{ margin: 0 }}>Create "Circle of Support" Person</h2>
+                    <h2 style={{ margin: 0 }}>Create &quot;Circle of Support&quot; Person</h2>
                     <button 
                         onClick={onClose} 
                         aria-label="Close"
@@ -71,7 +71,7 @@ const CharacterBuilder = ({ onSave, onClose }) => {
                             <AvatarRenderer recipe={recipe} size={250} />
                         </div>
                         <input 
-                            placeholder="Person's Name (e.g. Dad)" 
+                            placeholder="Person&apos;s Name (e.g. Dad)" 
                             value={name}
                             onChange={e => setName(e.target.value)}
                             style={{ marginTop: '30px', padding: '12px 20px', borderRadius: 'var(--radius-md)', border: '2px solid #ddd', width: '80%', fontSize: '1.2rem', textAlign: 'center' }}
@@ -123,7 +123,7 @@ const CharacterBuilder = ({ onSave, onClose }) => {
                         }}
                         style={{ flex: 2, padding: '15px', background: '#4ECDC4', color: 'white', border: 'none', borderRadius: '15px', cursor: 'pointer', fontWeight: 'bold', fontSize: '1.1rem' }}
                     >
-                        Save to "My People"
+                        Save to &quot;My People&quot;
                     </button>
                 </div>
             </div>

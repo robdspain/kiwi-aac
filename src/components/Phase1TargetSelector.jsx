@@ -1,4 +1,4 @@
-import React from 'react';
+
 
 const Phase1TargetSelector = ({ onSelect, rootItems = [] }) => {
     // Filter for the recommended "multiple meaning" items
@@ -39,7 +39,7 @@ const Phase1TargetSelector = ({ onSelect, rootItems = [] }) => {
             }}>
                 <h1 style={{ color: '#2D3436', marginBottom: '10px' }}>Choose a Target Item</h1>
                 <p style={{ fontSize: '1.1rem', color: '#636E72', marginBottom: '40px', lineHeight: 1.5 }}>
-                    Pick one item that is highly motivating and can have multiple meanings (e.g. "Play" can mean tickles, chase, or ball).
+                    Pick one item that is highly motivating and can have multiple meanings (e.g. &quot;Play&quot; can mean tickles, chase, or ball).
                 </p>
 
                 <div style={{

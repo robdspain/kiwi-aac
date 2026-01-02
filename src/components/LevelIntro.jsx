@@ -1,9 +1,7 @@
-import React from 'react';
 import {
     getLevel,
     getStage,
     getLevelInstructions,
-    formatLevel,
     LEVEL_ORDER
 } from '../data/levelDefinitions';
 
@@ -12,7 +10,6 @@ const LevelIntro = ({ level, onComplete, onChangeLevel }) => {
     const levelDef = getLevel(level);
     const stageDef = getStage(level);
     const instructions = getLevelInstructions(level);
-    const formatted = formatLevel(level);
 
     if (!levelDef || !instructions) {
         return null;

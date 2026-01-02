@@ -1,9 +1,9 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { Share } from '@capacitor/share';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { Capacitor } from '@capacitor/core';
 
-const BackupRestore = ({ isOpen, onClose, onRestore }) => {
+const BackupRestore = ({ isOpen, onClose }) => {
     const fileInputRef = useRef(null);
 
     if (!isOpen) return null;

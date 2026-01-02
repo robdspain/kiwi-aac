@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import AvatarRenderer from './AvatarRenderer';
@@ -32,7 +32,7 @@ const AppItem = ({
     zIndex: isDragging ? 1000 : 1
   };
 
-  const handleClick = (e) => {
+  const handleClick = () => {
     if (isBack) {
       onClick();
       return;

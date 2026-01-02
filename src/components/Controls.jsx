@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import GuidedAccessModal from './GuidedAccessModal';
 import FavoritesPickerModal from './FavoritesPickerModal';
 import CharacterBuilder from './CharacterBuilder';
 import Superwall from '../plugins/superwall';
-import { LEVELS, STAGES, LEVEL_ORDER, getLevel, getStage, formatLevel } from '../data/levelDefinitions';
+import { STAGES, LEVEL_ORDER, getLevel, getStage } from '../data/levelDefinitions';
 import { BELL_SOUNDS, playBellSound } from '../utils/sounds';
 
 const Controls = ({
@@ -11,30 +11,22 @@ const Controls = ({
     isTrainingMode,
     currentPhase,
     currentLevel,
-    showStrip,
-    skinTone,
     currentContext,
     contexts,
     onSetContext,
     onAddContext,
     onRenameContext,
     onDeleteContext,
-    onSetSkinTone,
     onToggleMenu,
     onAddItem,
-    onToggleStrip,
-    onSetPhase,
     onSetLevel,
     onStartTraining,
     onReset,
     onShuffle,
     onStopTraining,
     onOpenPicker,
-    onToggleEssentialMode,
     onToggleDashboard,
     onRedoCalibration,
-    isPrompted,
-    onSetPrompted,
     onToggleLock,
     voiceSettings,
     onUpdateVoiceSettings,
@@ -48,10 +40,10 @@ const Controls = ({
     triggerPaywall,
     bellSound,
     onUpdateBellSound,
+    onAddFavorites,
     progressData = {}
 }) => {
 
-    // Theme definitions
     const COLOR_THEMES = [
         { id: 'default', label: 'Kiwi', icon: '🥝', primary: '#4ECDC4', bg: '#FDF8F3', premium: false },
         { id: 'ocean', label: 'Ocean', icon: '🌊', primary: '#0EA5E9', bg: '#E8F4FC', premium: true },
@@ -61,10 +53,6 @@ const Controls = ({
         { id: 'candy', label: 'Candy', icon: '🍬', primary: '#EC4899', bg: '#FDF2F8', premium: true },
     ];
 
-    const [newWord, setNewWord] = useState('');
-    const [newIcon, setNewIcon] = useState('');
-    const [newType, setNewType] = useState('button');
-    const [availableVoices, setAvailableVoices] = useState([]);
     const [showGuidedAccess, setShowGuidedAccess] = useState(false);
     const [showFavoritesPicker, setShowFavoritesPicker] = useState(false);
     const [isRestoring, setIsRestoring] = useState(false);
@@ -73,16 +61,6 @@ const Controls = ({
 
     // Detect iOS to show relevant help
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-    React.useEffect(() => {
-        const loadVoices = () => {
-            const voices = window.speechSynthesis.getVoices();
-            // Filter for English voices or current locale to keep it clean
-            setAvailableVoices(voices.filter(v => v.lang.startsWith('en')));
-        };
-        loadVoices();
-        window.speechSynthesis.onvoiceschanged = loadVoices;
-    }, []);
 
     const handleRestore = async () => {
         setIsRestoring(true);
@@ -100,26 +78,6 @@ const Controls = ({
         }
     };
 
-    const handleAdd = () => {
-        if (!newWord || !newIcon) {
-            alert("Missing info");
-            return;
-        }
-        onAddItem(newWord, newIcon, newType);
-        setNewWord('');
-        setNewIcon('');
-    };
-
-    const phases = [
-        { id: 0, label: "Normal Mode", icon: "📱" },
-        { id: 1, label: "Level 1: Physical Exchange", icon: "🤝" },
-        { id: 2, label: "Level 2: Getting Attention", icon: "🔔" },
-        { id: 3, label: "Level 3: Picture Selection", icon: "🍱" },
-        { id: 4, label: "Level 4: Sentence Building", icon: "🏗️" },
-        { id: 5, label: "Level 5: Answering Questions", icon: "❓" },
-        { id: 6, label: "Level 6: Commenting", icon: "💬" }
-    ];
-
     const handleLock = () => {
         if (isIOS) {
             setShowGuidedAccess(true);
@@ -130,7 +88,7 @@ const Controls = ({
         }
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         console.log('Controls - isEditMode:', isEditMode, 'isTrainingMode:', isTrainingMode);
     }, [isEditMode, isTrainingMode]);
 
@@ -145,10 +103,8 @@ const Controls = ({
                     <button id="close-settings" onClick={onToggleMenu}>✕</button>
                 </div>
 
-                {/* Edit Panel */}
-                <div id="edit-panel" style={{ display: (isEditMode && !isTrainingMode) ? 'flex' : 'none' }}>
-                    {/* Prominent Lock Button at top */}
-                    <button
+                {/* Edit Panel */}                <div id="edit-panel" style={{ display: (isEditMode && !isTrainingMode) ? 'flex' : 'none' }}>
+                    {/* Prominent Lock Button at top */}                    <button
                         onClick={handleLock}
                         style={{
                             width: '100%',
@@ -169,8 +125,7 @@ const Controls = ({
                         🔒 Lock App for Child
                     </button>
 
-                    {/* Guided Access Help Button */}
-                    {isIOS && (
+                    {/* Guided Access Help Button */}                    {isIOS && (
                         <button
                             onClick={() => setShowGuidedAccess(true)}
                             style={{
@@ -194,8 +149,7 @@ const Controls = ({
                         </button>
                     )}
 
-                    {/* Tab Navigation */}
-                    <div style={{
+                    {/* Tab Navigation */}                    <div style={{
                         display: 'flex',
                         gap: '8px',
                         marginBottom: '15px',
@@ -203,7 +157,7 @@ const Controls = ({
                         padding: '4px',
                         borderRadius: '10px'
                     }}>
-                        {[
+                        {[ 
                             { id: 'basic', label: '⚡ Basic', icon: '⚡' },
                             { id: 'character', label: '✨ Character', icon: '✨' },
                             { id: 'advanced', label: '⚙️ Advanced', icon: '⚙️' },
@@ -231,17 +185,15 @@ const Controls = ({
                         ))}
                     </div>
 
-                    {/* Basic Tab */}
-                    {activeTab === 'basic' && (<>
-                        <div style={{ display: 'flex', gap: '10px', marginBottom: '5px' }}>
+                    {/* Basic Tab */}                    {activeTab === 'basic' && (<>                        <div style={{ display: 'flex', gap: '10px', marginBottom: '5px' }}>
                             <button 
                                 className="primary" 
-                                style={{ flex: 1 }} 
-                                onClick={() => onOpenPicker((word, icon, isImage) => {
+                                style={{ flex: 1 }}
+                                onClick={() => onOpenPicker((word, icon) => {
                                     onAddItem(word, icon, 'button');
                                 })}
                             >
-                                + Add Button
+                                + Add Icon
                             </button>
                             <button className="primary" style={{ flex: 1, background: '#34C759' }} onClick={() => onAddItem('', '', 'folder')}>+ Add Folder</button>
                         </div>
@@ -249,8 +201,7 @@ const Controls = ({
                         <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                             <span style={{ fontWeight: 600, color: '#333' }}>Communication Level</span>
 
-                            {/* Stage Selector */}
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                            {/* Stage Selector */}                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
                                 {Object.entries(STAGES).map(([stageNum, stage]) => {
                                     const stageInt = parseInt(stageNum);
                                     const isActive = Math.floor(currentLevel) === stageInt;
@@ -283,8 +234,7 @@ const Controls = ({
                                 })}
                             </div>
 
-                            {/* Sub-level Selector for current stage */}
-                            {currentLevel && (
+                            {/* Sub-level Selector for current stage */}                            {currentLevel && (
                                 <div style={{
                                     background: getStage(currentLevel).color + '15',
                                     padding: '12px',
@@ -331,8 +281,7 @@ const Controls = ({
                                 {getLevel(currentLevel)?.description}
                             </p>
 
-                            {/* Quick swap for Level 1 */}
-                            {currentPhase === 1 && (
+                            {/* Quick swap for Level 1 */}                            {currentPhase === 1 && (
                                 <div style={{ marginTop: '10px', padding: '12px', background: 'linear-gradient(135deg, #FFF5E1, #FFE4B5)', borderRadius: '10px', border: '2px solid #FFA500' }}>
                                     <label style={{ fontSize: '13px', fontWeight: 700, color: '#D2691E', display: 'block', marginBottom: '5px' }}>
                                         🎯 Choose Target Icon
@@ -383,8 +332,7 @@ const Controls = ({
                             )}
                         </div>
 
-                        {/* Context/Location Selector */}
-                        <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {/* Context/Location Selector */}                        <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <span style={{ fontWeight: 600, color: '#333' }}>📍 Locations</span>
                                 <button
@@ -475,11 +423,10 @@ const Controls = ({
                             </p>
                         </div>
 
-                        {/* Grid Accessibility */}
-                        <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {/* Grid Accessibility */}                        <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             <span style={{ fontWeight: 600, color: '#333' }}>📐 Grid Layout</span>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-                                {[
+                                {[ 
                                     { id: 'super-big', label: '🐘 2x2\nLarge', description: '4 items' },
                                     { id: 'big', label: '🦒 3x3\nMedium', description: '9 items' },
                                     { id: 'standard', label: '🐕 4x4\nStandard', description: '16 items' },
@@ -519,8 +466,7 @@ const Controls = ({
                         </div>
 
 
-                        {/* Voice Settings */}
-                        <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {/* Voice Settings */}                        <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                             <span style={{ fontWeight: 600, color: '#333' }}>🗣️ Voice Settings</span>
 
                             <div>
@@ -534,8 +480,7 @@ const Controls = ({
                             </div>
                         </div>
 
-                        {/* Bell Sound Settings */}
-                        <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {/* Bell Sound Settings */}                        <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                             <span style={{ fontWeight: 600, color: '#333' }}>🔔 Attention Bell Sound</span>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '8px' }}>
                                 <select
@@ -578,8 +523,7 @@ const Controls = ({
                         )}
                     </>)}
 
-                    {/* Character Tab */}
-                    {activeTab === 'character' && (
+                    {/* Character Tab */}                    {activeTab === 'character' && (
                         <div style={{ padding: '5px' }}>
                             <CharacterBuilder
                                 isTab={true}
@@ -593,9 +537,7 @@ const Controls = ({
                         </div>
                     )}
 
-                    {/* Advanced Tab */}
-                    {activeTab === 'advanced' && (<>
-                        <div className="input-row">
+                    {/* Advanced Tab */}                    {activeTab === 'advanced' && (<>                        <div className="input-row">
                             <button
                                 style={{ flexGrow: 1, background: '#E5E5EA', color: '#007AFF' }}
                                 onClick={() => {
@@ -607,8 +549,7 @@ const Controls = ({
                             </button>
                         </div>
 
-                        {/* Color Theme Selector - Premium Feature */}
-                        <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '10px' }}>
+                        {/* Color Theme Selector - Premium Feature */}                        <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '10px' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <span style={{ fontWeight: 600, color: '#333' }}>🎨 Color Theme</span>
                                 <span style={{ fontSize: '11px', color: '#999' }}>👑 Premium</span>
@@ -679,8 +620,7 @@ const Controls = ({
                             </div>
                         </div>
 
-                        {/* Advanced Settings Collapsible */}
-                        <div style={{ marginTop: '10px' }}>
+                        {/* Advanced Settings Collapsible */}                        <div style={{ marginTop: '10px' }}>
                             <button
                                 onClick={() => setShowAdvanced(!showAdvanced)}
                                 style={{
@@ -723,7 +663,7 @@ const Controls = ({
                                                     const json = JSON.parse(re.target.result);
                                                     localStorage.setItem('kians-words-ios', JSON.stringify(json));
                                                     window.location.reload();
-                                                } catch (err) { alert("Invalid JSON"); }
+                                                } catch { alert("Invalid JSON"); }
                                             };
                                             reader.readAsText(file);
                                         };
@@ -751,11 +691,8 @@ const Controls = ({
                         </div>
                     </>)}
 
-                    {/* Data Tab */}
-                    {activeTab === 'data' && (<>
-                        {/* Stats Overview */}
-                        <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '10px' }}>
-                            <span style={{ fontWeight: 600, color: '#333' }}>📊 Child's Progress</span>
+                    {/* Data Tab */}                    {activeTab === 'data' && (<>                        {/* Stats Overview */}                        <div style={{ background: 'white', padding: '15px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '10px' }}>
+                            <span style={{ fontWeight: 600, color: '#333' }}>📊 Child&apos;s Progress</span>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
                                 <div style={{ background: '#F2F2F7', padding: '10px', borderRadius: '8px', textAlign: 'center' }}>
                                     <div style={{ fontSize: '20px' }}>{STAGES[Math.floor(currentLevel)]?.icon || '📱'}</div>
@@ -767,8 +704,7 @@ const Controls = ({
                                 </div>
                                 <div style={{ background: '#F2F2F7', padding: '10px', borderRadius: '8px', textAlign: 'center' }}>
                                     <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#34C759' }}>
-                                        {/* Simple total interaction count derived from progress data if available, else a placeholder */}
-                                        {Object.values(progressData || {}).reduce((acc, curr) => acc + (curr.totalUses || 0), 0) || 0}
+                                        {/* Simple total interaction count derived from progress data if available, else a placeholder */}                                        {Object.values(progressData || {}).reduce((acc, curr) => acc + (curr.totalUses || 0), 0) || 0}
                                     </div>
                                     <div style={{ fontSize: '10px', color: '#666', marginTop: '4px' }}>Total Taps</div>
                                 </div>
@@ -810,8 +746,7 @@ const Controls = ({
                         </div>
                     </>)}
 
-                    {/* Compliance Section */}
-                    <div style={{
+                    {/* Compliance Section */}                    <div style={{
                         marginTop: '20px',
                         padding: '15px',
                         background: '#f8f8f8',
@@ -850,8 +785,7 @@ const Controls = ({
 
                 </div>
 
-                {/* Training Panel */}
-                <div id="training-panel" style={{ display: isTrainingMode ? 'flex' : 'none' }}>
+                {/* Training Panel */}                <div id="training-panel" style={{ display: isTrainingMode ? 'flex' : 'none' }}>
                     <h3 style={{ margin: 0, textAlign: 'center' }}>Select 2+ items</h3>
                     <div className="input-row">
                         <button className="primary" onClick={onShuffle}>🔀 Shuffle</button>

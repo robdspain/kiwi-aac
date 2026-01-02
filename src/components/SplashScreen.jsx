@@ -1,7 +1,7 @@
-import React from 'react';
+import { useEffect } from 'react';
 
 const SplashScreen = ({ onComplete }) => {
-    React.useEffect(() => {
+    useEffect(() => {
         const timer = setTimeout(onComplete, 2000);
         return () => clearTimeout(timer);
     }, [onComplete]);

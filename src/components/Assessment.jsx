@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import LevelIntro from './LevelIntro';
 
 const questions = [
@@ -30,13 +30,13 @@ const questions = [
         id: 4,
         question: "Can your child combine pictures to make a request?",
         emoji: "🔗",
-        hint: 'For example: "I want" + "cookie"',
+        hint: 'For example: &quot;I want&quot; + &quot;cookie&quot;',
         yesNext: 5,
         noResult: 4
     },
     {
         id: 5,
-        question: 'Can your child respond when asked "What do you want?"',
+        question: 'Can your child respond when asked &quot;What do you want?&quot;',
         emoji: "💬",
         hint: "They answer the question instead of just reaching for items",
         yesNext: 6,
@@ -46,7 +46,7 @@ const questions = [
         id: 6,
         question: "Does your child make comments about things they see or hear?",
         emoji: "👀",
-        hint: '"I see a dog", "I hear music"',
+        hint: '&quot;I see a dog&quot;, &quot;I hear music&quot;',
         yesNext: null, // End - recommend phase 0 (normal mode)
         noResult: 5
     }
@@ -182,7 +182,7 @@ const Assessment = ({ onComplete }) => {
                     marginBottom: '24px',
                     padding: '0 20px'
                 }}>
-                    Pick 1-3 favorites we'll add to the home screen
+                    Pick 1-3 favorites we&apos;ll add to the home screen
                 </p>
 
                 <div style={{
@@ -340,8 +340,8 @@ const Assessment = ({ onComplete }) => {
                     padding: '0 20px',
                     lineHeight: 1.5
                 }}>
-                    Even simple words like "COOKIE" or "PLAY"?<br />
-                    We'll adjust the app to support their reading level.
+                    Even simple words like &quot;COOKIE&quot; or &quot;PLAY&quot;?<br />
+                    We&apos;ll adjust the app to support their reading level.
                 </p>
 
                 <div style={{
@@ -749,7 +749,7 @@ const Assessment = ({ onComplete }) => {
                         gap: '8px'
                     }}
                 >
-                    🤔 I'm not sure
+                    🤔 I&apos;m not sure
                 </button>
             </div>
 

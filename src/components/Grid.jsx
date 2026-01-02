@@ -1,4 +1,4 @@
-import React from 'react';
+
 import AppItem from './AppItem';
 import VisualSchedule from './VisualSchedule';
 import AvatarRenderer from './AvatarRenderer';

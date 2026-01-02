@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const COMMON_REINFORCERS = [
     { id: 'play', label: 'Play', icon: '🏃' },
@@ -41,7 +41,7 @@ const FavoritesPicker = ({ onComplete }) => {
                     What do they love?
                 </h1>
                 <p style={{ color: '#636E72', lineHeight: 1.4 }}>
-                    Select up to 3 favorite things. We'll put these on the home screen so they can request them immediately!
+                    Select up to 3 favorite things. We&apos;ll put these on the home screen so they can request them immediately!
                 </p>
             </div>
 

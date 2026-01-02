@@ -23,11 +23,13 @@ Kiwi Voice is a specialized tool designed to curate and customize icon libraries
 #### 3.2. Selection & Curation
 - [x] **Single Select:** Toggle individual icons.
 - [x] **Bulk Select:** "Select All" and "Deselect" buttons for current categories.
+- [x] **Customization Flow:** Selecting an icon triggers a polished customization screen to edit labels before saving.
 - [x] **Visual Feedback:** Clear selection badges and highlight states.
 - [x] **Persistence:** Track selected items across category switches.
 
 #### 3.3. Customization
 - [x] **Skin Tone Picker:** Long-press/Right-click access to variation selector.
+- [x] **Mimoji Aesthetic:** Avatars feature premium 3D-style gradients, highlights, and shadows.
 - [x] **Variation Logic:** Automatically link base emojis to their skin-tone modifiers.
 - [x] **Accessibility:** Focus trapping and keyboard management for the picker.
 
@@ -46,6 +48,7 @@ Kiwi Voice is a specialized tool designed to curate and customize icon libraries
 
 #### 4.2. UI/UX & Responsive Design
 - [x] **Responsive Layout:** Adaptive sidebar (desktop) vs. Drawer (mobile).
+- [x] **Navigation Flow:** Seamless "Back to Library" transitions and Enter-key support for rapid saving.
 - [x] **Safe Areas:** Support for notches and home bars (`env(safe-area-inset)`).
 - [x] **Theme Consistency:** Resolve conflicts between `index.css` (dark) and Component (light).
 
@@ -62,6 +65,7 @@ Kiwi Voice is a specialized tool designed to curate and customize icon libraries
 #### 5.1. PWA Requirements
 - [x] **Manifest:** Create `manifest.json` with icons, theme colors, and display mode.
 - [x] **Service Worker:** Basic offline support and caching.
+- [x] **Installation UI:** iOS-specific instruction modal for adding the PWA to the home screen.
 
 #### 5.2. iOS / Android Assets
 - [x] **App Icons:** 1024x1024 (iOS) and 512x512 (Android) source assets.
@@ -86,6 +90,7 @@ Kiwi Voice is a specialized tool designed to curate and customize icon libraries
 | **Phase 11** | Market Disruption (Kiwi Edge) | **COMPLETE** |
 | **Phase 12** | Context-Aware Intelligence | **COMPLETE** |
 | **Phase 13** | Circle of Support (Avatar Builder) | **COMPLETE** |
+| **Phase 14** | Advanced Disruptor Refinements | **PENDING** |
 
 ---
 
@@ -124,6 +129,7 @@ To strictly adhere to iOS Human Interface Guidelines (HIG):
 Integrating key features from the product roadmap:
 
 - [x] **Visual Schedule Builder:** Allow users to create and export ordered sequences (e.g., "Morning Routine": Toilet -> Wash Hands -> Brush Teeth) as distinct entities.
+- [x] **Local Photo Library:** A private, focused tab showing only previously imported user photos (Camera/Library) with local search.
 - [x] **Skill Tagging:** Add metadata tags for "Essential Skills" (FCR, Wait, Denial) to support the upcoming training modes in Kiwi Voice.
 
 ---
@@ -173,5 +179,29 @@ Integrating key features from the product roadmap:
 - [x] **Accessibility Accessories:** Include options for hearing aids, glasses, and "AAC devices" in the avatar builder.
 - [x] **Recipe-Based Export:** Store avatars as "Recipes" (JSON objects) in `iconsData.json` rather than flat images to preserve scalability and editability.
 - [x] **Default Personas:** Pre-populate "My People" with default Mom (Black hair) and Dad (Brown hair, Blue eyes, Short beard) characters.
+
+---
+
+### 14. Phase 14: Advanced Disruptor Refinements (New)
+
+#### 14.1. Intelligent Automation
+- [ ] **Automated POS Tagging:** 
+    - **Data:** Integrate a 500-word linguistic lexicon (`aacLexicon.js`).
+    - **Logic:** Auto-assign `wordClass` during Bulk Import.
+    - **Visual:** Auto-apply Fitzgerald Key backgrounds: Noun (Yellow), Verb (Green), Adjective (Blue), Social (Pink).
+- [ ] **Interactive Grammar Engine:** 
+    - **Trigger:** Sequence detection in Sentence Strip (Pronoun -> Verb).
+    - **UI:** floating "Inflection Bubble" above verb offering tense changes (e.g., "Eat" -> "Eating", "Ate").
+
+#### 14.2. Instant Sharing
+- [ ] **QR/Board Sync:** 
+    - **Compression:** Use `lz-string` to compress library state into URL parameters.
+    - **QR Generation:** Display a QR code in the Share modal for instant device-to-device transfer.
+    - **Deep Linking:** Auto-import logic when the app is launched via a `?board=` link.
+
+#### 14.3. GLP Visuals
+- [ ] **Storyboard Phrase Buttons:** 
+    - **Layout:** Render multi-icon "scripts" in a horizontal 3-icon storyboard visual to distinguish them from single-word Core vocabulary.
+
 
 

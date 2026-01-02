@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Assessment from './Assessment';
 import TouchCalibration from './TouchCalibration';
 import FavoritesPicker from './FavoritesPicker';
@@ -99,7 +99,7 @@ const Onboarding = ({ onComplete }) => {
                             <p style={{ marginBottom: '12px' }}><strong>Step 1:</strong> Go to Settings → Accessibility → Guided Access</p>
                             <p style={{ marginBottom: '12px' }}><strong>Step 2:</strong> Turn it ON and set a passcode</p>
                             <p style={{ marginBottom: '12px' }}><strong>Step 3:</strong> Open Kiwi Voice and <strong>triple-click the Side Button</strong></p>
-                            <p style={{ marginBottom: '12px' }}><strong>Step 4:</strong> Tap "Start" to lock the app</p>
+                            <p style={{ marginBottom: '12px' }}><strong>Step 4:</strong> Tap &quot;Start&quot; to lock the app</p>
                             <p style={{ marginBottom: '0' }}><strong>To Exit:</strong> Triple-click Side Button again and enter passcode</p>
                         </div>
                     </div>

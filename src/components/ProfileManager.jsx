@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useProfile } from '../context/ProfileContext';
 
 const AVATARS = ['👤', '👦', '👧', '🧒', '👶', '🐶', '🐱', '🦁', '🐻', '🐰', '🦊', '🐸', '🌟', '🌈', '🎈', '🚀'];

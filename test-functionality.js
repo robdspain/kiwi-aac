@@ -1,3 +1,4 @@
+/* global process */
 import { EMOJI_DATA } from './src/utils/emojiData.js';
 
 // 1. Validate Data Integrity

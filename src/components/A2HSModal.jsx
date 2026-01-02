@@ -1,26 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 const A2HSModal = () => {
-    const [show, setShow] = useState(false);
+    // Detect if device is iOS
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    // Detect if app is running in standalone mode (installed)
+    const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+
+    const [show, setShow] = useState(() => {
+        if (isIOS && !isStandalone) {
+            const lastShown = localStorage.getItem('kiwi-a2hs-prompt-last');
+            if (!lastShown) return true;
+            return Date.now() - parseInt(lastShown) > 24 * 60 * 60 * 1000;
+        }
+        return false;
+    });
 
     useEffect(() => {
-        // Detect if device is iOS
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-        
-        // Detect if app is running in standalone mode (installed)
-        const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
-
-        // Show prompt if on iOS and not standalone
-        if (isIOS && !isStandalone) {
-            // Check if we've shown it recently
-            const lastShown = localStorage.getItem('kiwi-a2hs-prompt-last');
-            const now = Date.now();
-            
-            // Show if never shown or shown more than 24 hours ago
-            if (!lastShown || now - parseInt(lastShown) > 24 * 60 * 60 * 1000) {
-                setShow(true);
-            }
-        }
+        // State initialized above, but we could use this for complex listeners if needed
     }, []);
 
     const handleClose = () => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const TouchCalibration = ({ onComplete }) => {
     // 0: Start, 1: Large Test, 2: Standard Test, 3: Dense Test, 4: Result
@@ -97,9 +97,9 @@ const TouchCalibration = ({ onComplete }) => {
                 padding: '20px', textAlign: 'center', zIndex: 1200
             }}>
                 <div style={{ fontSize: '4rem', marginBottom: '20px' }}>🎯</div>
-                <h1 style={{ marginBottom: '10px' }}>Let's check your touch</h1>
+                <h1 style={{ marginBottom: '10px' }}>Let&apos;s check your touch</h1>
                 <p style={{ color: '#666', marginBottom: '30px', maxWidth: '300px' }}>
-                    We'll play a quick game to see which button size works best for you.
+                    We&apos;ll play a quick game to see which button size works best for you.
                 </p>
                 <button
                     onClick={() => handleTap(true)}
