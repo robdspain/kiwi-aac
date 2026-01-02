@@ -202,7 +202,7 @@ function App() {
   const [gridSize, setGridSize] = useState(() => {
     const saved = localStorage.getItem('kiwi-grid-size');
     const valid = ['super-big', 'big', 'standard'];
-    return valid.includes(saved) ? saved : 'standard';
+    return valid.includes(saved) ? saved : 'big';
   });
   const [colorTheme, setColorTheme] = useState(() => localStorage.getItem('kiwi-color-theme') || 'default');
   const [speechDelay, setSpeechDelay] = useState(() => {
@@ -469,34 +469,32 @@ function App() {
       )}
       
       {/* iOS Navigation Header */}
-      {(!((currentPhase === 1 || currentPhase === 2) && !isEditMode)) && (
-        <header className="ios-nav-header" style={{ opacity: 0.3 }}>
-          <div className="ios-nav-top">
-            {currentPath.length > 0 && (
-              <button className="ios-back-button" onClick={handleBack}>
-                <span className="ios-chevron-left">‹</span>
-                {currentPath.length === 1 ? 'Home' : 'Back'}
-              </button>
+      <header className="ios-nav-header" style={{ opacity: 0.3 }}>
+        <div className="ios-nav-top">
+          {currentPath.length > 0 && (
+            <button className="ios-back-button" onClick={handleBack}>
+              <span className="ios-chevron-left">‹</span>
+              {currentPath.length === 1 ? 'Home' : 'Back'}
+            </button>
+          )}
+          <div className="ios-nav-badges">
+            {currentContext !== 'home' && (
+              <span className="ios-context-badge">
+                {contexts.find(c => c.id === currentContext)?.icon} {contexts.find(c => c.id === currentContext)?.label}
+              </span>
             )}
-            <div className="ios-nav-badges">
-              {currentContext !== 'home' && (
-                <span className="ios-context-badge">
-                  {contexts.find(c => c.id === currentContext)?.icon} {contexts.find(c => c.id === currentContext)?.label}
-                </span>
-              )}
-              {currentPhase > 0 && <span className="ios-phase-badge">Level {currentPhase}</span>}
-            </div>
+            {currentPhase > 0 && <span className="ios-phase-badge">Level {currentPhase}</span>}
           </div>
-          <h1 className="ios-large-title">
-            {currentPath.length === 0 ? "Home" : currentPath.reduce((acc, i, idx) => { 
-              if (idx === 0) return rootItems[i].word; 
-              let list = rootItems; 
-              for (let j=0; j<idx; j++) list = list[currentPath[j]].contents; 
-              return list[i].word; 
-            }, "")}
-          </h1>
-        </header>
-      )}
+        </div>
+        <h1 className="ios-large-title">
+          {currentPath.length === 0 ? "Home" : currentPath.reduce((acc, i, idx) => { 
+            if (idx === 0) return rootItems[i].word; 
+            let list = rootItems; 
+            for (let j=0; j<idx; j++) list = list[currentPath[j]].contents; 
+            return list[i].word; 
+          }, "")}
+        </h1>
+      </header>
 
       {showSuccess && <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10rem', zIndex: 300, pointerEvents: 'none', animation: 'zoomIn 0.5s ease' }}>{currentPhase === 3 ? "🎯" : "🌟"}</div>}
       {currentPhase === 2 && !callActive && !isCommunicating && (

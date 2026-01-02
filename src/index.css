@@ -142,52 +142,61 @@ button.primary {
 .size-big .app-item { width: calc(33.33% - 1rem); max-width: 180px; }
 .size-super-big .app-item { width: calc(50% - 1rem); max-width: 240px; }
 
-/* Level 1/2 Focus Mode */
+/* Level 1/2 Focus Mode Card Refinement */
 .phase-large-grid {
-  position: fixed !important;
-  inset: 0 !important;
-  height: 100dvh !important;
-  width: 100vw !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  z-index: 100;
-  background: var(--bg-color);
+  flex: 1 !important;
   padding: 0 !important;
   margin: 0 !important;
+  z-index: 5;
 }
 
 .phase-large-grid .app-item {
   flex-direction: row !important;
-  width: 90vw !important;
-  max-width: none !important;
-  height: auto !important;
   background: white !important;
   border-radius: 48px !important;
   box-shadow: 0 40px 100px rgba(0,0,0,0.15) !important;
   padding: 40px !important;
   gap: 40px !important;
   border: none !important;
+  margin: auto !important;
 }
 
+/* Scaling based on child's preference */
+.size-standard.phase-large-grid .app-item { width: 70vw !important; max-width: 350px !important; padding: 25px !important; }
+.size-big.phase-large-grid .app-item { width: 85vw !important; max-width: 450px !important; padding: 40px !important; }
+.size-super-big.phase-large-grid .app-item { width: 95vw !important; max-width: 600px !important; padding: 60px !important; }
+
 .phase-large-grid .app-icon {
-  width: 60vw !important;
-  height: 60vw !important;
-  max-width: none !important;
-  max-height: none !important;
-  font-size: 45vw !important;
+  width: 35% !important;
+  height: auto !important;
+  aspect-ratio: 1/1 !important;
+  font-size: 25vw !important;
   background: transparent !important;
   box-shadow: none !important;
   flex-shrink: 0 !important;
 }
 
+/* Scaled Icons */
+.size-standard.phase-large-grid .app-icon { font-size: 15vw !important; }
+.size-big.phase-large-grid .app-icon { font-size: 25vw !important; }
+.size-super-big.phase-large-grid .app-icon { font-size: 35vw !important; }
+
 .phase-large-grid .app-label {
-  font-size: 12vw !important;
+  font-size: 8vw !important;
   font-weight: 900 !important;
   color: #000 !important;
   text-align: left !important;
   flex: 1 !important;
+  white-space: normal !important;
 }
+
+/* Scaled Labels */
+.size-standard.phase-large-grid .app-label { font-size: 6vw !important; }
+.size-big.phase-large-grid .app-label { font-size: 8vw !important; }
+.size-super-big.phase-large-grid .app-label { font-size: 10vw !important; }
 
 .app-icon {
   width: 100%;
