@@ -69,15 +69,16 @@ Communication is growing! 🥝
                 <div className="dashboard-header">
                     <h1>📊 Dashboard</h1>
                     <div className="dashboard-actions">
-                        <button onClick={handleShare} className="primary">📤 Share Progress</button>
-                        <button onClick={exportToCSV} style={{ padding: '10px 20px', borderRadius: '10px', background: 'var(--success)', color: 'white', border: 'none', cursor: 'pointer' }}>📥 Export CSV</button>
-                        <button onClick={onClose} style={{ padding: '10px 20px', borderRadius: '10px', background: '#E5E5EA', border: 'none', cursor: 'pointer' }}>Close</button>
+                        <button onClick={handleShare} className="dashboard-btn primary">📤 Share Progress</button>
+                        <button onClick={exportToCSV} className="dashboard-btn success">📥 Export CSV</button>
+                        <button onClick={onClose} className="dashboard-btn secondary">Close</button>
                     </div>
                 </div>
 
                 {/* Level Progress Section */}
                 <h2 className="dashboard-section-title">🎯 Level Progress</h2>
                 {(() => {
+                    // ... (rest of the level progress logic remains the same)
                     // Calculate progress per level from trials
                     const levelProgress = {};
                     const trials = progressData?.trials || [];
@@ -279,20 +280,20 @@ Communication is growing! 🥝
                 {/* Usage Overview */}
                 <h2 className="dashboard-section-title">📈 Usage Overview</h2>
                 <div className="dashboard-stat-grid">
-                    <div className="dashboard-stat-card" style={{ background: 'var(--stat-blue-bg)' }}>
-                        <div className="dashboard-stat-value" style={{ color: 'var(--stat-blue-text)' }}>{totalStats.totalClicks}</div>
+                    <div className="dashboard-stat-card">
+                        <div className="dashboard-stat-value">{totalStats.totalClicks}</div>
                         <div className="dashboard-stat-label">Total Clicks</div>
                     </div>
-                    <div className="dashboard-stat-card" style={{ background: 'var(--stat-green-bg)' }}>
-                        <div className="dashboard-stat-value" style={{ color: 'var(--stat-green-text)' }}>{totalStats.uniqueItems}</div>
+                    <div className="dashboard-stat-card">
+                        <div className="dashboard-stat-value">{totalStats.uniqueItems}</div>
                         <div className="dashboard-stat-label">Items Used</div>
                     </div>
-                    <div className="dashboard-stat-card" style={{ background: 'var(--stat-orange-bg)' }}>
-                        <div className="dashboard-stat-value" style={{ color: 'var(--stat-orange-text)' }}>{totalStats.totalSessions}</div>
+                    <div className="dashboard-stat-card">
+                        <div className="dashboard-stat-value">{totalStats.totalSessions}</div>
                         <div className="dashboard-stat-label">Sessions</div>
                     </div>
-                    <div className="dashboard-stat-card" style={{ background: 'var(--stat-pink-bg)' }}>
-                        <div className="dashboard-stat-value" style={{ color: 'var(--stat-pink-text)' }}>{totalStats.avgSessionTime}m</div>
+                    <div className="dashboard-stat-card">
+                        <div className="dashboard-stat-value">{totalStats.avgSessionTime}m</div>
                         <div className="dashboard-stat-label">Avg Session</div>
                     </div>
                 </div>

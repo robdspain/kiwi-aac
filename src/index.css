@@ -22,14 +22,6 @@
   --radius-xl: 40px;
   
   /* Additional Dashboard Colors (Standardized) */
-  --stat-blue-bg: #E3F2FD;
-  --stat-blue-text: #1976D2;
-  --stat-green-bg: #E8F5E9;
-  --stat-green-text: #388E3C;
-  --stat-orange-bg: #FFF3E0;
-  --stat-orange-text: #F57C00;
-  --stat-pink-bg: #FCE4EC;
-  --stat-pink-text: #C2185B;
   --gray-light: #F2F2F7;
   --gray-border: #E5E5EA;
 }
