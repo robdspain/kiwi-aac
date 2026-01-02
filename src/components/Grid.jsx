@@ -148,6 +148,7 @@ const Grid = ({
                             isDimmed={isTrainingMode && !trainingPanelVisible && !isSelected}
                             isScanned={scanIndex === index}
                             isLocked={isLayoutLocked || !!item.pos}
+                            isRevealed={item.isRevealed !== false}
                             isColorCodingEnabled={isColorCodingEnabled}
                             style={itemStyle}
                             onClick={onItemClick}

@@ -75,7 +75,7 @@ body.literacy-mode {
   outline: 4px solid var(--primary) !important;
   outline-offset: 4px !important;
   box-shadow: 0 0 0 8px rgba(78, 205, 196, 0.3) !important;
-  border-radius: 4px !important;
+  border-radius: inherit !important;
 }
 
 .app-item:focus-visible .app-icon {
@@ -854,6 +854,18 @@ button.primary {
   color: var(--primary);
   font-weight: 800;
   transform: scale(1.1);
+}
+
+.app-item.is-hidden {
+  opacity: 0.4;
+  filter: grayscale(0.8);
+  pointer-events: none;
+}
+
+.app-item.is-hidden.is-editing {
+  opacity: 0.6;
+  filter: grayscale(0.4);
+  pointer-events: all;
 }
 
 @keyframes fadeIn {

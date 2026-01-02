@@ -1074,16 +1074,16 @@ const gridConfigs = {
 **Why Important:**
 - Start simple (20 icons) → gradually add complexity as proficiency grows
 - Prevents overwhelming new users with 100+ icons immediately
-- controlled vocabulary expansion
+- SLP-controlled vocabulary expansion
 - Encourages mastery before adding new words
 
 **Implementation:**
-- [ ] **Hide Icons:** Gray out or completely hide icons not yet introduced
-- [ ] **Show Icons:** Gradually reveal new icons as child progresses
-- [ ] **Proficiency Levels:** Beginner (20 icons) → Intermediate (50) → Advanced (100+)
-- [ ] **Unlock Criteria:** Based on usage frequency or manual unlock
-- [ ] **Visual Cues:** "Unlock Soon" badge on grayed-out icons
-- [ ] **Mastery Tracking:** Track icon usage to determine readiness for new vocabulary
+- [x] **Hide Icons:** Gray out or completely hide icons not yet introduced
+- [x] **Show Icons:** Gradually reveal new icons as child progresses
+- [x] **Proficiency Levels:** Beginner (20 icons) → Intermediate (50) → Advanced (100+)
+- [x] **Unlock Criteria:** Manual unlock via Vocabulary Level settings
+- [x] **Visual Cues:** "Unlock Soon" badge on grayed-out icons
+- [x] **Mastery Tracking:** Track icon usage to determine readiness for new vocabulary (Integrated with Proficiency settings)
 
 **Example Progression:**
 1. **Week 1:** Show only 10 core words (I, want, more, yes, no, help, stop, go, eat, drink)

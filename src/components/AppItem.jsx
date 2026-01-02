@@ -15,6 +15,7 @@ const AppItem = ({
   isDimmed = false,
   isScanned = false,
   isLocked = false,
+  isRevealed = true,
   isColorCodingEnabled = true,
   style: customStyle = {},
   onClick,
@@ -73,6 +74,8 @@ const AppItem = ({
     pointerStartPos.current = null;
     setIsCancelling(false);
 
+    if (!isRevealed && !isEditMode) return;
+
     if (isBack) {
       triggerHaptic('light');
       onClick();
@@ -113,6 +116,7 @@ const AppItem = ({
   let wrapperClass = 'app-item';
   if (isEditMode && !isBack && !isTrainingMode) wrapperClass += ' is-editing';
   if (isScanned) wrapperClass += ' is-scanned';
+  if (!isRevealed) wrapperClass += ' is-hidden';
   if (isTrainingMode && !isBack) {
     if (isSelected) wrapperClass += ' selected';
     else if (isDimmed) wrapperClass += ' dimmed';
@@ -127,7 +131,7 @@ const AppItem = ({
   const effectiveWc = item.wc || lexiconEntry?.type;
   
   // Map pronoun to social for coloring if needed, or keep separate if we want specific colors
-  const mappedWc = effectiveWc; 
+  const mappedWc = effectiveWc === 'pronoun' ? 'social' : effectiveWc; 
 
   const getBackgroundColor = () => {
     if (item.bgColor) return item.bgColor;
@@ -213,6 +217,25 @@ const AppItem = ({
           )
         )}
       </div>
+
+      {!isRevealed && !isEditMode && (
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          background: 'rgba(0,0,0,0.6)',
+          color: 'white',
+          padding: '2px 6px',
+          borderRadius: '4px',
+          fontSize: '0.5rem',
+          fontWeight: 'bold',
+          whiteSpace: 'nowrap',
+          zIndex: 5
+        }}>
+          UNLOCK SOON
+        </div>
+      )}
 
       {isLocked && isEditMode && !isBack && (
         <div style={{

@@ -55,6 +55,8 @@ const Controls = ({
     onToggleLayoutLock,
     isColorCodingEnabled,
     onToggleColorCoding,
+    proficiencyLevel,
+    onUpdateProficiencyLevel,
     onAddFavorites,
     progressData = {}
 }) => {
@@ -538,6 +540,26 @@ const Controls = ({
                                 <div className="ios-row" style={{ minHeight: 'auto', padding: '0.5rem 0.9375rem', background: '#F2F2F7' }}>
                                     <p style={{ fontSize: '0.625rem', color: '#8E8E93', margin: 0 }}>
                                         Automatically colors icons by part of speech (Nouns: Yellow, Verbs: Green, etc.)
+                                    </p>
+                                </div>
+                                <div className="ios-row" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.625rem', padding: '1rem' }}>
+                                    <span style={{ fontWeight: 600, fontSize: '0.875rem' }}>🎯 Vocabulary Level</span>
+                                    <div className="ios-segmented-control" style={{ marginBottom: 0 }}>
+                                        <div 
+                                            className="selection-pill" 
+                                            style={{ 
+                                                width: 'calc(33.33% - 4px)',
+                                                transform: proficiencyLevel === 'beginner' ? 'translateX(0)' : 
+                                                           proficiencyLevel === 'intermediate' ? 'translateX(100%)' : 'translateX(200%)' 
+                                            }} 
+                                        />
+                                        <button onClick={() => onUpdateProficiencyLevel('beginner')} style={{ minHeight: '2.75rem' }}>Beginner</button>
+                                        <button onClick={() => onUpdateProficiencyLevel('intermediate')} style={{ minHeight: '2.75rem' }}>Intermediate</button>
+                                        <button onClick={() => onUpdateProficiencyLevel('advanced')} style={{ minHeight: '2.75rem' }}>Advanced</button>
+                                    </div>
+                                    <p style={{ fontSize: '0.625rem', color: '#8E8E93', margin: 0 }}>
+                                        {proficiencyLevel === 'beginner' ? 'Shows core words + 10 fringe icons. Others are grayed out.' : 
+                                         proficiencyLevel === 'intermediate' ? 'Shows core words + 40 fringe icons.' : 'Shows all vocabulary icons.'}
                                     </p>
                                 </div>
                                 <div className="ios-row" onClick={onRedoCalibration}>
