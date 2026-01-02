@@ -272,6 +272,8 @@ await Superwall.register({ event: 'addProfile2' }) // Trigger when adding 2nd pr
 
 ### 7. Roadmap & Implementation Status
 
+> **Note:** For quarter-based roadmap and detailed feature timelines, see [ROADMAP.md](./ROADMAP.md). This section provides phase-based implementation tracking with detailed technical requirements for each feature.
+
 | Phase | Feature | Status |
 | :--- | :--- | :--- |
 | **Phase 1** | Core Infrastructure (Vite, React, Linting) | **COMPLETE** |
@@ -290,12 +292,14 @@ await Superwall.register({ event: 'addProfile2' }) // Trigger when adding 2nd pr
 | **Phase 14** | Advanced Disruptor Refinements | **COMPLETE** |
 | **Phase 15** | High-Fidelity Voice Engine | **COMPLETE** |
 | **Phase 16** | Apple Design & Accessibility Standards | **COMPLETE** |
-| **Phase 17** | Quick Start & Template System | **IN PROGRESS** |
-| **Phase 18** | Social Sharing & Collaboration | **IN PROGRESS** |
-| **Phase 19** | Usage Analytics & Progress Tracking | **IN PROGRESS** |
-| **Phase 20** | AI Vision: JIT Visual Scene Automation | **PENDING** |
-| **Phase 21** | Linguistic Growth: Morphology & Visual Action Cues | **PENDING** |
-| **Phase 22** | Global Support: Multi-Language Mirroring | **PENDING** |
+| **Phase 17** | Visual Schedules & Routine Builder | **COMPLETE** |
+| **Phase 18** | Essential Skills Training (FCR, Denial Tolerance) | **COMPLETE** |
+| **Phase 19** | Quick Start & Template System | **IN PROGRESS** |
+| **Phase 20** | Social Sharing & Collaboration | **IN PROGRESS** |
+| **Phase 21** | Usage Analytics & Progress Tracking | **IN PROGRESS** |
+| **Phase 22** | AI Vision: JIT Visual Scene Automation | **PENDING** |
+| **Phase 23** | Linguistic Growth: Morphology & Visual Action Cues | **PENDING** |
+| **Phase 24** | Global Support: Multi-Language Mirroring | **PENDING** |
 
 ---
 
@@ -379,16 +383,94 @@ await Superwall.register({ event: 'addProfile2' }) // Trigger when adding 2nd pr
 
 ---
 
-### 17. Phase 17: Quick Start & Template System
+### 17. Phase 17: Visual Schedules & Routine Builder
 
-#### 17.1. Default Core Vocabulary
+> **See also:** [ROADMAP.md - Q1 2025](./ROADMAP.md#q1-2025) for release timeline
+
+#### 17.1. Visual Schedule Component
+- [x] **VisualSchedule.jsx:** Dedicated component for step-by-step routine navigation
+- [x] **Step-by-Step Display:** Large visual display of current activity
+- [x] **Navigation Controls:** Previous, Next, and Reset buttons
+- [x] **Progress Tracking:** Visual indication of position in schedule (Step X of Y)
+- [x] **Accessibility:** ARIA live regions for screen reader support
+
+#### 17.2. Routine Builder Integration
+- [x] **Folder-Based Schedules:** Use existing folder system as schedule containers
+- [x] **Icon Sequences:** Display folder contents in sequential order
+- [x] **Mixed Media Support:** Images, emojis, and custom icons in schedules
+- [x] **Background Colors:** Visual distinction between schedule items
+
+#### 17.3. Use Cases & Benefits
+- **Morning Routines:** Brush teeth → Get dressed → Eat breakfast
+- **Bedtime Sequences:** Bath → Pajamas → Story → Sleep
+- **School Transitions:** Arrival → Locker → Classroom → Unpack
+- **Custom Activities:** Any repeatable multi-step sequence
+- **Anxiety Reduction:** Predictable visual structure reduces transition stress
+- **Independence Building:** Child can follow routine without constant verbal prompts
+
+#### 17.4. Technical Implementation
+- **Location:** `src/components/VisualSchedule.jsx`
+- **Integration:** Activated when opening folders in schedule mode
+- **State Management:** Local component state for current step tracking
+- **Animations:** Spring transitions for smooth step changes
+
+---
+
+### 18. Phase 18: Essential Skills Training (FCR, Denial Tolerance)
+
+> **See also:** [ROADMAP.md - Q1 2025](./ROADMAP.md#q1-2025) for evidence-based protocols
+
+#### 18.1. Functional Communication Response (FCR)
+- [x] **FCR Mode:** Dedicated training interface for functional communication
+- [x] **Request Training:** "My Way" button for practicing manding (requesting)
+- [x] **Immediate Feedback:** Vocal and visual reinforcement on successful request
+- [x] **Success Flash:** Full-screen positive reinforcement animation
+
+#### 18.2. Denial Tolerance Training
+- [x] **Controlled Denial:** Configurable probability of denial (sensitivity slider)
+- [x] **"Not right now..." Screen:** Visual denial presentation
+- [x] **"Say Okay" Button:** Teaches appropriate response to denial
+- [x] **Tolerance Reward:** Positive reinforcement for accepting denial
+- [x] **Toggle On/Off:** Option to practice with or without denials
+
+#### 18.3. Wait Behavior Training
+- [x] **Delay Mechanism:** Random denial introduces wait time
+- [x] **Tolerance Step:** Explicit practice accepting delayed gratification
+- [x] **Progressive Difficulty:** Adjustable sensitivity for gradual skill building
+
+#### 18.4. Evidence-Based Design
+- **ABA Principles:** Based on applied behavior analysis research
+- **Positive Reinforcement:** Immediate vocal praise for correct responses
+- **Error Correction:** Gentle "not right now" without punishment
+- **Data Logging:** Event tracking for FCR attempts, denials, tolerance successes
+- **Therapist Customization:** Adjustable parameters for individual programs
+
+#### 18.5. Technical Implementation
+- **Location:** `src/components/EssentialSkillsMode.jsx`
+- **State Flow:** Request → (Random Denial) → Tolerance → Reward → Reset
+- **Event Logging:** Integration with analytics for progress tracking
+- **Full-Screen Mode:** Immersive experience to minimize distractions
+- **Exit Protection:** Dedicated exit button to prevent accidental closure
+
+#### 18.6. Clinical Applications
+- **Early Intervention:** Teaching functional communication to non-verbal children
+- **Behavior Management:** Reducing tantrum behaviors through denial tolerance
+- **Transition Preparation:** Building cooperation skills for school/therapy
+- **IEP Goals:** Trackable metrics for individualized education plans
+- **Parent Training:** Consistent home-based skill practice
+
+---
+
+### 19. Phase 19: Quick Start & Template System
+
+#### 19.1. Default Core Vocabulary
 - [x] **Core 50 Words:** Pre-loaded default vocabulary based on AAC research (CORE_VOCABULARY).
 - [x] **Ready Out of Box:** First launch includes functional board rather than blank slate.
 - [x] **Bilingual Labels:** Core words available in English with Spanish translation support.
 - [ ] **Auto-Population:** Automatically populate grid with core vocabulary on first install.
 - [ ] **Guided Setup:** Onboarding flow to help users customize the default board.
 
-#### 17.2. Template Library
+#### 19.2. Template Library
 - [x] **Pre-Built Templates:** Multiple ready-made boards (First 50 Words, School Day, etc.).
 - [x] **Template Data Structure:** TEMPLATES object in aacData.js with curated word lists.
 - [x] **Context-Specific Boards:** CONTEXT_DEFINITIONS for School, Home, Park, Mealtime scenarios.
@@ -396,7 +478,7 @@ await Superwall.register({ event: 'addProfile2' }) // Trigger when adding 2nd pr
 - [ ] **Template Gallery:** Visual gallery showing preview of each template before application.
 - [ ] **Community Templates:** User-submitted templates shared via cloud (future).
 
-#### 17.3. Progressive Complexity
+#### 19.3. Progressive Complexity
 - [ ] **Starter Mode:** Simplified interface for first-time users with only essential features.
 - [ ] **Advanced Mode:** Full feature set unlocked after user completes onboarding.
 - [ ] **Feature Discovery:** Progressive disclosure of advanced features as users gain proficiency.
@@ -404,22 +486,22 @@ await Superwall.register({ event: 'addProfile2' }) // Trigger when adding 2nd pr
 
 ---
 
-### 18. Phase 18: Social Sharing & Collaboration
+### 20. Phase 20: Social Sharing & Collaboration
 
-#### 18.1. Board Sharing (QR Code)
+#### 20.1. Board Sharing (QR Code)
 - [x] **QR Code Generation:** Share boards via QR code for instant device-to-device transfer.
 - [x] **URL Encoding:** Compress board data with LZ-String for shareable URLs.
 - [x] **Import from QR:** Scan QR code to import shared boards.
 - [x] **Visual Share Modal:** Polished UI with QR code display and copyable link.
 
-#### 18.2. Export & Backup
+#### 20.2. Export & Backup
 - [x] **Full Data Export:** BackupRestore component for exporting all Kiwi data.
 - [x] **JSON Backup:** Export iconsData, settings, analytics in timestamped JSON file.
 - [x] **Native Share:** Capacitor Share API integration for iOS/Android sharing.
 - [x] **Import Restore:** Import backup files to restore complete app state.
 - [ ] **Selective Export:** Choose specific boards or data to export (not all-or-nothing).
 
-#### 18.3. Cloud Sync & Collaboration
+#### 20.3. Cloud Sync & Collaboration
 - [ ] **Cloud Storage:** Supabase/Neon integration for cloud backup (infrastructure exists).
 - [ ] **Team Sharing:** Share boards with multiple users (teachers, therapists, parents).
 - [ ] **Real-Time Sync:** Sync boards across multiple devices for same user.
@@ -427,7 +509,7 @@ await Superwall.register({ event: 'addProfile2' }) // Trigger when adding 2nd pr
 - [ ] **Board Gallery:** Browse and download community-shared boards.
 - [ ] **Version History:** Track board changes and revert to previous versions.
 
-#### 18.4. Collaboration Features
+#### 20.4. Collaboration Features
 - [ ] **Team Roles:** Different permissions for parents, therapists, educators.
 - [ ] **Comments & Notes:** Therapist notes on specific icons or progress.
 - [ ] **Shared Analytics:** View usage data across team members.
@@ -435,37 +517,37 @@ await Superwall.register({ event: 'addProfile2' }) // Trigger when adding 2nd pr
 
 ---
 
-### 19. Phase 19: Usage Analytics & Progress Tracking
+### 21. Phase 21: Usage Analytics & Progress Tracking
 
-#### 19.1. Core Analytics Engine
+#### 21.1. Core Analytics Engine
 - [x] **Click Tracking:** AnalyticsService tracks every icon interaction with timestamps.
 - [x] **Item Usage Stats:** Count clicks per icon with daily breakdowns.
 - [x] **Session Tracking:** Track session start/end times and durations.
 - [x] **Sentence Logging:** Track complete sentences (last 100 saved).
 - [x] **Local Storage:** All analytics stored locally in browser localStorage.
 
-#### 19.2. Dashboard & Visualizations
+#### 21.2. Dashboard & Visualizations
 - [x] **Progress Dashboard:** Comprehensive dashboard showing all usage metrics.
 - [x] **Top Items Display:** Show most frequently used icons (top 5-10).
 - [x] **Daily Usage Graph:** 7-day bar chart of daily click activity.
 - [x] **Total Stats Summary:** Overall clicks, unique items, sessions, avg session time.
 - [x] **Recent Sentences:** Display recently formed sentences.
 
-#### 19.3. Export & Reporting
+#### 21.3. Export & Reporting
 - [x] **CSV Export:** Export usage data to CSV for external analysis.
 - [x] **Share Progress:** Share dashboard screenshots with team members.
 - [ ] **Weekly Reports:** Automated weekly summary emails for parents/therapists.
 - [ ] **PDF Reports:** Professional PDF reports for therapy documentation.
 - [ ] **Custom Date Ranges:** Filter analytics by custom date ranges.
 
-#### 19.4. Therapeutic Insights
+#### 21.4. Therapeutic Insights
 - [ ] **New Words This Week:** Highlight newly used vocabulary.
 - [ ] **Vocabulary Growth Chart:** Track vocabulary expansion over time.
 - [ ] **Communication Patterns:** Identify peak usage times and contexts.
 - [ ] **Goal Progress:** Track progress toward IEP goals (individualized education plan).
 - [ ] **Recommendations:** AI-suggested vocabulary additions based on usage patterns.
 
-#### 19.5. Privacy & Data Management
+#### 21.5. Privacy & Data Management
 - [x] **Local-First:** All analytics stored locally, no automatic cloud upload.
 - [ ] **Data Deletion:** Easy one-click delete all analytics data.
 - [ ] **Export for Privacy:** Export and delete from device before sharing.
@@ -474,34 +556,34 @@ await Superwall.register({ event: 'addProfile2' }) // Trigger when adding 2nd pr
 
 ---
 
-### 20. Phase 20: AI Vision: JIT Visual Scene Automation
+### 22. Phase 22: AI Vision: JIT Visual Scene Automation
 
-#### 20.1. On-Device Object Detection
+#### 22.1. On-Device Object Detection
 - [ ] **Vision Engine Integration:** Integrate an on-device vision model (e.g., TensorFlow.js) to process uploaded "Visual Scene" photos locally.
 - [ ] **Auto-Hotspot Suggestion:** Automatically identify common objects (cup, toy, snack) and suggest coordinate-based hotspots.
 
-#### 20.2. Intelligent Icon Mapping
+#### 22.2. Intelligent Icon Mapping
 - [ ] **Semantic Linker:** Automatically map detected objects to existing icons in the library or suggest matching emojis from the dataset.
 
 ---
 
-### 21. Phase 21: Linguistic Growth: Morphology & Visual Action Cues
+### 23. Phase 23: Linguistic Growth: Morphology & Visual Action Cues
 
-#### 21.1. Advanced Morphology Engine
+#### 23.1. Advanced Morphology Engine
 - [ ] **Noun Expansion:** Add toggles for Plurals (e.g., "Cookie" -> "Cookies") and Possessives ("Mom" -> "Mom's") in the customization modal.
 - [ ] **Agreement Logic:** Implement automatic subject-verb agreement (e.g., "I want" vs "He wants") within the sentence strip logic.
 
-#### 21.2. Visual Action Cues (Zen Style)
+#### 23.2. Visual Action Cues (Zen Style)
 - [ ] **Illustrative Action Imagery:** Instead of video, create a set of high-quality illustrative images/icons that depict the *action* or *context* of a word, matching the unified Mimoji aesthetic.
 - [ ] **Zen Animations:** Implement beautiful, calming animations (e.g., soft scaling or path-drawing) to illustrate specific concepts or learning milestones, avoiding sensory overload.
 
 ---
 
-### 22. Phase 22: Global Support: Multi-Language Mirroring
+### 24. Phase 24: Global Support: Multi-Language Mirroring
 
-#### 22.1. Decoupled Structure
+#### 24.1. Decoupled Structure
 - [ ] **Schema Refactor:** Decouple the board layout (spatial positions) from the linguistic labels.
 - [ ] **Mirroring Engine:** Implement a toggle to switch the entire board between languages (e.g., English <-> Spanish) while keeping icon positions identical to preserve motor memory.
 
-#### 19.2. Automated Translation
+#### 24.2. Automated Translation
 - [ ] **Local Lexicon Mapping:** Use an expanded `aacLexicon.js` to provide high-quality, clinical-grade translations for core and common fringe vocabulary.
