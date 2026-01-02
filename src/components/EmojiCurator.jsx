@@ -2,20 +2,10 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import { EMOJI_DATA } from '../utils/emojiData';
 import { triggerHaptic } from '../utils/haptics';
 import { CORE_VOCABULARY, TEMPLATES, CONTEXT_DEFINITIONS } from '../data/aacData';
-import { AAC_LEXICON } from '../data/aacLexicon';
+import { AAC_LEXICON, getFitzgeraldColor } from '../data/aacLexicon';
+import { useProfile } from '../context/ProfileContext';
 import MemojiPicker from './MemojiPicker';
-import AvatarRenderer from './AvatarRenderer';
 
-const getFitzgeraldColor = (wc) => {
-  switch (wc) {
-    case 'noun': return '#FFEB3B';
-    case 'verb': return '#4CAF50';
-    case 'adj': return '#2196F3';
-    case 'social': return '#E91E63';
-    case 'misc': return '#FF9800';
-    default: return '#ffffff';
-  }
-};
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import SplashScreen from './SplashScreen';
 import LZString from 'lz-string';
@@ -95,16 +85,62 @@ const { categories, groupedEmojiData, allEmojisFlat } = (() => {
 const CURRENT_ICONS = { 'TV': ['🔴', '🐶', '🎵', '📚'], 'Food': ['🍎', '🍌', '🧃', '🍪'], 'Toys': ['⚽', '🧱', '🚗', '🫧'], 'Feelings': ['😄', '😢', '😠'] };
 
 const EmojiCurator = () => {
+  const { pronunciations, addPronunciation } = useProfile();
   const [activeCategory, setActiveCategory] = useState(categories[0] || '');
   const [searchQuery, setSearchQuery] = useState('');
   const [pickerTarget, setPickerTarget] = useState(null);
-      const [visibleCount, setVisibleCount] = useState(100);
-      const gridRef = useRef(null);
-      const blacklistedEmojis = useMemo(() => [], []);
+  const [visibleCount, setVisibleCount] = useState(100);
+  const gridRef = useRef(null);
+  const pointerStartPos = useRef(null);
+  const [cancellingEmoji, setCancellingEmoji] = useState(null); // Tracks which emoji is showing cancel hint
+  const blacklistedEmojis = useMemo(() => [], []);
+  
+  const handlePointerDown = (e, emoji) => {
+    pointerStartPos.current = { x: e.clientX, y: e.clientY };
+    setCancellingEmoji(null);
+  };
+
+  const handlePointerMove = (e, emoji) => {
+    if (pointerStartPos.current) {
+      const dx = Math.abs(e.clientX - pointerStartPos.current.x);
+      const dy = Math.abs(e.clientY - pointerStartPos.current.y);
+      if (dx > 10 || dy > 10) {
+        setCancellingEmoji(emoji);
+      } else {
+        setCancellingEmoji(null);
+      }
+    }
+  };
+
+  const handleEmojiAction = (category, item) => {
+    setCancellingEmoji(null);
+    if (showPhraseCreator) {
+      if (phraseIcons.length < 3) {
+        triggerHaptic('light');
+        setPhraseIcons([...phraseIcons, item.emoji]);
+      }
+      return;
+    }
+    
+    if (!isLongPress.current && !pickerTarget) { 
+      if (sequenceMode) {
+        triggerHaptic('light');
+        setSequence(prev => [...prev, { ...item, id: new Date().getTime() }]); 
+      } else {
+        // Haptic Hierarchy (16.3)
+        let hapticStyle = 'light';
+        if (item.isPhrase) hapticStyle = 'medium';
+        else if (item.name?.toLowerCase() === 'no' || item.name?.toLowerCase() === 'stop') hapticStyle = 'heavy';
+        
+        triggerHaptic(hapticStyle);
+        toggleEmoji(category, item.emoji, item); 
+      }
+    } 
+  };
     const [customItems, setCustomItems] = useState([
-    { id: 'avatar-mom', name: 'Mom', category: 'My People', type: 'avatar', recipe: { head: 'round', skin: '#F1C27D', hair: 'short', hairColor: '#2C222B', eyeColor: '#333333', facialHair: 'none', eyes: 'happy', mouth: 'smile', accessory: 'none' }, emoji: 'avatar-mom' },
-    { id: 'avatar-dad', name: 'Dad', category: 'My People', type: 'avatar', recipe: { head: 'round', skin: '#F1C27D', hair: 'short', hairColor: '#A56B46', eyeColor: '#2e536f', facialHair: 'short_beard', eyes: 'happy', mouth: 'smile', accessory: 'none' }, emoji: 'avatar-dad' },
-    { id: 'avatar-ms-rachel', name: 'Ms Rachel', category: 'My People', type: 'avatar', recipe: { head: 'round', skin: '#F1C27D', hair: 'medium', hairColor: '#A56B46', eyeColor: '#333333', facialHair: 'none', eyes: 'happy', mouth: 'smile', accessory: 'none' }, emoji: 'avatar-ms-rachel' },
+    { id: 'memoji-mom', name: 'Mom', category: 'My People', image: '/images/memojis/15.png', emoji: 'memoji-mom' },
+    { id: 'memoji-dad', name: 'Dad', category: 'My People', image: '/images/memojis/12.png', emoji: 'memoji-dad' },
+    { id: 'memoji-ms-rachel', name: 'Ms Rachel', category: 'My People', image: '/images/memojis/10.png', emoji: 'memoji-ms-rachel' },
     { id: 'char-elmo', name: 'Elmo', category: 'Characters', emoji: '🔴' },
     { id: 'char-simple-songs', name: 'Super Simple Songs', category: 'Characters', emoji: '🎵' },
     { id: 'char-spiderman', name: 'Spiderman', category: 'Characters', emoji: '🕷️' }
@@ -130,7 +166,8 @@ const EmojiCurator = () => {
   const generateShareUrl = () => {
     const data = JSON.stringify({
       selected: selectedEmojis,
-      meta: emojiMetadata
+      meta: emojiMetadata,
+      pronunciations: pronunciations
     });
     const compressed = LZString.compressToEncodedURIComponent(data);
     const url = `${window.location.origin}${window.location.pathname}?board=${compressed}`;
@@ -179,7 +216,7 @@ const EmojiCurator = () => {
     }
 
     const initial = {}; categories.forEach(category => { initial[category] = []; });
-    initial['My People'] = ['avatar-mom', 'avatar-dad', 'avatar-ms-rachel'];
+    initial['My People'] = ['memoji-mom', 'memoji-dad', 'memoji-ms-rachel'];
     initial['Characters'] = ['🔴', '🎵', '🕷️'];
     Object.keys(CURRENT_ICONS).forEach(cat => {
         (CURRENT_ICONS[cat] || []).forEach(emoji => {
@@ -210,6 +247,19 @@ const EmojiCurator = () => {
     const params = new URLSearchParams(window.location.search);
     const boardData = params.get('board');
     if (boardData) {
+      // Import pronunciations if present
+      try {
+          const decompressed = LZString.decompressFromEncodedURIComponent(boardData);
+          if (decompressed) {
+              const parsed = JSON.parse(decompressed);
+              if (parsed.pronunciations) {
+                  Object.entries(parsed.pronunciations).forEach(([w, p]) => {
+                      addPronunciation(w, p);
+                  });
+              }
+          }
+      } catch (e) { console.error(e); }
+
       // Decompression check already done in initializers, just notify and clean up
       setTimeout(() => alert("Board imported successfully! 🥝"), 100);
       window.history.replaceState({}, document.title, window.location.pathname);
@@ -217,23 +267,22 @@ const EmojiCurator = () => {
   }, []);
 
 
-  const filteredEmojis = useMemo(() => {
-    let list = groupedEmojiData[activeCategory] || [];
-    list = [...customItems.filter(i => i.category === activeCategory), ...list];
-    if (activeContext !== 'Default' && CONTEXT_DEFINITIONS[activeContext]) {
-        const contextWords = CONTEXT_DEFINITIONS[activeContext];
-        const contextItems = list.filter(item => contextWords.some(w => item.name.toLowerCase().includes(w.toLowerCase())));
-        list = [...contextItems, ...list.filter(item => !contextItems.includes(item))];
-    }
-    if (searchQuery) {
-      list = [...customItems, ...allEmojisFlat].filter(item => (item.name || '').toLowerCase().includes(searchQuery.toLowerCase()) || item.emoji.includes(searchQuery));
-    }
-    if (blacklistedEmojis.length > 0) list = list.filter(item => !blacklistedEmojis.includes(item.emoji));
-    if (showCoreOnly) list = list.filter(item => item.name.toLowerCase().split(/[ -]/).some(w => CORE_VOCABULARY.includes(w)) || CORE_VOCABULARY.includes(item.name.toLowerCase()));
-    return list;
-  }, [searchQuery, activeCategory, showCoreOnly, customItems, activeContext, blacklistedEmojis]);
-
-  const longPressTimer = useRef(null);
+      const filteredEmojis = useMemo(() => {
+        let list = groupedEmojiData[activeCategory] || [];
+        list = [...customItems.filter(i => i.category === activeCategory), ...list];
+        if (activeContext !== 'Default' && CONTEXT_DEFINITIONS[activeContext]) {
+            const contextWords = CONTEXT_DEFINITIONS[activeContext];
+            const contextItems = list.filter(item => contextWords.some(w => item.name.toLowerCase().includes(w.toLowerCase())));
+            list = [...contextItems, ...list.filter(item => !contextItems.includes(item))];
+        }
+        if (searchQuery) {
+          list = [...customItems, ...allEmojisFlat].filter(item => (item.name || '').toLowerCase().includes(searchQuery.toLowerCase()) || item.emoji.includes(searchQuery));
+        }
+        if (blacklistedEmojis.length > 0) list = list.filter(item => !blacklistedEmojis.includes(item.emoji));
+        if (showCoreOnly) list = list.filter(item => item.name.toLowerCase().split(/[ -]/).some(w => CORE_VOCABULARY.includes(w)) || CORE_VOCABULARY.includes(item.name.toLowerCase()));
+        return list;
+      }, [searchQuery, activeCategory, showCoreOnly, customItems, blacklistedEmojis]);
+    const longPressTimer = useRef(null);
   const isLongPress = useRef(false);
   const pickerRef = useRef(null);
   const previousFocus = useRef(null);
@@ -288,10 +337,13 @@ const EmojiCurator = () => {
   const totalSelected = Object.values(selectedEmojis).reduce((sum, arr) => sum + (arr?.length || 0), 0);
 
   const exportSelected = () => {
-    const output = {};
+    const output = {
+        pronunciations: pronunciations,
+        icons: {}
+    };
     Object.keys(selectedEmojis).forEach(cat => {
       if (selectedEmojis[cat]?.length) {
-        output[cat] = selectedEmojis[cat].map(char => {
+        output.icons[cat] = selectedEmojis[cat].map(char => {
           const custom = customItems.find(c => c.emoji === char);
           if (custom) return custom.type === 'avatar' ? { w: custom.name, type: 'custom_avatar', recipe: custom.recipe, i: '👤' } : { w: custom.name, i: custom.image, isCustom: true };
           const base = allEmojisFlat.find(e => e.emoji === char) || allEmojisFlat.reduce((acc, b) => acc || b.variations.find(v => v.emoji === char), null);
@@ -310,17 +362,18 @@ const EmojiCurator = () => {
     <div style={{ padding: '0', paddingTop: 'env(safe-area-inset-top)', width: '100vw', height: '100dvh', display: 'flex', flexDirection: 'column', background: '#f0f2f5', color: '#000', position: 'fixed', top: 0, left: 0, zIndex: 9999, userSelect: 'none', overflow: 'hidden' }}>
       {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
       <div className="emoji-curator-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          {isMobile && <button onClick={() => setShowSidebar(!showSidebar)} style={{ background: 'transparent', border: 'none', color: 'white', fontSize: '1.5rem', cursor: 'pointer' }}>☰</button>}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.9375rem' }}>
+          {isMobile && <button onClick={() => setShowSidebar(!showSidebar)} style={{ background: 'transparent', border: 'none', color: 'white', fontSize: '1.5rem', cursor: 'pointer', minHeight: '2.75rem', minWidth: '2.75rem' }}>☰</button>}
           <span style={{ fontSize: isMobile ? '1.2rem' : '1.5rem' }}>🥝</span>{!isMobile && <h1 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 'bold' }}>LIBRARY BUILDER</h1>}
         </div>
-        <div style={{ display: 'flex', gap: isMobile ? '10px' : '20px', alignItems: 'center' }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: isMobile ? '0.8rem' : '0.9rem' }}><input type="checkbox" checked={showCoreOnly} onChange={(e) => setShowCoreOnly(e.target.checked)}/>Core Only</label>
+        <div style={{ display: 'flex', gap: isMobile ? '0.625rem' : '1.25rem', alignItems: 'center' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: isMobile ? '0.8rem' : '0.9rem', minHeight: '2.75rem' }}><input type="checkbox" checked={showCoreOnly} onChange={(e) => setShowCoreOnly(e.target.checked)}/>Core Only</label>
           <div style={{ position: 'relative' }}>
-              <button onClick={() => setShowToolsMenu(!showToolsMenu)} style={{ padding: '10px', background: '#333', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Tools ▾</button>
+              <button onClick={() => setShowToolsMenu(!showToolsMenu)} style={{ padding: '0.625rem', background: '#333', color: 'white', border: 'none', borderRadius: '0.5rem', cursor: 'pointer', minHeight: '2.75rem' }}>Tools ▾</button>
               {showToolsMenu && (
                   <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: '10px', background: 'white', borderRadius: '12px', padding: '10px', boxShadow: '0 10px 30px rgba(0,0,0,0.2)', width: '200px', display: 'flex', flexDirection: 'column', gap: '5px', zIndex: 2000 }}>
                       <button onClick={() => { setShowSmartImport(true); setShowToolsMenu(false); }}>📥 Bulk Import</button>
+                      <button onClick={() => { setShowPhraseCreator(true); setShowToolsMenu(false); }}>🗣️ GLP Phrase Creator</button>
                       <button onClick={() => { setShowTemplates(true); setShowToolsMenu(false); }}>📋 Templates</button>
                       <button onClick={() => { setShowImageSearch(true); setShowToolsMenu(false); }}>📷 Add Custom</button>
                       <button onClick={() => { setSequenceMode(!sequenceMode); setShowToolsMenu(false); }}>{sequenceMode ? 'Finish Sequence' : '✨ Builder Mode'}</button>
@@ -328,18 +381,19 @@ const EmojiCurator = () => {
                   </div>
               )}
           </div>
-          <div style={{ background: '#333', padding: '8px 15px', borderRadius: '8px', fontSize: '0.9rem', color: 'white' }}><span style={{ color: '#4ECDC4', fontWeight: 'bold' }}>{totalSelected}</span> selected</div>
+          <div style={{ background: '#333', padding: '0.5rem 0.9375rem', borderRadius: '0.5rem', fontSize: '0.9rem', color: 'white' }}><span style={{ color: '#4ECDC4', fontWeight: 'bold' }}>{totalSelected}</span> selected</div>
             <button
               onClick={generateShareUrl}
               style={{
-                padding: isMobile ? '8px 12px' : '10px 20px',
+                padding: isMobile ? '0.5rem 0.75rem' : '0.625rem 1.25rem',
                 background: '#333',
                 color: 'white',
                 border: 'none',
-                borderRadius: '8px',
+                borderRadius: '0.5rem',
                 fontWeight: 'bold',
                 cursor: 'pointer',
-                fontSize: isMobile ? '0.8rem' : '0.9rem'
+                fontSize: isMobile ? '0.8rem' : '0.9rem',
+                minHeight: '2.75rem'
               }}
             >
               SHARE
@@ -347,14 +401,15 @@ const EmojiCurator = () => {
             <button
               onClick={exportSelected}
               style={{
-                padding: isMobile ? '8px 15px' : '10px 25px',
+                padding: isMobile ? '0.5rem 0.9375rem' : '0.625rem 1.5625rem',
                 background: '#4ECDC4',
                 color: '#2D3436',
                 border: 'none',
-                borderRadius: '8px',
+                borderRadius: '0.5rem',
                 fontWeight: 'bold',
                 cursor: 'pointer',
-                fontSize: isMobile ? '0.8rem' : '0.9rem'
+                fontSize: isMobile ? '0.8rem' : '0.9rem',
+                minHeight: '2.75rem'
               }}
             >
               {isMobile ? 'SAVE' : 'SAVE iconsData.json'}
@@ -362,17 +417,17 @@ const EmojiCurator = () => {
         </div>
       </div>
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
-        <div style={{ width: '280px', height: '100%', overflowY: 'auto', background: 'white', borderRight: '1px solid #ddd', padding: '20px 10px', display: 'flex', flexDirection: 'column', gap: '2px', position: isMobile ? 'absolute' : 'relative', zIndex: 100, left: 0, top: 0, transform: showSidebar ? 'translateX(0)' : (isMobile ? 'translateX(-100%)' : 'translateX(0)'), transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)', boxShadow: isMobile && showSidebar ? '4px 0 15px rgba(0,0,0,0.1)' : 'none' }}>
-          <div style={{ padding: '0 15px 15px 15px' }}>
-            <div style={{ fontSize: '0.7rem', color: '#999', fontWeight: 'bold', marginBottom: '10px' }}>CATEGORIES</div>
-            <div style={{ position: 'relative' }}><input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} style={{ width: '100%', padding: '8px 30px', borderRadius: '6px', border: '1px solid #ddd' }} /><span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }}>🔍</span></div>
+        <div style={{ width: '17.5rem', height: '100%', overflowY: 'auto', background: 'white', borderRight: '0.0625rem solid #ddd', padding: '1.25rem 0.625rem', display: 'flex', flexDirection: 'column', gap: '0.125rem', position: isMobile ? 'absolute' : 'relative', zIndex: 100, left: 0, top: 0, transform: showSidebar ? 'translateX(0)' : (isMobile ? 'translateX(-100%)' : 'translateX(0)'), transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)', boxShadow: isMobile && showSidebar ? '0.25rem 0 0.9375rem rgba(0,0,0,0.1)' : 'none' }}>
+          <div style={{ padding: '0 0.9375rem 0.9375rem 0.9375rem' }}>
+            <div style={{ fontSize: '0.7rem', color: '#999', fontWeight: 'bold', marginBottom: '0.625rem' }}>CATEGORIES</div>
+            <div style={{ position: 'relative' }}><input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} style={{ width: '100%', padding: '0.5rem 1.875rem', borderRadius: '0.375rem', border: '0.0625rem solid #ddd' }} /><span style={{ position: 'absolute', left: '0.625rem', top: '50%', transform: 'translateY(-50%)' }}>🔍</span></div>
           </div>
-          {!searchQuery && categories.map(cat => ( <button key={cat} onClick={() => { setActiveCategory(cat); if (isMobile) setShowSidebar(false); }} style={{ textAlign: 'left', padding: '10px 15px', borderRadius: '6px', border: 'none', background: activeCategory === cat ? '#f0f7ff' : 'transparent', color: activeCategory === cat ? '#007AFF' : '#555', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><span>{cat}</span>                {selectedEmojis[cat]?.length > 0 && (
+          {!searchQuery && categories.map(cat => ( <button key={cat} onClick={() => { setActiveCategory(cat); if (isMobile) setShowSidebar(false); }} style={{ textAlign: 'left', padding: '0.625rem 0.9375rem', borderRadius: '0.375rem', border: 'none', background: activeCategory === cat ? '#f0f7ff' : 'transparent', color: activeCategory === cat ? '#007AFF' : '#555', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: '2.75rem' }}><span>{cat}</span>                {selectedEmojis[cat]?.length > 0 && (
                   <span style={{ 
                     background: '#4ECDC4',
                     color: '#2D3436',
-                    width: '20px',
-                    height: '20px',
+                    width: '1.25rem',
+                    height: '1.25rem',
                     borderRadius: '50%',
                     fontSize: '0.7rem',
                     display: 'flex',
@@ -385,12 +440,12 @@ const EmojiCurator = () => {
         </div>
         {isMobile && showSidebar && <div onClick={() => setShowSidebar(false)} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', zIndex: 90, backdropFilter: 'blur(2px)' }}/>} 
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#f8f9fa' }}>
-          <div style={{ padding: isMobile ? '15px' : '20px 30px', background: 'white', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ padding: isMobile ? '0.9375rem' : '1.25rem 1.875rem', background: 'white', borderBottom: '0.0625rem solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: '4.375rem' }}>
             <h2 style={{ margin: 0, fontSize: isMobile ? '1rem' : '1.1rem' }}>{searchQuery ? `Search results for &quot;${searchQuery}&quot;` : activeCategory}</h2>
-            {!searchQuery && <div style={{ display: 'flex', gap: '10px' }}><button onClick={() => { const all = (groupedEmojiData[activeCategory] || []).map(i => i.emoji); setSelectedEmojis(prev => ({ ...prev, [activeCategory]: all })); }} style={{ padding: '6px 12px', background: '#f0f2f5', border: '1px solid #ddd', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer' }}>Select All</button></div>}
+            {!searchQuery && <div style={{ display: 'flex', gap: '0.625rem' }}><button onClick={() => { const all = (groupedEmojiData[activeCategory] || []).map(i => i.emoji); setSelectedEmojis(prev => ({ ...prev, [activeCategory]: all })); }} style={{ padding: '0.375rem 0.75rem', background: '#f0f2f5', border: '0.0625rem solid #ddd', borderRadius: '0.375rem', fontSize: '0.8rem', cursor: 'pointer', minHeight: '2.75rem' }}>Select All</button></div>}
           </div>
-          <div ref={gridRef} onScroll={handleScroll} style={{ flex: 1, overflowY: 'auto', padding: isMobile ? '15px' : '30px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(auto-fill, minmax(85px, 1fr))' : 'repeat(auto-fill, minmax(130px, 1fr))', gap: isMobile ? '10px' : '20px' }}>
+          <div ref={gridRef} onScroll={handleScroll} style={{ flex: 1, overflowY: 'auto', padding: isMobile ? '0.9375rem' : '1.875rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(auto-fill, minmax(5.3125rem, 1fr))' : 'repeat(auto-fill, minmax(8.125rem, 1fr))', gap: isMobile ? '0.625rem' : '1.25rem' }}>
               {(filteredEmojis || []).slice(0, visibleCount).map((item, idx) => {
                 const sel = getSelectedInGroup(activeCategory, item); const isChecked = !!sel; const disp = sel || item.emoji;
                 const meta = emojiMetadata[disp] || {};
@@ -398,48 +453,90 @@ const EmojiCurator = () => {
                 const textColor = meta.wordClass ? (meta.wordClass === 'noun' ? '#2D3436' : '#FFFFFF') : '#333';
                 const isTarg = guideMode && (CORE_VOCABULARY.includes(item.name.toLowerCase()));
                 return (
-                                    <button key={`${item.emoji}-${idx}`} onMouseDown={(e) => handleStart(e, item)} onMouseUp={handleCleanup} onMouseLeave={handleCleanup} onClick={() => { 
-                                      if (showPhraseCreator) {
-                                        if (phraseIcons.length < 3) setPhraseIcons([...phraseIcons, item.emoji]);
-                                        return;
-                                      }
-                                      if (!isLongPress.current && !pickerTarget) { 
-                                        if (sequenceMode) setSequence(prev => [...prev, { ...item, id: new Date().getTime() }]); 
-                                        else toggleEmoji(activeCategory, item.emoji, item); 
-                                      } 
-                                    }} style={{ padding: '15px', borderRadius: '12px', border: 'none', background: bgColor, boxShadow: isTarg ? '0 0 15px #FFD700' : '0 2px 6px rgba(0,0,0,0.05)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', position: 'relative', transition: 'transform 0.1s active' }}>
-                                      {item.isPhrase ? (
-                                        <div style={{ display: 'flex', gap: '2px', background: '#fff', padding: '5px', borderRadius: '8px', border: '1px solid #eee' }}>
-                                          {(item.phraseIcons || [item.emoji]).map((ic, i) => (
-                                            <span key={i} style={{ fontSize: item.phraseIcons?.length > 1 ? '1.5rem' : '2.5rem' }}>{ic}</span>
-                                          ))}
-                                        </div>
-                                      ) : item.image ? <img src={item.image} alt={item.name} style={{ width: '3rem', height: '3rem', objectFit: 'cover' }} /> : item.type === 'avatar' ? <div style={{ pointerEvents: 'none' }}><AvatarRenderer recipe={item.recipe} size={80} /></div> : <span style={{ fontSize: '2.5rem' }}>{disp}</span>}
-                                      <span style={{ fontSize: '0.8rem', color: textColor, fontWeight: (meta.wordClass || item.isPhrase) ? 'bold' : 'normal' }}>{meta.label || item.name}</span>
-                  
-                      {/* Selection Badge */}                      {isChecked && (
-                        <div 
-                          aria-hidden="true"
-                          style={{
-                            position: 'absolute',
-                            top: '-10px',
-                            right: '-10px',
-                            background: '#4ECDC4',
-                            color: '#2D3436',
-                            width: '28px',
-                            height: '28px',
-                            borderRadius: '50%',
-                            fontSize: '14px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-                            border: '2px solid white'
-                          }}
-                        >
-                          ✓
-                        </div>
-                      )}
+                  <button 
+                    key={`${item.emoji}-${idx}`} 
+                    onPointerDown={(e) => handlePointerDown(e, item.emoji)}
+                    onPointerMove={(e) => handlePointerMove(e, item.emoji)}
+                    onMouseDown={(e) => handleStart(e, item)} 
+                    onMouseUp={handleCleanup} 
+                    onMouseLeave={handleCleanup} 
+                    onPointerUp={(e) => {
+                      if (cancellingEmoji === item.emoji) {
+                        setCancellingEmoji(null);
+                        return;
+                      }
+                      handleEmojiAction(activeCategory, item);
+                    }}
+                    style={{ 
+                      padding: '0.9375rem', 
+                      borderRadius: '0.75rem', 
+                      border: 'none', 
+                      background: bgColor, 
+                      boxShadow: isTarg ? '0 0 0.9375rem #FFD700' : '0 0.125rem 0.375rem rgba(0,0,0,0.05)', 
+                      cursor: 'pointer', 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      alignItems: 'center', 
+                      gap: '0.625rem', 
+                      position: 'relative', 
+                      transition: 'transform 0.1s active' 
+                    }}
+                  >
+                    {cancellingEmoji === item.emoji && (
+                      <div style={{
+                        position: 'absolute',
+                        inset: 0,
+                        background: 'rgba(255, 59, 48, 0.8)',
+                        color: 'white',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '0.75rem',
+                        fontWeight: 'bold',
+                        zIndex: 10,
+                        borderRadius: 'inherit',
+                        backdropFilter: 'blur(4px)'
+                      }}>
+                        CANCEL
+                      </div>
+                    )}
+                                        {item.isPhrase ? (
+                                          <div style={{ display: 'flex', gap: '0.125rem', background: '#fff', padding: '0.3125rem', borderRadius: '0.5rem', border: '0.0625rem solid #eee' }}>
+                                            {(item.phraseIcons || [item.emoji]).map((ic, i) => (
+                                              <span key={i} style={{ fontSize: item.phraseIcons?.length > 1 ? '1.5rem' : '2.5rem' }}>{ic}</span>
+                                            ))}
+                                          </div>
+                                        ) : item.image ? (
+                                          <img src={item.image} alt={item.name} style={{ width: '3rem', height: '3rem', objectFit: 'cover' }} />
+                                        ) : (
+                                          <span style={{ fontSize: '2.5rem' }}>{disp}</span>
+                                        )}
+                                        <span style={{ fontSize: '0.8rem', color: textColor, fontWeight: (meta.wordClass || item.isPhrase) ? 'bold' : 'normal' }}>{meta.label || item.name}</span>
+                                      
+                                        {isChecked && (
+                                          <div 
+                                            aria-hidden="true"
+                                            style={{
+                                              position: 'absolute',
+                                              top: '-10px',
+                                              right: '-10px',
+                                              background: '#4ECDC4',
+                                              color: '#2D3436',
+                                              width: '28px',
+                                              height: '28px',
+                                              borderRadius: '50%',
+                                              fontSize: '14px',
+                                              display: 'flex',
+                                              alignItems: 'center',
+                                              justifyContent: 'center',
+                                              boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                                              border: '2px solid white'
+                                            }}
+                                          >
+                                            ✓
+                                          </div>
+                                        )}
+                    
                     {isChecked && <div onClick={(e) => { e.stopPropagation(); openEditModal(item, disp); }} style={{ position: 'absolute', top: '5px', left: '5px', background: 'white', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>✏️</div>}
                   </button>
                 );
