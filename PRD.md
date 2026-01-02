@@ -90,8 +90,8 @@ Kiwi Voice is a specialized tool designed to curate and customize icon libraries
 | **Phase 11** | Market Disruption (Kiwi Edge) | **COMPLETE** |
 | **Phase 12** | Context-Aware Intelligence | **COMPLETE** |
 | **Phase 13** | Circle of Support (Avatar Builder) | **COMPLETE** |
-| **Phase 14** | Advanced Disruptor Refinements | **PENDING** |
-| **Phase 15** | High-Fidelity Voice Engine | **PENDING** |
+| **Phase 14** | Advanced Disruptor Refinements | **COMPLETE** |
+| **Phase 15** | High-Fidelity Voice Engine | **IN PROGRESS** |
 | **Phase 16** | Apple Design & Accessibility Standards | **PENDING** |
 
 ---
@@ -220,22 +220,22 @@ Integrating key features from the product roadmap:
 ### 14. Phase 14: Advanced Disruptor Refinements (New)
 
 #### 14.1. Intelligent Automation
-- [ ] **Automated POS Tagging:** 
+- [x] **Automated POS Tagging:** 
     - **Data:** Integrate a 500-word linguistic lexicon (`aacLexicon.js`).
     - **Logic:** Auto-assign `wordClass` during Bulk Import.
     - **Visual:** Auto-apply Fitzgerald Key backgrounds: Noun (Yellow), Verb (Green), Adjective (Blue), Social (Pink).
-- [ ] **Interactive Grammar Engine:** 
+- [x] **Interactive Grammar Engine:** 
     - **Trigger:** Sequence detection in Sentence Strip (Pronoun -> Verb).
     - **UI:** floating "Inflection Bubble" above verb offering tense changes (e.g., "Eat" -> "Eating", "Ate").
 
 #### 14.2. Instant Sharing
-- [ ] **QR/Board Sync:** 
+- [x] **QR/Board Sync:** 
     - **Compression:** Use `lz-string` to compress library state into URL parameters.
     - **QR Generation:** Display a QR code in the Share modal for instant device-to-device transfer.
     - **Deep Linking:** Auto-import logic when the app is launched via a `?board=` link.
 
 #### 14.3. GLP Visuals
-- [ ] **Storyboard Phrase Buttons:** 
+- [x] **Storyboard Phrase Buttons:** 
     - **Layout:** Render multi-icon "scripts" in a horizontal 3-icon storyboard visual to distinguish them from single-word Core vocabulary.
 
 

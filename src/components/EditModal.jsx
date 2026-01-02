@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import VoiceRecorder from './VoiceRecorder';
-import CharacterBuilder from './CharacterBuilder';
+import MemojiPicker from './MemojiPicker';
 
 const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item, triggerPaywall }) => {
     const [word, setWord] = useState('');
@@ -9,7 +9,7 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
     const [viewMode, setViewMode] = useState('grid');
     const [customAudio, setCustomAudio] = useState(null);
     const [isImage, setIsImage] = useState(false);
-    const [showCharacterBuilder, setShowCharacterBuilder] = useState(false);
+    const [showMemojiPicker, setShowMemojiPicker] = useState(false);
     const [characterConfig, setCharacterConfig] = useState(null);
     const fileInputRef = useRef(null);
     const cameraInputRef = useRef(null);
@@ -94,7 +94,7 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                             </div>
                             
                             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                                {['', '#FF3B30', '#FF9500', '#FFCC00', '#34C759', '#007AFF', '#5856D6', '#AF52DE'].map(color => (
+                                {['', '#FF3B30', '#FF9500', '#FFCC00', '#34C759', '#007AFF', '#5556D6', '#AF52DE'].map(color => (
                                     <button 
                                         key={color} 
                                         onClick={() => setBgColor(color)} 
@@ -113,8 +113,8 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                             <span>Choose from Library</span>
                             <span className="ios-chevron">›</span>
                         </div>
-                        <div className="ios-row" onClick={() => setShowCharacterBuilder(true)}>
-                            <span>Customize Avatar</span>
+                        <div className="ios-row" onClick={() => setShowMemojiPicker(true)}>
+                            <span>Select Character</span>
                             <span className="ios-chevron">›</span>
                         </div>
                         <div className="ios-row" onClick={() => triggerPaywall ? triggerPaywall('upload_photo', () => fileInputRef.current.click()) : fileInputRef.current.click()}>
@@ -144,18 +144,16 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                     <input type="file" ref={cameraInputRef} onChange={handleFileChange} accept="image/*" capture="environment" style={{ display: 'none' }}/>
                 </div>
 
-                {showCharacterBuilder && (
-                    <CharacterBuilder 
-                        initialConfig={characterConfig} 
-                        triggerPaywall={triggerPaywall} 
+                {showMemojiPicker && (
+                    <MemojiPicker 
                         onSelect={(newIcon, config) => { 
                             setIcon(newIcon); 
                             setCharacterConfig(config); 
                             if (config.name) setWord(config.name); 
-                            setIsImage(!!config.isImported); 
-                            setShowCharacterBuilder(false); 
+                            setIsImage(true); 
+                            setShowMemojiPicker(false); 
                         }} 
-                        onClose={() => setShowCharacterBuilder(false)}
+                        onClose={() => setShowMemojiPicker(false)}
                     />
                 )}
             </div>

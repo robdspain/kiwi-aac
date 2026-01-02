@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import GuidedAccessModal from './GuidedAccessModal';
 import FavoritesPickerModal from './FavoritesPickerModal';
-import CharacterBuilder from './CharacterBuilder';
+import MemojiPicker from './MemojiPicker';
 import Superwall from '../plugins/superwall';
 import { STAGES, LEVEL_ORDER, getLevel, getStage } from '../data/levelDefinitions';
 import { BELL_SOUNDS, playBellSound } from '../utils/sounds';
@@ -37,7 +37,6 @@ const Controls = ({
     rootItems,
     colorTheme,
     onSetColorTheme,
-    triggerPaywall,
     bellSound,
     onUpdateBellSound,
     speechDelay,
@@ -340,18 +339,14 @@ const Controls = ({
                     {/* Character Tab */}
                     {activeTab === 'character' && (
                         <div style={{ background: '#F2F2F7', margin: '0 -24px', padding: '24px', flex: 1 }}>
-                            <div className="ios-setting-group-header">Custom Avatars</div>
-                            <div className="ios-setting-card" style={{ padding: '5px' }}>
-                                <CharacterBuilder
-                                    isTab={true}
-                                    triggerPaywall={triggerPaywall}
-                                    onSelect={(url, config) => {
-                                        onAddItem(config.name || 'Me', url, 'button');
-                                        alert(`${config.name || 'Character'} added to your library!`);
-                                        setActiveTab('basic');
-                                    }}
-                                />
-                            </div>
+                            <MemojiPicker
+                                onSelect={(url, config) => {
+                                    onAddItem(config.name || 'Character', url, 'button');
+                                    alert(`${config.name || 'Character'} added to your library!`);
+                                    setActiveTab('basic');
+                                }}
+                                onClose={() => setActiveTab('basic')}
+                            />
                         </div>
                     )}
 
