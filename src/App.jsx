@@ -453,7 +453,7 @@ function App() {
       )}
       
       {/* iOS Navigation Header */}
-      <header className="ios-nav-header">
+      <header className="ios-nav-header" style={{ opacity: 0.3 }}>
         <div className="ios-nav-top">
           {currentPath.length > 0 && (
             <button className="ios-back-button" onClick={handleBack}>

@@ -91,6 +91,8 @@ Kiwi Voice is a specialized tool designed to curate and customize icon libraries
 | **Phase 12** | Context-Aware Intelligence | **COMPLETE** |
 | **Phase 13** | Circle of Support (Avatar Builder) | **COMPLETE** |
 | **Phase 14** | Advanced Disruptor Refinements | **PENDING** |
+| **Phase 15** | High-Fidelity Voice Engine | **PENDING** |
+| **Phase 16** | Apple Design & Accessibility Standards | **PENDING** |
 
 ---
 
@@ -101,6 +103,24 @@ To strictly adhere to iOS Human Interface Guidelines (HIG):
 - [x] **Visual Feedback:** Add `:active` states (opacity/scale) to all interactive elements to mimic native touch feedback.
 - [x] **Translucency:** Apply `backdrop-filter: blur()` to the Top Navigation Bar and Sidebar for the "Liquid Glass" feel.
 - [x] **Loading Skeleton:** Replace the simple lazy loading spinner (if any) or blank space with a skeleton loader during the initial batch render.
+
+---
+
+### 16. Phase 16: Apple Design & Accessibility Standards (New)
+To ensure Kiwi Voice meets the highest standards for iOS users, especially those with visual or motor impairments:
+
+#### 16.1. Visual & Contrast Standards
+- [ ] **Contrast Compliance (WCAG 2.1 AA):** Ensure all text-to-background contrast ratios are at least 4.5:1. 
+    - **Fix:** Update primary teal (#4ECDC4) to pass against white text or switch to dark text on light backgrounds.
+    - **Fitzgerald Key:** Adjust Fitzgerald Key colors to ensure readability (e.g., dark text on yellow/green).
+- [ ] **Dynamic Type Support:** Use relative units (rem/em) or system font styles to allow the UI to scale with iOS system font size settings.
+- [ ] **SF Pro Rounded:** Ensure the app utilizes the system rounded font variant for a native, friendly feel.
+
+#### 16.2. Motor & Interaction Standards
+- [ ] **Touch Target Minimums:** Enforce a strict minimum of 44x44 pt for all interactive elements (Apple HIG standard).
+- [ ] **Pointer Cancellation:** Ensure actions trigger on `pointerup` (UP event) rather than `down` to allow users to slide off a button to cancel an accidental tap.
+- [ ] **Haptic Hierarchy:** Use varied haptic intensities (Light, Medium, Heavy) to distinguish between successful selections and errors/warnings.
+
 
 ---
 

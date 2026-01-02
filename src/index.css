@@ -138,12 +138,30 @@ body.literacy-mode {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   position: relative;
   cursor: pointer;
   animation: fadeIn 0.3s ease;
   width: calc(33.33% - 15px); /* Responsive width for Flexbox centering */
   max-width: 160px;
+}
+
+.phase-large-grid .app-item {
+  width: 60vw;
+  height: 60vw;
+  max-width: none;
+}
+
+.phase-large-grid .app-icon {
+  width: 100%;
+  height: 100%;
+  font-size: 15vw;
+}
+
+.phase-large-grid .app-label {
+  font-size: 4vw;
+  margin-top: 10px;
 }
 
 /* Floating Settings Button */
