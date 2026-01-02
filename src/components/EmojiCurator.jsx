@@ -1,12 +1,14 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { EMOJI_DATA } from '../utils/emojiData';
 import { triggerHaptic } from '../utils/haptics';
-import { CORE_VOCABULARY, TEMPLATES, CONTEXT_DEFINITIONS, SKILLS, WORD_CLASSES } from '../data/aacData';
+import { CORE_VOCABULARY, TEMPLATES, CONTEXT_DEFINITIONS } from '../data/aacData';
 import { AAC_LEXICON, getFitzgeraldColor } from '../data/aacLexicon';
 import CharacterBuilder from './CharacterBuilder';
 import AvatarRenderer from './AvatarRenderer';
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { Camera, CameraResultType, CameraSource } from '@capacitor-camera';
 import SplashScreen from './SplashScreen';
+import LZString from 'lz-string';
+import { QRCodeCanvas } from 'qrcode.react';
 
 const TONE_NAMES = ["Pale", "Cream White", "Brown", "Dark Brown", "Black"];
 const TONE_SUFFIX_REGEX = new RegExp(` (${TONE_NAMES.join('|')})\\)$`, 'i');
@@ -105,12 +107,46 @@ const EmojiCurator = () => {
   const [showImageSearch, setShowImageSearch] = useState(false);
   const [showSmartImport, setShowSmartImport] = useState(false);
   const [showPhraseCreator, setShowPhraseCreator] = useState(false);
+  const [phraseIcons, setPhraseIcons] = useState([]);
   const [showVisualSceneCreator, setShowVisualSceneCreator] = useState(false);
   const [showCharacterBuilder, setShowCharacterBuilder] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
   const [showToolsMenu, setShowToolsMenu] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
   const [tempMeta, setTempMeta] = useState({ label: '', wordClass: 'noun', backgroundColor: '#ffffff', skill: 'none' });
-  const [activeContext] = useState('Default');
+
+  // Deep Linking / Import Logic
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const boardData = params.get('board');
+    if (boardData) {
+      try {
+        const decompressed = LZString.decompressFromEncodedURIComponent(boardData);
+        if (decompressed) {
+          const parsed = JSON.parse(decompressed);
+          if (parsed.selected) setSelectedEmojis(parsed.selected);
+          if (parsed.meta) setEmojiMetadata(parsed.meta);
+          alert("Board imported successfully! 🥝");
+          // Clear URL without refresh
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      } catch (e) {
+        console.error("Failed to import board:", e);
+      }
+    }
+  }, []);
+
+  const generateShareUrl = () => {
+    const data = JSON.stringify({
+      selected: selectedEmojis,
+      meta: emojiMetadata
+    });
+    const compressed = LZString.compressToEncodedURIComponent(data);
+    const url = `${window.location.origin}${window.location.pathname}?board=${compressed}`;
+    setShareUrl(url);
+    setShowShareModal(true);
+  };
   const [guideMode, setGuideMode] = useState(false);
 
   const openEditModal = (item, disp) => {
@@ -265,6 +301,21 @@ const EmojiCurator = () => {
           </div>
           <div style={{ background: '#333', padding: '8px 15px', borderRadius: '8px', fontSize: '0.9rem', color: 'white' }}><span style={{ color: '#4ECDC4', fontWeight: 'bold' }}>{totalSelected}</span> selected</div>
             <button
+              onClick={generateShareUrl}
+              style={{
+                padding: isMobile ? '8px 12px' : '10px 20px',
+                background: '#333',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                fontSize: isMobile ? '0.8rem' : '0.9rem'
+              }}
+            >
+              SHARE
+            </button>
+            <button
               onClick={exportSelected}
               style={{
                 padding: isMobile ? '8px 15px' : '10px 25px',
@@ -318,9 +369,25 @@ const EmojiCurator = () => {
                 const textColor = meta.wordClass ? (meta.wordClass === 'noun' ? '#2D3436' : '#FFFFFF') : '#333';
                 const isTarg = guideMode && (CORE_VOCABULARY.includes(item.name.toLowerCase()));
                 return (
-                  <button key={`${item.emoji}-${idx}`} onMouseDown={(e) => handleStart(e, item)} onMouseUp={handleCleanup} onMouseLeave={handleCleanup} onClick={() => { if (!isLongPress.current && !pickerTarget) { if (sequenceMode) setSequence(prev => [...prev, { ...item, id: new Date().getTime() }]); else toggleEmoji(activeCategory, item.emoji, item); } }} style={{ padding: '15px', borderRadius: '12px', border: 'none', background: bgColor, boxShadow: isTarg ? '0 0 15px #FFD700' : '0 2px 6px rgba(0,0,0,0.05)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', position: 'relative', transition: 'transform 0.1s active' }}>
-                    {item.image ? <img src={item.image} alt={item.name} style={{ width: '3rem', height: '3rem', objectFit: 'cover' }} /> : item.type === 'avatar' ? <div style={{ pointerEvents: 'none' }}><AvatarRenderer recipe={item.recipe} size={80} /></div> : <span style={{ fontSize: '2.5rem' }}>{disp}</span>}
-                    <span style={{ fontSize: '0.8rem', color: textColor, fontWeight: meta.wordClass ? 'bold' : 'normal' }}>{meta.label || item.name}</span>
+                                    <button key={`${item.emoji}-${idx}`} onMouseDown={(e) => handleStart(e, item)} onMouseUp={handleCleanup} onMouseLeave={handleCleanup} onClick={() => { 
+                                      if (showPhraseCreator) {
+                                        if (phraseIcons.length < 3) setPhraseIcons([...phraseIcons, item.emoji]);
+                                        return;
+                                      }
+                                      if (!isLongPress.current && !pickerTarget) { 
+                                        if (sequenceMode) setSequence(prev => [...prev, { ...item, id: new Date().getTime() }]); 
+                                        else toggleEmoji(activeCategory, item.emoji, item); 
+                                      } 
+                                    }} style={{ padding: '15px', borderRadius: '12px', border: 'none', background: bgColor, boxShadow: isTarg ? '0 0 15px #FFD700' : '0 2px 6px rgba(0,0,0,0.05)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', position: 'relative', transition: 'transform 0.1s active' }}>
+                                      {item.isPhrase ? (
+                                        <div style={{ display: 'flex', gap: '2px', background: '#fff', padding: '5px', borderRadius: '8px', border: '1px solid #eee' }}>
+                                          {(item.phraseIcons || [item.emoji]).map((ic, i) => (
+                                            <span key={i} style={{ fontSize: item.phraseIcons?.length > 1 ? '1.5rem' : '2.5rem' }}>{ic}</span>
+                                          ))}
+                                        </div>
+                                      ) : item.image ? <img src={item.image} alt={item.name} style={{ width: '3rem', height: '3rem', objectFit: 'cover' }} /> : item.type === 'avatar' ? <div style={{ pointerEvents: 'none' }}><AvatarRenderer recipe={item.recipe} size={80} /></div> : <span style={{ fontSize: '2.5rem' }}>{disp}</span>}
+                                      <span style={{ fontSize: '0.8rem', color: textColor, fontWeight: (meta.wordClass || item.isPhrase) ? 'bold' : 'normal' }}>{meta.label || item.name}</span>
+                  
                       {/* Selection Badge */}                      {isChecked && (
                         <div 
                           aria-hidden="true"
@@ -367,14 +434,77 @@ const EmojiCurator = () => {
           </div>
       )}
       {showVisualSceneCreator && ( <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', zIndex: 10006, display: 'flex', alignItems: 'center', justifyContent: 'center' }}> <div style={{ background: 'white', padding: '20px', borderRadius: '16px', width: '90%', maxWidth: '500px' }}> <h3>Visual Scene</h3> <input type="file" onChange={(e) => { const reader = new FileReader(); reader.onload = () => { }; reader.readAsDataURL(e.target.files[0]); }}/> <button onClick={() => setShowVisualSceneCreator(false)}>Cancel</button> </div> </div> )}
-      {showPhraseCreator && ( <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', zIndex: 10005, display: 'flex', alignItems: 'center', justifyContent: 'center' }}> <div style={{ background: 'white', padding: '20px', borderRadius: '16px' }}> <h3>Create Phrase</h3> <input id="ph-txt" placeholder="Phrase..." /> <button onClick={() => { const t = document.getElementById('ph-txt').value; if (t) { setCustomItems(prev => [...prev, { id: `ph-${new Date().getTime()}`, name: t, category: activeCategory, emoji: '💬', isPhrase: true }]); setShowPhraseCreator(false); } }}>Create</button> </div> </div> )}
+      {showPhraseCreator && ( 
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', zIndex: 10005, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}> 
+          <div style={{ background: 'white', padding: '25px', borderRadius: '24px', width: '90%', maxWidth: '450px', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}> 
+            <h3 style={{ marginTop: 0 }}>Create Phrase Script (GLP)</h3> 
+            <p style={{ fontSize: '0.8rem', color: '#666', marginBottom: '15px' }}>Build a storyboard visual for a full phrase or script.</p>
+            
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', fontSize: '0.8rem', color: '#666', marginBottom: '5px' }}>Phrase / Script Name</label>
+              <input id="ph-txt" placeholder="e.g., Let&apos;s go to the park" style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #ddd' }} /> 
+            </div>
+
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', fontSize: '0.8rem', color: '#666', marginBottom: '5px' }}>Storyboard Icons (Max 3)</label>
+              <div style={{ display: 'flex', gap: '10px', background: '#f8f9fa', padding: '15px', borderRadius: '12px', justifyContent: 'center', minHeight: '70px', alignItems: 'center' }}>
+                {phraseIcons.map((ic, i) => (
+                  <div key={i} onClick={() => setPhraseIcons(phraseIcons.filter((_, idx) => idx !== i))} style={{ fontSize: '2rem', cursor: 'pointer', background: 'white', padding: '5px', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>{ic}</div>
+                ))}
+                {phraseIcons.length < 3 && <div style={{ fontSize: '0.8rem', color: '#999' }}>Tap icons in the background grid to add...</div>}
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button style={{ flex: 1, padding: '12px', background: '#eee', border: 'none', borderRadius: '10px', fontWeight: 'bold' }} onClick={() => { setShowPhraseCreator(false); setPhraseIcons([]); }}>Cancel</button> 
+              <button style={{ flex: 1, padding: '12px', background: '#4ECDC4', color: '#2D3436', border: 'none', borderRadius: '10px', fontWeight: 'bold' }} onClick={() => { 
+                const t = document.getElementById('ph-txt').value; 
+                if (t && phraseIcons.length > 0) { 
+                  const newItem = { id: `ph-${new Date().getTime()}`, name: t, category: activeCategory, emoji: phraseIcons[0], phraseIcons: phraseIcons, isPhrase: true };
+                  setCustomItems(prev => [...prev, newItem]); 
+                  toggleEmoji(activeCategory, newItem.emoji, newItem);
+                  setShowPhraseCreator(false); 
+                  setPhraseIcons([]);
+                } else {
+                  alert("Please enter a name and select at least one icon.");
+                }
+              }}>Create Phrase</button> 
+            </div>
+          </div> 
+        </div> 
+      )}
       {showSmartImport && ( <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', zIndex: 10004, display: 'flex', alignItems: 'center', justifyContent: 'center' }}> <div style={{ background: 'white', padding: '20px', borderRadius: '16px', width: '90%', maxWidth: '400px' }}> <h3>Smart Import</h3> <p style={{ fontSize: '0.8rem', color: '#666', marginBottom: '15px' }}>Enter words separated by commas or new lines. We&apos;ll auto-tag them with Fitzgerald colors.</p> <textarea id="sm-imp" placeholder="apple, want, happy..." style={{ width: '100%', height: '120px', padding: '10px', borderRadius: '8px', border: '1px solid #ddd', marginBottom: '15px', fontFamily: 'inherit' }} /> <div style={{ display: 'flex', gap: '10px' }}> <button style={{ flex: 1, padding: '12px', background: '#eee', border: 'none', borderRadius: '8px', fontWeight: 'bold' }} onClick={() => setShowSmartImport(false)}>Cancel</button> <button style={{ flex: 1, padding: '12px', background: '#4ECDC4', color: '#2D3436', border: 'none', borderRadius: '8px', fontWeight: 'bold' }} onClick={() => { const t = document.getElementById('sm-imp').value; if (t) { const words = t.split(/[\n,]+/).map(s => s.trim()).filter(Boolean); words.forEach(w => { const m = allEmojisFlat.find(e => e.name.toLowerCase() === w.toLowerCase()) || allEmojisFlat.find(e => e.name.toLowerCase().includes(w.toLowerCase())); if (m) { const lexiconEntry = AAC_LEXICON[w.toLowerCase()] || AAC_LEXICON[m.name.toLowerCase()]; if (lexiconEntry) { setEmojiMetadata(prev => ({ ...prev, [m.emoji]: { label: m.name, wordClass: lexiconEntry.type, backgroundColor: getFitzgeraldColor(lexiconEntry.type), skill: 'none' } })); } toggleEmoji(m.category, m.emoji, m); } }); setShowSmartImport(false); triggerHaptic('success'); } }}>Import</button> </div> </div> </div> )}
       {showCharacterBuilder && <CharacterBuilder onClose={() => setShowCharacterBuilder(false)} onSave={(n, r) => { const i = { id: `av-${new Date().getTime()}`, name: n, category: 'My People', type: 'avatar', recipe: r, emoji: '👤' }; setCustomItems(prev => [i, ...prev]); toggleEmoji('My People', i.emoji, i); setShowCharacterBuilder(false); }} />} 
       {showImageSearch && ( <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', zIndex: 10003, display: 'flex', alignItems: 'center', justifyContent: 'center' }}> <div style={{ background: 'white', padding: '20px', borderRadius: '16px' }}>                   <div style={{ marginBottom: '20px', padding: '15px', background: '#f9f9f9', borderRadius: '10px', textAlign: 'center' }}><p style={{ margin: '0 0 15px 0', fontWeight: 'bold' }}>Add from Device</p><div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}><button onClick={() => handleGetPhoto(CameraSource.Camera)} style={{ padding: '15px', background: '#007AFF', color: 'white', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.9rem' }}>📸 Take Photo</button><button onClick={() => handleGetPhoto(CameraSource.Photos)} style={{ padding: '15px', background: '#34C759', color: 'white', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.9rem' }}>🖼️ Library</button></div><div style={{ marginTop: '15px', display: 'flex', gap: '10px' }}><button onClick={() => { setShowImageSearch(false); setShowVisualSceneCreator(true); }} style={{ flex: 1, padding: '10px', background: '#5856D6', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem' }}>Create JIT Scene</button><button onClick={() => { setShowImageSearch(false); setShowCharacterBuilder(true); }} style={{ flex: 1, padding: '10px', background: '#FF9500', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem' }}>Create Avatar</button></div></div>
                   <div style={{ borderTop: '1px solid #ddd', paddingTop: '20px' }}><p style={{ margin: '0 0 15px 0', fontWeight: 'bold' }}>Previously Imported Photos</p><div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>{customItems.filter(i => i.image).map(item => ( <div key={item.id} onClick={() => { toggleEmoji(activeCategory, item.emoji, item); setShowImageSearch(false); }} style={{ cursor: 'pointer', textAlign: 'center' }}><img src={item.image} alt={item.name} style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', borderRadius: '8px' }} /><div style={{ fontSize: '0.6rem', marginTop: '4px', overflow: 'hidden', whiteSpace: 'nowrap' }}>{item.name}</div></div> ))}</div>{customItems.filter(i => i.image).length === 0 && <p style={{ fontSize: '0.8rem', color: '#999', textAlign: 'center' }}>No photos imported yet.</p>}</div>
                   <button onClick={() => setShowImageSearch(false)} style={{ marginTop: '20px', padding: '10px', width: '100%', background: '#eee', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Cancel</button> </div> </div> )}
       {showTemplates && ( <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', zIndex: 10001, display: 'flex', alignItems: 'center', justifyContent: 'center' }}> <div style={{ background: 'white', padding: '20px', borderRadius: '16px' }}> <h3>Templates</h3> {Object.keys(TEMPLATES).map(n => <button key={n} onClick={() => applyTemplate(n)}>{n}</button>)} <button onClick={() => setShowTemplates(false)}>Cancel</button> </div> </div> )}
-      {editingItem && ( <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', zIndex: 10002, display: 'flex', alignItems: 'center', justifyContent: 'center' }}> <div style={{ background: 'white', padding: '20px', borderRadius: '16px' }}> <h3>Edit {editingItem.emoji}</h3> <input value={tempMeta.label} onChange={e => setTempMeta({...tempMeta, label: e.target.value})} /> <button onClick={() => { handleSaveMetadata(editingItem.emoji, tempMeta.label, tempMeta.wordClass, tempMeta.backgroundColor, tempMeta.skill); }}>Save</button> <button onClick={() => setEditingItem(null)}>Cancel</button> </div> </div> )}
+            {showShareModal && (
+              <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', zIndex: 10010, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
+                <div style={{ background: 'white', padding: '30px', borderRadius: '24px', width: '90%', maxWidth: '400px', textAlign: 'center', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
+                  <h3 style={{ marginTop: 0 }}>Share Board</h3>
+                  <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '20px' }}>Scan this QR code with another device to instantly import your board.</p>
+                  
+                  <div style={{ background: '#f8f9fa', padding: '20px', borderRadius: '16px', display: 'inline-block', marginBottom: '20px' }}>
+                    <QRCodeCanvas value={shareUrl} size={200} />
+                  </div>
+      
+                  <div style={{ marginBottom: '20px' }}>
+                    <input readOnly value={shareUrl} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.7rem', background: '#f9f9f9' }} />
+                    <button 
+                      onClick={() => { navigator.clipboard.writeText(shareUrl); alert("Link copied!"); }}
+                      style={{ marginTop: '10px', width: '100%', padding: '10px', background: '#007AFF', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}
+                    >
+                      Copy Link
+                    </button>
+                  </div>
+      
+                  <button onClick={() => setShowShareModal(false)} style={{ width: '100%', padding: '12px', background: '#eee', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>Close</button>
+                </div>
+              </div>
+            )}
+            {editingItem && ( <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', zIndex: 10002, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
+       <div style={{ background: 'white', padding: '25px', borderRadius: '20px', width: '90%', maxWidth: '400px', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}> <h3 style={{ marginTop: 0 }}>Edit {editingItem.emoji}</h3> <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}> <div> <label style={{ display: 'block', fontSize: '0.8rem', color: '#666', marginBottom: '5px' }}>Display Label</label> <input value={tempMeta.label} onChange={e => setTempMeta({...tempMeta, label: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }} /> </div> <div> <label style={{ display: 'block', fontSize: '0.8rem', color: '#666', marginBottom: '5px' }}>Word Class (Fitzgerald Key)</label> <select value={tempMeta.wordClass} onChange={e => { const wc = e.target.value; setTempMeta({...tempMeta, wordClass: wc, backgroundColor: getFitzgeraldColor(wc)}); }} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }}> <option value="noun">Noun (Yellow)</option> <option value="verb">Verb (Green)</option> <option value="adj">Adjective (Blue)</option> <option value="social">Social/Pronoun (Pink)</option> <option value="misc">Misc/Preposition (Orange)</option> <option value="none">None (White)</option> </select> </div> <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}> <button style={{ flex: 1, padding: '12px', background: '#eee', border: 'none', borderRadius: '8px', fontWeight: 'bold' }} onClick={() => setEditingItem(null)}>Cancel</button> <button style={{ flex: 1, padding: '12px', background: '#4ECDC4', color: '#2D3436', border: 'none', borderRadius: '8px', fontWeight: 'bold' }} onClick={() => { handleSaveMetadata(editingItem.emoji, tempMeta.label, tempMeta.wordClass, tempMeta.backgroundColor, tempMeta.skill); }}>Save</button> </div> </div> </div> </div> )}
     </div>
   );
 };

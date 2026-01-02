@@ -522,22 +522,47 @@ function App() {
       {showAdvancementModal && <AdvancementModal currentPhase={currentPhase} onAdvance={handleAdvance} onWait={handleWait}/>}
       <A2HSModal />
       {inflectionData && (
-        <div className="inflection-bubble" style={{ position: 'fixed', top: '20%', left: '50%', transform: 'translateX(-50%)', background: 'white', padding: '15px', borderRadius: '15px', boxShadow: '0 5px 20px rgba(0,0,0,0.2)', zIndex: 1000, display: 'flex', gap: '10px' }}>
-          <button onClick={() => { 
-            const updatedItems = [...stripItems];
-            updatedItems[updatedItems.length - 1] = { ...inflectionData.item, word: inflectionData.verbEntry.inflections.present };
-            setStripItems(updatedItems);
-            speak(inflectionData.verbEntry.inflections.present);
-            setInflectionData(null);
-          }}>{inflectionData.verbEntry.inflections.present}</button>
-          <button onClick={() => { 
-            const updatedItems = [...stripItems];
-            updatedItems[updatedItems.length - 1] = { ...inflectionData.item, word: inflectionData.verbEntry.inflections.past };
-            setStripItems(updatedItems);
-            speak(inflectionData.verbEntry.inflections.past);
-            setInflectionData(null);
-          }}>{inflectionData.verbEntry.inflections.past}</button>
-          <button onClick={() => setInflectionData(null)}>✕</button>
+        <div className="inflection-bubble" style={{ 
+          position: 'fixed', 
+          bottom: '120px', 
+          left: '50%', 
+          transform: 'translateX(-50%)', 
+          background: 'white', 
+          padding: '10px', 
+          borderRadius: '20px', 
+          boxShadow: '0 8px 30px rgba(0,0,0,0.3)', 
+          zIndex: 10000, 
+          display: 'flex', 
+          gap: '10px',
+          border: '2px solid #4ECDC4',
+          animation: 'slideUp 0.3s ease-out'
+        }}>
+          {inflectionData.verbEntry.inflections.map((inflection, i) => (
+            <button key={i} onClick={() => { 
+              const updatedItems = [...stripItems];
+              updatedItems[updatedItems.length - 1] = { ...inflectionData.item, word: inflection };
+              setStripItems(updatedItems);
+              speak(inflection);
+              setInflectionData(null);
+            }} style={{
+              padding: '10px 20px',
+              borderRadius: '15px',
+              border: 'none',
+              background: '#f0f2f5',
+              fontWeight: 'bold',
+              cursor: 'pointer'
+            }}>{inflection}</button>
+          ))}
+          <button onClick={() => setInflectionData(null)} style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '20px',
+              border: 'none',
+              background: '#ffefef',
+              color: '#FF3B30',
+              fontWeight: 'bold',
+              cursor: 'pointer'
+          }}>✕</button>
         </div>
       )}
       {showDashboard && <Suspense fallback={null}><Dashboard onClose={() => setShowDashboard(false)} progressData={progressData} currentPhase={currentPhase} currentLevel={currentLevel} rootItems={rootItems}/></Suspense>}

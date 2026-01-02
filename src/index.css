@@ -145,58 +145,63 @@ button.primary {
 /* Level 1/2 Focus Mode Card Refinement */
 .phase-large-grid {
   display: flex !important;
+  flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
   flex: 1 !important;
-  padding: 0 !important;
+  padding: 40px !important; /* Extra padding to prevent shadow clipping */
   margin: 0 !important;
   z-index: 5;
+  overflow: hidden !important; /* No scrolling in focus mode */
 }
 
 .phase-large-grid .app-item {
   flex-direction: row !important;
   background: white !important;
-  border-radius: 48px !important;
-  box-shadow: 0 40px 100px rgba(0,0,0,0.15) !important;
-  padding: 40px !important;
-  gap: 40px !important;
+  border-radius: 32px !important;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.12) !important;
+  padding: 25px !important;
+  gap: 30px !important;
   border: none !important;
-  margin: auto !important;
+  margin: auto !important; /* Absolute center within flex box */
+  height: auto !important;
 }
 
-/* Scaling based on child's preference */
-.size-standard.phase-large-grid .app-item { width: 70vw !important; max-width: 350px !important; padding: 25px !important; }
-.size-big.phase-large-grid .app-item { width: 85vw !important; max-width: 450px !important; padding: 40px !important; }
-.size-super-big.phase-large-grid .app-item { width: 95vw !important; max-width: 600px !important; padding: 60px !important; }
+/* Strictly scaling based on defined touch target sizes */
+.size-standard.phase-large-grid .app-item { width: 80vw !important; max-width: 320px !important; }
+.size-big.phase-large-grid .app-item { width: 85vw !important; max-width: 440px !important; }
+.size-super-big.phase-large-grid .app-item { width: 90vw !important; max-width: 560px !important; }
 
 .phase-large-grid .app-icon {
-  width: 35% !important;
+  width: auto !important;
   height: auto !important;
   aspect-ratio: 1/1 !important;
-  font-size: 25vw !important;
   background: transparent !important;
   box-shadow: none !important;
   flex-shrink: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
-/* Scaled Icons */
-.size-standard.phase-large-grid .app-icon { font-size: 15vw !important; }
-.size-big.phase-large-grid .app-icon { font-size: 25vw !important; }
-.size-super-big.phase-large-grid .app-icon { font-size: 35vw !important; }
+/* Icon scaling aligned with touch targets */
+.size-standard.phase-large-grid .app-icon { height: 100px !important; font-size: 70px !important; }
+.size-big.phase-large-grid .app-icon { height: 140px !important; font-size: 100px !important; }
+.size-super-big.phase-large-grid .app-icon { height: 180px !important; font-size: 130px !important; }
 
 .phase-large-grid .app-label {
-  font-size: 8vw !important;
-  font-weight: 900 !important;
+  font-weight: 800 !important;
   color: #000 !important;
   text-align: left !important;
   flex: 1 !important;
   white-space: normal !important;
+  margin: 0 !important;
 }
 
-/* Scaled Labels */
-.size-standard.phase-large-grid .app-label { font-size: 6vw !important; }
-.size-big.phase-large-grid .app-label { font-size: 8vw !important; }
-.size-super-big.phase-large-grid .app-label { font-size: 10vw !important; }
+/* Label scaling */
+.size-standard.phase-large-grid .app-label { font-size: 32px !important; }
+.size-big.phase-large-grid .app-label { font-size: 42px !important; }
+.size-super-big.phase-large-grid .app-label { font-size: 52px !important; }
 
 .app-icon {
   width: 100%;
