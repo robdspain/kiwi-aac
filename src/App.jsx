@@ -155,7 +155,6 @@ function App() {
 
   const currentStage = Math.floor(currentLevel);
   const currentPhase = currentStage;
-  const setCurrentPhase = (phase) => handleSetPhase(phase);
 
   const [showOnboarding, setShowOnboarding] = useState(() => !localStorage.getItem('kiwi-onboarding-complete'));
   const [showSplash, setShowSplash] = useState(true); 
@@ -390,6 +389,7 @@ function App() {
 
   const handleSetLevel = (newLevel) => { setCurrentLevel(newLevel); const resetProgress = { ...progressData, currentStreak: 0, successDates: [], lastSuccessTime: null }; setProgressData(resetProgress); localStorage.setItem('kians-progress', JSON.stringify(resetProgress)); };
   const handleSetPhase = (newPhase) => handleSetLevel(migratePhaseToLevel(newPhase));
+  function setCurrentPhase(phase) { handleSetPhase(phase); }
   const handleAdvance = () => { const nextLevel = getNextLevel(currentLevel); if (nextLevel) handleSetLevel(nextLevel); setShowAdvancementModal(false); };
   const handleWait = () => { setShowAdvancementModal(false); const resetProgress = { ...progressData, currentStreak: 0, successDates: [], lastSuccessTime: null }; setProgressData(resetProgress); localStorage.setItem('kians-progress', JSON.stringify(resetProgress)); };
 

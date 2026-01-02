@@ -8,7 +8,7 @@ import {
 } from '@dnd-kit/sortable';
 
 const Grid = ({
-    items,
+    items = [],
     currentPhase = 0,
     gridSize = 'auto',
     isTrainingMode,

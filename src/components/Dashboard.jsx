@@ -73,7 +73,6 @@ Communication is growing! 🥝
                 {/* Level Progress Section */}
                 <h2 className="dashboard-section-title">🎯 Level Progress</h2>
                 {(() => {
-                    // ... (rest of the level progress logic remains the same)
                     // Calculate progress per level from trials
                     const levelProgress = {};
                     const trials = progressData?.trials || [];

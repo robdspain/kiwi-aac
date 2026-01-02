@@ -8,7 +8,7 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import SplashScreen from './SplashScreen';
 
 const TONE_NAMES = ["Pale", "Cream White", "Brown", "Dark Brown", "Black"];
-const TONE_SUFFIX_REGEX = new RegExp(` ((${TONE_NAMES.join('|')})))$`, 'i');
+const TONE_SUFFIX_REGEX = new RegExp(` (${TONE_NAMES.join('|')})\\)$`, 'i');
 const TONE_PREFIX_REGEX = new RegExp(`^(${TONE_NAMES.join('|')}) `, 'i');
 const MODIFIERS = { 'Pale': '\u{1F3FB}', 'Cream White': '\u{1F3FC}', 'Brown': '\u{1F3FD}', 'Dark Brown': '\u{1F3FE}', 'Black': '\u{1F3FF}' };
 const CATEGORY_OVERRIDES = { 'Harp': 'Objects', 'Shovel': 'Objects', 'Face With Diagonal Mouth': 'Smileys & Emotion', 'Face with Diagonal Mouth': 'Smileys & Emotion', 'Face Exhaling': 'Smileys & Emotion', 'Face in Clouds': 'Smileys & Emotion', 'Heart on Fire': 'Smileys & Emotion', 'Mending Heart': 'Smileys & Emotion', 'Person with White Cane': 'People & Fantasy', 'New Emojis Person': 'People & Fantasy' };
@@ -117,12 +117,7 @@ const EmojiCurator = () => {
         const existing = emojiMetadata[editingItem.emoji] || {};
         const nextMeta = { label: existing.label || editingItem.name, wordClass: existing.wordClass || 'noun', backgroundColor: existing.backgroundColor || '#ffffff', skill: existing.skill || 'none' };
         
-        // Use a timeout or a check to prevent synchronous setState during effect
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setTempMeta(prev => {
-            if (prev.label === nextMeta.label && prev.wordClass === nextMeta.wordClass && prev.backgroundColor === nextMeta.backgroundColor && prev.skill === nextMeta.skill) return prev;
-            return nextMeta;
-        });
+        setTempMeta(nextMeta);
     }
   }, [editingItem, emojiMetadata]);
 

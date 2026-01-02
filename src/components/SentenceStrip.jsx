@@ -1,6 +1,6 @@
 
 
-const SentenceStrip = ({ stripItems, onClear, onPlay }) => {
+const SentenceStrip = ({ stripItems = [], onClear, onPlay }) => {
     return (
         <div id="strip-container" style={{ display: 'block' }}>
             <div id="sentence-strip" onClick={onPlay}>

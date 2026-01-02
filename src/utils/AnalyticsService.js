@@ -52,7 +52,7 @@ export const trackItemClick = (itemId, itemWord) => {
 
     // Track daily usage
     if (!analytics.dailyUsage[today]) {
-        analytics.dailyUsage[today] = { clicks: 0, uniqueItems: new Set() };
+        analytics.dailyUsage[today] = { clicks: 0 };
     }
     analytics.dailyUsage[today].clicks += 1;
 
