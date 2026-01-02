@@ -36,20 +36,6 @@ const Grid = ({
 
     const gridClass = useLargeGrid ? 'phase-large-grid' : '';
 
-    const getGridStyle = () => {
-        if (useLargeGrid) return {};
-
-        let cols;
-        switch (gridSize) {
-            case 'super-big': cols = 2; break;
-            case 'big': cols = 3; break;
-            case 'standard': cols = 4; break;
-            case 'dense': cols = 6; break;
-            default: return {}; // Use CSS responsive defaults
-        }
-        return { gridTemplateColumns: `repeat(${cols}, 1fr)` };
-    };
-
     // Show empty state when no items to display
     if (items.length === 0) {
         return (
@@ -110,7 +96,7 @@ const Grid = ({
     }
 
     return (
-        <div id="grid-container" className={gridClass} style={getGridStyle()}>
+        <div id="grid-container" className={gridClass}>
             <SortableContext
                 items={items.map(i => i.id || i.word)}
                 strategy={rectSortingStrategy}
