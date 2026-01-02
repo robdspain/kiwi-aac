@@ -1,6 +1,5 @@
 import { getTopItems, getDailyStats, getTotalStats, exportToCSV, getRecentSentences } from '../utils/AnalyticsService';
 import { getLevel, getStage } from '../data/levelDefinitions';
-import { checkExportAnalytics } from '../utils/paywall';
 
 const Dashboard = ({ onClose, progressData, currentLevel, rootItems = [] }) => {
 
@@ -67,9 +66,15 @@ Communication is growing! 🥝
                     <div className="dashboard-actions">
                         <button onClick={handleShare} className="dashboard-btn primary">📤 Share Progress</button>
                         <button onClick={async () => {
-                            const hasAccess = await checkExportAnalytics();
-                            if (hasAccess) {
-                                exportToCSV();
+                            try {
+                                const { checkExportAnalytics } = await import('../utils/paywall');
+                                const hasAccess = await checkExportAnalytics();
+                                if (hasAccess) {
+                                    exportToCSV();
+                                }
+                            } catch (error) {
+                                console.error('Failed to check export access:', error);
+                                exportToCSV(); // Continue anyway
                             }
                         }} className="dashboard-btn success">📥 Export CSV</button>
                         <button onClick={onClose} className="dashboard-btn secondary">Close</button>

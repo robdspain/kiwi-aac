@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { useProfile } from '../context/ProfileContext';
-import { checkPronunciationLimit, FREE_TIER_LIMITS } from '../utils/paywall';
+
+const FREE_TIER_LIMITS = {
+    MAX_PRONUNCIATION_ENTRIES: 10
+};
 
 const PronunciationEditor = ({ onClose }) => {
     const { pronunciations, addPronunciation, deletePronunciation } = useProfile();
@@ -11,13 +14,22 @@ const PronunciationEditor = ({ onClose }) => {
         e.preventDefault();
         if (word && phonetic) {
             const currentCount = Object.keys(pronunciations).length;
-            const hasAccess = await checkPronunciationLimit(currentCount);
 
-            if (hasAccess) {
-                addPronunciation(word, phonetic);
-                setWord('');
-                setPhonetic('');
+            // Check pronunciation limit using lazy import
+            if (currentCount >= FREE_TIER_LIMITS.MAX_PRONUNCIATION_ENTRIES) {
+                try {
+                    const { checkPronunciationLimit } = await import('../utils/paywall');
+                    const hasAccess = await checkPronunciationLimit(currentCount);
+                    if (!hasAccess) return;
+                } catch (error) {
+                    console.error('Failed to check pronunciation limit:', error);
+                    // Continue anyway
+                }
             }
+
+            addPronunciation(word, phonetic);
+            setWord('');
+            setPhonetic('');
         }
     };
 

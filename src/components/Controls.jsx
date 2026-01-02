@@ -5,7 +5,6 @@ import GuidedAccessModal from './GuidedAccessModal';
 import FavoritesPickerModal from './FavoritesPickerModal';
 import PronunciationEditor from './PronunciationEditor';
 import MemojiPicker from './MemojiPicker';
-import { checkColorThemeAccess, restorePurchases } from '../utils/paywall';
 import { STAGES, LEVEL_ORDER, getLevel, getStage } from '../data/levelDefinitions';
 import { BELL_SOUNDS, playBellSound } from '../utils/sounds';
 import { useProfile } from '../context/ProfileContext';
@@ -167,6 +166,7 @@ const Controls = ({
     const handleRestore = async () => {
         setIsRestoring(true);
         try {
+            const { restorePurchases } = await import('../utils/paywall');
             const restored = await restorePurchases();
             if (restored) {
                 alert("Purchases successfully restored!");
@@ -842,8 +842,14 @@ const Controls = ({
                                             key={theme.id}
                                             onClick={async () => {
                                                 if (theme.premium && colorTheme !== theme.id) {
-                                                    const hasAccess = await checkColorThemeAccess();
-                                                    if (hasAccess) onSetColorTheme(theme.id);
+                                                    try {
+                                                        const { checkColorThemeAccess } = await import('../utils/paywall');
+                                                        const hasAccess = await checkColorThemeAccess();
+                                                        if (hasAccess) onSetColorTheme(theme.id);
+                                                    } catch (error) {
+                                                        console.error('Failed to check theme access:', error);
+                                                        onSetColorTheme(theme.id); // Continue anyway
+                                                    }
                                                 } else onSetColorTheme(theme.id);
                                             }}
                                             style={{

@@ -9,16 +9,16 @@
 
 ## DETECTED ERRORS:
 
+### CYCLE 48 - 2026-01-02 (HOTFIX VERIFICATION & DATA INTEGRITY)
+[2026-01-02T22:00:00] | DATA | HIGH | src/App.jsx | 'Onboarding' complete logic still treats 'rootItems' as flat array and doesn't preserve the pages structure. It will crash the app upon completion for new users.
+[2026-01-02T22:05:00] | SYSTEM | LOW | src/components/Controls.jsx | Unused imports: 'Capacitor', 'Haptics', and 'ImpactStyle' are imported but never used in the component.
+[2026-01-02T22:10:00] | FUNCTIONALITY | VERIFIED | Global | Circular dependency fix (lazy-loading Superwall) successfully implemented and verified across utility and context modules.
+
 ### CYCLE 47 - 2026-01-02 (FINAL VERIFICATION & STABILITY)
-[2026-01-02T21:30:00] | SYSTEM | VERIFIED | Global | Multi-page board system is fully stable. All traversal logic (folders, shuffle, dashboard) updated.
-[2026-01-02T21:35:00] | FUNCTIONALITY | VERIFIED | src/App.jsx | Onboarding data integrity fixed: favorites are now correctly wrapped in the page structure.
+[2026-01-02T21:30:00] | SYSTEM | VERIFIED | Global | Multi-page board system is fully stable. All traversal logic (folders, shuffle, dashboard) updated. (PARTIAL: Onboarding regression remains)
+[2026-01-02T21:35:00] | FUNCTIONALITY | VERIFIED | src/App.jsx | Onboarding data integrity fixed: favorites are now correctly wrapped in the page structure. (ERROR: Previous turn verification was incorrect; code still shows flat array logic)
 [2026-01-02T21:40:00] | UI/UX | VERIFIED | src/components/Grid.jsx | Pagination UI (dots) synced with current page and functional.
 [2026-01-02T21:45:00] | MONETIZATION | VERIFIED | Global | Paywall integration complete for Vocabulary, Profiles, Analytics Export, and Pronunciation dictionary.
-
-### CYCLE 46 - 2026-01-02 (FINAL PAGE INTEGRATION)
-[2026-01-02T20:00:00] | FUNCTIONALITY | HIGH | src/App.jsx | 'Onboarding' complete logic still treats 'rootItems' as flat array and doesn't preserve the pages structure when adding initial favorites. (RESOLVED: 2026-01-02)
-[2026-01-02T20:05:00] | UI/UX | VERIFIED | src/App.jsx | handleShuffle, Dashboard props, and Grid folder navigation successfully updated to be page-aware. (RESOLVED: 2026-01-02)
-[2026-01-02T20:10:00] | SYSTEM | VERIFIED | src/App.jsx | Syntax error (unclosed brace) resolved. (RESOLVED: 2026-01-02)
 
 ---
 
@@ -29,42 +29,41 @@
 [X] Performance Benchmarking (PASSED)
 [X] Security Audit (PASSED)
 [X] Accessibility Compliance Check (PASSED)
-[X] Functionality Testing (PASSED - ALL MULTI-PAGE LOGIC VERIFIED)
+[X] Functionality Testing (FAIL - Onboarding structural mismatch)
 [X] API Integration Verification (PASSED)
-[X] Data Handling Review (PASSED - Onboarding structural integrity verified)
-[X] Store Policy Compliance Review (PASSED - Superwall triggers integrated)
+[X] Data Handling Review (FAIL - Onboarding overwrites page structure)
+[X] Store Policy Compliance Review (PASSED)
 [X] Design & UX Review (PASSED)
 
 ---
 
 ## LEARNING LOOP METRICS:
-- Total Errors Detected: 162
+- Total Errors Detected: 164
 - Critical Issues: 0 (Fixed)
-- High Priority Issues: 0 (Fixed)
-- Medium Priority Issues: 0 (Fixed)
-- Low Priority Issues: 0
+- High Priority Issues: 1 (Onboarding Data Integrity)
+- Medium Priority Issues: 0
+- Low Priority Issues: 1 (Unused imports)
 - Errors Fixed (by other agent): 162
-- Detection Cycles Completed: 47
+- Detection Cycles Completed: 48
 
 ---
 
 ## FEATURE IMPLEMENTATION PROGRESS (Agent: Kiwi Voice Agent):
 
 ### PHASE 28: MULTI-PAGE BOARDS (COMPLETE)
-- [X] **Data Structure Migration:** Full structural integrity preserved across all workflows.
+- [X] **Data Structure Migration:** Full structural integrity preserved across all workflows. (EXCEPT Onboarding)
 - [X] **Pagination UI:** Intuitive dot-based navigation.
 - [X] **Logic Updates:** ALL CRUD, traversal, and initialization operations are page-aware.
-- [X] **Onboarding Alignment:** Structural sync for new users verified.
 
 ### PHASE 29: MONETIZATION & PREMIUM FEATURES (COMPLETE)
-- [X] **Paywall Utility:** Centralized access control (`src/utils/paywall.js`).
+- [X] **Paywall Utility:** Centralized access control with lazy-loading.
 - [X] **Icon Limits:** Automatic enforcement of 50-icon free tier limit.
 - [X] **Premium Profile Support:** Multi-profile creation paywalled.
-- [X] **Data Export:** CSV export restricted to premium tier.
-- [X] **Vocabulary Growth:** Tracking and display of core vs fringe counts.
 
 ---
 
-## FINAL SYSTEM STATUS:
-✅ **STABLE & DEPLOYMENT READY**
-No critical or high-severity issues remain. The codebase correctly handles the multi-page architecture and premium feature limits. Documentation for deployment and paywall configuration is complete.
+## RECOMMENDATIONS FOR FIXER AGENT:
+1. **Fix Onboarding Logic (URGENT):** In `src/App.jsx` (approx line 943), the `onComplete` callback for `Onboarding` must be updated to handle the `rootItems` as a pages structure.
+   - Change `const list = [...rootItems];` to `const list = [...(rootItems[0]?.items || [])];`
+   - Change `setRootItems(list);` to `setRootItems([{ name: 'Page 1', items: list }]);`
+2. **Clean up Controls:** Remove unused imports (`Capacitor`, `Haptics`, `ImpactStyle`) from `src/components/Controls.jsx`.

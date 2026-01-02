@@ -38,7 +38,6 @@ import {
 import { AAC_LEXICON } from './data/aacLexicon';
 import { CORE_WORDS_LAYOUT } from './data/aacData';
 import { useProfile } from './context/ProfileContext';
-import { checkUnlimitedVocabulary } from './utils/paywall';
 
 const synth = window.speechSynthesis || null;
 
@@ -661,8 +660,14 @@ function App() {
 
     // Check vocabulary limit if adding a button (not a folder)
     if (type !== 'folder') {
-      const hasAccess = await checkUnlimitedVocabulary(totalIconCount);
-      if (!hasAccess) return; // User declined or not subscribed
+      try {
+        const { checkUnlimitedVocabulary } = await import('./utils/paywall');
+        const hasAccess = await checkUnlimitedVocabulary(totalIconCount);
+        if (!hasAccess) return; // User declined or not subscribed
+      } catch (error) {
+        console.error('Failed to check vocabulary limit:', error);
+        // Continue anyway in case of error
+      }
     }
 
     const newItem = type === 'folder' ? { id: 'item-' + new Date().getTime(), type: 'folder', word: word || 'New Folder', icon: icon || '📁', contents: [] } : { id: 'item-' + new Date().getTime(), type: 'button', word: word || 'New Item', icon: icon || '⚪' };

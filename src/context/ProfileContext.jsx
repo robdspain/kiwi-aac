@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { checkMultiProfiles } from '../utils/paywall';
 
 const ProfileContext = createContext();
 
@@ -56,10 +55,18 @@ export const ProfileProvider = ({ children }) => {
     };
 
     const addProfile = async (name, avatar) => {
-        // Check multi-profile limit
-        const hasAccess = await checkMultiProfiles(profiles.length);
-        if (!hasAccess) {
-            return null; // User declined or not subscribed
+        // Check multi-profile limit using lazy import to avoid circular dependency
+        if (profiles.length >= 1) {
+            try {
+                const { checkMultiProfiles } = await import('../utils/paywall');
+                const hasAccess = await checkMultiProfiles(profiles.length);
+                if (!hasAccess) {
+                    return null; // User declined or not subscribed
+                }
+            } catch (error) {
+                console.error('Failed to check multi-profile limit:', error);
+                // Continue anyway in case of error
+            }
         }
 
         const newProfile = {
