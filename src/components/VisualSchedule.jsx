@@ -32,6 +32,19 @@ const VisualSchedule = ({ folder, onBack }) => {
             padding: '20px',
             gap: '20px'
         }}>
+            <div role="status" aria-live="polite" style={{
+                position: 'absolute',
+                width: '1px',
+                height: '1px',
+                padding: '0',
+                margin: '-1px',
+                overflow: 'hidden',
+                clip: 'rect(0, 0, 0, 0)',
+                whiteSpace: 'nowrap',
+                border: '0'
+            }}>
+                {currentIndex === items.length - 1 ? 'Schedule finished!' : `Step ${currentIndex + 1} of ${items.length}: ${currentItem?.word}`}
+            </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
                 <button onClick={onBack} style={{ padding: '10px 15px', borderRadius: '10px', background: '#E5E5EA', border: 'none', cursor: 'pointer' }}>
                     ← Back

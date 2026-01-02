@@ -118,6 +118,19 @@ const VoiceRecorder = ({ currentAudio, onSave, onRemove }) => {
             flexDirection: 'column',
             gap: '10px'
         }}>
+            <div role="status" aria-live="polite" style={{
+                position: 'absolute',
+                width: '1px',
+                height: '1px',
+                padding: '0',
+                margin: '-1px',
+                overflow: 'hidden',
+                clip: 'rect(0, 0, 0, 0)',
+                whiteSpace: 'nowrap',
+                border: '0'
+            }}>
+                {isRecording ? 'Recording started' : audioUrl && !isRecording ? 'Recording stopped' : ''}
+            </div>
             <label style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>Custom Voice</label>
 
             {isRecording ? (
