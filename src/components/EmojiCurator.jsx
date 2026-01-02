@@ -167,7 +167,9 @@ const { categories, groupedEmojiData, allEmojisFlat } = (() => {
       }
   });
 
-  return { categories: Object.keys(groupedData), groupedEmojiData: groupedData, allEmojisFlat: flatList };
+  const finalCategories = ['My People', ...Object.keys(groupedData)];
+
+  return { categories: finalCategories, groupedEmojiData: groupedData, allEmojisFlat: flatList };
 })();
 
 // Current icons in the app (from PickerModal.jsx)
@@ -201,8 +203,7 @@ const EmojiCurator = () => {
   const [showSmartImport, setShowSmartImport] = useState(false);
   const [showPhraseCreator, setShowPhraseCreator] = useState(false);
   const [showVisualSceneCreator, setShowVisualSceneCreator] = useState(false);
-  const [sceneImage, setSceneImage] = useState(null);
-  const [hotspots, setHotspots] = useState([]);
+  const [showCharacterBuilder, setShowCharacterBuilder] = useState(false);
   const [searchQueryImage, setSearchQueryImage] = useState('');
   const [showToolsMenu, setShowToolsMenu] = useState(false);
   const [tempMeta, setTempMeta] = useState({ label: '', wordClass: 'noun', backgroundColor: '#ffffff', skill: 'none' });
@@ -479,6 +480,9 @@ const EmojiCurator = () => {
           output[category] = selectedEmojis[category].map(emojiChar => {
               const custom = customItems.find(c => c.emoji === emojiChar);
               if (custom) {
+                  if (custom.type === 'avatar') {
+                      return { w: custom.name, type: 'custom_avatar', recipe: custom.recipe, i: '👤' };
+                  }
                   return { w: custom.name, i: custom.image, isCustom: true };
               }
 
@@ -980,6 +984,10 @@ const EmojiCurator = () => {
                     >
                       {item.image ? (
                           <img src={item.image} alt={item.name} style={{ width: isMobile ? '2.5rem' : '3rem', height: isMobile ? '2.5rem' : '3rem', objectFit: 'cover', borderRadius: '8px' }} />
+                      ) : item.type === 'avatar' ? (
+                          <div style={{ transform: isMobile ? 'scale(0.5)' : 'scale(0.8)' }}>
+                              <AvatarRenderer recipe={item.recipe} size={150} />
+                          </div>
                       ) : (
                           <span style={{ fontSize: isMobile ? '2.5rem' : '3rem' }} aria-hidden="true">{displayEmoji}</span>
                       )}
@@ -1423,6 +1431,26 @@ const EmojiCurator = () => {
             </div>
         )}
 
+        {/* Character Builder Modal */}
+        {showCharacterBuilder && (
+            <CharacterBuilder 
+                onClose={() => setShowCharacterBuilder(false)}
+                onSave={(name, recipe) => {
+                    const newItem = {
+                        id: `avatar-${Date.now()}`,
+                        name,
+                        category: 'My People',
+                        type: 'avatar',
+                        recipe,
+                        emoji: '👤' // Placeholder key
+                    };
+                    setCustomItems(prev => [newItem, ...prev]);
+                    toggleEmoji('My People', newItem.emoji, newItem);
+                    setShowCharacterBuilder(false);
+                }}
+            />
+        )}
+
         {/* Custom Icon Modal */}
         {showImageSearch && (
             <div style={{
@@ -1475,6 +1503,15 @@ const EmojiCurator = () => {
                                 style={{ padding: '8px 12px', background: '#5856D6', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem' }}
                             >
                                 JIT Scene
+                            </button>
+                            <button 
+                                onClick={() => {
+                                    setShowImageSearch(false);
+                                    setShowCharacterBuilder(true);
+                                }}
+                                style={{ padding: '8px 12px', background: '#FF9500', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem' }}
+                            >
+                                Avatar
                             </button>
                         </div>
                     </div>
