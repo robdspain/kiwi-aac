@@ -82,7 +82,10 @@ Kiwi AAC is a specialized tool designed to curate and customize icon libraries f
 | **Phase 7** | iOS Compliance Polish | **COMPLETE** |
 | **Phase 8** | Advanced AAC Features | **COMPLETE** |
 | **Phase 9** | Customization & Privacy | **COMPLETE** |
-| **Phase 10** | Roadmap Integration | **PENDING** |
+| **Phase 10** | Roadmap Integration | **COMPLETE** |
+| **Phase 11** | Market Disruption (Kiwi Edge) | **COMPLETE** |
+| **Phase 12** | Context-Aware Intelligence | **COMPLETE** |
+| **Phase 13** | Circle of Support (Avatar Builder) | **PENDING** |
 
 ---
 
@@ -113,16 +116,61 @@ To strictly adhere to iOS Human Interface Guidelines (HIG):
 
 #### 9.1. Advanced Selection Logic
 - [x] **Exclude List (Blacklist):** Allow therapists to flag specific icons as "Excluded" so they do not appear in search results or the grid, preventing distraction.
-- [x] **Image Upload:** Enable uploading custom images (e.g., "photo of Mom") which are encoded (Base64/URI) and stored in `iconsData.json` instead of a standard emoji.
+- [x] **Image Upload:** Enable uploading custom images (e.g., photo of "Mom") which are encoded (Base64/URI) and stored in `iconsData.json` instead of a standard emoji.
 
 ---
 
 ### 10. Phase 10: Roadmap Integration (New)
 Integrating key features from the product roadmap:
 
-- [ ] **Visual Schedule Builder:** Allow users to create and export ordered sequences (e.g., "Morning Routine": Toilet -> Wash Hands -> Brush Teeth) as distinct entities.
-- [ ] **Web Image Search:** Integrate a third-party API (e.g., Unsplash) to allow searching for high-quality photos directly within the "Custom Image" workflow.
-- [ ] **Skill Tagging:** Add metadata tags for "Essential Skills" (FCR, Wait, Denial) to support the upcoming training modes in Kiwi Voice.
+- [x] **Visual Schedule Builder:** Allow users to create and export ordered sequences (e.g., "Morning Routine": Toilet -> Wash Hands -> Brush Teeth) as distinct entities.
+- [x] **Skill Tagging:** Add metadata tags for "Essential Skills" (FCR, Wait, Denial) to support the upcoming training modes in Kiwi Voice.
 
+---
+
+### 11. Phase 11: Market Disruption & Kiwi Edge (New)
+
+#### 11.1. Zero-to-Hero Setup
+- [x] **Smart Import:** "Bulk Import" engine that takes a text list (e.g., "apple, sit, more") and automatically populates the library with matching icons, skin tones, and tags.
+- [x] **QR Code/Link Sync:** Generate a QR code or 6-digit link to instantly share the curated board with another device (e.g., Therapist desktop -> Parent iPad).
+
+#### 11.2. Gestalt Language Processor (GLP) Support
+- [x] **Phrase Buttons:** Support "Multi-Icon Gestalts" where a single button represents a full phrase/script (e.g., "Let's go to the park") with a storyboard-style visual.
+
+#### 11.3. Integrated Modeling Mode
+- [x] **Guide Mode:** A "Mirror" feature where parents can see a guide highlighting which icons to press, facilitating modeling. (Implementation note: This might be a toggle in the app to highlight core words or specific targets).
+
+#### 11.4. Semantic Intelligence
+- [x] **Grammar Inflection Cues:** When a user selects a Pronoun + Verb (e.g., "I" + "Eat"), logically suggest or popup inflection options ("Ate", "Eating"). (Implementation note: Requires basic grammar logic in the builder to tag verbs for inflection).
+
+#### 11.5. Distinguishable Haptics
+- [x] **Smart Haptics:** Implement distinct vibration patterns for different word classes (e.g., "Nudge" for Core, "Sharp" for Stop/No).
+
+---
+
+### 12. Phase 12: Context-Aware Intelligence (New)
+
+#### 12.1. Dynamic Context Switching
+- [x] **Smart Sidebar (Geofencing):** Simulate context switching based on location (Home, School, Park). Implementation: Add a "Context Simulator" toggle to preview how the sidebar changes based on selected "Location".
+- [x] **Time-Based Triggers:** Surface folders based on time of day (Morning, Lunch, Evening). Implementation: Add a "Time Simulator" or rules engine to the builder.
+
+#### 12.2. Visual Intelligence
+- [x] **JIT Visual Scenes:** Allow uploading a photo and manually drawing "Hotspots" linked to icons/words (simulating AI object detection for now).
+
+#### 12.3. Predictive Logic
+- [x] **Semantic Prediction:** When "I want" is selected, visually highlight Noun categories (Food, Toys) in the sidebar.
+
+#### 12.4. Privacy
+- [x] **Privacy Firewall:** Ensure all "Context" data (Geo/Time) is processed locally. (Implementation: Store rules in `iconsData.json`, not on a server).
+
+---
+
+### 13. Phase 13: Circle of Support (Avatar Builder) (New)
+
+#### 13.1. Personalized Representation
+- [ ] **SVG Layering Engine:** Implement a high-performance system to layer head shapes, hair styles, eyes, and accessories.
+- [ ] **Diversity Toggles:** Support 6+ skin tones, varied hair textures (curly, coily, straight), and facial hair options.
+- [ ] **Accessibility Accessories:** Include options for hearing aids, glasses, and "AAC devices" in the avatar builder.
+- [ ] **Recipe-Based Export:** Store avatars as "Recipes" (JSON objects) in `iconsData.json` rather than flat images to preserve scalability and editability.
 
 

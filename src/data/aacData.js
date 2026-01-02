@@ -38,3 +38,10 @@ export const SKILLS = [
     { id: 'denial', label: 'Denial Acceptance', color: '#795548' },
     { id: 'none', label: 'None', color: '#ccc' }
 ];
+
+export const CONTEXT_DEFINITIONS = {
+    "School": ["Teacher", "Friend", "Backpack", "Pencil", "Recess", "Bus", "Desk"],
+    "Home": ["Mom", "Dad", "Bath", "Bed", "TV", "Toy"],
+    "Park": ["Slide", "Swing", "Sand", "Run", "Jump", "Sun"],
+    "Mealtime": ["Eat", "Drink", "Spoon", "Fork", "Plate", "Cup", "More", "All Done"]
+};

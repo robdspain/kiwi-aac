@@ -1,7 +1,9 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { EMOJI_DATA } from '../utils/emojiData';
 import { triggerHaptic } from '../utils/haptics';
-import { CORE_VOCABULARY, WORD_CLASSES, TEMPLATES, SKILLS } from '../data/aacData';
+import { CORE_VOCABULARY, WORD_CLASSES, TEMPLATES, SKILLS, CONTEXT_DEFINITIONS } from '../data/aacData';
+import CharacterBuilder from './CharacterBuilder';
+import AvatarRenderer from './AvatarRenderer';
 
 const TONE_CATEGORIES = [
   "Tone: Pale",
@@ -196,8 +198,16 @@ const EmojiCurator = () => {
   const [sequenceMode, setSequenceMode] = useState(false);
   const [sequence, setSequence] = useState([]); // Array of items
   const [showImageSearch, setShowImageSearch] = useState(false);
+  const [showSmartImport, setShowSmartImport] = useState(false);
+  const [showPhraseCreator, setShowPhraseCreator] = useState(false);
+  const [showVisualSceneCreator, setShowVisualSceneCreator] = useState(false);
+  const [sceneImage, setSceneImage] = useState(null);
+  const [hotspots, setHotspots] = useState([]);
   const [searchQueryImage, setSearchQueryImage] = useState('');
+  const [showToolsMenu, setShowToolsMenu] = useState(false);
   const [tempMeta, setTempMeta] = useState({ label: '', wordClass: 'noun', backgroundColor: '#ffffff', skill: 'none' });
+  const [activeContext, setActiveContext] = useState('Default'); // 'Default', 'School', etc.
+  const [guideMode, setGuideMode] = useState(false);
 
   useEffect(() => {
     if (editingItem) {
@@ -273,6 +283,19 @@ const EmojiCurator = () => {
     // Merge Custom Items for this category
     const relevantCustom = customItems.filter(i => i.category === activeCategory);
     list = [...relevantCustom, ...list];
+
+    // Apply Context Filter (Priority)
+    if (activeContext !== 'Default' && CONTEXT_DEFINITIONS[activeContext]) {
+        const contextWords = CONTEXT_DEFINITIONS[activeContext];
+        // Find context items in the current list
+        const contextItems = list.filter(item => {
+             const name = item.name.toLowerCase();
+             return contextWords.some(w => name.includes(w.toLowerCase()));
+        });
+        // Move them to top
+        const otherItems = list.filter(item => !contextItems.includes(item));
+        list = [...contextItems, ...otherItems];
+    }
 
     if (searchQuery) {
       const allWithCustom = [...customItems, ...allEmojisFlat];
@@ -539,10 +562,22 @@ const EmojiCurator = () => {
 
     const handleClick = (e, cat, item) => {
         if (!isLongPress.current && !pickerTarget) {
+            // Smart Haptics Logic
+            const isCore = CORE_VOCABULARY.includes(item.name.toLowerCase());
+            const meta = emojiMetadata[item.emoji] || {};
+            const isDenial = meta.skill === 'denial' || item.name.toLowerCase() === 'no' || item.name.toLowerCase() === 'stop';
+            
+            if (isDenial) {
+                triggerHaptic('heavy');
+            } else if (isCore) {
+                triggerHaptic('medium');
+            } else {
+                triggerHaptic('light');
+            }
+
             if (sequenceMode) {
                 // Add to sequence
                 setSequence(prev => [...prev, { ...item, id: Date.now() }]); // Unique ID for sequence
-                triggerHaptic('light');
             } else {
                 toggleEmoji(cat, item.emoji, item);
             }
@@ -588,119 +623,102 @@ const EmojiCurator = () => {
         userSelect: 'none',
         overflow: 'hidden'
       }}>
-        {/* Top Navigation Bar */}
-        <div style={{ 
-          padding: isMobile ? '10px 15px' : '15px 30px', 
-          background: '#1a1a1a', 
-          color: 'white',
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
-          flexShrink: 0,
-          boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-            {isMobile && (
-                <button 
-                    onClick={() => setShowSidebar(!showSidebar)}
+              {/* Top Navigation Bar */}
+              <div className="emoji-curator-header">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                  {isMobile && (
+                      <button 
+                          onClick={() => setShowSidebar(!showSidebar)}
+                          style={{
+                              background: 'transparent',
+                              border: 'none',
+                              color: 'white',
+                              fontSize: '1.5rem',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              padding: '5px'
+                          }}
+                      >
+                          ☰
+                      </button>
+                  )}
+                  <span style={{ fontSize: isMobile ? '1.2rem' : '1.5rem' }}>🥝</span>
+                  {!isMobile && <h1 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 'bold' }}>LIBRARY BUILDER</h1>}
+                </div>
+        
+                <div style={{ display: 'flex', gap: isMobile ? '10px' : '20px', alignItems: 'center' }}>
+                  
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: isMobile ? '0.8rem' : '0.9rem' }}>
+                      <input 
+                          type="checkbox" 
+                          checked={showCoreOnly} 
+                          onChange={(e) => setShowCoreOnly(e.target.checked)}
+                          style={{ accentColor: '#4ECDC4', width: '16px', height: '16px' }}
+                      />
+                      Core Only
+                  </label>
+        
+                  <div style={{ position: 'relative' }}>
+                      <button
+                          onClick={() => setShowToolsMenu(!showToolsMenu)}
+                          style={{
+                              padding: isMobile ? '8px 12px' : '10px 15px',
+                              background: '#333',
+                              border: '1px solid #555',
+                              borderRadius: '8px',
+                              color: 'white',
+                              cursor: 'pointer',
+                              fontSize: isMobile ? '0.8rem' : '0.9rem',
+                              display: 'flex', alignItems: 'center', gap: '5px'
+                          }}
+                      >
+                          Tools ▾
+                      </button>
+                      
+                      {showToolsMenu && (
+                          <div style={{
+                              position: 'absolute', top: '100%', right: 0, marginTop: '10px',
+                              background: 'white', borderRadius: '12px', padding: '10px',
+                              boxShadow: '0 10px 30px rgba(0,0,0,0.2)', width: '200px',
+                              display: 'flex', flexDirection: 'column', gap: '5px', zIndex: 2000
+                          }}>
+                              <button onClick={() => { setShowSmartImport(true); setShowToolsMenu(false); }} style={{ textAlign: 'left', padding: '10px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.9rem', color: '#333' }}>📥 Bulk Import</button>
+                              <button onClick={() => { setShowTemplates(true); setShowToolsMenu(false); }} style={{ textAlign: 'left', padding: '10px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.9rem', color: '#333' }}>📋 Templates</button>
+                              <button onClick={() => { setShowImageSearch(true); setShowToolsMenu(false); }} style={{ textAlign: 'left', padding: '10px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.9rem', color: '#333' }}>📷 Add Custom</button>
+                              <button onClick={() => { setSequenceMode(!sequenceMode); setShowToolsMenu(false); }} style={{ textAlign: 'left', padding: '10px', background: sequenceMode ? '#FFF3E0' : 'none', border: 'none', cursor: 'pointer', fontSize: '0.9rem', color: '#333', fontWeight: sequenceMode ? 'bold' : 'normal' }}>
+                                  {sequenceMode ? 'Finish Sequence' : '✨ Builder Mode'}
+                              </button>
+                              <hr style={{ margin: '5px 0', border: 'none', borderTop: '1px solid #eee' }} />
+                              <button onClick={() => {
+                                  const id = Math.random().toString(36).substring(7);
+                                  alert(`Board Link Copied: https://kiwiaac.app/share/${id}`);
+                                  setShowToolsMenu(false);
+                              }} style={{ textAlign: 'left', padding: '10px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.9rem', color: '#007AFF', fontWeight: 'bold' }}>🔗 Share Board</button>
+                          </div>
+                      )}
+                  </div>
+        
+                  <div style={{ background: '#333', padding: '8px 15px', borderRadius: '8px', fontSize: isMobile ? '0.8rem' : '0.9rem' }}>
+                    <span style={{ color: '#4ECDC4', fontWeight: 'bold' }}>{totalSelected}</span> {isMobile ? '' : 'icons selected'}
+                  </div>
+                  <button
+                    onClick={exportSelected}
                     style={{
-                        background: 'transparent',
-                        border: 'none',
-                        color: 'white',
-                        fontSize: '1.5rem',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        padding: '5px'
+                      padding: isMobile ? '8px 15px' : '10px 25px',
+                      background: '#4ECDC4',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontWeight: 'bold',
+                      cursor: 'pointer',
+                      fontSize: isMobile ? '0.8rem' : '0.9rem'
                     }}
-                >
-                    ☰
-                </button>
-            )}
-            <span style={{ fontSize: isMobile ? '1.2rem' : '1.5rem' }}>🥝</span>
-            {!isMobile && <h1 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 'bold' }}>LIBRARY BUILDER v3.2</h1>}
-          </div>
-
-          <div style={{ display: 'flex', gap: isMobile ? '10px' : '20px', alignItems: 'center' }}>
-            
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: isMobile ? '0.8rem' : '0.9rem' }}>
-                <input 
-                    type="checkbox" 
-                    checked={showCoreOnly} 
-                    onChange={(e) => setShowCoreOnly(e.target.checked)}
-                    style={{ accentColor: '#4ECDC4', width: '16px', height: '16px' }}
-                />
-                Core Only
-            </label>
-
-            <button
-                onClick={() => setShowTemplates(true)}
-                style={{
-                    padding: isMobile ? '8px 12px' : '10px 15px',
-                    background: '#333',
-                    border: '1px solid #555',
-                    borderRadius: '8px',
-                    color: 'white',
-                    cursor: 'pointer',
-                    fontSize: isMobile ? '0.8rem' : '0.9rem'
-                }}
-            >
-                Templates
-            </button>
-
-            <button
-                onClick={() => setShowImageSearch(true)}
-                style={{
-                    padding: isMobile ? '8px 12px' : '10px 15px',
-                    background: '#333',
-                    border: '1px solid #555',
-                    borderRadius: '8px',
-                    color: 'white',
-                    cursor: 'pointer',
-                    fontSize: isMobile ? '0.8rem' : '0.9rem',
-                    display: 'flex', alignItems: 'center', gap: '5px'
-                }}
-            >
-                <span>📷</span> Add Custom
-            </button>
-
-            <button
-                onClick={() => setSequenceMode(!sequenceMode)}
-                style={{
-                    padding: isMobile ? '8px 12px' : '10px 15px',
-                    background: sequenceMode ? '#FF9500' : '#333',
-                    border: '1px solid #555',
-                    borderRadius: '8px',
-                    color: 'white',
-                    cursor: 'pointer',
-                    fontSize: isMobile ? '0.8rem' : '0.9rem',
-                    fontWeight: sequenceMode ? 'bold' : 'normal'
-                }}
-            >
-                {sequenceMode ? 'Finish Sequence' : 'Builder Mode'}
-            </button>
-
-            <div style={{ background: '#333', padding: '8px 15px', borderRadius: '8px', fontSize: isMobile ? '0.8rem' : '0.9rem' }}>
-              <span style={{ color: '#4ECDC4', fontWeight: 'bold' }}>{totalSelected}</span> {isMobile ? '' : 'icons selected'}
-            </div>
-            <button
-              onClick={exportSelected}
-              style={{
-                padding: isMobile ? '8px 15px' : '10px 25px',
-                background: '#4ECDC4',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                fontSize: isMobile ? '0.8rem' : '0.9rem'
-              }}
-            >
-              {isMobile ? 'SAVE' : 'SAVE iconsData.json'}
-            </button>
-          </div>
-        </div>
-
+                  >
+                    {isMobile ? 'SAVE' : 'SAVE iconsData.json'}
+                  </button>
+                </div>
+              </div>
         <div style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
           
           {/* Category List */}
@@ -916,16 +934,20 @@ const EmojiCurator = () => {
                 }}
               >
                 {(filteredEmojis || []).slice(0, visibleCount).map((item, idx) => {
-                  const cat = item.category || activeCategory;
-                  const selectedEmoji = getSelectedInGroup(cat, item);
                   const isChecked = !!selectedEmoji;
                   const displayEmoji = selectedEmoji || item.emoji;
                   const hasVariations = item.variations && item.variations.length > 0;
                   
+                  // Guide Mode Logic
+                  const isCore = CORE_VOCABULARY.includes(item.name.toLowerCase());
+                  const isContextMatch = activeContext !== 'Default' && CONTEXT_DEFINITIONS[activeContext]?.some(w => item.name.toLowerCase().includes(w.toLowerCase()));
+                  const isGuideTarget = guideMode && (isCore || isContextMatch);
+
                   return (
                     <button
                       key={`${item.emoji}-${idx}`}
                       role="gridcell"
+                      className="emoji-btn"
                       aria-pressed={isChecked}
                       aria-label={`${item.name}${isChecked ? ', selected' : ''}`}
                       onMouseDown={(e) => handleStart(e, item)}
@@ -940,9 +962,11 @@ const EmojiCurator = () => {
                         borderRadius: '12px',
                         border: 'none',
                         background: 'white',
-                        boxShadow: isChecked
-                          ? '0 0 0 3px #4ECDC4, 0 4px 12px rgba(0,0,0,0.1)' 
-                          : '0 2px 6px rgba(0,0,0,0.05)',
+                        boxShadow: isGuideTarget 
+                          ? '0 0 15px #FFD700, 0 4px 12px rgba(0,0,0,0.1)'
+                          : (isChecked
+                            ? '0 0 0 3px #4ECDC4, 0 4px 12px rgba(0,0,0,0.1)' 
+                            : '0 2px 6px rgba(0,0,0,0.05)'),
                         cursor: 'pointer',
                         display: 'flex',
                         flexDirection: 'column',
@@ -950,7 +974,8 @@ const EmojiCurator = () => {
                         gap: isMobile ? '8px' : '12px',
                         transition: 'all 0.2s',
                         position: 'relative',
-                        WebkitTapHighlightColor: 'transparent'
+                        WebkitTapHighlightColor: 'transparent',
+                        animation: isGuideTarget ? 'pulse-glow 2s infinite' : 'none'
                       }}
                     >
                       {item.image ? (
@@ -1183,6 +1208,221 @@ const EmojiCurator = () => {
                         </button>
                     ))}
                 </div>
+        {/* Visual Scene Creator Modal */}
+        {showVisualSceneCreator && (
+            <div style={{
+                position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+                background: 'rgba(0,0,0,0.5)', zIndex: 10006,
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }}>
+                <div style={{
+                    background: 'white', padding: '20px', borderRadius: '16px',
+                    width: '95%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto',
+                    boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
+                }}>
+                    <h3 style={{ marginTop: 0 }}>Create Visual Scene (JIT)</h3>
+                    
+                    {!sceneImage ? (
+                        <div style={{ padding: '40px', border: '2px dashed #ddd', borderRadius: '12px', textAlign: 'center' }}>
+                            <p>Upload a photo of your environment (e.g., Dinner Table)</p>
+                            <input 
+                                type="file" 
+                                accept="image/*" 
+                                onChange={(e) => {
+                                    const file = e.target.files[0];
+                                    if (file) {
+                                        const reader = new FileReader();
+                                        reader.onload = (re) => setSceneImage(re.target.result);
+                                        reader.readAsDataURL(file);
+                                    }
+                                }}
+                            />
+                        </div>
+                    ) : (
+                        <div>
+                            <p style={{ color: '#666', fontSize: '0.8rem' }}>Tap on the photo to add hotspots for specific objects.</p>
+                            <div 
+                                style={{ position: 'relative', width: '100%', cursor: 'crosshair' }}
+                                onClick={(e) => {
+                                    const rect = e.currentTarget.getBoundingClientRect();
+                                    const x = ((e.clientX - rect.left) / rect.width) * 100;
+                                    const y = ((e.clientY - rect.top) / rect.height) * 100;
+                                    const label = prompt("Label for this hotspot (e.g. Carrots):");
+                                    if (label) {
+                                        setHotspots(prev => [...prev, { x, y, label }]);
+                                    }
+                                }}
+                            >
+                                <img src={sceneImage} alt="Scene" style={{ width: '100%', borderRadius: '12px' }} />
+                                {hotspots.map((h, i) => (
+                                    <div 
+                                        key={i}
+                                        style={{
+                                            position: 'absolute', left: `${h.x}%`, top: `${h.y}%`,
+                                            width: '20px', height: '20px', background: 'rgba(78, 205, 196, 0.8)',
+                                            border: '2px solid white', borderRadius: '50%', transform: 'translate(-50%, -50%)'
+                                        }}
+                                        title={h.label}
+                                    />
+                                ))}
+                            </div>
+                            <div style={{ marginTop: '15px', maxHeight: '100px', overflowY: 'auto' }}>
+                                {hotspots.map((h, i) => <span key={i} style={{ display: 'inline-block', margin: '2px', padding: '2px 8px', background: '#eee', borderRadius: '4px', fontSize: '0.7rem' }}>{h.label}</span>)}
+                            </div>
+                        </div>
+                    )}
+
+                    <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                        <button onClick={() => { setShowVisualSceneCreator(false); setSceneImage(null); setHotspots([]); }} style={{
+                            flex: 1, padding: '12px', background: '#eee', border: 'none', borderRadius: '8px', cursor: 'pointer'
+                        }}>Cancel</button>
+                        <button 
+                            disabled={!sceneImage}
+                            onClick={() => {
+                                const name = prompt("Enter name for this Scene:", "My Scene");
+                                if (name) {
+                                    const newItem = {
+                                        id: `scene-${Date.now()}`,
+                                        name,
+                                        category: activeCategory,
+                                        image: sceneImage,
+                                        emoji: '🖼️',
+                                        isScene: true,
+                                        hotspots
+                                    };
+                                    setCustomItems(prev => [newItem, ...prev]);
+                                    toggleEmoji(activeCategory, newItem.emoji, newItem);
+                                    setShowVisualSceneCreator(false);
+                                    setSceneImage(null);
+                                    setHotspots([]);
+                                }
+                            }} 
+                            style={{
+                                flex: 1, padding: '12px', background: '#5856D6', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold',
+                                opacity: sceneImage ? 1 : 0.5
+                            }}
+                        >
+                            Save Scene
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )}
+
+        {/* Phrase Creator Modal */}
+        {showPhraseCreator && (
+            <div style={{
+                position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+                background: 'rgba(0,0,0,0.5)', zIndex: 10005,
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }} onClick={() => setShowPhraseCreator(false)}>
+                <div style={{
+                    background: 'white', padding: '20px', borderRadius: '16px',
+                    width: '90%', maxWidth: '400px',
+                    boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
+                }} onClick={e => e.stopPropagation()}>
+                    <h3 style={{ marginTop: 0 }}>Create Phrase Button (GLP)</h3>
+                    <p style={{ color: '#666', fontSize: '0.8rem' }}>Combine words into a single 'script' button for Gestalt learners.</p>
+                    
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Phrase Text</label>
+                    <input 
+                        id="phrase-text"
+                        placeholder="e.g. Let's go to the park"
+                        style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd', marginBottom: '15px' }}
+                    />
+
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Storyboard Icons (Paste 1-3 emojis)</label>
+                    <input 
+                        id="phrase-icons"
+                        placeholder="e.g. 🏃‍♂️🌳☀️"
+                        style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd', marginBottom: '20px' }}
+                    />
+
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <button onClick={() => setShowPhraseCreator(false)} style={{
+                            flex: 1, padding: '12px', background: '#eee', border: 'none', borderRadius: '8px', cursor: 'pointer'
+                        }}>Cancel</button>
+                        <button onClick={() => {
+                            const text = document.getElementById('phrase-text').value;
+                            const icons = document.getElementById('phrase-icons').value;
+                            if (text) {
+                                const newItem = {
+                                    id: `phrase-${Date.now()}`,
+                                    name: text,
+                                    category: activeCategory,
+                                    emoji: icons || '💬',
+                                    isPhrase: true
+                                };
+                                setCustomItems(prev => [newItem, ...prev]);
+                                toggleEmoji(activeCategory, newItem.emoji, newItem);
+                                setShowPhraseCreator(false);
+                            }
+                        }} style={{
+                            flex: 1, padding: '12px', background: '#4ECDC4', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold'
+                        }}>Create Script</button>
+                    </div>
+                </div>
+            </div>
+        )}
+
+        {/* Smart Import Modal */}
+        {showSmartImport && (
+            <div style={{
+                position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+                background: 'rgba(0,0,0,0.5)', zIndex: 10004,
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }} onClick={() => setShowSmartImport(false)}>
+                <div style={{
+                    background: 'white', padding: '20px', borderRadius: '16px',
+                    width: '90%', maxWidth: '500px',
+                    boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
+                }} onClick={e => e.stopPropagation()}>
+                    <h3 style={{ marginTop: 0 }}>Smart Import (Zero-to-Hero)</h3>
+                    <p style={{ color: '#666', fontSize: '0.9rem' }}>
+                        Paste a list of words (comma or newline separated) from a lesson plan or PDF. 
+                        We'll automatically find the icons for you.
+                    </p>
+                    <textarea 
+                        id="smart-import-text"
+                        placeholder="apple, sit, more, playground, reading..."
+                        style={{ width: '100%', height: '150px', padding: '10px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '1rem' }}
+                    />
+                    <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
+                        <button onClick={() => setShowSmartImport(false)} style={{
+                            flex: 1, padding: '12px', background: '#eee', border: 'none', borderRadius: '8px', cursor: 'pointer'
+                        }}>Cancel</button>
+                        <button onClick={() => {
+                            const text = document.getElementById('smart-import-text').value;
+                            if (text) {
+                                const words = text.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+                                let addedCount = 0;
+                                const newSelection = { ...selectedEmojis };
+                                
+                                words.forEach(word => {
+                                    let match = allEmojisFlat.find(e => e.name.toLowerCase() === word.toLowerCase());
+                                    if (!match) match = allEmojisFlat.find(e => e.name.toLowerCase().includes(word.toLowerCase()));
+                                    
+                                    if (match) {
+                                        if (!newSelection[match.category]) newSelection[match.category] = [];
+                                        if (!newSelection[match.category].includes(match.emoji)) {
+                                            newSelection[match.category].push(match.emoji);
+                                            addedCount++;
+                                        }
+                                    }
+                                });
+                                
+                                setSelectedEmojis(newSelection);
+                                setShowSmartImport(false);
+                                alert(`Successfully imported ${addedCount} icons from ${words.length} words.`);
+                            }
+                        }} style={{
+                            flex: 1, padding: '12px', background: '#4ECDC4', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold'
+                        }}>Import Words</button>
+                    </div>
+                </div>
+            </div>
+        )}
+
         {/* Custom Icon Modal */}
         {showImageSearch && (
             <div style={{
@@ -1199,32 +1439,44 @@ const EmojiCurator = () => {
                     
                     <div style={{ marginBottom: '20px', padding: '15px', background: '#f9f9f9', borderRadius: '10px', textAlign: 'center' }}>
                         <p style={{ margin: '0 0 10px 0', fontWeight: 'bold' }}>Upload from Device</p>
-                        <input 
-                            type="file" 
-                            accept="image/*" 
-                            onChange={(e) => {
-                                const file = e.target.files[0];
-                                if (file) {
-                                    const reader = new FileReader();
-                                    reader.onload = (re) => {
-                                        const name = prompt("Enter name for this icon:", file.name.split('.')[0]);
-                                        if (name) {
-                                            const newItem = {
-                                                id: `custom-${Date.now()}`,
-                                                name,
-                                                category: activeCategory,
-                                                image: re.target.result,
-                                                emoji: `custom-${Date.now()}`
-                                            };
-                                            setCustomItems(prev => [newItem, ...prev]);
-                                            toggleEmoji(activeCategory, newItem.emoji, newItem);
-                                            setShowImageSearch(false);
-                                        }
-                                    };
-                                    reader.readAsDataURL(file);
-                                }
-                            }}
-                        />
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <input 
+                                type="file" 
+                                accept="image/*" 
+                                style={{ flex: 1 }}
+                                onChange={(e) => {
+                                    const file = e.target.files[0];
+                                    if (file) {
+                                        const reader = new FileReader();
+                                        reader.onload = (re) => {
+                                            const name = prompt("Enter name for this icon:", file.name.split('.')[0]);
+                                            if (name) {
+                                                const newItem = {
+                                                    id: `custom-${Date.now()}`,
+                                                    name,
+                                                    category: activeCategory,
+                                                    image: re.target.result,
+                                                    emoji: `custom-${Date.now()}`
+                                                };
+                                                setCustomItems(prev => [newItem, ...prev]);
+                                                toggleEmoji(activeCategory, newItem.emoji, newItem);
+                                                setShowImageSearch(false);
+                                            }
+                                        };
+                                        reader.readAsDataURL(file);
+                                    }
+                                }}
+                            />
+                            <button 
+                                onClick={() => {
+                                    setShowImageSearch(false);
+                                    setShowVisualSceneCreator(true);
+                                }}
+                                style={{ padding: '8px 12px', background: '#5856D6', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem' }}
+                            >
+                                JIT Scene
+                            </button>
+                        </div>
                     </div>
 
                     <div style={{ borderTop: '1px solid #ddd', paddingTop: '20px' }}>
@@ -1439,7 +1691,7 @@ const EmojiCurator = () => {
                         from { opacity: 0; transform: scale(0.8); }
                         to { opacity: 1; transform: scale(1); }
                     }
-                `}</style>
+                    @keyframes pulse {                        0% { opacity: 1; }                        50% { opacity: 0.5; }                        100% { opacity: 1; }                    }                    @keyframes pulse-glow {                        0% { box-shadow: 0 0 5px #FFD700, 0 4px 12px rgba(0,0,0,0.1); }                        50% { box-shadow: 0 0 20px #FFD700, 0 4px 12px rgba(0,0,0,0.2); }                        100% { box-shadow: 0 0 5px #FFD700, 0 4px 12px rgba(0,0,0,0.1); }                    }                `}</style>
             </div>
         )}
       </div>
