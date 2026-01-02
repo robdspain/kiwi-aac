@@ -31,36 +31,9 @@
   --transition-spring: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes bounceIn {
-  0% { transform: scale(0.8); opacity: 0; }
-  50% { transform: scale(1.02); }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.01); }
-}
-
-@keyframes jiggle {
-  0%, 100% { transform: rotate(-0.5deg); }
-  50% { transform: rotate(0.5deg); }
-}
-
-@keyframes flash {
-  0% { background-color: var(--bg-color); }
-  50% { background-color: var(--success); }
-  100% { background-color: var(--bg-color); }
-}
-
-body.success-flash {
-  animation: flash 0.4s ease-out;
+/* Literacy Mode */
+body.literacy-mode {
+  font-family: 'Comic Sans MS', 'Lexend', 'OpenDyslexic', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* Base Styles */

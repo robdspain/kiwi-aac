@@ -448,11 +448,6 @@ function App() {
     <div id="main-area">
       {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
       {showLevelIntro && <Suspense fallback={null}><LevelIntro level={currentLevel} onComplete={() => { localStorage.setItem(`kiwi-intro-seen-level-${currentLevel}`, 'true'); setShowLevelIntro(false); if (currentStage <= 2 && !phase1TargetId) setShowPhase1Selector(true); }} onChangeLevel={() => { setShowLevelIntro(false); setIsEditMode(true); }}/></Suspense>}
-      <div className="bg-decorations">
-        <div className="decor-item" style={{ top: '10%', left: '5%', fontSize: '3rem' }}>🥝</div>
-        <div className="decor-item" style={{ top: '60%', right: '10%', fontSize: '2rem' }}>🌟</div>
-        <div className="decor-item" style={{ bottom: '15%', left: '15%', fontSize: '2.5rem' }}>✨</div>
-      </div>
       {showStrip && (gridSize !== 'super-big' || localStorage.getItem('kiwi-force-strip') === 'true') && (
         <SentenceStrip stripItems={stripItems} onClear={() => setStripItems([])} onPlay={() => { const sentence = stripItems.map(i => i.word).join(" "); trackSentence(sentence); speak(sentence); }}/>
       )}
