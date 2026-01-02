@@ -73,7 +73,204 @@ Kiwi Voice is a specialized tool designed to curate and customize icon libraries
 
 ---
 
-### 6. Roadmap & Implementation Status
+### 6. Pricing & Monetization Strategy
+
+#### 6.1. Market Analysis & Competitive Pricing
+
+**Competitor Pricing Landscape:**
+- **Proloquo2Go:** $249.99 (one-time, iOS only)
+- **TouchChat:** $149.99 base + $99.99 add-ons (iOS/Android)
+- **LAMP Words for Life:** $299.99 (one-time)
+- **Avaz:** $99.99 (one-time)
+- **Cboard:** Free (open source, limited features)
+
+**Market Barriers:**
+- High cost ($100-300) prohibitive for many families
+- iOS-only apps exclude Android tablet users
+- Hidden costs through paid add-ons and voice packs
+- No trial period to evaluate before purchase
+
+**Kiwi Voice Competitive Advantage:**
+- **Cross-Platform:** PWA works on iOS, Android, tablets, web browsers
+- **Transparent Pricing:** No hidden add-ons or surprise costs
+- **Accessible Entry Point:** Lower barrier to entry than premium competitors
+- **Freemium Model:** Core features free, premium features via subscription
+
+#### 6.2. Free Tier (Core AAC Functionality)
+
+**Always Free - No Paywall:**
+- ✅ Core 50 word vocabulary
+- ✅ Basic grid system (up to 50 icons)
+- ✅ Text-to-speech (system voices)
+- ✅ Skin tone customization
+- ✅ Basic templates (First 50 Words)
+- ✅ Default Kiwi color theme
+- ✅ Export to JSON
+- ✅ QR code sharing
+- ✅ Basic analytics (last 7 days)
+- ✅ Single user profile
+
+**Rationale:** Core communication should NEVER be paywalled. Every child deserves the ability to communicate regardless of ability to pay.
+
+#### 6.3. Premium Tier - "Kiwi Pro" ($4.99/month or $39.99/year)
+
+**Premium Features (Superwall Integration):**
+
+1. **🎨 Premium Color Themes** (IMPLEMENTED)
+   - Ocean, Sunset, Forest, Berry, Candy themes
+   - Paywall trigger: `Superwall.register({ event: 'colorThemes' })`
+   - Current implementation: Controls.jsx:544
+
+2. **📊 Advanced Analytics** (RECOMMENDED)
+   - Unlimited history (vs. 7 days free)
+   - Vocabulary growth charts
+   - IEP goal tracking
+   - Weekly automated reports
+   - CSV export with date ranges
+   - Paywall trigger: `Superwall.register({ event: 'advancedAnalytics' })`
+
+3. **🎭 Character & People Builder** (RECOMMENDED)
+   - Unlimited custom characters (vs. 3 free)
+   - Access to all 58 Memoji characters
+   - Custom voice recordings per character
+   - Paywall trigger: `Superwall.register({ event: 'unlimitedPeople' })`
+
+4. **📚 Premium Templates & Contexts** (RECOMMENDED)
+   - Extended template library (20+ templates)
+   - Context-aware boards (School, Therapy, Home, Park, Mealtime)
+   - Seasonal/holiday boards
+   - Paywall trigger: `Superwall.register({ event: 'premiumTemplates' })`
+
+5. **☁️ Cloud Sync & Collaboration** (RECOMMENDED)
+   - Sync across unlimited devices
+   - Share boards with team (teachers, therapists, family)
+   - Real-time collaboration
+   - Board version history
+   - Paywall trigger: `Superwall.register({ event: 'cloudSync' })`
+
+6. **🗣️ Premium Voice Features** (RECOMMENDED)
+   - Custom pronunciation dictionary (unlimited entries vs. 10 free)
+   - Voice presets (Young Child, Adult, Clear Speech)
+   - Voice cloning for custom TTS (future)
+   - Paywall trigger: `Superwall.register({ event: 'premiumVoice' })`
+
+7. **👥 Multi-Profile Support** (RECOMMENDED)
+   - Unlimited learner profiles (vs. 1 free)
+   - Profile-specific settings and boards
+   - Easy profile switching
+   - Paywall trigger: `Superwall.register({ event: 'multiProfiles' })`
+
+8. **🎯 Unlimited Vocabulary** (RECOMMENDED)
+   - Unlimited icons on grid (vs. 50 free)
+   - Unlimited categories
+   - Full emoji dataset access
+   - Paywall trigger: `Superwall.register({ event: 'unlimitedVocabulary' })`
+
+9. **📱 Priority Support** (RECOMMENDED)
+   - Email support within 24 hours
+   - Video tutorials
+   - Setup assistance
+   - Direct access to AAC specialists
+
+#### 6.4. Institutional Pricing
+
+**Kiwi Pro for Schools/Clinics:**
+- $99/year per organization (unlimited students)
+- Volume discounts for districts
+- Admin dashboard for managing multiple users
+- Professional development training included
+- HIPAA/FERPA compliance documentation
+
+**Kiwi Pro for Therapists:**
+- $59/year (up to 10 active clients)
+- Professional reporting templates
+- Session notes integration
+- Progress monitoring tools
+
+#### 6.5. Implementation Strategy
+
+**Superwall Event Mapping:**
+
+```javascript
+// Color Themes (DONE)
+await Superwall.register({ event: 'colorThemes' })
+
+// Analytics (TO ADD)
+await Superwall.register({ event: 'advancedAnalytics' })
+await Superwall.register({ event: 'exportAnalytics' })
+
+// Templates (TO ADD)
+await Superwall.register({ event: 'premiumTemplates' })
+await Superwall.register({ event: 'applyTemplate' })
+
+// Cloud Features (TO ADD)
+await Superwall.register({ event: 'cloudSync' })
+await Superwall.register({ event: 'teamSharing' })
+
+// Voice (TO ADD)
+await Superwall.register({ event: 'premiumVoice' })
+await Superwall.register({ event: 'voicePresets' })
+
+// People/Characters (TO ADD)
+await Superwall.register({ event: 'unlimitedPeople' })
+await Superwall.register({ event: 'addCustomCharacter' })
+
+// Vocabulary (TO ADD)
+await Superwall.register({ event: 'unlimitedVocabulary' })
+await Superwall.register({ event: 'addIcon51' }) // Trigger when adding 51st icon
+
+// Profiles (TO ADD)
+await Superwall.register({ event: 'multiProfiles' })
+await Superwall.register({ event: 'addProfile2' }) // Trigger when adding 2nd profile
+```
+
+#### 6.6. Value Proposition & Positioning
+
+**Compared to Proloquo2Go ($249.99):**
+- ✅ $39.99/year = **84% cheaper**
+- ✅ Works on Android (Proloquo2Go is iOS-only)
+- ✅ No platform lock-in
+- ✅ Try before you buy
+
+**Compared to Free Options (Cboard):**
+- ✅ Premium analytics and insights
+- ✅ Cloud sync and collaboration
+- ✅ Professional support
+- ✅ Better UX and performance
+
+**Unique Selling Points:**
+1. **Most Affordable Premium AAC:** Under $50/year vs. $100-300 one-time
+2. **True Cross-Platform:** iOS, Android, web - use anywhere
+3. **Family-Friendly Freemium:** Core features always free
+4. **Transparent Pricing:** No hidden costs or surprise add-ons
+5. **Subscription Flexibility:** Cancel anytime, keep your data
+
+#### 6.7. Revenue Projections & Success Metrics
+
+**Target Market Size:**
+- 2M+ AAC users in US alone
+- Growing market (autism rates increasing)
+- Underserved Android market
+
+**Conservative Projections (Year 1):**
+- 10,000 free tier users
+- 5% conversion to premium (500 paid users)
+- $500 × $39.99/year = **$19,995 ARR**
+
+**Moderate Growth (Year 2):**
+- 50,000 free tier users
+- 8% conversion to premium (4,000 paid users)
+- 4,000 × $39.99 = **$159,960 ARR**
+
+**Success Metrics:**
+- Free-to-paid conversion rate > 5%
+- Monthly churn rate < 5%
+- User satisfaction score > 4.5/5
+- App Store rating > 4.7/5
+
+---
+
+### 7. Roadmap & Implementation Status
 
 | Phase | Feature | Status |
 | :--- | :--- | :--- |
