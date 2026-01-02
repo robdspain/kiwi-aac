@@ -20,6 +20,13 @@ export class SuperwallWeb extends WebPlugin implements SuperwallPlugin {
     // Web SDK doesn't support this, but we can store for future use
     console.log('Superwall user attributes:', options.attributes);
   }
+
+  async restore(): Promise<{ result: 'restored' | 'failed' }> {
+    // Web SDK doesn't support restore functionality
+    // Return success to prevent runtime crashes
+    console.log('Superwall restore called on web - no-op');
+    return { result: 'restored' };
+  }
 }
 
 // Extend Window interface for TypeScript
