@@ -40,6 +40,8 @@ const Controls = ({
     triggerPaywall,
     bellSound,
     onUpdateBellSound,
+    speechDelay,
+    onUpdateSpeechDelay,
     onAddFavorites,
     progressData = {}
 }) => {
@@ -396,6 +398,23 @@ const Controls = ({
                                             onChange={(e) => onUpdateVoiceSettings({ ...voiceSettings, rate: parseFloat(e.target.value) })}
                                             style={{ width: '100%', height: '44px' }}
                                         />
+                                    </div>
+                                </div>
+                                <div className="ios-row" style={{ padding: '15px' }}>
+                                    <div style={{ width: '100%' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                            <span style={{ fontSize: '14px' }}>⏱️ Repetition Delay</span>
+                                            <span style={{ fontSize: '14px', fontWeight: 700 }}>{speechDelay}s</span>
+                                        </div>
+                                        <input
+                                            type="range" min="0" max="15" step="1"
+                                            value={speechDelay}
+                                            onChange={(e) => onUpdateSpeechDelay(parseInt(e.target.value, 10))}
+                                            style={{ width: '100%', height: '44px' }}
+                                        />
+                                        <p style={{ fontSize: '11px', color: '#888', margin: '5px 0 0 0' }}>
+                                            Time before the same word can be spoken again.
+                                        </p>
                                     </div>
                                 </div>
                                 <div className="ios-row">

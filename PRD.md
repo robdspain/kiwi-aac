@@ -107,19 +107,34 @@ To strictly adhere to iOS Human Interface Guidelines (HIG):
 ---
 
 ### 16. Phase 16: Apple Design & Accessibility Standards (New)
-To ensure Kiwi Voice meets the highest standards for iOS users, especially those with visual or motor impairments:
 
-#### 16.1. Visual & Contrast Standards
-- [ ] **Contrast Compliance (WCAG 2.1 AA):** Ensure all text-to-background contrast ratios are at least 4.5:1. 
-    - **Fix:** Update primary teal (#4ECDC4) to pass against white text or switch to dark text on light backgrounds.
-    - **Fitzgerald Key:** Adjust Fitzgerald Key colors to ensure readability (e.g., dark text on yellow/green).
-- [ ] **Dynamic Type Support:** Use relative units (rem/em) or system font styles to allow the UI to scale with iOS system font size settings.
-- [ ] **SF Pro Rounded:** Ensure the app utilizes the system rounded font variant for a native, friendly feel.
+#### 16.1. High-Contrast Color System (WCAG 2.1 AA)
+- [ ] **Contrast Remediation:** 
+    - Update primary UI colors to ensure 4.5:1 ratio against text.
+    - **Teal (#4ECDC4) ->** Switch to dark text (`#1A535C`) instead of white.
+    - **Fitzgerald Key:** 
+        - Nouns (Yellow #FFEB3B) -> Dark Text (#2D3436).
+        - Verbs (Green #4CAF50) -> Increase saturation/darkness to pass white text.
+        - Adjectives (Blue #2196F3) -> Increase saturation/darkness.
 
-#### 16.2. Motor & Interaction Standards
-- [ ] **Touch Target Minimums:** Enforce a strict minimum of 44x44 pt for all interactive elements (Apple HIG standard).
-- [ ] **Pointer Cancellation:** Ensure actions trigger on `pointerup` (UP event) rather than `down` to allow users to slide off a button to cancel an accidental tap.
-- [ ] **Haptic Hierarchy:** Use varied haptic intensities (Light, Medium, Heavy) to distinguish between successful selections and errors/warnings.
+#### 16.2. Typography & Layout Scaling
+- [ ] **Dynamic Type Implementation:** 
+    - Convert all hardcoded `px` font sizes to `rem`.
+    - Use `clamp()` for responsive header text to prevent clipping on small devices.
+- [ ] **SF Pro Rounded Integration:** Ensure `font-family` strictly defaults to system rounded variant for better readability.
+
+#### 16.3. Motor & Hit-Area Standards
+- [ ] **Touch Target Audit:** 
+    - Ensure all interactive elements (Close buttons, Search clears, Sidebar items) have a minimum hit area of `44x44px`.
+- [ ] **Pointer Cancellation:** 
+    - Standardize action triggers on `pointerup` events.
+    - Implement a "Slide-to-Cancel" visual cue for long-press actions.
+- [ ] **Haptic Feedback Hierarchy:** 
+    - **Light:** Item selection / Toggle.
+    - **Medium:** Navigation / Level Change.
+    - **Success:** Export / Save.
+    - **Error:** Blacklist / Delete (Heavy).
+
 
 
 ---

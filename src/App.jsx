@@ -1,4 +1,4 @@
-import { useState, useEffect, Suspense, lazy } from 'react';
+import { useState, useEffect, Suspense, lazy, useRef } from 'react';
 import Grid from './components/Grid';
 import SentenceStrip from './components/SentenceStrip';
 import Controls from './components/Controls';
@@ -205,13 +205,19 @@ function App() {
     return valid.includes(saved) ? saved : 'standard';
   });
   const [colorTheme, setColorTheme] = useState(() => localStorage.getItem('kiwi-color-theme') || 'default');
+  const [speechDelay, setSpeechDelay] = useState(() => {
+    const saved = localStorage.getItem('kiwi-speech-delay');
+    return saved !== null ? parseInt(saved, 10) : 5;
+  });
   const [inflectionData, setInflectionData] = useState(null);
+  const lastSpeakTimeRef = useRef({});
 
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
 
   const triggerPaywall = (feature, cb) => { if (cb) cb(); };
 
   useEffect(() => { localStorage.setItem('kiwi-contexts', JSON.stringify(contexts)); }, [contexts]);
+  useEffect(() => { localStorage.setItem('kiwi-speech-delay', speechDelay.toString()); }, [speechDelay]);
   useEffect(() => { if (phase1TargetId) localStorage.setItem('kiwi-phase1-target', phase1TargetId); }, [phase1TargetId]);
   useEffect(() => { localStorage.setItem('kiwi-bell-sound', bellSound); }, [bellSound]);
 
@@ -329,6 +335,16 @@ function App() {
     }
     if (item.type === 'folder') setCurrentPath([...currentPath, index]);
     else {
+      // Repetition Delay Logic
+      // eslint-disable-next-line react-hooks/purity
+      const now = Date.now();
+      const lastTime = lastSpeakTimeRef.current[item.word] || 0;
+      if (now - lastTime < speechDelay * 1000) {
+          console.log(`Speech delay active for: ${item.word}`);
+          return; 
+      }
+      lastSpeakTimeRef.current[item.word] = now;
+
       // Grammar Inflection Logic
       const lexiconEntry = AAC_LEXICON[item.word] || AAC_LEXICON[item.word.toLowerCase()];
       if (lexiconEntry?.type === 'verb' && stripItems.length > 0) {
@@ -489,7 +505,7 @@ function App() {
         <Grid items={itemsToShow} currentPhase={currentPhase} gridSize={gridSize} isTrainingMode={isTrainingMode} trainingSelection={trainingSelection} isEditMode={isEditMode} onItemClick={handleItemClick} onBack={handleBack} onDelete={handleDelete} onEdit={handleEdit} onAddItem={handleAddItem} onToggleTraining={handleToggleTraining} hasBack={currentPath.length > 0} trainingPanelVisible={!shuffledItems} folder={currentPath.length > 0 ? currentPath.reduce((acc, i) => acc[i].contents, rootItems) : null}/>
       </DndContext>
       {!isLocked && !isEditMode && !isTrainingMode && <button id="settings-button" onClick={() => setIsEditMode(true)} aria-label="Open Settings">⚙️</button>}
-      {!isLocked && <Controls isEditMode={isEditMode} isTrainingMode={isTrainingMode} currentPhase={currentPhase} currentLevel={currentLevel} showStrip={showStrip} currentContext={currentContext} contexts={contexts} onSetContext={handleSetContext} onToggleMenu={() => setIsEditMode(!isEditMode)} onAddItem={handleAddItem} onAddContext={handleAddContext} onRenameContext={handleRenameContext} onDeleteContext={handleDeleteContext} onSetLevel={handleSetLevel} onStartTraining={() => { setIsTrainingMode(true); setTrainingSelection([]); }} onReset={() => { if (confirm("Reset everything?")) { localStorage.clear(); location.reload(); } }} onShuffle={handleShuffle} onStopTraining={handleStopTraining} onOpenPicker={handlePickerOpen} onToggleDashboard={() => setShowDashboard(true)} onRedoCalibration={() => setShowCalibration(true)} onToggleLock={() => setIsLocked(true)} voiceSettings={voiceSettings} onUpdateVoiceSettings={setVoiceSettings} gridSize={gridSize} onUpdateGridSize={setGridSize} phase1TargetId={phase1TargetId} onSetPhase1Target={setPhase1TargetId} rootItems={rootItems} colorTheme={colorTheme} onSetColorTheme={setColorTheme} triggerPaywall={triggerPaywall} bellSound={bellSound} onUpdateBellSound={setBellSound}           onAddFavorites={(favorites) => {
+      {!isLocked && <Controls isEditMode={isEditMode} isTrainingMode={isTrainingMode} currentPhase={currentPhase} currentLevel={currentLevel} showStrip={showStrip} currentContext={currentContext} contexts={contexts} onSetContext={handleSetContext} onToggleMenu={() => setIsEditMode(!isEditMode)} onAddItem={handleAddItem} onAddContext={handleAddContext} onRenameContext={handleRenameContext} onDeleteContext={handleDeleteContext} onSetLevel={handleSetLevel} onStartTraining={() => { setIsTrainingMode(true); setTrainingSelection([]); }} onReset={() => { if (confirm("Reset everything?")) { localStorage.clear(); location.reload(); } }} onShuffle={handleShuffle} onStopTraining={handleStopTraining} onOpenPicker={handlePickerOpen} onToggleDashboard={() => setShowDashboard(true)} onRedoCalibration={() => setShowCalibration(true)} onToggleLock={() => setIsLocked(true)} voiceSettings={voiceSettings} onUpdateVoiceSettings={setVoiceSettings} gridSize={gridSize} onUpdateGridSize={setGridSize} phase1TargetId={phase1TargetId} onSetPhase1Target={setPhase1TargetId} rootItems={rootItems} colorTheme={colorTheme} onSetColorTheme={setColorTheme} triggerPaywall={triggerPaywall} bellSound={bellSound} onUpdateBellSound={setBellSound} speechDelay={speechDelay} onUpdateSpeechDelay={setSpeechDelay}           onAddFavorites={(favorites) => {
             const nowTime = new Date().getTime();
             const newFavs = favorites.map((fav, i) => ({ id: `fav-${nowTime}-${i}`, type: 'button', word: fav.word || fav.label, icon: fav.icon, bgColor: '#FFF3E0' })); const list = [...rootItems]; let insertIndex = 0; for (let i = 0; i < list.length; i++) if (list[i].category === 'starter') insertIndex = i + 1; else break; list.splice(insertIndex, 0, ...newFavs); setRootItems(list); }} progressData={progressData}/>}
       {isLocked && (

@@ -121,9 +121,9 @@ const CharacterBuilder = ({ onSave, onClose }) => {
                             if (!name) return alert('Please enter a name');
                             onSave(name, recipe);
                         }}
-                        style={{ flex: 2, padding: '15px', background: '#4ECDC4', color: '#2D3436', border: 'none', borderRadius: '15px', cursor: 'pointer', fontWeight: 'bold', fontSize: '1.1rem' }}
+                        style={{ flex: 2, padding: '15px', background: '#4ECDC4', color: 'white', border: 'none', borderRadius: '15px', cursor: 'pointer', fontWeight: 'bold', fontSize: '1.1rem' }}
                     >
-                        Save to "My People"
+                        Save to &quot;My People&quot;
                     </button>
                 </div>
             </div>

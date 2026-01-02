@@ -221,6 +221,25 @@ const EmojiCurator = () => {
 
   const totalSelected = Object.values(selectedEmojis).reduce((sum, arr) => sum + (arr?.length || 0), 0);
 
+  const exportSelected = () => {
+    const output = {};
+    Object.keys(selectedEmojis).forEach(cat => {
+      if (selectedEmojis[cat]?.length) {
+        output[cat] = selectedEmojis[cat].map(char => {
+          const custom = customItems.find(c => c.emoji === char);
+          if (custom) return custom.type === 'avatar' ? { w: custom.name, type: 'custom_avatar', recipe: custom.recipe, i: '👤' } : { w: custom.name, i: custom.image, isCustom: true };
+          const base = allEmojisFlat.find(e => e.emoji === char) || allEmojisFlat.reduce((acc, b) => acc || b.variations.find(v => v.emoji === char), null);
+          const meta = emojiMetadata[char] || {};
+          return { w: meta.label || base?.name || "Unknown", i: char, wc: meta.wordClass || 'noun', bg: meta.backgroundColor || '#ffffff', skill: meta.skill || 'none' };
+        });
+      }
+    });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(output, null, 2)], { type: 'application/json' }));
+    a.download = 'iconsData.json';
+    a.click();
+  };
+
   return (
     <div style={{ padding: '0', paddingTop: 'env(safe-area-inset-top)', width: '100vw', height: '100dvh', display: 'flex', flexDirection: 'column', background: '#f0f2f5', color: '#000', position: 'fixed', top: 0, left: 0, zIndex: 9999, userSelect: 'none', overflow: 'hidden' }}>
       {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
@@ -267,7 +286,7 @@ const EmojiCurator = () => {
             <div style={{ fontSize: '0.7rem', color: '#999', fontWeight: 'bold', marginBottom: '10px' }}>CATEGORIES</div>
             <div style={{ position: 'relative' }}><input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} style={{ width: '100%', padding: '8px 30px', borderRadius: '6px', border: '1px solid #ddd' }} /><span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }}>🔍</span></div>
           </div>
-          {!searchQuery && categories.map(cat => ( <button key={cat} onClick={() => { setActiveCategory(cat); if (isMobile) setShowSidebar(false); }} style={{ textAlign: 'left', padding: '10px 15px', borderRadius: '6px', border: 'none', background: activeCategory === cat ? '#f0f7ff' : 'transparent', color: activeCategory === cat ? '#007AFF' : '#555', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><span>{cat}</span>                {selectedEmojis[category]?.length > 0 && (
+          {!searchQuery && categories.map(cat => ( <button key={cat} onClick={() => { setActiveCategory(cat); if (isMobile) setShowSidebar(false); }} style={{ textAlign: 'left', padding: '10px 15px', borderRadius: '6px', border: 'none', background: activeCategory === cat ? '#f0f7ff' : 'transparent', color: activeCategory === cat ? '#007AFF' : '#555', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><span>{cat}</span>                {selectedEmojis[cat]?.length > 0 && (
                   <span style={{ 
                     background: '#4ECDC4',
                     color: '#2D3436',
@@ -279,7 +298,7 @@ const EmojiCurator = () => {
                     alignItems: 'center',
                     justifyContent: 'center'
                   }}>
-                    {selectedEmojis[category].length}
+                    {selectedEmojis[cat].length}
                   </span>
                 )}</button> ))}
         </div>
