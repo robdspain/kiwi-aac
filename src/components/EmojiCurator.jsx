@@ -112,14 +112,16 @@ const EmojiCurator = () => {
   const [activeContext] = useState('Default');
   const [guideMode, setGuideMode] = useState(false);
 
-  useEffect(() => {
-    if (editingItem) {
-        const existing = emojiMetadata[editingItem.emoji] || {};
-        const nextMeta = { label: existing.label || editingItem.name, wordClass: existing.wordClass || 'noun', backgroundColor: existing.backgroundColor || '#ffffff', skill: existing.skill || 'none' };
-        
-        setTempMeta(nextMeta);
-    }
-  }, [editingItem, emojiMetadata]);
+  const openEditModal = (item, disp) => {
+    const existing = emojiMetadata[disp] || {};
+    setTempMeta({ 
+        label: existing.label || item.name, 
+        wordClass: existing.wordClass || 'noun', 
+        backgroundColor: existing.backgroundColor || '#ffffff', 
+        skill: existing.skill || 'none' 
+    });
+    setEditingItem({ ...item, emoji: disp });
+  };
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 850);
   const [showSidebar, setShowSidebar] = useState(!isMobile);
@@ -269,7 +271,7 @@ const EmojiCurator = () => {
                     {item.image ? <img src={item.image} alt={item.name} style={{ width: '3rem', height: '3rem', objectFit: 'cover' }} /> : item.type === 'avatar' ? <div style={{ pointerEvents: 'none' }}><AvatarRenderer recipe={item.recipe} size={80} /></div> : <span style={{ fontSize: '2.5rem' }}>{disp}</span>}
                     <span style={{ fontSize: '0.8rem', color: '#333' }}>{item.name}</span>
                     {isChecked && <div style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#4ECDC4', color: 'white', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✓</div>}
-                    {isChecked && <div onClick={(e) => { e.stopPropagation(); setEditingItem({ ...item, emoji: disp }); }} style={{ position: 'absolute', top: '5px', left: '5px', background: 'white', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>✏️</div>}
+                    {isChecked && <div onClick={(e) => { e.stopPropagation(); openEditModal(item, disp); }} style={{ position: 'absolute', top: '5px', left: '5px', background: 'white', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>✏️</div>}
                   </button>
                 );
               })}
