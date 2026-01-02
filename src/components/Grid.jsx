@@ -1,10 +1,23 @@
 
 import AppItem from './AppItem';
 import VisualSchedule from './VisualSchedule';
+import { AAC_LEXICON } from '../data/aacLexicon';
 import {
     SortableContext,
     rectSortingStrategy
 } from '@dnd-kit/sortable';
+
+const CATEGORY_METADATA = {
+    'core': { label: 'Core Words', color: 'rgba(78, 205, 196, 0.1)', icon: '⭐' },
+    'pronoun': { label: 'People', color: 'rgba(194, 24, 91, 0.05)', icon: '👤' },
+    'verb': { label: 'Actions', color: 'rgba(46, 125, 50, 0.05)', icon: '🏃' },
+    'noun': { label: 'Things', color: 'rgba(255, 235, 59, 0.1)', icon: '📦' },
+    'adj': { label: 'Describe', color: 'rgba(21, 101, 192, 0.05)', icon: '🎨' },
+    'social': { label: 'Social', color: 'rgba(194, 24, 91, 0.05)', icon: '👋' },
+    'question': { label: 'Questions', color: 'rgba(106, 27, 154, 0.05)', icon: '❓' },
+    'misc': { label: 'Other', color: 'rgba(230, 81, 0, 0.05)', icon: '✨' },
+    'unknown': { label: 'Fringe', color: 'rgba(0, 0, 0, 0.02)', icon: '📂' }
+};
 
 const Grid = ({
     items = [],
@@ -24,7 +37,9 @@ const Grid = ({
     folder, // New prop: currently open folder object
     scanIndex = -1,
     isLayoutLocked = false,
-    isColorCodingEnabled = true
+    isColorCodingEnabled = true,
+    collapsedSections = [],
+    onToggleSection
 }) => {
     // If we're inside a folder and it's in schedule mode, show the VisualSchedule view
     if (folder && folder.type === 'folder' && folder.viewMode === 'schedule') {
@@ -50,6 +65,18 @@ const Grid = ({
     };
 
     const { rows, cols } = getGridDimensions();
+
+    // Grouping Logic for Sections
+    const groupedItems = items.reduce((acc, item, index) => {
+        const lexiconEntry = item.word ? AAC_LEXICON[item.word.toLowerCase()] : null;
+        const category = item.category || item.wc || lexiconEntry?.type || 'unknown';
+        if (!acc[category]) acc[category] = [];
+        acc[category].push({ ...item, originalIndex: index });
+        return acc;
+    }, {});
+
+    // Ordered list of categories to display
+    const categoryOrder = ['core', 'pronoun', 'verb', 'adj', 'noun', 'social', 'question', 'misc', 'unknown'];
 
     // Show empty state when no items to display
     if (items.length === 0) {
@@ -111,54 +138,126 @@ const Grid = ({
         );
     }
 
-    return (
-        <div 
-            id="grid-container" 
-            className={gridClass}
-            style={!useLargeGrid ? {
-                display: 'grid',
-                gridTemplateColumns: `repeat(${cols}, 1fr)`,
-                gridTemplateRows: `repeat(${rows}, 1fr)`,
-                gap: '1rem',
-                padding: '1.25rem'
-            } : {}}
-        >
-            <SortableContext
-                items={items.map(i => i.id || i.word)}
-                strategy={rectSortingStrategy}
-            >
-                {items.map((item, index) => {
-                    const isSelected = trainingSelection.includes(index);
-                    const displayIcon = item.image || item.icon;
-                    
-                    // Support for fixed positioning if item has pos
-                    const itemStyle = item.pos ? {
-                        gridRowStart: item.pos.r + 1,
-                        gridColumnStart: item.pos.c + 1
-                    } : {};
+    if (useLargeGrid) {
+        return (
+            <div id="grid-container" className={gridClass}>
+                <SortableContext
+                    items={items.map(i => i.id || i.word)}
+                    strategy={rectSortingStrategy}
+                >
+                    {items.map((item, index) => {
+                        const isSelected = trainingSelection.includes(index);
+                        const displayIcon = item.image || item.icon;
+                        
+                        return (
+                            <AppItem
+                                key={item.id || index}
+                                item={{ ...item, icon: displayIcon }}
+                                index={index}
+                                isEditMode={isEditMode}
+                                isTrainingMode={isTrainingMode}
+                                isSelected={isSelected}
+                                isDimmed={isTrainingMode && !trainingPanelVisible && !isSelected}
+                                isScanned={scanIndex === index}
+                                isLocked={isLayoutLocked || !!item.pos}
+                                isRevealed={item.isRevealed !== false}
+                                isColorCodingEnabled={isColorCodingEnabled}
+                                style={{}}
+                                onClick={onItemClick}
+                                onDelete={onDelete}
+                                onEdit={onEdit}
+                                onToggleTraining={onToggleTraining}
+                            />
+                        );
+                    })}
+                </SortableContext>
+            </div>
+        );
+    }
 
-                    return (
-                        <AppItem
-                            key={item.id || index}
-                            item={{ ...item, icon: displayIcon }}
-                            index={index}
-                            isEditMode={isEditMode}
-                            isTrainingMode={isTrainingMode}
-                            isSelected={isSelected}
-                            isDimmed={isTrainingMode && !trainingPanelVisible && !isSelected}
-                            isScanned={scanIndex === index}
-                            isLocked={isLayoutLocked || !!item.pos}
-                            isRevealed={item.isRevealed !== false}
-                            isColorCodingEnabled={isColorCodingEnabled}
-                            style={itemStyle}
-                            onClick={onItemClick}
-                            onDelete={onDelete}
-                            onEdit={onEdit}
-                            onToggleTraining={onToggleTraining}
-                        />
-                    );
-                })}
-            </SortableContext>
+    return (
+        <div id="grid-container" className={gridClass} style={{ display: 'block', padding: '1rem' }}>
+            {categoryOrder.map(catId => {
+                const sectionItems = groupedItems[catId];
+                if (!sectionItems || sectionItems.length === 0) return null;
+
+                const meta = CATEGORY_METADATA[catId] || CATEGORY_METADATA['unknown'];
+                const isCollapsed = collapsedSections.includes(catId);
+
+                return (
+                    <div 
+                        key={catId} 
+                        style={{ 
+                            marginBottom: '1.5rem', 
+                            background: meta.color, 
+                            borderRadius: '1.25rem',
+                            padding: '0.75rem',
+                            border: `1px solid rgba(0,0,0,0.05)`
+                        }}
+                    >
+                        <div 
+                            onClick={() => onToggleSection && onToggleSection(catId)}
+                            style={{ 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                gap: '0.5rem', 
+                                marginBottom: isCollapsed ? 0 : '0.75rem',
+                                cursor: 'pointer',
+                                padding: '0.25rem 0.5rem'
+                            }}
+                        >
+                            <span style={{ fontSize: '1.25rem' }}>{meta.icon}</span>
+                            <span style={{ fontWeight: 800, fontSize: '0.875rem', textTransform: 'uppercase', color: '#666', flex: 1 }}>{meta.label}</span>
+                            <span style={{ opacity: 0.4 }}>{isCollapsed ? '➕' : '➖'}</span>
+                        </div>
+
+                        {!isCollapsed && (
+                            <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: `repeat(${cols}, 1fr)`,
+                                gap: '1rem'
+                            }}>
+                                <SortableContext
+                                    items={sectionItems.map(i => i.id || i.word)}
+                                    strategy={rectSortingStrategy}
+                                >
+                                    {sectionItems.map((item) => {
+                                        const index = item.originalIndex;
+                                        const isSelected = trainingSelection.includes(index);
+                                        const displayIcon = item.image || item.icon;
+                                        
+                                        const itemStyle = item.pos ? {
+                                            gridRowStart: item.pos.r + 1,
+                                            gridColumnStart: item.pos.c + 1
+                                        } : {};
+
+                                        return (
+                                            <AppItem
+                                                key={item.id || index}
+                                                item={{ ...item, icon: displayIcon }}
+                                                index={index}
+                                                isEditMode={isEditMode}
+                                                isTrainingMode={isTrainingMode}
+                                                isSelected={isSelected}
+                                                isDimmed={isTrainingMode && !trainingPanelVisible && !isSelected}
+                                                isScanned={scanIndex === index}
+                                                isLocked={isLayoutLocked || !!item.pos}
+                                                isRevealed={item.isRevealed !== false}
+                                                isColorCodingEnabled={isColorCodingEnabled}
+                                                style={itemStyle}
+                                                onClick={onItemClick}
+                                                onDelete={onDelete}
+                                                onEdit={onEdit}
+                                                onToggleTraining={onToggleTraining}
+                                            />
+                                        );
+                                    })}
+                                </SortableContext>
+                            </div>
+                        )}
+                    </div>
+                );
+            })}
         </div>
     );
 };

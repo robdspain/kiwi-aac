@@ -787,7 +787,7 @@ await Superwall.register({ event: 'addProfile2' }) // Trigger when adding 2nd pr
 - [ ] **PDF Reports:** Professional PDF reports for therapy documentation.
 - [ ] **Custom Date Ranges:** Filter analytics by custom date ranges.
 
-#### 21.4. Therapeutic Insights
+#### 21.4. Adult Insights
 - [ ] **New Words This Week:** Highlight newly used vocabulary.
 - [ ] **Vocabulary Growth Chart:** Track vocabulary expansion over time.
 - [ ] **Communication Patterns:** Identify peak usage times and contexts.
@@ -1101,10 +1101,10 @@ const gridConfigs = {
 #### 23.4. Visual Boundaries & Organization
 
 **Category Sections:**
-- [ ] **Section Borders:** Visual dividers between categories
-- [ ] **Section Labels:** Category headers (People, Actions, Things, Feelings)
-- [ ] **Collapsible Sections:** Hide/show entire categories
-- [ ] **Section Colors:** Background color per category for visual organization
+- [x] **Section Borders:** Visual dividers between categories (Implemented via themed cards)
+- [x] **Section Labels:** Category headers (Core, People, Actions, Things, etc.)
+- [x] **Collapsible Sections:** Hide/show entire categories
+- [x] **Section Colors:** Background color per category for visual organization
 
 **Page/Folder Navigation:**
 - [x] **Folder System:** Already implemented for contexts (School, Home, etc.)
@@ -1390,10 +1390,32 @@ const bilingualIcon = {
 - Automatic symbol translation via API
 - Fallback to emoji if symbol unavailable
 
-#### 26.3. Translation Quality
+---
 
-**Clinical-Grade Translations:**
-- Not Google Translate - use AAC lexicon
-- Verified by bilingual SLPs
-- Cultural appropriateness (not just literal translation)
-- Regional variations (Latin American Spanish vs Spain Spanish)
+### 27. Phase 27: Native Quality Parity (High Fidelity)
+
+To compete with $200+ native apps, Kiwi must exceed standard PWA expectations and deliver a "Native-First" experience.
+
+#### 27.1. Advanced Platform Integration
+- [ ] **Biometric Protection:** Implement FaceID / TouchID / Android Biometrics for adult settings access (instead of just triple-tap).
+- [ ] **Native App Review:** Trigger `@capacitor-community/in-app-review` at key mastery milestones (Phase 18 success).
+- [ ] **Universal Links / Deep Linking:** Support sharing specific boards via links that open directly in the app.
+- [ ] **Keyboard Avoidance:** Ensure native keyboard overlays don't obscure the search bar or edit fields.
+
+#### 27.2. High-Fidelity UI/UX
+- [ ] **60fps Transitions:** Use Framer Motion or optimized CSS transforms for all screen transitions (Level intros, modal slides).
+- [ ] **Haptic Feedback Hierarchy:** 
+    - *Light:* Navigation / Selection.
+    - *Medium:* Folder open / Success.
+    - *Heavy:* Error / Delete / Long-press trigger.
+- [ ] **Spring Physics:** Implement natural spring-based animations for the icon grid and message bar items.
+
+#### 27.3. Adaptive System Support
+- [ ] **Dynamic Type (iOS):** Automatically scale app fonts and icon labels based on the user's system font size settings.
+- [ ] **Dark Mode Sync:** Seamlessly transition themes based on system-wide light/dark mode changes.
+- [ ] **Safe Area Persistence:** Ensure layout avoids notches, home bars, and hole-punch cameras on all mobile devices.
+
+#### 27.4. Robust Offline Architecture
+- [ ] **IndexedDB for Media:** Move from `localStorage` to `IndexedDB` for custom photos and voice recordings to support larger libraries (>5MB).
+- [ ] **Background Sync:** Ensure analytics and profile changes sync to the cloud (when implemented) even if the app is closed.
+- [ ] **Asset Pre-caching:** Pre-download high-quality system voices and ARASAAC core icons during initial installation.
