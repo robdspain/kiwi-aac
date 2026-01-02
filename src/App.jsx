@@ -504,11 +504,15 @@ function App() {
 
     // Auto-enable/disable strip based on level definition
     const levelDef = getLevel(currentLevel);
-    if (levelDef?.showStrip) setShowStrip(true);
-    else setShowStrip(false);
+    const shouldShowStrip = !!levelDef?.showStrip;
+    if (showStrip !== shouldShowStrip) {
+      setShowStrip(shouldShowStrip);
+    }
 
     // Reset path when changing level
-    setCurrentPath([]);
+    if (currentPath.length > 0) {
+      setCurrentPath([]);
+    }
   }, [currentLevel]);
 
   const getCurrentList = () => {
