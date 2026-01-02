@@ -5,7 +5,7 @@ import GuidedAccessModal from './GuidedAccessModal';
 import FavoritesPickerModal from './FavoritesPickerModal';
 import PronunciationEditor from './PronunciationEditor';
 import MemojiPicker from './MemojiPicker';
-import Superwall from '../plugins/superwall';
+import { checkColorThemeAccess, restorePurchases } from '../utils/paywall';
 import { STAGES, LEVEL_ORDER, getLevel, getStage } from '../data/levelDefinitions';
 import { BELL_SOUNDS, playBellSound } from '../utils/sounds';
 import { useProfile } from '../context/ProfileContext';
@@ -167,8 +167,8 @@ const Controls = ({
     const handleRestore = async () => {
         setIsRestoring(true);
         try {
-            const result = await Superwall.restore();
-            if (result.result === 'restored') {
+            const restored = await restorePurchases();
+            if (restored) {
                 alert("Purchases successfully restored!");
                 window.location.reload();
             }
@@ -301,7 +301,7 @@ const Controls = ({
                                                     justifyContent: 'center',
                                                     gap: '0.125rem',
                                                     background: isActive ? stage.color : '#E5E5EA',
-                                                    color: isActive ? 'white' : 'black',
+                                                    color: isActive ? 'var(--primary-text)' : 'black',
                                                     borderRadius: '0.625rem',
                                                     border: 'none',
                                                     cursor: 'pointer'
@@ -337,7 +337,7 @@ const Controls = ({
                                                             padding: '0 0.75rem',
                                                             fontSize: '0.6875rem',
                                                             background: isSelected ? getStage(currentLevel).color : 'white',
-                                                            color: isSelected ? 'white' : '#333',
+                                                            color: isSelected ? 'var(--primary-text)' : '#333',
                                                             borderRadius: '0.5rem',
                                                             border: isSelected ? 'none' : '0.0625rem solid #ddd',
                                                             cursor: 'pointer',
@@ -388,7 +388,7 @@ const Controls = ({
                                                         }}
                                                     >
                                                         <span>{typeof item.icon === 'string' && (item.icon.startsWith('/') || item.icon.startsWith('data:') || item.icon.includes('.')) ? '🖼️' : item.icon}</span>
-                                                        <span style={{ fontSize: '0.5rem', fontWeight: '700', color: isSelected ? 'white' : '#666', overflow: 'hidden', width: '100%', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.word}</span>
+                                                        <span style={{ fontSize: '0.5rem', fontWeight: '700', color: isSelected ? 'var(--primary-text)' : '#666', overflow: 'hidden', width: '100%', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.word}</span>
                                                     </button>
                                                 );
                                             })}
@@ -663,7 +663,7 @@ const Controls = ({
                                                     padding: '0.5rem',
                                                     fontSize: '0.75rem',
                                                     background: (voiceSettings.pitch === preset.pitch && voiceSettings.rate === preset.rate) ? 'var(--primary)' : '#E5E5EA',
-                                                    color: (voiceSettings.pitch === preset.pitch && voiceSettings.rate === preset.rate) ? 'white' : 'black',
+                                                    color: (voiceSettings.pitch === preset.pitch && voiceSettings.rate === preset.rate) ? 'var(--primary-text)' : 'black',
                                                     borderRadius: '0.5rem',
                                                     border: 'none',
                                                     fontWeight: 600,
@@ -842,10 +842,8 @@ const Controls = ({
                                             key={theme.id}
                                             onClick={async () => {
                                                 if (theme.premium && colorTheme !== theme.id) {
-                                                    try {
-                                                        const result = await Superwall.register({ event: 'colorThemes' });
-                                                        if (result.result === 'userIsSubscribed' || result.result === 'noRuleMatch') onSetColorTheme(theme.id);
-                                                    } catch { onSetColorTheme(theme.id); }
+                                                    const hasAccess = await checkColorThemeAccess();
+                                                    if (hasAccess) onSetColorTheme(theme.id);
                                                 } else onSetColorTheme(theme.id);
                                             }}
                                             style={{

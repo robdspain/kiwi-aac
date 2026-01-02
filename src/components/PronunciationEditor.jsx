@@ -1,17 +1,23 @@
 import { useState } from 'react';
 import { useProfile } from '../context/ProfileContext';
+import { checkPronunciationLimit, FREE_TIER_LIMITS } from '../utils/paywall';
 
 const PronunciationEditor = ({ onClose }) => {
     const { pronunciations, addPronunciation, deletePronunciation } = useProfile();
     const [word, setWord] = useState('');
     const [phonetic, setPhonetic] = useState('');
 
-    const handleAdd = (e) => {
+    const handleAdd = async (e) => {
         e.preventDefault();
         if (word && phonetic) {
-            addPronunciation(word, phonetic);
-            setWord('');
-            setPhonetic('');
+            const currentCount = Object.keys(pronunciations).length;
+            const hasAccess = await checkPronunciationLimit(currentCount);
+
+            if (hasAccess) {
+                addPronunciation(word, phonetic);
+                setWord('');
+                setPhonetic('');
+            }
         }
     };
 
@@ -27,6 +33,10 @@ const PronunciationEditor = ({ onClose }) => {
                     <p style={{ fontSize: '0.75rem', color: '#666', marginBottom: '1rem' }}>
                         Type a word and how you want it to sound (phonetically).
                         <br/>Example: <b>Kiwi</b> → <b>Kee-wee</b>
+                        <br/>
+                        <span style={{ color: Object.keys(pronunciations).length >= FREE_TIER_LIMITS.MAX_PRONUNCIATION_ENTRIES ? '#FF3B30' : '#007AFF' }}>
+                            {Object.keys(pronunciations).length}/{FREE_TIER_LIMITS.MAX_PRONUNCIATION_ENTRIES} free entries used
+                        </span>
                     </p>
 
                     <form onSubmit={handleAdd} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>

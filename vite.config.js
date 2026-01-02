@@ -16,5 +16,6 @@ export default defineConfig({
     },
     // Increase warning threshold since we've optimized what we can
     chunkSizeWarningLimit: 600,
+    sourcemap: true,
   },
 })

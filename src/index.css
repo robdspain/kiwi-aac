@@ -141,8 +141,6 @@ body.literacy-mode {
 * {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
 }
 
 *::-webkit-scrollbar {

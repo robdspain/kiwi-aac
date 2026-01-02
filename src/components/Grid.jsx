@@ -306,6 +306,38 @@ const Grid = ({
                 })}
             </AnimatePresence>
         </div>
+
+        {/* Pagination Dots */}
+        {pages && pages.length > 1 && (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '1rem',
+                paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))',
+                background: 'rgba(255,255,255,0.9)',
+                borderTop: '1px solid rgba(0,0,0,0.05)'
+            }}>
+                {pages.map((page, index) => (
+                    <button
+                        key={index}
+                        onClick={() => onSetPage && onSetPage(index)}
+                        style={{
+                            width: currentPageIndex === index ? '2rem' : '0.75rem',
+                            height: '0.75rem',
+                            borderRadius: '0.5rem',
+                            border: 'none',
+                            background: currentPageIndex === index ? 'var(--primary-dark, #1A535C)' : 'rgba(0,0,0,0.4)',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease',
+                            padding: 0
+                        }}
+                        aria-label={`Go to ${page.name || `Page ${index + 1}`}`}
+                    />
+                ))}
+            </div>
+        )}
     </div>
     );
 };

@@ -265,7 +265,7 @@ const Assessment = ({ onComplete }) => {
                         background: selectedFavorites.length >= 1
                             ? 'linear-gradient(135deg, #4ECDC4, #3DB8B0)'
                             : '#D1D5DB',
-                        color: 'white',
+                        color: 'var(--primary-text)',
                         border: 'none',
                         padding: '1.125rem',
                         borderRadius: '1rem',
@@ -362,7 +362,7 @@ const Assessment = ({ onComplete }) => {
                         }}
                         style={{
                             background: 'linear-gradient(135deg, #4ECDC4, #3DB8B0)',
-                            color: 'white',
+                            color: 'var(--primary-text)',
                             border: 'none',
                             padding: '1.25rem',
                             borderRadius: '1rem',
@@ -514,7 +514,7 @@ const Assessment = ({ onComplete }) => {
 
                 <div style={{
                     background: 'linear-gradient(135deg, #4ECDC4, #3DB8B0)',
-                    color: 'white',
+                    color: 'var(--primary-text)',
                     padding: '1.25rem 1.75rem',
                     borderRadius: '1.25rem',
                     textAlign: 'center',
@@ -558,7 +558,7 @@ const Assessment = ({ onComplete }) => {
                     onClick={() => handleContinue(result)}
                     style={{
                         background: 'linear-gradient(135deg, #4ECDC4, #3DB8B0)',
-                        color: 'white',
+                        color: 'var(--primary-text)',
                         border: 'none',
                         padding: '1.125rem 3rem',
                         borderRadius: '1rem',
@@ -646,6 +646,7 @@ const Assessment = ({ onComplete }) => {
                             background: i <= currentQuestion
                                 ? 'linear-gradient(135deg, #4ECDC4, #3DB8B0)'
                                 : '#D1D5DB',
+                            color: 'var(--primary-text)',
                             transition: 'all 0.3s ease'
                         }}
                     />
@@ -707,7 +708,7 @@ const Assessment = ({ onComplete }) => {
                     onClick={() => handleAnswer(true)}
                     style={{
                         background: 'linear-gradient(135deg, #4ECDC4, #3DB8B0)',
-                        color: 'white',
+                        color: 'var(--primary-text)',
                         border: 'none',
                         padding: '1.125rem',
                         borderRadius: '1rem',
@@ -805,7 +806,7 @@ const Assessment = ({ onComplete }) => {
                             }}
                             style={{
                                 background: 'linear-gradient(135deg, #4ECDC4, #3DB8B0)',
-                                color: 'white',
+                                color: 'var(--primary-text)',
                                 border: 'none',
                                 padding: '1rem',
                                 borderRadius: '0.875rem',

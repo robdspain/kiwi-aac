@@ -91,15 +91,14 @@ const FavoritesPicker = ({ onComplete }) => {
                 <button
                     onClick={handleContinue}
                     disabled={selected.length === 0}
-                    style={{
-                        width: '100%',
-                        padding: '1.125rem',
-                        background: selected.length > 0
-                            ? 'linear-gradient(135deg, #4ECDC4, #3DB8B0)'
-                            : '#E5E5EA',
-                        color: selected.length > 0 ? 'white' : '#A0A0A0',
-                        border: 'none',
-                        borderRadius: '1rem',
+                                            style={{
+                                                width: '100%',
+                                                padding: '1.125rem',
+                                                background: selected.length > 0
+                                                    ? 'linear-gradient(135deg, #4ECDC4, #3DB8B0)'
+                                                    : '#E5E5EA',
+                                                color: selected.length > 0 ? 'var(--primary-text)' : '#A0A0A0',
+                                                border: 'none',                        borderRadius: '1rem',
                         fontSize: '1.1rem',
                         fontWeight: 700,
                         cursor: selected.length > 0 ? 'pointer' : 'default',

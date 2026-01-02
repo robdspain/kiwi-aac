@@ -283,7 +283,7 @@ const Onboarding = ({ onComplete }) => {
                     style={{
                         flex: 2, padding: '1rem',
                         background: 'linear-gradient(135deg, #4ECDC4, #3DB8B0)',
-                        color: 'white',
+                        color: 'var(--primary-text)',
                         border: 'none',
                         borderRadius: '1rem',
                         fontSize: '1rem',

@@ -1,5 +1,6 @@
 import { getTopItems, getDailyStats, getTotalStats, exportToCSV, getRecentSentences } from '../utils/AnalyticsService';
 import { getLevel, getStage } from '../data/levelDefinitions';
+import { checkExportAnalytics } from '../utils/paywall';
 
 const Dashboard = ({ onClose, progressData, currentLevel, rootItems = [] }) => {
 
@@ -65,7 +66,12 @@ Communication is growing! 🥝
                     <h1>📊 Dashboard</h1>
                     <div className="dashboard-actions">
                         <button onClick={handleShare} className="dashboard-btn primary">📤 Share Progress</button>
-                        <button onClick={exportToCSV} className="dashboard-btn success">📥 Export CSV</button>
+                        <button onClick={async () => {
+                            const hasAccess = await checkExportAnalytics();
+                            if (hasAccess) {
+                                exportToCSV();
+                            }
+                        }} className="dashboard-btn success">📥 Export CSV</button>
                         <button onClick={onClose} className="dashboard-btn secondary">Close</button>
                     </div>
                 </div>
@@ -387,7 +393,7 @@ Communication is growing! 🥝
                             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '0.5rem' }}>
                                 <span style={{ width: '1.5rem', fontWeight: 'bold', color: '#666' }}>#{i + 1}</span>
                                 <span style={{ flex: 1 }}>{item.word}</span>
-                                <span style={{ background: 'var(--primary)', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '0.625rem', fontSize: '0.9rem' }}>{item.count}</span>
+                                <span style={{ background: 'var(--primary)', color: 'var(--primary-text)', padding: '0.25rem 0.75rem', borderRadius: '0.625rem', fontSize: '0.9rem' }}>{item.count}</span>
                             </div>
                         ))}
                     </div>

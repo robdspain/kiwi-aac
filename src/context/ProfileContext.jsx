@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { checkMultiProfiles } from '../utils/paywall';
 
 const ProfileContext = createContext();
 
@@ -54,7 +55,13 @@ export const ProfileProvider = ({ children }) => {
         });
     };
 
-    const addProfile = (name, avatar) => {
+    const addProfile = async (name, avatar) => {
+        // Check multi-profile limit
+        const hasAccess = await checkMultiProfiles(profiles.length);
+        if (!hasAccess) {
+            return null; // User declined or not subscribed
+        }
+
         const newProfile = {
             id: 'profile-' + Date.now(),
             name,
