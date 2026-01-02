@@ -23,7 +23,7 @@ const VisualSchedule = ({ folder, onBack }) => {
     const currentItem = items[currentIndex];
 
     return (
-        <div className="visual-schedule-container" style={{ transition: 'var(--transition-zen)' }}>
+        <div className="visual-schedule-container" style={{ transition: 'var(--transition-spring)' }}>
             <div role="status" aria-live="polite" style={{
                 position: 'absolute',
                 width: '1px',

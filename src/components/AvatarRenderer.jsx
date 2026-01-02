@@ -33,25 +33,32 @@ const AvatarRenderer = ({ recipe, size = 100 }) => {
             xmlns="http://www.w3.org/2000/svg"
             style={{ display: 'block' }}
         >
-            {/* 1. Head Base */}
-            <g fill={skin}>
-                {React.createElement('g', { dangerouslySetInnerHTML: { __html: headSvg } })}
+            <defs>
+                <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.2"/>
+                </filter>
+            </defs>
+            <g filter="url(#shadow)">
+                {/* 1. Head Base */}
+                <g fill={skin}>
+                    {React.createElement('g', { dangerouslySetInnerHTML: { __html: headSvg } })}
+                </g>
+
+                {/* 2. Eyes */}
+                <g dangerouslySetInnerHTML={{ __html: eyesSvg }} />
+
+                {/* 3. Mouth */}
+                <g dangerouslySetInnerHTML={{ __html: mouthSvg }} />
+
+                {/* 4. Hair */}
+                <g dangerouslySetInnerHTML={{ __html: hairSvg }} />
+
+                {/* 5. Facial Hair */}
+                <g dangerouslySetInnerHTML={{ __html: facialHairSvg }} />
+
+                {/* 6. Accessories */}
+                <g dangerouslySetInnerHTML={{ __html: accessorySvg }} />
             </g>
-
-            {/* 2. Eyes */}
-            <g dangerouslySetInnerHTML={{ __html: eyesSvg }} />
-
-            {/* 3. Mouth */}
-            <g dangerouslySetInnerHTML={{ __html: mouthSvg }} />
-
-            {/* 4. Hair */}
-            <g dangerouslySetInnerHTML={{ __html: hairSvg }} />
-
-            {/* 5. Facial Hair */}
-            <g dangerouslySetInnerHTML={{ __html: facialHairSvg }} />
-
-            {/* 6. Accessories */}
-            <g dangerouslySetInnerHTML={{ __html: accessorySvg }} />
         </svg>
     );
 };

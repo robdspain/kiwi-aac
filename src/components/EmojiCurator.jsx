@@ -1098,7 +1098,7 @@ const EmojiCurator = () => {
                       {item.image ? (
                           <img src={item.image} alt={item.name} style={{ width: isMobile ? '2.5rem' : '3rem', height: isMobile ? '2.5rem' : '3rem', objectFit: 'cover', borderRadius: '8px' }} />
                       ) : item.type === 'avatar' ? (
-                          <div style={{ transform: isMobile ? 'scale(0.5)' : 'scale(0.8)' }}>
+                          <div style={{ transform: isMobile ? 'scale(0.5)' : 'scale(0.8)', pointerEvents: 'none' }}>
                               <AvatarRenderer recipe={item.recipe} size={150} />
                           </div>
                       ) : (

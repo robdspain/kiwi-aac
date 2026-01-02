@@ -91,7 +91,7 @@ const AppItem = ({
             {item.contents.slice(0, 4).map((subItem, i) => (
               <span key={i} className="mini-icon">
                 {subItem.type === 'custom_avatar' ? (
-                  <div style={{ transform: 'scale(0.3)' }}>
+                  <div style={{ transform: 'scale(0.3)', pointerEvents: 'none' }}>
                     <AvatarRenderer recipe={subItem.recipe} size={100} />
                   </div>
                 ) : typeof subItem.icon === 'string' && (subItem.icon.startsWith('/') || subItem.icon.startsWith('data:') || subItem.icon.includes('.')) ? (
