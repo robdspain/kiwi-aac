@@ -163,7 +163,13 @@ function App() {
   const [rootItems, setRootItems] = useState(() => {
     const key = getContextStorageKey(localStorage.getItem('kiwi-context') || 'home');
     const saved = localStorage.getItem(key);
-    return saved ? JSON.parse(saved) : getDefaultDataForContext(localStorage.getItem('kiwi-context') || 'home');
+    const data = saved ? JSON.parse(saved) : getDefaultDataForContext(localStorage.getItem('kiwi-context') || 'home');
+    
+    // Migration: If data is a flat array, wrap it in a pages structure
+    if (Array.isArray(data)) {
+      return [{ name: 'Page 1', items: data }];
+    }
+    return data; // Assume it's already { pages: [...] } or similar
   });
 
   const [currentLevel, setCurrentLevel] = useState(() => {
@@ -255,6 +261,7 @@ function App() {
   const [proficiencyLevel, setProficiencyLevel] = useState(() => {
     return localStorage.getItem('kiwi-proficiency-level') || 'beginner';
   });
+  const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [showCategoryHeaders, setShowCategoryHeaders] = useState(() => {
     const saved = localStorage.getItem('kiwi-show-category-headers');
     return saved !== null ? saved === 'true' : true;
@@ -355,10 +362,15 @@ function App() {
     setCurrentContext(id);
     localStorage.setItem('kiwi-context', id);
     if (currentPath.length > 0) setCurrentPath([]);
+    setCurrentPageIndex(0); // Reset to first page
     const key = getContextStorageKey(id);
     const saved = localStorage.getItem(key);
-    const items = saved ? JSON.parse(saved) : getDefaultDataForContext(id);
-    setRootItems(items);
+    let data = saved ? JSON.parse(saved) : getDefaultDataForContext(id);
+    
+    if (Array.isArray(data)) {
+      data = [{ name: 'Page 1', items: data }];
+    }
+    setRootItems(data);
   };
 
   const handleAddContext = (label, icon) => {
@@ -585,34 +597,44 @@ function App() {
 
   const handleBack = () => setCurrentPath(currentPath.slice(0, -1));
   const handleDelete = (index) => {
-    if (confirm("Delete this app?")) {
-      const list = [...currentPath.length === 0 ? rootItems : currentPath.reduce((acc, i) => acc[i].contents, rootItems)];
+    if (confirm("Delete this item?")) {
+      const currentPageItems = rootItems[currentPageIndex]?.items || [];
+      const list = [...currentPath.length === 0 ? currentPageItems : currentPath.reduce((acc, i) => acc[i].contents, currentPageItems)];
       list.splice(index, 1);
-      if (currentPath.length === 0) setRootItems(list);
-      else {
-        const newRoot = JSON.parse(JSON.stringify(rootItems));
-        let target = newRoot; for (let i = 0; i < currentPath.length - 1; i++) target = target[currentPath[i]].contents;
-        target[currentPath[currentPath.length - 1]].contents = list;
-        setRootItems(newRoot);
+      
+      const newRootItems = [...rootItems];
+      if (currentPath.length === 0) {
+        newRootItems[currentPageIndex] = { ...newRootItems[currentPageIndex], items: list };
       }
+      else {
+        let target = newRootItems[currentPageIndex].items;
+        for (let i = 0; i < currentPath.length - 1; i++) target = target[currentPath[i]].contents;
+        target[currentPath[currentPath.length - 1]].contents = list;
+      }
+      setRootItems(newRootItems);
     }
   };
 
   const handleEdit = (index) => { setEditingItemIndex(index); setEditModalOpen(true); };
   const handleSaveEdit = (newWord, newIcon, newBgColor, newViewMode, newCustomAudio, newCharacterConfig) => {
     if (editingItemIndex === null) return;
-    const currentList = currentPath.length === 0 ? rootItems : currentPath.reduce((acc, i) => acc[i].contents, rootItems);
+    const currentPageItems = rootItems[currentPageIndex]?.items || [];
+    const currentList = currentPath.length === 0 ? currentPageItems : currentPath.reduce((acc, i) => acc[i].contents, currentPageItems);
     const item = currentList[editingItemIndex];
     const newItem = { ...item, word: newWord, icon: newIcon, bgColor: newBgColor, customAudio: newCustomAudio, characterConfig: newCharacterConfig };
     if (item.type === 'folder') newItem.viewMode = newViewMode;
     const newList = [...currentList]; newList[editingItemIndex] = newItem;
-    if (currentPath.length === 0) setRootItems(newList);
-    else {
-      const newRoot = JSON.parse(JSON.stringify(rootItems));
-      let target = newRoot; for (let i = 0; i < currentPath.length - 1; i++) target = target[currentPath[i]].contents;
-      target[currentPath[currentPath.length - 1]].contents = newList;
-      setRootItems(newRoot);
+    
+    const newRootItems = [...rootItems];
+    if (currentPath.length === 0) {
+      newRootItems[currentPageIndex] = { ...newRootItems[currentPageIndex], items: newList };
     }
+    else {
+      let target = newRootItems[currentPageIndex].items; 
+      for (let i = 0; i < currentPath.length - 1; i++) target = target[currentPath[i]].contents;
+      target[currentPath[currentPath.length - 1]].contents = newList;
+    }
+    setRootItems(newRootItems);
     setEditModalOpen(false); setEditingItemIndex(null);
   };
 
@@ -622,16 +644,21 @@ function App() {
   const handleWait = () => { setShowAdvancementModal(false); const resetProgress = { ...progressData, currentStreak: 0, successDates: [], lastSuccessTime: null }; setProgressData(resetProgress); localStorage.setItem('kians-progress', JSON.stringify(resetProgress)); };
 
   const handleAddItem = (word, icon, type) => {
-    const list = [...currentPath.length === 0 ? rootItems : currentPath.reduce((acc, i) => acc[i].contents, rootItems)];
+    const currentPageItems = rootItems[currentPageIndex]?.items || [];
+    const list = [...currentPath.length === 0 ? currentPageItems : currentPath.reduce((acc, i) => acc[i].contents, currentPageItems)];
     const newItem = type === 'folder' ? { id: 'item-' + new Date().getTime(), type: 'folder', word: word || 'New Folder', icon: icon || '📁', contents: [] } : { id: 'item-' + new Date().getTime(), type: 'button', word: word || 'New Item', icon: icon || '⚪' };
     const newList = [...list, newItem];
-    if (currentPath.length === 0) setRootItems(newList);
-    else {
-      const newRoot = JSON.parse(JSON.stringify(rootItems));
-      let target = newRoot; for (let i = 0; i < currentPath.length - 1; i++) target = target[currentPath[i]].contents;
-      target[currentPath[currentPath.length - 1]].contents = newList;
-      setRootItems(newRoot);
+    
+    const newRootItems = [...rootItems];
+    if (currentPath.length === 0) {
+      newRootItems[currentPageIndex] = { ...newRootItems[currentPageIndex], items: newList };
     }
+    else {
+      let target = newRootItems[currentPageIndex].items;
+      for (let i = 0; i < currentPath.length - 1; i++) target = target[currentPath[i]].contents;
+      target[currentPath[currentPath.length - 1]].contents = newList;
+    }
+    setRootItems(newRootItems);
     setEditingItemIndex(newList.length - 1); setEditModalOpen(true);
   };
 
@@ -645,6 +672,21 @@ function App() {
   const handleStopTraining = () => { setIsTrainingMode(false); setShuffledItems(null); setTrainingSelection([]); setIsEditMode(false); };
   const handlePickerOpen = (setWord, setIcon) => { setPickerCallback(() => (w, i, isImage) => { setWord(w); setIcon(i, isImage); setPickerOpen(false); }); setPickerOpen(true); };
 
+  const handleAddNewPage = () => {
+    const newPage = { name: `Page ${rootItems.length + 1}`, items: [] };
+    setRootItems([...rootItems, newPage]);
+    setCurrentPageIndex(rootItems.length);
+  };
+
+  const handleDeletePage = (index) => {
+    if (rootItems.length <= 1) return;
+    if (confirm("Delete this entire page?")) {
+      const newPages = rootItems.filter((_, i) => i !== index);
+      setRootItems(newPages);
+      setCurrentPageIndex(Math.max(0, currentPageIndex - 1));
+    }
+  };
+
   const handleDragEnd = (event) => {
     if (isLayoutLocked) return;
     const { active, over } = event;
@@ -654,18 +696,24 @@ function App() {
       
       const newList = arrayMove(itemsToShow, oldIndex, newIndex);
       
-      if (currentPath.length === 0) setRootItems(newList);
+      const newRootItems = [...rootItems];
+      if (currentPath.length === 0) {
+        newRootItems[currentPageIndex] = { ...newRootItems[currentPageIndex], items: newList };
+      }
       else {
-        const newRoot = JSON.parse(JSON.stringify(rootItems));
-        let target = newRoot;
+        let target = newRootItems[currentPageIndex].items;
         for (let i = 0; i < currentPath.length - 1; i++) target = target[currentPath[i]].contents;
         target[currentPath[currentPath.length - 1]].contents = newList;
-        setRootItems(newRoot);
       }
+      setRootItems(newRootItems);
     }
   };
 
-  let itemsToShow = currentPath.length === 0 ? rootItems : currentPath.reduce((acc, i) => acc[i].contents, rootItems);
+  let itemsToShow = currentPath.length === 0 
+    ? (rootItems[currentPageIndex]?.items || []) 
+    : currentPath.reduce((acc, i) => acc[i].contents, rootItems[currentPageIndex]?.items || []);
+  
+  if (currentPath.length === 0) {
   
   // Dynamic Core Overlay: Prepend core words if at root (and not in Training Mode)
   if (currentPath.length === 0 && !isTrainingMode && currentPhase > 2) {
@@ -798,6 +846,9 @@ function App() {
             isColorCodingEnabled={isColorCodingEnabled}
             collapsedSections={collapsedSections}
             showCategoryHeaders={showCategoryHeaders}
+            pages={rootItems}
+            currentPageIndex={currentPageIndex}
+            onSetPage={setCurrentPageIndex}
             onToggleSection={(sectionId) => {
               setCollapsedSections(prev => 
                 prev.includes(sectionId) ? prev.filter(id => id !== sectionId) : [...prev, sectionId]
@@ -807,9 +858,19 @@ function App() {
         </div>
       </DndContext>
       {!isLocked && !isEditMode && !isTrainingMode && <button id="settings-button" onClick={() => setIsEditMode(true)} aria-label="Open Settings">⚙️</button>}
-      {!isLocked && <Controls isEditMode={isEditMode} isTrainingMode={isTrainingMode} currentPhase={currentPhase} currentLevel={currentLevel} showStrip={showStrip} currentContext={currentContext} contexts={contexts} onSetContext={handleSetContext} onToggleMenu={() => setIsEditMode(!isEditMode)} onAddItem={handleAddItem} onAddContext={handleAddContext} onRenameContext={handleRenameContext} onDeleteContext={handleDeleteContext} onSetLevel={handleSetLevel} onStartTraining={() => { setIsTrainingMode(true); setTrainingSelection([]); }} onReset={() => { if (confirm("Reset everything?")) { localStorage.clear(); location.reload(); } }} onShuffle={handleShuffle} onStopTraining={handleStopTraining} onOpenPicker={handlePickerOpen} onToggleDashboard={() => setShowDashboard(true)} onRedoCalibration={() => setShowCalibration(true)} onToggleLock={() => setIsLocked(true)} voiceSettings={voiceSettings} onUpdateVoiceSettings={setVoiceSettings} gridSize={gridSize} onUpdateGridSize={setGridSize} phase1TargetId={phase1TargetId} onSetPhase1Target={setPhase1TargetId} rootItems={rootItems} colorTheme={colorTheme} onSetColorTheme={setColorTheme} triggerPaywall={triggerPaywall} bellSound={bellSound} onUpdateBellSound={setBellSound} speechDelay={speechDelay} onUpdateSpeechDelay={setSpeechDelay} autoSpeak={autoSpeak} onUpdateAutoSpeak={setAutoSpeak} isScanning={isScanning} onToggleScanning={() => setIsScanning(!isScanning)} scanSpeed={scanSpeed} onUpdateScanSpeed={setScanSpeed} isLayoutLocked={isLayoutLocked} onToggleLayoutLock={() => setIsLayoutLocked(!isLayoutLocked)} isColorCodingEnabled={isColorCodingEnabled} onToggleColorCoding={() => setIsColorCodingEnabled(!isColorCodingEnabled)} showCategoryHeaders={showCategoryHeaders} onToggleCategoryHeaders={() => setShowCategoryHeaders(!showCategoryHeaders)} proficiencyLevel={proficiencyLevel} onUpdateProficiencyLevel={setProficiencyLevel}           onAddFavorites={(favorites) => {
+      {!isLocked && <Controls isEditMode={isEditMode} isTrainingMode={isTrainingMode} currentPhase={currentPhase} currentLevel={currentLevel} showStrip={showStrip} currentContext={currentContext} contexts={contexts} onSetContext={handleSetContext} onToggleMenu={() => setIsEditMode(!isEditMode)} onAddItem={handleAddItem} onAddContext={handleAddContext} onRenameContext={handleRenameContext} onDeleteContext={handleDeleteContext} onSetLevel={handleSetLevel} onStartTraining={() => { setIsTrainingMode(true); setTrainingSelection([]); }} onReset={() => { if (confirm("Reset everything?")) { localStorage.clear(); location.reload(); } }} onShuffle={handleShuffle} onStopTraining={handleStopTraining} onOpenPicker={handlePickerOpen} onToggleDashboard={() => setShowDashboard(true)} onRedoCalibration={() => setShowCalibration(true)} onToggleLock={() => setIsLocked(true)} voiceSettings={voiceSettings} onUpdateVoiceSettings={setVoiceSettings} gridSize={gridSize} onUpdateGridSize={setGridSize} phase1TargetId={phase1TargetId} onSetPhase1Target={setPhase1TargetId} rootItems={rootItems} colorTheme={colorTheme} onSetColorTheme={setColorTheme} triggerPaywall={triggerPaywall} bellSound={bellSound} onUpdateBellSound={setBellSound} speechDelay={speechDelay} onUpdateSpeechDelay={setSpeechDelay} autoSpeak={autoSpeak} onUpdateAutoSpeak={setAutoSpeak} isScanning={isScanning} onToggleScanning={() => setIsScanning(!isScanning)} scanSpeed={scanSpeed} onUpdateScanSpeed={setScanSpeed} isLayoutLocked={isLayoutLocked} onToggleLayoutLock={() => setIsLayoutLocked(!isLayoutLocked)} isColorCodingEnabled={isColorCodingEnabled} onToggleColorCoding={() => setIsColorCodingEnabled(!isColorCodingEnabled)} showCategoryHeaders={showCategoryHeaders} onToggleCategoryHeaders={() => setShowCategoryHeaders(!showCategoryHeaders)} proficiencyLevel={proficiencyLevel} onUpdateProficiencyLevel={setProficiencyLevel} onAddPage={handleAddNewPage} onDeletePage={handleDeletePage} currentPageIndex={currentPageIndex}           onAddFavorites={(favorites) => {
             const nowTime = new Date().getTime();
-            const newFavs = favorites.map((fav, i) => ({ id: `fav-${nowTime}-${i}`, type: 'button', word: fav.word || fav.label, icon: fav.icon, bgColor: '#FFF3E0' })); const list = [...rootItems]; let insertIndex = 0; for (let i = 0; i < list.length; i++) if (list[i].category === 'starter') insertIndex = i + 1; else break; list.splice(insertIndex, 0, ...newFavs); setRootItems(list); }} progressData={progressData}/>}
+            const newFavs = favorites.map((fav, i) => ({ id: `fav-${nowTime}-${i}`, type: 'button', word: fav.word || fav.label, icon: fav.icon, bgColor: '#FFF3E0' })); 
+            
+            const newRootItems = [...rootItems];
+            const list = [...(newRootItems[currentPageIndex]?.items || [])]; 
+            let insertIndex = 0; 
+            for (let i = 0; i < list.length; i++) if (list[i].category === 'starter' || list[i].category === 'core') insertIndex = i + 1; else break; 
+            list.splice(insertIndex, 0, ...newFavs); 
+            
+            newRootItems[currentPageIndex] = { ...newRootItems[currentPageIndex], items: list };
+            setRootItems(newRootItems); 
+          }} progressData={progressData}/>}
       {isLocked && (
         <div style={{ position: 'fixed', bottom: '0', left: '0', right: '0', padding: '12px 20px calc(12px + env(safe-area-inset-bottom, 0px)) 20px', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)', borderTopLeftRadius: '20px', borderTopRightRadius: '20px', boxShadow: '0 -2px 10px rgba(0,0,0,0.1)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100, cursor: 'pointer', textAlign: 'center' }} onClick={() => { const newCount = lockTapCount + 1; setLockTapCount(newCount); setShowUnlockHint(true); if (newCount >= 3) { setIsLocked(false); localStorage.setItem('kiwi-child-mode', 'unlocked'); setLockTapCount(0); setShowUnlockHint(false); } setTimeout(() => { setLockTapCount(0); setShowUnlockHint(false); }, 3000); }}>
           <span style={{ fontSize: '12px', color: '#666', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}><span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>🔒 Child Mode Active</span>{showUnlockHint ? <span style={{ color: 'var(--primary)', fontWeight: 600 }}>{3 - lockTapCount} more taps to unlock</span> : <span style={{ opacity: 0.8 }}>Tap 3x here to unlock</span>}</span>

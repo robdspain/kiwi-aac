@@ -928,12 +928,12 @@ searchIcons(query, libraries = ['emoji', 'arasaac', 'mulberry']) {
 
 **User Experience:**
 - [x] **Unified Search:** Search across emoji + symbols simultaneously
-- [ ] **Library Selector:** Toggle which libraries to search (emoji, ARASAAC, Mulberry, etc.)
+- [x] **Library Selector:** Toggle which libraries to search (emoji, ARASAAC, Mulberry, etc.)
 - [x] **Visual Distinction:** Clear icon badges showing source (🎨 emoji, 📚 ARASAAC, etc.)
 - [x] **Mixed Boards:** Allow emoji and symbols on same board
-- [ ] **Symbol Preview:** Hover/long-press to see larger preview
+- [x] **Symbol Preview:** Hover/long-press to see larger preview
 - [x] **Download Management:** Symbols cached locally for offline use (via browser cache)
-- [ ] **Symbol Packs:** Pre-download common symbol sets (Core Vocabulary, Medical, School)
+- [x] **Symbol Packs:** Pre-download common symbol sets (Core Vocabulary, Medical, School)
 
 **Category Mapping:**
 - Map ARASAAC categories to Kiwi categories
@@ -986,13 +986,23 @@ async function searchARASAAC(keyword, language = 'en') {
 
 **Competitor Feature Comparison:**
 
-| Feature | Kiwi (Planned) | Proloquo2Go | TouchChat | Cboard |
-|---------|----------------|-------------|-----------|---------|
+| Feature | Kiwi Voice | Proloquo2Go | TouchChat | Cboard |
+|---------|------------|-------------|-----------|---------|
 | Personal Photos | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes |
-| Open Symbols | ✅ ARASAAC | ❌ No | ❌ No | ✅ ARASAAC |
-| Premium Symbols | ⏳ PCS/SymbolStix | ✅ PCS | ✅ SymbolStix | ❌ No |
+| Open Symbols | ✅ ARASAAC+OpenMoji | ❌ No | ❌ No | ✅ ARASAAC |
+| Premium Symbols | ⏳ Planned | ✅ PCS | ✅ SymbolStix | ❌ No |
 | Mixed Boards | ✅ Yes | ✅ Yes | ✅ Yes | ⚠️ Limited |
-| Symbol Search | ✅ Unified | ✅ Yes | ✅ Yes | ✅ Yes |
+| Symbol Search | ✅ Unified (4 sources) | ✅ Yes | ✅ Yes | ✅ Yes |
+| Motor Planning | ✅ Yes (Fixed Grid) | ✅ Yes | ✅ Yes | ❌ Dynamic |
+| Switch Access | ✅ Yes (Auto-Scan) | ✅ Yes | ✅ Yes | ⚠️ Limited |
+| Color Coding | ✅ Yes (Fitzgerald) | ✅ Yes | ✅ Yes | ✅ Yes |
+| Multi-Page | ✅ Yes (Tabs+Thumbs) | ✅ Yes | ✅ Yes | ✅ Yes |
+| **Memoji Aesthetic**| ✅ **3D Characters** | ❌ 2D Only | ❌ 2D Only | ❌ 2D Only |
+| **Skill Training** | ✅ **FCR & Denial** | ❌ No | ❌ No | ❌ No |
+| **Routine Builder** | ✅ **Visual Schedules**| ❌ No | ❌ No | ❌ No |
+| **Price** | ✅ **$39/yr (Free Tier)**| ❌ $249+ | ❌ $299+ | ✅ Free |
+| **Cross-Platform** | ✅ **Web/iOS/Android** | ❌ iOS Only | ⚠️ iOS/Android | ✅ Web Only |
+| Biometrics | ⏳ Planned | ✅ Yes | ✅ Yes | ❌ No |
 
 ---
 
@@ -1088,10 +1098,10 @@ const gridConfigs = {
 4. **Month 2:** Full 50-word core vocabulary visible
 5. **Month 3+:** Context-specific fringe vocabulary unlocked
 
-**Therapist Controls:**
+**Adult Controls:**
 - [ ] **Unlock Schedule:** Define which icons unlock when
 - [ ] **Manual Override:**  can unlock specific icons anytime
-- [ ] **Parent View:** Parents see what's hidden vs visible
+- [ ] **Adult View:** Parents see what's hidden vs visible
 - [ ] **Progress Reports:** Track vocabulary expansion over time
 
 #### 23.4. Visual Boundaries & Organization
@@ -1104,9 +1114,9 @@ const gridConfigs = {
 
 **Page/Folder Navigation:**
 - [x] **Folder System:** Already implemented for contexts (School, Home, etc.)
-- [ ] **Page Tabs:** Multiple pages within same board (Page 1, Page 2, etc.)
-- [ ] **Page Thumbnails:** Visual preview of each page
-- [ ] **Quick Jump:** Jump to specific page/category with one tap
+- [x] **Page Tabs:** Multiple pages within same board (Page 1, Page 2, etc.)
+- [x] **Page Thumbnails:** Visual preview of each page (Implemented at grid bottom)
+- [x] **Quick Jump:** Jump to specific page/category with one tap
 
 ---
 
@@ -1292,7 +1302,7 @@ function handleSwitchPress(event) {
 
 **Validation Requirements:**
 - [ ] Test with 50+ users to validate usefulness
-- [ ] Measure accuracy: >85% correct object identification required
+- [ ] Measure accuracy: >90% correct object identification required
 - [ ] Compare to manual creation: Is AI actually faster/better?
 - [ ] SLP feedback: Does this improve AAC therapy outcomes?
 

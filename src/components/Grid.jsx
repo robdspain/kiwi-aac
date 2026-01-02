@@ -39,9 +39,12 @@ const Grid = ({
     scanIndex = -1,
     isLayoutLocked = false,
     isColorCodingEnabled = true,
-    isCategorizationEnabled = true,
     collapsedSections = [],
-    onToggleSection
+    showCategoryHeaders = true,
+    onToggleSection,
+    pages = [],
+    currentPageIndex = 0,
+    onSetPage
 }) => {
     // If we're inside a folder and it's in schedule mode, show the VisualSchedule view
     if (folder && folder.type === 'folder' && folder.viewMode === 'schedule') {
@@ -200,47 +203,49 @@ const Grid = ({
     }
 
     return (
-        <div id="grid-container" className={gridClass} style={{ display: 'block', padding: '1rem' }}>
-            <AnimatePresence mode="popLayout">
-                {categoryOrder.map(catId => {
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <div id="grid-container" className={gridClass} style={{ display: 'block', padding: '1rem', flex: 1, overflowY: 'auto' }}>
+                <AnimatePresence mode="popLayout">
+                    {categoryOrder.map(catId => {
                     const sectionItems = groupedItems[catId];
                     if (!sectionItems || sectionItems.length === 0) return null;
 
                     const meta = CATEGORY_METADATA[catId] || CATEGORY_METADATA['unknown'];
                     const isCollapsed = collapsedSections.includes(catId);
 
-                    return (
-                        <motion.div 
-                            key={catId} 
-                            layout
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                            style={{ 
-                                marginBottom: '1.5rem', 
-                                background: meta.color, 
-                                borderRadius: '1.25rem',
-                                padding: '0.75rem',
-                                border: `1px solid rgba(0,0,0,0.05)`
-                            }}
-                        >
-                            <div 
-                                onClick={() => onToggleSection && onToggleSection(catId)}
-                                style={{ 
-                                    display: 'flex', 
-                                    alignItems: 'center', 
-                                    gap: '0.5rem', 
-                                    marginBottom: isCollapsed ? 0 : '0.75rem',
-                                    cursor: 'pointer',
-                                    padding: '0.25rem 0.5rem'
-                                }}
-                            >
-                                <span style={{ fontSize: '1.25rem' }}>{meta.icon}</span>
-                                <span style={{ fontWeight: 800, fontSize: '0.875rem', textTransform: 'uppercase', color: '#666', flex: 1 }}>{meta.label}</span>
-                                <span style={{ opacity: 0.4 }}>{isCollapsed ? '➕' : '➖'}</span>
-                            </div>
-
+                                    return (
+                                        <motion.div 
+                                            key={catId} 
+                                            layout
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, scale: 0.95 }}
+                                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                            style={showCategoryHeaders ? { 
+                                                marginBottom: '1.5rem', 
+                                                background: meta.color, 
+                                                borderRadius: '1.25rem',
+                                                padding: '0.75rem',
+                                                border: `1px solid rgba(0,0,0,0.05)`
+                                            } : { marginBottom: '1rem' }}
+                                        >
+                                            {showCategoryHeaders && (
+                                                <div 
+                                                    onClick={() => onToggleSection && onToggleSection(catId)}
+                                                    style={{ 
+                                                        display: 'flex', 
+                                                        alignItems: 'center', 
+                                                        gap: '0.5rem', 
+                                                        marginBottom: isCollapsed ? 0 : '0.75rem',
+                                                        cursor: 'pointer',
+                                                        padding: '0.25rem 0.5rem'
+                                                    }}
+                                                >
+                                                    <span style={{ fontSize: '1.25rem' }}>{meta.icon}</span>
+                                                    <span style={{ fontWeight: 800, fontSize: '0.875rem', textTransform: 'uppercase', color: '#666', flex: 1 }}>{meta.label}</span>
+                                                    <span style={{ opacity: 0.4 }}>{isCollapsed ? '➕' : '➖'}</span>
+                                                </div>
+                                            )}
                             <AnimatePresence>
                                 {!isCollapsed && (
                                     <motion.div 

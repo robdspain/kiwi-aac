@@ -57,10 +57,13 @@ const Controls = ({
     onToggleLayoutLock,
     isColorCodingEnabled,
     onToggleColorCoding,
-    isCategorizationEnabled,
-    onToggleCategorization,
+    showCategoryHeaders,
+    onToggleCategoryHeaders,
     proficiencyLevel,
     onUpdateProficiencyLevel,
+    onAddPage,
+    onDeletePage,
+    currentPageIndex,
     onAddFavorites,
     progressData = {}
 }) => {
@@ -255,6 +258,25 @@ const Controls = ({
                                     <span>+ Add Folder</span>
                                     <span className="ios-chevron">›</span>
                                 </div>
+                            </div>
+
+                            <div className="ios-setting-group-header">Board Pages</div>
+                            <div className="ios-setting-card">
+                                <div className="ios-row" onClick={onAddPage}>
+                                    <span style={{ color: '#007AFF', fontWeight: 600 }}>+ Add New Page</span>
+                                    <span className="ios-chevron">›</span>
+                                </div>
+                                <div className="ios-row" style={{ minHeight: 'auto', padding: '0.5rem 0.9375rem', background: '#F2F2F7' }}>
+                                    <p style={{ fontSize: '0.625rem', color: '#8E8E93', margin: 0 }}>
+                                        Current Page: {currentPageIndex + 1}
+                                    </p>
+                                </div>
+                                {onDeletePage && (
+                                    <div className="ios-row" onClick={() => onDeletePage(currentPageIndex)} style={{ opacity: currentPageIndex === 0 ? 0.5 : 1 }}>
+                                        <span style={{ color: '#FF3B30', fontWeight: 600 }}>Delete Current Page</span>
+                                        <span className="ios-chevron">🗑️</span>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="ios-setting-group-header">Communication Level</div>
@@ -541,21 +563,16 @@ const Controls = ({
                                         </div>
                                     </div>
                                 </div>
-                                <div className="ios-row" style={{ minHeight: 'auto', padding: '0.5rem 0.9375rem', background: '#F2F2F7' }}>
-                                    <p style={{ fontSize: '0.625rem', color: '#8E8E93', margin: 0 }}>
-                                        Automatically colors icons by part of speech (Nouns: Yellow, Verbs: Green, etc.)
-                                    </p>
-                                </div>
-                                <div className="ios-row" onClick={onToggleCategorization}>
-                                    <span>📂 Group by Category</span>
+                                <div className="ios-row" onClick={onToggleCategoryHeaders}>
+                                    <span>📂 Show Category Headers</span>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                        <span style={{ fontSize: '0.875rem', fontWeight: 600, color: isCategorizationEnabled ? '#007AFF' : '#8E8E93' }}>
-                                            {isCategorizationEnabled ? 'On' : 'Off'}
+                                        <span style={{ fontSize: '0.875rem', fontWeight: 600, color: showCategoryHeaders ? '#34C759' : '#8E8E93' }}>
+                                            {showCategoryHeaders ? 'On' : 'Off'}
                                         </span>
                                         <div style={{ 
                                             width: '51px', 
                                             height: '31px', 
-                                            background: isCategorizationEnabled ? '#007AFF' : '#E5E5EA', 
+                                            background: showCategoryHeaders ? '#34C759' : '#E5E5EA', 
                                             borderRadius: '15.5px', 
                                             position: 'relative',
                                             transition: 'background 0.2s'
@@ -567,7 +584,7 @@ const Controls = ({
                                                 borderRadius: '50%', 
                                                 position: 'absolute', 
                                                 top: '2px', 
-                                                left: isCategorizationEnabled ? '22px' : '2px',
+                                                left: showCategoryHeaders ? '22px' : '2px',
                                                 transition: 'left 0.2s',
                                                 boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
                                             }} />
@@ -576,7 +593,7 @@ const Controls = ({
                                 </div>
                                 <div className="ios-row" style={{ minHeight: 'auto', padding: '0.5rem 0.9375rem', background: '#F2F2F7' }}>
                                     <p style={{ fontSize: '0.625rem', color: '#8E8E93', margin: 0 }}>
-                                        Groups icons into collapsible sections like 'Actions', 'Things', etc.
+                                        Organizes your board into labeled sections like 'Actions' or 'Describe'.
                                     </p>
                                 </div>
                                 <div className="ios-row" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.625rem', padding: '1rem' }}>
