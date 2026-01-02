@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import Assessment from './Assessment';
 import TouchCalibration from './TouchCalibration';
 import FavoritesPicker from './FavoritesPicker';
@@ -11,6 +12,24 @@ const Onboarding = ({ onComplete }) => {
     const [recommendedPhase, setRecommendedPhase] = useState(null);
     const [selectedFavorites, setSelectedFavorites] = useState([]);
     const [canRead, setCanRead] = useState(null);
+    const [learnerName, setLearnerName] = useState('');
+    const [learnerPhoto, setLearnerPhoto] = useState(null);
+
+    const takePhoto = async () => {
+        try {
+            const image = await Camera.getPhoto({
+                quality: 90,
+                allowEditing: true,
+                resultType: CameraResultType.DataUrl,
+                source: CameraSource.Prompt
+            });
+            if (image && image.dataUrl) {
+                setLearnerPhoto(image.dataUrl);
+            }
+        } catch (error) {
+            console.error('Camera error:', error);
+        }
+    };
 
     const steps = [
         {
@@ -20,6 +39,46 @@ const Onboarding = ({ onComplete }) => {
                     <div style={{ fontSize: '5rem', marginBottom: '1.25rem' }}>🥝</div>
                     <p style={{ fontSize: '1.1rem', color: '#636E72', lineHeight: 1.5 }}>
                         A powerful communication tool designed for children learning to express themselves.
+                    </p>
+                </div>
+            )
+        },
+        {
+            title: "Who are we helping?",
+            content: (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
+                    <div 
+                        onClick={takePhoto}
+                        style={{ 
+                            width: '8rem', height: '8rem', borderRadius: '50%', 
+                            background: '#F2F2F7', display: 'flex', alignItems: 'center', 
+                            justifyContent: 'center', fontSize: '3rem', cursor: 'pointer',
+                            overflow: 'hidden', border: '0.25rem solid white',
+                            boxShadow: '0 0.5rem 1rem rgba(0,0,0,0.1)'
+                        }}
+                    >
+                        {learnerPhoto ? (
+                            <img src={learnerPhoto} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : (
+                            '📸'
+                        )}
+                    </div>
+                    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        <label style={{ fontSize: '0.875rem', fontWeight: 700, color: '#666', marginLeft: '0.5rem' }}>LEARNER&apos;S NAME</label>
+                        <input 
+                            type="text" 
+                            placeholder="Enter name (optional)" 
+                            value={learnerName}
+                            onChange={(e) => setLearnerName(e.target.value)}
+                            style={{ 
+                                width: '100%', padding: '1rem 1.25rem', borderRadius: '1rem', 
+                                border: 'none', background: 'white', fontSize: '1.1rem',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.05)', outline: 'none'
+                            }}
+                        />
+                    </div>
+                    <p style={{ fontSize: '0.9rem', color: '#95A5A6', textAlign: 'center', lineHeight: 1.4 }}>
+                        Adding a name and photo makes the app feel like it belongs to them!
                     </p>
                 </div>
             )
@@ -120,7 +179,7 @@ const Onboarding = ({ onComplete }) => {
         } else {
             // Complete onboarding
             localStorage.setItem('kiwi-onboarding-complete', 'true');
-            onComplete(recommendedPhase || 0, selectedFavorites, canRead);
+            onComplete(recommendedPhase || 0, selectedFavorites, canRead, { name: learnerName, photo: learnerPhoto });
         }
     };
 

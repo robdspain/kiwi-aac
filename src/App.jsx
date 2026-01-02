@@ -391,7 +391,7 @@ function App() {
     }
   };
 
-  const { pronunciations } = useProfile();
+  const { profiles, updateProfile, pronunciations } = useProfile();
 
   const speak = (text, customAudio = null) => {
     if (customAudio) { new Audio(customAudio).play(); return; }
@@ -926,9 +926,15 @@ function App() {
       {showDashboard && <Suspense fallback={null}><Dashboard onClose={() => setShowDashboard(false)} progressData={progressData} currentPhase={currentPhase} currentLevel={currentLevel} rootItems={rootItems}/></Suspense>}
       {showCalibration && <TouchCalibration onComplete={() => setShowCalibration(false)}/>}
       {showOnboarding && (
-        <Onboarding onComplete={(recommendedPhase, favorites, canRead) => {
+        <Onboarding onComplete={(recommendedPhase, favorites, canRead, learnerProfile) => {
           if (typeof recommendedPhase === 'number') handleSetPhase(recommendedPhase);
           if (canRead !== null && canRead !== undefined) { localStorage.setItem('kiwi-literacy', JSON.stringify(canRead)); if (canRead === true || canRead === 'partial') document.body.classList.add('literacy-mode'); }
+          
+          if (learnerProfile) {
+            if (learnerProfile.name) updateProfile('default', { name: learnerProfile.name });
+            if (learnerProfile.photo) updateProfile('default', { avatar: learnerProfile.photo });
+          }
+
           if (favorites && Array.isArray(favorites) && favorites.length > 0) {
             const now = new Date().getTime();
             const newFavs = favorites.map((fav, i) => ({ id: `fav-${now}-${i}`, type: 'button', word: fav.word || fav.label, icon: fav.icon, bgColor: '#FFF3E0' }));

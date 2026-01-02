@@ -557,6 +557,8 @@ await Superwall.register({ event: 'addProfile2' }) // Trigger when adding 2nd pr
 
 ### 18. Phase 18: Essential Skills Training (FCR, Denial Tolerance)
 
+**Integrated Skill Training:** Kiwi Voice provides native, evidence-based FCR (Functional Communication Response) and Denial Tolerance modes—features that usually require separate clinical protocols in other apps.
+
 > **See also:** [ROADMAP.md - Q1 2025](./ROADMAP.md#q1-2025) for evidence-based protocols
 
 #### 18.1. Functional Communication Response (FCR)

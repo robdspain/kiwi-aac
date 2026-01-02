@@ -955,6 +955,67 @@
             opacity: 0;
             animation: fadeInUp 0.8s ease forwards;
         }
+
+        /* Comparison Table Styles */
+        .comparison-section {
+            padding: var(--spacing-xl) 2rem;
+            background: white;
+        }
+
+        .comparison-table-wrapper {
+            max-width: 1000px;
+            margin: 3rem auto 0;
+            overflow-x: auto;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            text-align: left;
+        }
+
+        .comparison-table th, .comparison-table td {
+            padding: 1.5rem;
+            border-bottom: 1px solid #F2F2F7;
+        }
+
+        .comparison-table th {
+            background: #F8F9FA;
+            font-weight: 800;
+            color: var(--dark);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table .feature-name {
+            font-weight: 700;
+            color: var(--dark);
+            width: 30%;
+        }
+
+        .comparison-table .kiwi-col {
+            background: rgba(78, 205, 196, 0.05);
+            font-weight: 700;
+            color: var(--primary-dark);
+            text-align: center;
+        }
+
+        .comparison-table td:not(.feature-name) {
+            text-align: center;
+        }
+
+        .check-icon { color: #34D399; font-weight: bold; font-size: 1.2rem; }
+        .cross-icon { color: #FF6B6B; font-weight: bold; font-size: 1.2rem; }
+        .warn-icon { color: #F97316; font-weight: bold; font-size: 1.2rem; }
     </style>
 </head>
 
