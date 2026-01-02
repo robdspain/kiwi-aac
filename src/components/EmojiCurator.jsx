@@ -648,45 +648,21 @@ const EmojiCurator = () => {
                 Templates
             </button>
 
-            <label style={{
-                padding: isMobile ? '8px 12px' : '10px 15px',
-                background: '#333',
-                border: '1px solid #555',
-                borderRadius: '8px',
-                color: 'white',
-                cursor: 'pointer',
-                fontSize: isMobile ? '0.8rem' : '0.9rem',
-                display: 'flex', alignItems: 'center', gap: '5px'
-            }}>
-                <span>📷</span>
-                <input 
-                    type="file" 
-                    accept="image/*" 
-                    style={{ display: 'none' }}
-                    onChange={(e) => {
-                        const file = e.target.files[0];
-                        if (file) {
-                            const reader = new FileReader();
-                            reader.onload = (re) => {
-                                const name = prompt("Enter name for this icon:", "My Photo");
-                                if (name) {
-                                    const newItem = {
-                                        id: `custom-${Date.now()}`,
-                                        name,
-                                        category: activeCategory,
-                                        image: re.target.result,
-                                        emoji: `custom-${Date.now()}` // Use ID as emoji key
-                                    };
-                                    setCustomItems(prev => [newItem, ...prev]);
-                                    // Auto-select it?
-                                    toggleEmoji(activeCategory, newItem.emoji, newItem);
-                                }
-                            };
-                            reader.readAsDataURL(file);
-                        }
-                    }}
-                />
-            </label>
+            <button
+                onClick={() => setShowImageSearch(true)}
+                style={{
+                    padding: isMobile ? '8px 12px' : '10px 15px',
+                    background: '#333',
+                    border: '1px solid #555',
+                    borderRadius: '8px',
+                    color: 'white',
+                    cursor: 'pointer',
+                    fontSize: isMobile ? '0.8rem' : '0.9rem',
+                    display: 'flex', alignItems: 'center', gap: '5px'
+                }}
+            >
+                <span>📷</span> Add Custom
+            </button>
 
             <button
                 onClick={() => setSequenceMode(!sequenceMode)}
@@ -1222,6 +1198,97 @@ const EmojiCurator = () => {
                         </button>
                     ))}
                 </div>
+        {/* Custom Icon Modal */}
+        {showImageSearch && (
+            <div style={{
+                position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+                background: 'rgba(0,0,0,0.5)', zIndex: 10003,
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }} onClick={() => setShowImageSearch(false)}>
+                <div style={{
+                    background: 'white', padding: '20px', borderRadius: '16px',
+                    width: '90%', maxWidth: '400px', maxHeight: '80vh', overflowY: 'auto',
+                    boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
+                }} onClick={e => e.stopPropagation()}>
+                    <h3 style={{ marginTop: 0 }}>Add Custom Icon</h3>
+                    
+                    <div style={{ marginBottom: '20px', padding: '15px', background: '#f9f9f9', borderRadius: '10px', textAlign: 'center' }}>
+                        <p style={{ margin: '0 0 10px 0', fontWeight: 'bold' }}>Upload from Device</p>
+                        <input 
+                            type="file" 
+                            accept="image/*" 
+                            onChange={(e) => {
+                                const file = e.target.files[0];
+                                if (file) {
+                                    const reader = new FileReader();
+                                    reader.onload = (re) => {
+                                        const name = prompt("Enter name for this icon:", file.name.split('.')[0]);
+                                        if (name) {
+                                            const newItem = {
+                                                id: `custom-${Date.now()}`,
+                                                name,
+                                                category: activeCategory,
+                                                image: re.target.result,
+                                                emoji: `custom-${Date.now()}`
+                                            };
+                                            setCustomItems(prev => [newItem, ...prev]);
+                                            toggleEmoji(activeCategory, newItem.emoji, newItem);
+                                            setShowImageSearch(false);
+                                        }
+                                    };
+                                    reader.readAsDataURL(file);
+                                }
+                            }}
+                        />
+                    </div>
+
+                    <div style={{ borderTop: '1px solid #ddd', paddingTop: '20px' }}>
+                        <p style={{ margin: '0 0 10px 0', fontWeight: 'bold' }}>Web Search (Mock)</p>
+                        <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                            <input 
+                                type="text" 
+                                placeholder="Search Unsplash..."
+                                value={searchQueryImage}
+                                onChange={(e) => setSearchQueryImage(e.target.value)}
+                                style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid #ddd' }}
+                            />
+                            <button style={{ padding: '8px 15px', background: '#333', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Go</button>
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                            {searchQueryImage && [1,2,3].map(i => (
+                                <img 
+                                    key={i}
+                                    src={`https://picsum.photos/seed/${searchQueryImage}${i}/200/200`}
+                                    alt="Result"
+                                    onClick={() => {
+                                        const name = prompt("Enter name for this icon:", searchQueryImage);
+                                        if (name) {
+                                            const newItem = {
+                                                id: `custom-${Date.now()}`,
+                                                name,
+                                                category: activeCategory,
+                                                image: `https://picsum.photos/seed/${searchQueryImage}${i}/200/200`,
+                                                emoji: `custom-${Date.now()}`
+                                            };
+                                            setCustomItems(prev => [newItem, ...prev]);
+                                            toggleEmoji(activeCategory, newItem.emoji, newItem);
+                                            setShowImageSearch(false);
+                                        }
+                                    }}
+                                    style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', borderRadius: '8px', cursor: 'pointer' }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                    <button onClick={() => setShowImageSearch(false)} style={{
+                        marginTop: '20px', padding: '10px', width: '100%',
+                        background: '#eee', border: 'none', borderRadius: '8px', cursor: 'pointer'
+                    }}>Cancel</button>
+                </div>
+            </div>
+        )}
+
         {/* Templates Modal */}
         {showTemplates && (
             <div style={{
