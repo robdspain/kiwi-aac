@@ -137,6 +137,58 @@ button.primary {
   animation: fadeIn 0.3s ease;
 }
 
+/* Touch Target Size Definitions */
+.size-standard .app-item { width: calc(25% - 1rem); max-width: 140px; }
+.size-big .app-item { width: calc(33.33% - 1rem); max-width: 180px; }
+.size-super-big .app-item { width: calc(50% - 1rem); max-width: 240px; }
+
+/* Level 1/2 Focus Mode */
+.phase-large-grid {
+  position: fixed !important;
+  inset: 0 !important;
+  height: 100dvh !important;
+  width: 100vw !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 100;
+  background: var(--bg-color);
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.phase-large-grid .app-item {
+  flex-direction: row !important;
+  width: 90vw !important;
+  max-width: none !important;
+  height: auto !important;
+  background: white !important;
+  border-radius: 48px !important;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.15) !important;
+  padding: 40px !important;
+  gap: 40px !important;
+  border: none !important;
+}
+
+.phase-large-grid .app-icon {
+  width: 60vw !important;
+  height: 60vw !important;
+  max-width: none !important;
+  max-height: none !important;
+  font-size: 45vw !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  flex-shrink: 0 !important;
+}
+
+.phase-large-grid .app-label {
+  font-size: 12vw !important;
+  font-weight: 900 !important;
+  color: #000 !important;
+  text-align: left !important;
+  flex: 1 !important;
+}
+
 .app-icon {
   width: 100%;
   aspect-ratio: 1 / 1;

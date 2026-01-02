@@ -1,7 +1,8 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { EMOJI_DATA } from '../utils/emojiData';
 import { triggerHaptic } from '../utils/haptics';
-import { CORE_VOCABULARY, TEMPLATES, CONTEXT_DEFINITIONS } from '../data/aacData';
+import { CORE_VOCABULARY, TEMPLATES, CONTEXT_DEFINITIONS, SKILLS, WORD_CLASSES } from '../data/aacData';
+import { AAC_LEXICON, getFitzgeraldColor } from '../data/aacLexicon';
 import CharacterBuilder from './CharacterBuilder';
 import AvatarRenderer from './AvatarRenderer';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
