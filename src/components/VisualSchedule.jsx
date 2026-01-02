@@ -23,15 +23,7 @@ const VisualSchedule = ({ folder, onBack }) => {
     const currentItem = items[currentIndex];
 
     return (
-        <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '100%',
-            padding: '20px',
-            gap: '20px'
-        }}>
+        <div className="visual-schedule-container">
             <div role="status" aria-live="polite" style={{
                 position: 'absolute',
                 width: '1px',
@@ -45,7 +37,7 @@ const VisualSchedule = ({ folder, onBack }) => {
             }}>
                 {currentIndex === items.length - 1 ? 'Schedule finished!' : `Step ${currentIndex + 1} of ${items.length}: ${currentItem?.word}`}
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+            <div className="visual-schedule-header">
                 <button onClick={onBack} style={{ padding: '10px 15px', borderRadius: '10px', background: '#E5E5EA', border: 'none', cursor: 'pointer' }}>
                     ← Back
                 </button>
@@ -55,28 +47,11 @@ const VisualSchedule = ({ folder, onBack }) => {
                 </button>
             </div>
 
-            <div style={{
-                flex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '15px'
-            }}>
+            <div className="visual-schedule-content">
                 {currentItem ? (
                     <>
-                        <div style={{
-                            width: '200px',
-                            height: '200px',
-                            borderRadius: '20%',
-                            background: currentItem.bgColor || '#f0f0f0',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '6rem',
-                            overflow: 'hidden',
-                            border: '4px solid #007AFF',
-                            boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
+                        <div className="visual-schedule-item-display" style={{
+                            background: currentItem.bgColor || '#f0f0f0'
                         }}>
                             {typeof currentItem.icon === 'string' && (currentItem.icon.startsWith('/') || currentItem.icon.startsWith('data:') || currentItem.icon.includes('.')) ? (
                                 <img src={currentItem.icon} alt={currentItem.word} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
@@ -84,14 +59,14 @@ const VisualSchedule = ({ folder, onBack }) => {
                                 currentItem.icon
                             )}
                         </div>
-                        <div style={{ fontSize: '2.5rem', fontWeight: 'bold' }}>{currentItem.word}</div>
+                        <div className="visual-schedule-label">{currentItem.word}</div>
                     </>
                 ) : (
                     <div>No items in this schedule</div>
                 )}
             </div>
 
-            <div style={{ display: 'flex', gap: '20px', width: '100%', justifyContent: 'center' }}>
+            <div className="visual-schedule-controls">
                 <button
                     onClick={handlePrev}
                     disabled={currentIndex === 0}
@@ -110,14 +85,11 @@ const VisualSchedule = ({ folder, onBack }) => {
                 <button
                     onClick={handleNext}
                     disabled={currentIndex === items.length - 1}
+                    className="primary"
                     style={{
                         padding: '15px 30px',
                         borderRadius: '15px',
-                        background: '#007AFF',
-                        color: 'white',
-                        border: 'none',
                         fontSize: '1.2rem',
-                        fontWeight: 'bold',
                         cursor: currentIndex === items.length - 1 ? 'default' : 'pointer',
                         opacity: currentIndex === items.length - 1 ? 0.5 : 1
                     }}
@@ -126,14 +98,9 @@ const VisualSchedule = ({ folder, onBack }) => {
                 </button>
             </div>
 
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <div className="visual-schedule-progress">
                 {items.map((_, i) => (
-                    <div key={i} style={{
-                        width: '12px',
-                        height: '12px',
-                        borderRadius: '50%',
-                        background: i === currentIndex ? '#007AFF' : '#D1D1D6'
-                    }} />
+                    <div key={i} className={`visual-schedule-dot ${i === currentIndex ? 'active' : 'inactive'}`} />
                 ))}
             </div>
         </div>

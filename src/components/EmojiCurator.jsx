@@ -998,26 +998,11 @@ const EmojiCurator = () => {
                       {isChecked && (
                           <div
                             role="button"
+                            className="emoji-curator-edit-btn"
                             aria-label="Edit Metadata"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 setEditingItem({ ...item, emoji: displayEmoji });
-                            }}
-                            style={{
-                                position: 'absolute',
-                                top: '5px',
-                                left: '5px',
-                                width: '24px',
-                                height: '24px',
-                                background: 'white',
-                                borderRadius: '50%',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
-                                fontSize: '12px',
-                                cursor: 'pointer',
-                                zIndex: 5
                             }}
                           >
                               ✏️

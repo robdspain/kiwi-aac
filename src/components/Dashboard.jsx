@@ -64,22 +64,19 @@ Communication is growing! 🥝
     };
 
     return (
-        <div id="picker-modal" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div id="picker-content" style={{
-                width: '90%', maxWidth: '800px', height: '90vh', overflowY: 'auto',
-                padding: '30px', borderRadius: '25px'
-            }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                    <h1 style={{ margin: 0 }}>📊 Dashboard</h1>
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                        <button onClick={handleShare} style={{ padding: '10px 20px', borderRadius: '10px', background: '#007AFF', color: 'white', border: 'none', cursor: 'pointer' }}>📤 Share Progress</button>
-                        <button onClick={exportToCSV} style={{ padding: '10px 20px', borderRadius: '10px', background: '#34C759', color: 'white', border: 'none', cursor: 'pointer' }}>📥 Export CSV</button>
+        <div className="dashboard-modal">
+            <div className="dashboard-content">
+                <div className="dashboard-header">
+                    <h1>📊 Dashboard</h1>
+                    <div className="dashboard-actions">
+                        <button onClick={handleShare} className="primary">📤 Share Progress</button>
+                        <button onClick={exportToCSV} style={{ padding: '10px 20px', borderRadius: '10px', background: 'var(--success)', color: 'white', border: 'none', cursor: 'pointer' }}>📥 Export CSV</button>
                         <button onClick={onClose} style={{ padding: '10px 20px', borderRadius: '10px', background: '#E5E5EA', border: 'none', cursor: 'pointer' }}>Close</button>
                     </div>
                 </div>
 
                 {/* Level Progress Section */}
-                <h2 style={{ borderBottom: '2px solid #EEE', paddingBottom: '10px' }}>🎯 Level Progress</h2>
+                <h2 className="dashboard-section-title">🎯 Level Progress</h2>
                 {(() => {
                     // Calculate progress per level from trials
                     const levelProgress = {};
@@ -119,15 +116,12 @@ Communication is growing! 🥝
 
                     if (sortedLevels.length === 0) {
                         return (
-                            <div style={{
-                                background: '#f8f8f8',
-                                padding: '30px',
-                                borderRadius: '15px',
+                            <div className="dashboard-card" style={{
                                 textAlign: 'center',
-                                marginBottom: '30px'
+                                background: 'var(--gray-light)'
                             }}>
                                 <div style={{ fontSize: '3rem', marginBottom: '10px' }}>📝</div>
-                                <p style={{ color: '#666', margin: 0 }}>No level progress data yet. Complete some trials to see progress here!</p>
+                                <p style={{ color: 'var(--text-secondary)', margin: 0 }}>No level progress data yet. Complete some trials to see progress here!</p>
                             </div>
                         );
                     }
@@ -136,16 +130,13 @@ Communication is growing! 🥝
                         <div style={{ marginBottom: '30px' }}>
                             {/* Current Level Card */}
                             {currentLevel && (
-                                <div style={{
+                                <div className="dashboard-card" style={{
                                     background: `linear-gradient(135deg, ${getStage(currentLevel).color}15, ${getStage(currentLevel).color}30)`,
-                                    border: `2px solid ${getStage(currentLevel).color}`,
-                                    padding: '20px',
-                                    borderRadius: '15px',
-                                    marginBottom: '20px'
+                                    border: `2px solid ${getStage(currentLevel).color}`
                                 }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <div>
-                                            <div style={{ fontSize: '0.85rem', color: '#666', marginBottom: '4px' }}>Current Level</div>
+                                            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>Current Level</div>
                                             <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: getStage(currentLevel).color }}>
                                                 {getStage(currentLevel).icon} Level {currentLevel}
                                             </div>
@@ -156,7 +147,7 @@ Communication is growing! 🥝
                                                 <div style={{ fontSize: '2rem', fontWeight: 'bold', color: getStage(currentLevel).color }}>
                                                     {levelProgress[currentLevel].attempts}
                                                 </div>
-                                                <div style={{ fontSize: '0.8rem', color: '#666' }}>attempts</div>
+                                                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>attempts</div>
                                             </div>
                                         )}
                                     </div>
@@ -170,24 +161,24 @@ Communication is growing! 🥝
                                             borderRadius: '10px'
                                         }}>
                                             <div style={{ flex: 1, textAlign: 'center' }}>
-                                                <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#34C759' }}>
+                                                <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--success)' }}>
                                                     {levelProgress[currentLevel].independent}
                                                 </div>
-                                                <div style={{ fontSize: '0.75rem', color: '#666' }}>Independent</div>
+                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Independent</div>
                                             </div>
                                             <div style={{ flex: 1, textAlign: 'center' }}>
-                                                <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#FF9500' }}>
+                                                <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--warning)' }}>
                                                     {levelProgress[currentLevel].prompted}
                                                 </div>
-                                                <div style={{ fontSize: '0.75rem', color: '#666' }}>Prompted</div>
+                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Prompted</div>
                                             </div>
                                             <div style={{ flex: 1, textAlign: 'center' }}>
-                                                <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#007AFF' }}>
+                                                <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--primary)' }}>
                                                     {levelProgress[currentLevel].attempts > 0
                                                         ? Math.round((levelProgress[currentLevel].independent / levelProgress[currentLevel].attempts) * 100)
                                                         : 0}%
                                                 </div>
-                                                <div style={{ fontSize: '0.75rem', color: '#666' }}>Accuracy</div>
+                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Accuracy</div>
                                             </div>
                                         </div>
                                     )}
@@ -195,7 +186,7 @@ Communication is growing! 🥝
                             )}
 
                             {/* All Levels Progress */}
-                            <div style={{ background: '#f8f8f8', padding: '20px', borderRadius: '15px' }}>
+                            <div className="dashboard-card" style={{ background: 'var(--gray-light)' }}>
                                 <h3 style={{ margin: '0 0 15px 0', fontSize: '1rem' }}>Level History</h3>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                     {sortedLevels.map(lvl => {
@@ -229,7 +220,7 @@ Communication is growing! 🥝
                                                     width: '36px',
                                                     height: '36px',
                                                     borderRadius: '50%',
-                                                    background: isPassed ? '#34C759' : (stageDef?.color || '#E5E5EA') + '30',
+                                                    background: isPassed ? 'var(--success)' : (stageDef?.color || '#E5E5EA') + '30',
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
@@ -250,7 +241,7 @@ Communication is growing! 🥝
                                                 <div style={{ textAlign: 'right' }}>
                                                     {isPassed ? (
                                                         <span style={{
-                                                            background: '#34C759',
+                                                            background: 'var(--success)',
                                                             color: 'white',
                                                             padding: '4px 10px',
                                                             borderRadius: '12px',
@@ -259,7 +250,7 @@ Communication is growing! 🥝
                                                         }}>Passed</span>
                                                     ) : isCurrent ? (
                                                         <span style={{
-                                                            background: stageDef?.color || '#007AFF',
+                                                            background: stageDef?.color || 'var(--primary)',
                                                             color: 'white',
                                                             padding: '4px 10px',
                                                             borderRadius: '12px',
@@ -286,28 +277,28 @@ Communication is growing! 🥝
                 })()}
 
                 {/* Usage Overview */}
-                <h2 style={{ borderBottom: '2px solid #EEE', paddingBottom: '10px' }}>📈 Usage Overview</h2>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px', marginBottom: '30px' }}>
-                    <div style={{ background: '#E3F2FD', padding: '20px', borderRadius: '15px', textAlign: 'center' }}>
-                        <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#1976D2' }}>{totalStats.totalClicks}</div>
-                        <div style={{ fontSize: '0.9rem', color: '#555' }}>Total Clicks</div>
+                <h2 className="dashboard-section-title">📈 Usage Overview</h2>
+                <div className="dashboard-stat-grid">
+                    <div className="dashboard-stat-card" style={{ background: 'var(--stat-blue-bg)' }}>
+                        <div className="dashboard-stat-value" style={{ color: 'var(--stat-blue-text)' }}>{totalStats.totalClicks}</div>
+                        <div className="dashboard-stat-label">Total Clicks</div>
                     </div>
-                    <div style={{ background: '#E8F5E9', padding: '20px', borderRadius: '15px', textAlign: 'center' }}>
-                        <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#388E3C' }}>{totalStats.uniqueItems}</div>
-                        <div style={{ fontSize: '0.9rem', color: '#555' }}>Items Used</div>
+                    <div className="dashboard-stat-card" style={{ background: 'var(--stat-green-bg)' }}>
+                        <div className="dashboard-stat-value" style={{ color: 'var(--stat-green-text)' }}>{totalStats.uniqueItems}</div>
+                        <div className="dashboard-stat-label">Items Used</div>
                     </div>
-                    <div style={{ background: '#FFF3E0', padding: '20px', borderRadius: '15px', textAlign: 'center' }}>
-                        <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#F57C00' }}>{totalStats.totalSessions}</div>
-                        <div style={{ fontSize: '0.9rem', color: '#555' }}>Sessions</div>
+                    <div className="dashboard-stat-card" style={{ background: 'var(--stat-orange-bg)' }}>
+                        <div className="dashboard-stat-value" style={{ color: 'var(--stat-orange-text)' }}>{totalStats.totalSessions}</div>
+                        <div className="dashboard-stat-label">Sessions</div>
                     </div>
-                    <div style={{ background: '#FCE4EC', padding: '20px', borderRadius: '15px', textAlign: 'center' }}>
-                        <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#C2185B' }}>{totalStats.avgSessionTime}m</div>
-                        <div style={{ fontSize: '0.9rem', color: '#555' }}>Avg Session</div>
+                    <div className="dashboard-stat-card" style={{ background: 'var(--stat-pink-bg)' }}>
+                        <div className="dashboard-stat-value" style={{ color: 'var(--stat-pink-text)' }}>{totalStats.avgSessionTime}m</div>
+                        <div className="dashboard-stat-label">Avg Session</div>
                     </div>
                 </div>
 
                 {/* Weekly Activity Chart */}
-                <div style={{ marginBottom: '30px', background: '#f8f8f8', padding: '20px', borderRadius: '15px' }}>
+                <div className="dashboard-card" style={{ background: 'var(--gray-light)' }}>
                     <h3 style={{ margin: '0 0 15px 0' }}>Weekly Activity</h3>
                     <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', height: '100px' }}>
                         {dailyStats.map((day, i) => (
@@ -315,7 +306,7 @@ Communication is growing! 🥝
                                 <div style={{
                                     width: '100%',
                                     height: `${(day.clicks / maxDaily) * 80}px`,
-                                    background: 'linear-gradient(180deg, #007AFF, #5856D6)',
+                                    background: 'linear-gradient(180deg, var(--primary), var(--primary-dark))',
                                     borderRadius: '5px 5px 0 0',
                                     minHeight: '4px'
                                 }} />
@@ -327,8 +318,8 @@ Communication is growing! 🥝
 
                 {/* Independence Trend Chart */}
                 {trials.length > 5 && (
-                    <div style={{ marginBottom: '30px', background: '#fff', border: '1px solid #eee', padding: '20px', borderRadius: '15px' }}>
-                        <h3 style={{ margin: '0 0 15px 0', color: '#333' }}>📈 Independence Trend (Last 7 Days)</h3>
+                    <div className="dashboard-card" style={{ background: 'white', border: '1px solid #eee' }}>
+                        <h3 style={{ margin: '0 0 15px 0', color: 'var(--text-primary)' }}>📈 Independence Trend (Last 7 Days)</h3>
                         {(() => {
                             // Calculate daily independence rates
                             const days = [];
@@ -363,7 +354,7 @@ Communication is growing! 🥝
                                         <polyline
                                             points={points}
                                             fill="none"
-                                            stroke="#34C759"
+                                            stroke="var(--success)"
                                             strokeWidth="2"
                                             strokeLinecap="round"
                                             strokeLinejoin="round"
@@ -376,7 +367,7 @@ Communication is growing! 🥝
                                                 cx={(i / 6) * 100}
                                                 cy={100 - d.rate}
                                                 r={d.hasData ? "2" : "1"}
-                                                fill={d.hasData ? "#34C759" : "#ddd"}
+                                                fill={d.hasData ? "var(--success)" : "#ddd"}
                                             />
                                         ))}
                                     </svg>
@@ -395,13 +386,13 @@ Communication is growing! 🥝
 
                 {/* Top Items */}
                 {topItems.length > 0 && (
-                    <div style={{ marginBottom: '30px', background: '#f0f0ff', padding: '20px', borderRadius: '15px' }}>
+                    <div className="dashboard-card" style={{ background: '#f0f0ff' }}>
                         <h3 style={{ margin: '0 0 15px 0' }}>🏆 Most Used Items</h3>
                         {topItems.map((item, i) => (
                             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                                 <span style={{ width: '24px', fontWeight: 'bold', color: '#666' }}>#{i + 1}</span>
                                 <span style={{ flex: 1 }}>{item.word}</span>
-                                <span style={{ background: '#007AFF', color: 'white', padding: '4px 12px', borderRadius: '10px', fontSize: '0.9rem' }}>{item.count}</span>
+                                <span style={{ background: 'var(--primary)', color: 'white', padding: '4px 12px', borderRadius: '10px', fontSize: '0.9rem' }}>{item.count}</span>
                             </div>
                         ))}
                     </div>
@@ -409,7 +400,7 @@ Communication is growing! 🥝
 
                 {/* Favorites Usage */}
                 {favorites.length > 0 && (
-                    <div style={{ marginBottom: '30px', background: 'linear-gradient(135deg, #FFF5E1, #FFE4B5)', padding: '20px', borderRadius: '15px', border: '2px solid #FFD700' }}>
+                    <div className="dashboard-card" style={{ background: 'linear-gradient(135deg, #FFF5E1, #FFE4B5)', border: '2px solid #FFD700' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
                             <h3 style={{ margin: 0 }}>⭐ Favorite Usage</h3>
                             <span style={{ background: '#FFD700', color: 'white', padding: '4px 12px', borderRadius: '10px', fontSize: '0.85rem', fontWeight: 'bold' }}>
@@ -474,24 +465,24 @@ Communication is growing! 🥝
                     </div>
                 )}
 
-                <h2 style={{ borderBottom: '2px solid #EEE', paddingBottom: '10px' }}>🏃 Communication Progress</h2>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px', marginBottom: '30px' }}>
-                    <div style={{ background: '#F3E5F5', padding: '20px', borderRadius: '15px', textAlign: 'center' }}>
-                        <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#9C27B0' }}>{independentTrials}</div>
-                        <div style={{ fontSize: '0.9rem', color: '#555' }}>Independent</div>
+                <h2 className="dashboard-section-title">🏃 Communication Progress</h2>
+                <div className="dashboard-stat-grid" style={{gridTemplateColumns: 'repeat(3, 1fr)'}}>
+                    <div className="dashboard-stat-card" style={{ background: '#F3E5F5' }}>
+                        <div className="dashboard-stat-value" style={{ color: '#9C27B0' }}>{independentTrials}</div>
+                        <div className="dashboard-stat-label">Independent</div>
                     </div>
-                    <div style={{ background: '#FFFDE7', padding: '20px', borderRadius: '15px', textAlign: 'center' }}>
-                        <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#FBC02D' }}>{promptedTrials}</div>
-                        <div style={{ fontSize: '0.9rem', color: '#555' }}>Prompted</div>
+                    <div className="dashboard-stat-card" style={{ background: '#FFFDE7' }}>
+                        <div className="dashboard-stat-value" style={{ color: '#FBC02D' }}>{promptedTrials}</div>
+                        <div className="dashboard-stat-label">Prompted</div>
                     </div>
-                    <div style={{ background: '#E0F2F1', padding: '20px', borderRadius: '15px', textAlign: 'center' }}>
-                        <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#00897B' }}>{independenceRate}%</div>
-                        <div style={{ fontSize: '0.9rem', color: '#555' }}>Independence</div>
+                    <div className="dashboard-stat-card" style={{ background: '#E0F2F1' }}>
+                        <div className="dashboard-stat-value" style={{ color: '#00897B' }}>{independenceRate}%</div>
+                        <div className="dashboard-stat-label">Independence</div>
                     </div>
                 </div>
 
                 {trials.length > 0 && (
-                    <div style={{ marginBottom: '30px', background: '#f0efff', padding: '20px', borderRadius: '15px' }}>
+                    <div className="dashboard-card" style={{ background: '#f0efff' }}>
                         <h3 style={{ margin: '0 0 10px 0' }}>Trial History</h3>
                         <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
                             {trials.slice(-20).map((t, i) => (
