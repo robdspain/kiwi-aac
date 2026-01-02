@@ -207,12 +207,9 @@ function App() {
     const saved = localStorage.getItem('kiwi-color-coding-enabled');
     return saved !== null ? saved === 'true' : true;
   });
-  const [proficiencyLevel, setProficiencyLevel] = useState(() => {
-    return localStorage.getItem('kiwi-proficiency-level') || 'beginner';
-  });
-  const [collapsedSections, setCollapsedSections] = useState(() => {
-    const saved = localStorage.getItem('kiwi-collapsed-sections');
-    return saved ? JSON.parse(saved) : [];
+  const [isCategorizationEnabled, setIsCategorizationEnabled] = useState(() => {
+    const saved = localStorage.getItem('kiwi-categorization-enabled');
+    return saved !== null ? saved === 'true' : true;
   });
   const [scanIndex, setScanIndex] = useState(-1);
   const [scanSpeed, setScanSpeed] = useState(() => {
@@ -255,6 +252,12 @@ function App() {
     return saved !== null ? JSON.parse(saved) : true;
   });
 
+  const [proficiencyLevel, setProficiencyLevel] = useState(() => localStorage.getItem('kiwi-proficiency') || 'intermediate');
+  const [collapsedSections, setCollapsedSections] = useState(() => {
+    const saved = localStorage.getItem('kiwi-collapsed-sections');
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const [speechDelay, setSpeechDelay] = useState(() => {
     const saved = localStorage.getItem('kiwi-speech-delay');
     return saved ? parseInt(saved, 10) : 0;
@@ -276,7 +279,8 @@ function App() {
   useEffect(() => { localStorage.setItem('kiwi-scan-speed', scanSpeed.toString()); }, [scanSpeed]);
   useEffect(() => { localStorage.setItem('kiwi-layout-locked', isLayoutLocked.toString()); }, [isLayoutLocked]);
   useEffect(() => { localStorage.setItem('kiwi-color-coding-enabled', isColorCodingEnabled.toString()); }, [isColorCodingEnabled]);
-  useEffect(() => { localStorage.setItem('kiwi-proficiency-level', proficiencyLevel); }, [proficiencyLevel]);
+  useEffect(() => { localStorage.setItem('kiwi-categorization-enabled', isCategorizationEnabled.toString()); }, [isCategorizationEnabled]);
+  useEffect(() => { localStorage.setItem('kiwi-proficiency', proficiencyLevel); }, [proficiencyLevel]);
   useEffect(() => { localStorage.setItem('kiwi-collapsed-sections', JSON.stringify(collapsedSections)); }, [collapsedSections]);
 
   // Auto-scanning Logic
@@ -290,13 +294,13 @@ function App() {
 
     const interval = setInterval(() => {
       setScanIndex(prev => {
-        if (itemsToShow.length === 0) return -1;
-        return (prev + 1) % itemsToShow.length;
+        if (visibleItemsForScanning.length === 0) return -1;
+        return (prev + 1) % visibleItemsForScanning.length;
       });
     }, scanSpeed);
 
     return () => clearInterval(interval);
-  }, [isScanning, scanSpeed, itemsToShow.length, editModalOpen, pickerOpen, showDashboard, showOnboarding, showLevelIntro, showAdvancementModal, showCalibration]);
+  }, [isScanning, scanSpeed, visibleItemsForScanning.length, editModalOpen, pickerOpen, showDashboard, showOnboarding, showLevelIntro, showAdvancementModal, showCalibration]);
 
   // Global Switch Listener (Space/Enter or Screen Tap when scanning)
   useEffect(() => {
@@ -311,10 +315,10 @@ function App() {
         if (e.target.closest('#settings-button') || e.target.closest('#controls-content') || e.target.closest('.ios-bottom-sheet')) return;
       }
 
-      if (scanIndex >= 0 && scanIndex < itemsToShow.length) {
+      if (scanIndex >= 0 && scanIndex < visibleItemsForScanning.length) {
         e.preventDefault();
         e.stopPropagation();
-        handleItemClick(itemsToShow[scanIndex], scanIndex);
+        handleItemClick(visibleItemsForScanning[scanIndex], scanIndex);
       }
     };
 
@@ -324,7 +328,7 @@ function App() {
       window.removeEventListener('keydown', handleGlobalSwitch);
       window.removeEventListener('click', handleGlobalSwitch, true);
     };
-  }, [isScanning, scanIndex, itemsToShow]);
+  }, [isScanning, scanIndex, visibleItemsForScanning]);
 
   useEffect(() => {
     if (typeof currentLevel === 'number' && !isNaN(currentLevel)) {
@@ -664,6 +668,36 @@ function App() {
     itemsToShow = [...CORE_WORDS_DATA, ...fringeItems];
   }
 
+  // Phase Filtering
+  if (isTrainingMode && shuffledItems) {
+    itemsToShow = shuffledItems.map(obj => obj.item);
+  } else if (currentPhase === 1 || currentPhase === 2) {
+    let target = phase1TargetId ? rootItems.find(i => i.id === phase1TargetId) : null;
+    if (!target) { 
+      const allowedIds = ['snack-generic', 'play-generic', 'toy-generic', 'mom', 'dad']; 
+      target = rootItems.find(i => i.type === 'button' && allowedIds.includes(i.id)); 
+    }
+    itemsToShow = target ? [target] : [];
+  } else if (currentPhase === 3) {
+    itemsToShow = rootItems.filter(i => i.type === 'button' && i.category !== 'starter').slice(0, 20);
+  } else if (currentPhase > 0 && currentPhase < 6) {
+    itemsToShow = itemsToShow.filter(i => i.category !== 'starter');
+  }
+
+  // Categorization Sorting
+  if (isCategorizationEnabled && !isTrainingMode && currentPhase > 2 && currentPath.length === 0) {
+    const categoryOrder = ['core', 'pronoun', 'verb', 'adj', 'noun', 'social', 'question', 'misc', 'unknown'];
+    itemsToShow = [...itemsToShow].sort((a, b) => {
+      const getCat = (item) => {
+        const lexiconEntry = item.word ? AAC_LEXICON[item.word.toLowerCase()] : null;
+        return item.category || item.wc || lexiconEntry?.type || 'unknown';
+      };
+      const catA = getCat(a);
+      const catB = getCat(b);
+      return categoryOrder.indexOf(catA) - categoryOrder.indexOf(catB);
+    });
+  }
+
   // Progressive Revelation Logic
   itemsToShow = itemsToShow.map((item, index) => {
     let isRevealed = true;
@@ -671,6 +705,14 @@ function App() {
     else if (proficiencyLevel === 'intermediate' && index >= 50) isRevealed = false;
     if (item.category === 'core') isRevealed = true; // Always show core
     return { ...item, isRevealed };
+  });
+
+  // Filter for Auto-Scanning (excluding collapsed sections)
+  const visibleItemsForScanning = itemsToShow.filter(item => {
+    if (!isCategorizationEnabled) return true;
+    const lexiconEntry = item.word ? AAC_LEXICON[item.word.toLowerCase()] : null;
+    const category = item.category || item.wc || lexiconEntry?.type || 'unknown';
+    return !collapsedSections.includes(category);
   });
 
   if (showSplash) {
@@ -747,6 +789,7 @@ function App() {
             scanIndex={scanIndex} 
             isLayoutLocked={isLayoutLocked} 
             isColorCodingEnabled={isColorCodingEnabled}
+            isCategorizationEnabled={isCategorizationEnabled}
             collapsedSections={collapsedSections}
             onToggleSection={(sectionId) => {
               setCollapsedSections(prev => 
@@ -757,7 +800,7 @@ function App() {
         </div>
       </DndContext>
       {!isLocked && !isEditMode && !isTrainingMode && <button id="settings-button" onClick={() => setIsEditMode(true)} aria-label="Open Settings">⚙️</button>}
-      {!isLocked && <Controls isEditMode={isEditMode} isTrainingMode={isTrainingMode} currentPhase={currentPhase} currentLevel={currentLevel} showStrip={showStrip} currentContext={currentContext} contexts={contexts} onSetContext={handleSetContext} onToggleMenu={() => setIsEditMode(!isEditMode)} onAddItem={handleAddItem} onAddContext={handleAddContext} onRenameContext={handleRenameContext} onDeleteContext={handleDeleteContext} onSetLevel={handleSetLevel} onStartTraining={() => { setIsTrainingMode(true); setTrainingSelection([]); }} onReset={() => { if (confirm("Reset everything?")) { localStorage.clear(); location.reload(); } }} onShuffle={handleShuffle} onStopTraining={handleStopTraining} onOpenPicker={handlePickerOpen} onToggleDashboard={() => setShowDashboard(true)} onRedoCalibration={() => setShowCalibration(true)} onToggleLock={() => setIsLocked(true)} voiceSettings={voiceSettings} onUpdateVoiceSettings={setVoiceSettings} gridSize={gridSize} onUpdateGridSize={setGridSize} phase1TargetId={phase1TargetId} onSetPhase1Target={setPhase1TargetId} rootItems={rootItems} colorTheme={colorTheme} onSetColorTheme={setColorTheme} triggerPaywall={triggerPaywall} bellSound={bellSound} onUpdateBellSound={setBellSound} speechDelay={speechDelay} onUpdateSpeechDelay={setSpeechDelay} autoSpeak={autoSpeak} onUpdateAutoSpeak={setAutoSpeak} isScanning={isScanning} onToggleScanning={() => setIsScanning(!isScanning)} scanSpeed={scanSpeed} onUpdateScanSpeed={setScanSpeed} isLayoutLocked={isLayoutLocked} onToggleLayoutLock={() => setIsLayoutLocked(!isLayoutLocked)} isColorCodingEnabled={isColorCodingEnabled} onToggleColorCoding={() => setIsColorCodingEnabled(!isColorCodingEnabled)} proficiencyLevel={proficiencyLevel} onUpdateProficiencyLevel={setProficiencyLevel}           onAddFavorites={(favorites) => {
+      {!isLocked && <Controls isEditMode={isEditMode} isTrainingMode={isTrainingMode} currentPhase={currentPhase} currentLevel={currentLevel} showStrip={showStrip} currentContext={currentContext} contexts={contexts} onSetContext={handleSetContext} onToggleMenu={() => setIsEditMode(!isEditMode)} onAddItem={handleAddItem} onAddContext={handleAddContext} onRenameContext={handleRenameContext} onDeleteContext={handleDeleteContext} onSetLevel={handleSetLevel} onStartTraining={() => { setIsTrainingMode(true); setTrainingSelection([]); }} onReset={() => { if (confirm("Reset everything?")) { localStorage.clear(); location.reload(); } }} onShuffle={handleShuffle} onStopTraining={handleStopTraining} onOpenPicker={handlePickerOpen} onToggleDashboard={() => setShowDashboard(true)} onRedoCalibration={() => setShowCalibration(true)} onToggleLock={() => setIsLocked(true)} voiceSettings={voiceSettings} onUpdateVoiceSettings={setVoiceSettings} gridSize={gridSize} onUpdateGridSize={setGridSize} phase1TargetId={phase1TargetId} onSetPhase1Target={setPhase1TargetId} rootItems={rootItems} colorTheme={colorTheme} onSetColorTheme={setColorTheme} triggerPaywall={triggerPaywall} bellSound={bellSound} onUpdateBellSound={setBellSound} speechDelay={speechDelay} onUpdateSpeechDelay={setSpeechDelay} autoSpeak={autoSpeak} onUpdateAutoSpeak={setAutoSpeak} isScanning={isScanning} onToggleScanning={() => setIsScanning(!isScanning)} scanSpeed={scanSpeed} onUpdateScanSpeed={setScanSpeed} isLayoutLocked={isLayoutLocked} onToggleLayoutLock={() => setIsLayoutLocked(!isLayoutLocked)} isColorCodingEnabled={isColorCodingEnabled} onToggleColorCoding={() => setIsColorCodingEnabled(!isColorCodingEnabled)} isCategorizationEnabled={isCategorizationEnabled} onToggleCategorization={() => setIsCategorizationEnabled(!isCategorizationEnabled)} proficiencyLevel={proficiencyLevel} onUpdateProficiencyLevel={setProficiencyLevel}           onAddFavorites={(favorites) => {
             const nowTime = new Date().getTime();
             const newFavs = favorites.map((fav, i) => ({ id: `fav-${nowTime}-${i}`, type: 'button', word: fav.word || fav.label, icon: fav.icon, bgColor: '#FFF3E0' })); const list = [...rootItems]; let insertIndex = 0; for (let i = 0; i < list.length; i++) if (list[i].category === 'starter') insertIndex = i + 1; else break; list.splice(insertIndex, 0, ...newFavs); setRootItems(list); }} progressData={progressData}/>}
       {isLocked && (

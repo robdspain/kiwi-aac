@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { Capacitor } from '@capacitor/core';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import GuidedAccessModal from './GuidedAccessModal';
 import FavoritesPickerModal from './FavoritesPickerModal';
 import PronunciationEditor from './PronunciationEditor';
@@ -55,6 +57,8 @@ const Controls = ({
     onToggleLayoutLock,
     isColorCodingEnabled,
     onToggleColorCoding,
+    isCategorizationEnabled,
+    onToggleCategorization,
     proficiencyLevel,
     onUpdateProficiencyLevel,
     onAddFavorites,
@@ -540,6 +544,39 @@ const Controls = ({
                                 <div className="ios-row" style={{ minHeight: 'auto', padding: '0.5rem 0.9375rem', background: '#F2F2F7' }}>
                                     <p style={{ fontSize: '0.625rem', color: '#8E8E93', margin: 0 }}>
                                         Automatically colors icons by part of speech (Nouns: Yellow, Verbs: Green, etc.)
+                                    </p>
+                                </div>
+                                <div className="ios-row" onClick={onToggleCategorization}>
+                                    <span>📂 Group by Category</span>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <span style={{ fontSize: '0.875rem', fontWeight: 600, color: isCategorizationEnabled ? '#007AFF' : '#8E8E93' }}>
+                                            {isCategorizationEnabled ? 'On' : 'Off'}
+                                        </span>
+                                        <div style={{ 
+                                            width: '51px', 
+                                            height: '31px', 
+                                            background: isCategorizationEnabled ? '#007AFF' : '#E5E5EA', 
+                                            borderRadius: '15.5px', 
+                                            position: 'relative',
+                                            transition: 'background 0.2s'
+                                        }}>
+                                            <div style={{ 
+                                                width: '27px', 
+                                                height: '27px', 
+                                                background: 'white', 
+                                                borderRadius: '50%', 
+                                                position: 'absolute', 
+                                                top: '2px', 
+                                                left: isCategorizationEnabled ? '22px' : '2px',
+                                                transition: 'left 0.2s',
+                                                boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
+                                            }} />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="ios-row" style={{ minHeight: 'auto', padding: '0.5rem 0.9375rem', background: '#F2F2F7' }}>
+                                    <p style={{ fontSize: '0.625rem', color: '#8E8E93', margin: 0 }}>
+                                        Groups icons into collapsible sections like 'Actions', 'Things', etc.
                                     </p>
                                 </div>
                                 <div className="ios-row" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.625rem', padding: '1rem' }}>

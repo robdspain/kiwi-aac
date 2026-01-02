@@ -1,9 +1,14 @@
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { motion } from 'framer-motion';
 import { AAC_LEXICON } from '../data/aacLexicon';
+import { getMedia } from '../utils/db';
 import { triggerHaptic } from '../utils/haptics';
+
+// Simple global cache for media to avoid repeated DB reads
+const mediaCache = new Map();
 
 const AppItem = ({
   item,
@@ -25,6 +30,45 @@ const AppItem = ({
 }) => {
   const pointerStartPos = useRef(null);
   const [isCancelling, setIsCancelling] = useState(false);
+  const [resolvedIcon, setResolvedIcon] = useState(item.icon);
+  const [resolvedAudio, setResolvedAudio] = useState(item.customAudio);
+
+  useEffect(() => {
+    let didCancel = false;
+
+    const resolveMedia = async () => {
+      let icon = item.icon;
+      let audio = item.customAudio;
+
+      if (typeof item.icon === 'string' && item.icon.startsWith('db:')) {
+        const mediaId = item.icon.split(':')[1];
+        if (mediaCache.has(mediaId)) {
+          icon = mediaCache.get(mediaId);
+        } else {
+          icon = await getMedia(mediaId);
+          mediaCache.set(mediaId, icon);
+        }
+      }
+
+      if (typeof item.customAudio === 'string' && item.customAudio.startsWith('db:')) {
+        const mediaId = item.customAudio.split(':')[1];
+        if (mediaCache.has(mediaId)) {
+          audio = mediaCache.get(mediaId);
+        } else {
+          audio = await getMedia(mediaId);
+          mediaCache.set(mediaId, audio);
+        }
+      }
+
+      if (!didCancel) {
+        setResolvedIcon(icon);
+        setResolvedAudio(audio);
+      }
+    };
+
+    resolveMedia();
+    return () => { didCancel = true; };
+  }, [item.icon, item.customAudio]);
   
   const {
     attributes,
@@ -100,7 +144,7 @@ const AppItem = ({
     else if (item.name?.toLowerCase() === 'no' || item.name?.toLowerCase() === 'stop') hapticStyle = 'heavy';
 
     triggerHaptic(hapticStyle);
-    onClick(item, index);
+    onClick({ ...item, customAudio: resolvedAudio }, index);
   };
 
   const handleDelete = (e) => {
@@ -150,13 +194,14 @@ const AppItem = ({
   };
 
   return (
-    <div
+    <motion.div
       ref={setNodeRef}
       style={style}
       className={wrapperClass}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handleAction}
+      whileTap={{ scale: 0.95 }}
       role="button"
       tabIndex={0}
       aria-label={isBack ? 'Go back' : `${item.word}${item.type === 'folder' ? ', folder' : ''}`}
@@ -210,10 +255,10 @@ const AppItem = ({
             ))}
           </div>
         ) : (
-          typeof item.icon === 'string' && (item.icon.startsWith('/') || item.icon.startsWith('data:') || item.icon.includes('.')) ? (
-            <img src={item.icon} alt={item.word} />
+          typeof resolvedIcon === 'string' && (resolvedIcon.startsWith('/') || resolvedIcon.startsWith('data:') || resolvedIcon.includes('.')) ? (
+            <img src={resolvedIcon} alt={item.word} />
           ) : (
-            item.icon
+            resolvedIcon
           )
         )}
       </div>
@@ -265,7 +310,7 @@ const AppItem = ({
       )}
 
       <div className="app-label">{item.word}</div>
-    </div>
+    </motion.div>
   );
 };
 

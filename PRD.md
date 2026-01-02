@@ -296,11 +296,7 @@ Does it improve CORE communication?
    - Full emoji dataset access
    - Paywall trigger: `Superwall.register({ event: 'unlimitedVocabulary' })`
 
-9. **📱 Priority Support** (RECOMMENDED)
-   - Email support within 24 hours
-   - Video tutorials
-   - Setup assistance
-   - Direct access to AAC specialists
+
 
 #### 7.4. Institutional Pricing
 
@@ -1398,24 +1394,24 @@ To compete with $200+ native apps, Kiwi must exceed standard PWA expectations an
 
 #### 27.1. Advanced Platform Integration
 - [ ] **Biometric Protection:** Implement FaceID / TouchID / Android Biometrics for adult settings access (instead of just triple-tap).
-- [ ] **Native App Review:** Trigger `@capacitor-community/in-app-review` at key mastery milestones (Phase 18 success).
+- [x] **Native App Review:** Trigger `@capacitor-community/in-app-review` at key mastery milestones (Phase 18 success).
 - [ ] **Universal Links / Deep Linking:** Support sharing specific boards via links that open directly in the app.
-- [ ] **Keyboard Avoidance:** Ensure native keyboard overlays don't obscure the search bar or edit fields.
+- [x] **Keyboard Avoidance:** Ensured via fluid layout and safe-area-insets.
 
 #### 27.2. High-Fidelity UI/UX
-- [ ] **60fps Transitions:** Use Framer Motion or optimized CSS transforms for all screen transitions (Level intros, modal slides).
-- [ ] **Haptic Feedback Hierarchy:** 
+- [x] **60fps Transitions:** Implemented **Framer Motion** for grid entry, section collapse, and sentence strip items.
+- [x] **Haptic Feedback Hierarchy:** 
     - *Light:* Navigation / Selection.
     - *Medium:* Folder open / Success.
     - *Heavy:* Error / Delete / Long-press trigger.
-- [ ] **Spring Physics:** Implement natural spring-based animations for the icon grid and message bar items.
+- [x] **Spring Physics:** Used spring-based animations for natural feeling interactions.
 
 #### 27.3. Adaptive System Support
-- [ ] **Dynamic Type (iOS):** Automatically scale app fonts and icon labels based on the user's system font size settings.
-- [ ] **Dark Mode Sync:** Seamlessly transition themes based on system-wide light/dark mode changes.
-- [ ] **Safe Area Persistence:** Ensure layout avoids notches, home bars, and hole-punch cameras on all mobile devices.
+- [x] **Dynamic Type (iOS):** Automatically scale app fonts and icon labels based on the user's system font size settings.
+- [x] **Dark Mode Sync:** System-wide dark mode support with specialized high-contrast variables.
+- [x] **Safe Area Persistence:** Fully integrated `viewport-fit=cover` and CSS `env(safe-area-inset)`.
 
 #### 27.4. Robust Offline Architecture
-- [ ] **IndexedDB for Media:** Move from `localStorage` to `IndexedDB` for custom photos and voice recordings to support larger libraries (>5MB).
+- [x] **IndexedDB for Media:** Successfully moved custom photos and voice recordings from `localStorage` to **IndexedDB**, bypassing the 5MB limit.
 - [ ] **Background Sync:** Ensure analytics and profile changes sync to the cloud (when implemented) even if the app is closed.
-- [ ] **Asset Pre-caching:** Pre-download high-quality system voices and ARASAAC core icons during initial installation.
+- [x] **Asset Pre-caching:** Added support for downloading and caching ARASAAC core packs.

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import VoiceRecorder from './VoiceRecorder';
 import MemojiPicker from './MemojiPicker';
+import { saveMedia, getMedia, deleteMedia } from '../utils/db';
 
 const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item, triggerPaywall }) => {
     const [word, setWord] = useState('');
@@ -20,11 +21,31 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
     useEffect(() => {
         if (isOpen && item && item.id !== lastItemIdRef.current) {
             lastItemIdRef.current = item.id;
-            setTimeout(() => {
-                setWord(item.word); setIcon(item.icon); setBgColor(item.bgColor || ''); setViewMode(item.viewMode || 'grid'); setCustomAudio(item.customAudio || null); setCharacterConfig(item.characterConfig || null);
-                setIsImage(typeof item.icon === 'string' && (item.icon.startsWith('/') || item.icon.startsWith('data:') || item.icon.includes('.')));
-                setProcessing(false);
-            }, 0);
+            
+            const loadData = async () => {
+                let resolvedIcon = item.icon;
+                let resolvedAudio = item.customAudio;
+
+                if (typeof item.icon === 'string' && item.icon.startsWith('db:')) {
+                    const mediaId = item.icon.split(':')[1];
+                    resolvedIcon = await getMedia(mediaId);
+                }
+
+                if (typeof item.customAudio === 'string' && item.customAudio.startsWith('db:')) {
+                    const mediaId = item.customAudio.split(':')[1];
+                    resolvedAudio = await getMedia(mediaId);
+                }
+
+                setWord(item.word); 
+                setIcon(resolvedIcon); 
+                setBgColor(item.bgColor || ''); 
+                setViewMode(item.viewMode || 'grid'); 
+                setCustomAudio(resolvedAudio); 
+                setCharacterConfig(item.characterConfig || null);
+                setIsImage(typeof resolvedIcon === 'string' && (resolvedIcon.startsWith('/') || resolvedIcon.startsWith('data:') || resolvedIcon.includes('.')));
+            };
+
+            loadData();
         }
     }, [isOpen, item]);
 
@@ -109,9 +130,39 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                     <h2 className="ios-sheet-title">{item?.type === 'folder' ? 'Edit Folder' : 'Edit Button'}</h2>
                     <button 
                         className="ios-done-button" 
-                        onClick={() => { onSave(word, icon, bgColor, viewMode, customAudio, characterConfig); onClose(); }}
                         disabled={processing}
                         style={{ opacity: processing ? 0.5 : 1 }}
+                        onClick={async () => { 
+                            let finalIcon = icon;
+                            let finalAudio = customAudio;
+
+                            // Move heavy icon to IndexedDB if it's a new data URL
+                            if (typeof icon === 'string' && icon.startsWith('data:')) {
+                                // Cleanup old entry if it was from DB
+                                if (typeof item.icon === 'string' && item.icon.startsWith('db:')) {
+                                    const oldId = item.icon.split(':')[1];
+                                    await deleteMedia(oldId);
+                                }
+                                const mediaId = `img-${Date.now()}`;
+                                await saveMedia(mediaId, icon);
+                                finalIcon = `db:${mediaId}`;
+                            }
+
+                            // Move heavy audio to IndexedDB if it's a new data URL
+                            if (typeof customAudio === 'string' && customAudio.startsWith('data:')) {
+                                // Cleanup old entry if it was from DB
+                                if (typeof item.customAudio === 'string' && item.customAudio.startsWith('db:')) {
+                                    const oldId = item.customAudio.split(':')[1];
+                                    await deleteMedia(oldId);
+                                }
+                                const audioId = `audio-${Date.now()}`;
+                                await saveMedia(audioId, customAudio);
+                                finalAudio = `db:${audioId}`;
+                            }
+
+                            onSave(word, finalIcon, bgColor, viewMode, finalAudio, characterConfig); 
+                            onClose(); 
+                        }}
                     >
                         {processing ? '...' : 'Done'}
                     </button>

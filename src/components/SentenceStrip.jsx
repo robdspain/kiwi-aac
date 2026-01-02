@@ -1,5 +1,7 @@
 
 
+import { motion, AnimatePresence } from 'framer-motion';
+
 const SentenceStrip = ({ stripItems = [], onClear, onPlay, onDeleteItem }) => {
     return (
         <div id="strip-container">
@@ -10,23 +12,30 @@ const SentenceStrip = ({ stripItems = [], onClear, onPlay, onDeleteItem }) => {
                             Tap icons to build a sentence
                         </span>
                     ) : (
-                        stripItems.map((item, index) => (
-                            <div 
-                                key={`${item.id}-${index}`} 
-                                className="strip-item"
-                                onClick={() => onDeleteItem && onDeleteItem(index)}
-                            >
-                                <div className="strip-icon-wrapper">
-                                    {typeof item.icon === 'string' && (item.icon.startsWith('/') || item.icon.startsWith('data:') || item.icon.includes('.')) ? (
-                                        <img src={item.icon} alt={item.word} className="strip-img" />
-                                    ) : (
-                                        <span className="strip-emoji">{item.icon}</span>
-                                    )}
-                                </div>
-                                <span className="strip-label">{item.word}</span>
-                                <div className="strip-item-remove">✕</div>
-                            </div>
-                        ))
+                        <AnimatePresence mode="popLayout">
+                            {stripItems.map((item, index) => (
+                                <motion.div 
+                                    layout
+                                    initial={{ opacity: 0, scale: 0.5, x: 20 }}
+                                    animate={{ opacity: 1, scale: 1, x: 0 }}
+                                    exit={{ opacity: 0, scale: 0.5, y: -20 }}
+                                    key={`${item.id}-${index}`} 
+                                    className="strip-item"
+                                    onClick={() => onDeleteItem && onDeleteItem(index)}
+                                    whileTap={{ scale: 0.9 }}
+                                >
+                                    <div className="strip-icon-wrapper">
+                                        {typeof item.icon === 'string' && (item.icon.startsWith('/') || item.icon.startsWith('data:') || item.icon.includes('.')) ? (
+                                            <img src={item.icon} alt={item.word} className="strip-img" />
+                                        ) : (
+                                            <span className="strip-emoji">{item.icon}</span>
+                                        )}
+                                    </div>
+                                    <span className="strip-label">{item.word}</span>
+                                    <div className="strip-item-remove">✕</div>
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
                     )}
                 </div>
                 

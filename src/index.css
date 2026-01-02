@@ -46,6 +46,61 @@
   --transition-spring: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+/* Native Dark Mode Sync */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #000000;
+    --bg-gradient: linear-gradient(180deg, #1C1C1E 0%, #000000 100%);
+    --card-bg: #1C1C1E;
+    --primary-dark: #4ECDC4;
+    --primary-text: #FFFFFF;
+    --text-primary: #FFFFFF;
+    --text-secondary: #EBEBF5;
+    --text-muted: #8E8E93;
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --gray-light: #1C1C1E;
+    --gray-border: #38383A;
+  }
+
+  body {
+    background: #000000;
+  }
+
+  .ios-setting-card, .ios-row, #strip-container, #controls-content {
+    background: #1C1C1E;
+    color: white;
+  }
+
+  .ios-row {
+    border-bottom-color: #38383A;
+  }
+
+  .ios-segmented-control {
+    background: #38383A;
+  }
+
+  .ios-segmented-control .selection-pill {
+    background: #636366;
+  }
+
+  .ios-segmented-control button {
+    color: white;
+  }
+
+  input.ios-input, #sentence-strip, .ios-close-btn {
+    background: #2C2C2E;
+    color: white;
+  }
+
+  .ios-large-title {
+    color: white;
+  }
+  
+  .app-item:not(.is-hidden) .app-label {
+    color: white;
+  }
+}
+
 /* Literacy Mode */
 body.literacy-mode {
   font-family: 'Comic Sans MS', 'Lexend', 'OpenDyslexic', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -923,16 +978,33 @@ button.primary {
 
 
 /* Text Spacing Support (WCAG 2.1 AA) */
-
 /* Ensure layout doesn't break when users increase spacing */
-
 body {
-
   line-height: 1.5;
-
   letter-spacing: normal;
-
 }
+
+/* Dynamic Type Scaling */
+@media (max-width: 320px) {
+  :root {
+    --app-label-size: 0.75rem;
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --app-label-size: 1rem;
+  }
+}
+
+.app-label {
+  font-size: var(--app-label-size, 0.875rem);
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+  line-height: 1.2;
+}
+
 
 
 

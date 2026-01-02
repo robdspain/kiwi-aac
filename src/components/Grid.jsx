@@ -2,6 +2,7 @@
 import AppItem from './AppItem';
 import VisualSchedule from './VisualSchedule';
 import { AAC_LEXICON } from '../data/aacLexicon';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
     SortableContext,
     rectSortingStrategy
@@ -38,6 +39,7 @@ const Grid = ({
     scanIndex = -1,
     isLayoutLocked = false,
     isColorCodingEnabled = true,
+    isCategorizationEnabled = true,
     collapsedSections = [],
     onToggleSection
 }) => {
@@ -45,6 +47,13 @@ const Grid = ({
     if (folder && folder.type === 'folder' && folder.viewMode === 'schedule') {
         return <VisualSchedule folder={folder} onBack={onBack} />;
     }
+
+    // Determine if we should use categorized view
+    // 1. Must be enabled via settings
+    // 2. Must not have any items with fixed 'pos' (Motor Planning mode)
+    // 3. Not in Training Mode (which handles its own sorting/layout)
+    const hasFixedPositions = items.some(item => !!item.pos);
+    const useCategorizedView = isCategorizationEnabled && !hasFixedPositions && !isTrainingMode && !useLargeGrid;
 
     // Logic for Large 2x2 Grid
     // Phase 1 & 2: Always 2x2
@@ -138,9 +147,19 @@ const Grid = ({
         );
     }
 
-    if (useLargeGrid) {
+    if (useLargeGrid || !useCategorizedView) {
         return (
-            <div id="grid-container" className={gridClass}>
+            <div 
+                id="grid-container" 
+                className={gridClass}
+                style={!useLargeGrid ? {
+                    display: 'grid',
+                    gridTemplateColumns: `repeat(${cols}, 1fr)`,
+                    gridTemplateRows: `repeat(${rows}, 1fr)`,
+                    gap: '1rem',
+                    padding: '1.25rem'
+                } : {}}
+            >
                 <SortableContext
                     items={items.map(i => i.id || i.word)}
                     strategy={rectSortingStrategy}
@@ -149,6 +168,11 @@ const Grid = ({
                         const isSelected = trainingSelection.includes(index);
                         const displayIcon = item.image || item.icon;
                         
+                        const itemStyle = item.pos ? {
+                            gridRowStart: item.pos.r + 1,
+                            gridColumnStart: item.pos.c + 1
+                        } : {};
+
                         return (
                             <AppItem
                                 key={item.id || index}
@@ -162,7 +186,7 @@ const Grid = ({
                                 isLocked={isLayoutLocked || !!item.pos}
                                 isRevealed={item.isRevealed !== false}
                                 isColorCodingEnabled={isColorCodingEnabled}
-                                style={{}}
+                                style={itemStyle}
                                 onClick={onItemClick}
                                 onDelete={onDelete}
                                 onEdit={onEdit}
@@ -177,87 +201,105 @@ const Grid = ({
 
     return (
         <div id="grid-container" className={gridClass} style={{ display: 'block', padding: '1rem' }}>
-            {categoryOrder.map(catId => {
-                const sectionItems = groupedItems[catId];
-                if (!sectionItems || sectionItems.length === 0) return null;
+            <AnimatePresence mode="popLayout">
+                {categoryOrder.map(catId => {
+                    const sectionItems = groupedItems[catId];
+                    if (!sectionItems || sectionItems.length === 0) return null;
 
-                const meta = CATEGORY_METADATA[catId] || CATEGORY_METADATA['unknown'];
-                const isCollapsed = collapsedSections.includes(catId);
+                    const meta = CATEGORY_METADATA[catId] || CATEGORY_METADATA['unknown'];
+                    const isCollapsed = collapsedSections.includes(catId);
 
-                return (
-                    <div 
-                        key={catId} 
-                        style={{ 
-                            marginBottom: '1.5rem', 
-                            background: meta.color, 
-                            borderRadius: '1.25rem',
-                            padding: '0.75rem',
-                            border: `1px solid rgba(0,0,0,0.05)`
-                        }}
-                    >
-                        <div 
-                            onClick={() => onToggleSection && onToggleSection(catId)}
+                    return (
+                        <motion.div 
+                            key={catId} 
+                            layout
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
                             style={{ 
-                                display: 'flex', 
-                                alignItems: 'center', 
-                                gap: '0.5rem', 
-                                marginBottom: isCollapsed ? 0 : '0.75rem',
-                                cursor: 'pointer',
-                                padding: '0.25rem 0.5rem'
+                                marginBottom: '1.5rem', 
+                                background: meta.color, 
+                                borderRadius: '1.25rem',
+                                padding: '0.75rem',
+                                border: `1px solid rgba(0,0,0,0.05)`
                             }}
                         >
-                            <span style={{ fontSize: '1.25rem' }}>{meta.icon}</span>
-                            <span style={{ fontWeight: 800, fontSize: '0.875rem', textTransform: 'uppercase', color: '#666', flex: 1 }}>{meta.label}</span>
-                            <span style={{ opacity: 0.4 }}>{isCollapsed ? '➕' : '➖'}</span>
-                        </div>
-
-                        {!isCollapsed && (
-                            <div style={{
-                                display: 'grid',
-                                gridTemplateColumns: `repeat(${cols}, 1fr)`,
-                                gap: '1rem'
-                            }}>
-                                <SortableContext
-                                    items={sectionItems.map(i => i.id || i.word)}
-                                    strategy={rectSortingStrategy}
-                                >
-                                    {sectionItems.map((item) => {
-                                        const index = item.originalIndex;
-                                        const isSelected = trainingSelection.includes(index);
-                                        const displayIcon = item.image || item.icon;
-                                        
-                                        const itemStyle = item.pos ? {
-                                            gridRowStart: item.pos.r + 1,
-                                            gridColumnStart: item.pos.c + 1
-                                        } : {};
-
-                                        return (
-                                            <AppItem
-                                                key={item.id || index}
-                                                item={{ ...item, icon: displayIcon }}
-                                                index={index}
-                                                isEditMode={isEditMode}
-                                                isTrainingMode={isTrainingMode}
-                                                isSelected={isSelected}
-                                                isDimmed={isTrainingMode && !trainingPanelVisible && !isSelected}
-                                                isScanned={scanIndex === index}
-                                                isLocked={isLayoutLocked || !!item.pos}
-                                                isRevealed={item.isRevealed !== false}
-                                                isColorCodingEnabled={isColorCodingEnabled}
-                                                style={itemStyle}
-                                                onClick={onItemClick}
-                                                onDelete={onDelete}
-                                                onEdit={onEdit}
-                                                onToggleTraining={onToggleTraining}
-                                            />
-                                        );
-                                    })}
-                                </SortableContext>
+                            <div 
+                                onClick={() => onToggleSection && onToggleSection(catId)}
+                                style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    gap: '0.5rem', 
+                                    marginBottom: isCollapsed ? 0 : '0.75rem',
+                                    cursor: 'pointer',
+                                    padding: '0.25rem 0.5rem'
+                                }}
+                            >
+                                <span style={{ fontSize: '1.25rem' }}>{meta.icon}</span>
+                                <span style={{ fontWeight: 800, fontSize: '0.875rem', textTransform: 'uppercase', color: '#666', flex: 1 }}>{meta.label}</span>
+                                <span style={{ opacity: 0.4 }}>{isCollapsed ? '➕' : '➖'}</span>
                             </div>
-                        )}
-                    </div>
-                );
-            })}
+
+                            <AnimatePresence>
+                                {!isCollapsed && (
+                                    <motion.div 
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                                        style={{ overflow: 'hidden' }}
+                                    >
+                                        <div style={{
+                                            display: 'grid',
+                                            gridTemplateColumns: `repeat(${cols}, 1fr)`,
+                                            gap: '1rem',
+                                            paddingTop: '0.5rem'
+                                        }}>
+                                            <SortableContext
+                                                items={sectionItems.map(i => i.id || i.word)}
+                                                strategy={rectSortingStrategy}
+                                            >
+                                                {sectionItems.map((item) => {
+                                                    const index = item.originalIndex;
+                                                    const isSelected = trainingSelection.includes(index);
+                                                    const displayIcon = item.image || item.icon;
+                                                    
+                                                    const itemStyle = item.pos ? {
+                                                        gridRowStart: item.pos.r + 1,
+                                                        gridColumnStart: item.pos.c + 1
+                                                    } : {};
+
+                                                    return (
+                                                        <AppItem
+                                                            key={item.id || index}
+                                                            item={{ ...item, icon: displayIcon }}
+                                                            index={index}
+                                                            isEditMode={isEditMode}
+                                                            isTrainingMode={isTrainingMode}
+                                                            isSelected={isSelected}
+                                                            isDimmed={isTrainingMode && !trainingPanelVisible && !isSelected}
+                                                            isScanned={scanIndex === index}
+                                                            isLocked={isLayoutLocked || !!item.pos}
+                                                            isRevealed={item.isRevealed !== false}
+                                                            isColorCodingEnabled={isColorCodingEnabled}
+                                                            style={itemStyle}
+                                                            onClick={onItemClick}
+                                                            onDelete={onDelete}
+                                                            onEdit={onEdit}
+                                                            onToggleTraining={onToggleTraining}
+                                                        />
+                                                    );
+                                                })}
+                                            </SortableContext>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </motion.div>
+                    );
+                })}
+            </AnimatePresence>
         </div>
     );
 };
