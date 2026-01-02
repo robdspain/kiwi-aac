@@ -1,4 +1,3 @@
-import React from 'react';
 import { getTopItems, getDailyStats, getTotalStats, exportToCSV, getRecentSentences } from '../utils/AnalyticsService';
 import { getLevel, getStage, formatLevel, LEVEL_ORDER } from '../data/levelDefinitions';
 
@@ -33,8 +32,9 @@ const Dashboard = ({ onClose, progressData, currentPhase, currentLevel, rootItem
     const handleShare = async () => {
         const levelDef = currentLevel ? getLevel(currentLevel) : null;
         const stageDef = currentLevel ? getStage(currentLevel) : null;
+        const recentSentences = getRecentSentences(1);
         const report = `
-📊 Kiwi Talk Progress Report
+📊 Kiwi Voice Progress Report
 ---------------------------
 📍 Current Level: ${currentLevel || 'Not set'} ${levelDef?.name || ''}
 ${stageDef ? `🎯 Stage ${Math.floor(currentLevel)}: ${stageDef.name}` : ''}
@@ -50,7 +50,7 @@ Communication is growing! 🥝
         if (navigator.share) {
             try {
                 await navigator.share({
-                    title: 'Kiwi Talk Progress Report',
+                    title: 'Kiwi Voice Progress Report',
                     text: report,
                 });
             } catch (err) {

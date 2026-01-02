@@ -20,10 +20,10 @@
 /* Begin PBXContainerItemProxy section */
 		D4431EEF2EFB36DB008021DF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = D4431EE92EFB36DA008021DF /* Kiwi AAC.xcodeproj */;
+			containerPortal = D4431EE92EFB36DA008021DF /* Kiwi Voice.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = D4431EDB2EFB36D7008021DF;
-			remoteInfo = "Kiwi AAC";
+			remoteInfo = "Kiwi Voice";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -38,7 +38,7 @@
 		504EC3131FED79650016851F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		50B271D01FEDC1A000F3C39B /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
 		958DCC722DB07C7200EA8C5F /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = debug.xcconfig; path = ../debug.xcconfig; sourceTree = SOURCE_ROOT; };
-		D4431EE92EFB36DA008021DF /* Kiwi AAC.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Kiwi AAC.xcodeproj"; path = "/Users/rob/Desktop/Kiwi AAC/Kiwi AAC/Kiwi AAC.xcodeproj"; sourceTree = "<absolute>"; };
+		D4431EE92EFB36DA008021DF /* Kiwi Voice.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Kiwi Voice.xcodeproj"; path = "/Users/rob/Desktop/Kiwi Voice/Kiwi Voice/Kiwi Voice.xcodeproj"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,7 +56,7 @@
 		504EC2FB1FED79650016851F = {
 			isa = PBXGroup;
 			children = (
-				D4431EE92EFB36DA008021DF /* Kiwi AAC.xcodeproj */,
+				D4431EE92EFB36DA008021DF /* Kiwi Voice.xcodeproj */,
 				958DCC722DB07C7200EA8C5F /* debug.xcconfig */,
 				504EC3061FED79650016851F /* App */,
 				504EC3051FED79650016851F /* Products */,
@@ -89,7 +89,7 @@
 		D4431EEC2EFB36DB008021DF /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D4431EF02EFB36DB008021DF /* Kiwi AAC.app */,
+				D4431EF02EFB36DB008021DF /* Kiwi Voice.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -150,7 +150,7 @@
 			projectReferences = (
 				{
 					ProductGroup = D4431EEC2EFB36DB008021DF /* Products */;
-					ProjectRef = D4431EE92EFB36DA008021DF /* Kiwi AAC.xcodeproj */;
+					ProjectRef = D4431EE92EFB36DA008021DF /* Kiwi Voice.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -161,10 +161,10 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		D4431EF02EFB36DB008021DF /* Kiwi AAC.app */ = {
+		D4431EF02EFB36DB008021DF /* Kiwi Voice.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
-			path = "Kiwi AAC.app";
+			path = "Kiwi Voice.app";
 			remoteRef = D4431EEF2EFB36DB008021DF /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};

@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { EMOJI_DATA } from '../utils/emojiData';
 import { triggerHaptic } from '../utils/haptics';
 import { CORE_VOCABULARY, WORD_CLASSES, TEMPLATES, SKILLS, CONTEXT_DEFINITIONS } from '../data/aacData';

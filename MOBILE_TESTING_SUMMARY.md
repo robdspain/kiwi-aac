@@ -1,7 +1,7 @@
-# Mobile Testing Summary - Kiwi AAC
+# Mobile Testing Summary - Kiwi Voice
 
 ## Overview
-This document provides a quick visual reference for testing the Kiwi AAC app on mobile devices.
+This document provides a quick visual reference for testing the Kiwi Voice app on mobile devices.
 
 **Testing Environment:**
 - Viewport: 375x667 (iPhone SE)
@@ -64,7 +64,7 @@ This document provides a quick visual reference for testing the Kiwi AAC app on 
 ### ⚠️ POTENTIAL ISSUES FOUND
 
 #### 1. Controls Panel Scrolling
-**Location:** `/Users/rob/Desktop/Kiwi AAC/src/index.css:580-583`
+**Location:** `/Users/rob/Desktop/Kiwi Voice/src/index.css:580-583`
 ```css
 #controls:not(.collapsed) {
   max-height: 80vh;
@@ -75,7 +75,7 @@ This document provides a quick visual reference for testing the Kiwi AAC app on 
 **Test:** Open all sections, scroll to bottom, verify all content accessible
 
 #### 2. Dense Grid Mode on Mobile
-**Location:** `/Users/rob/Desktop/Kiwi AAC/src/index.css:263`
+**Location:** `/Users/rob/Desktop/Kiwi Voice/src/index.css:263`
 ```css
 grid-template-columns: repeat(6, 1fr);
 ```
@@ -83,7 +83,7 @@ grid-template-columns: repeat(6, 1fr);
 **Test:** Switch to Dense mode, verify buttons are tappable
 
 #### 3. Breadcrumbs Text Size
-**Location:** `/Users/rob/Desktop/Kiwi AAC/src/index.css:178-188`
+**Location:** `/Users/rob/Desktop/Kiwi Voice/src/index.css:178-188`
 ```css
 #breadcrumbs {
   font-size: 1.75rem;
@@ -93,7 +93,7 @@ grid-template-columns: repeat(6, 1fr);
 **Test:** Long context names, check for overflow
 
 #### 4. Character Builder Modal Height
-**Location:** `/Users/rob/Desktop/Kiwi AAC/src/components/CharacterBuilder.jsx:238`
+**Location:** `/Users/rob/Desktop/Kiwi Voice/src/components/CharacterBuilder.jsx:238`
 ```jsx
 maxHeight: '85vh', overflowY: 'auto'
 ```
@@ -101,7 +101,7 @@ maxHeight: '85vh', overflowY: 'auto'
 **Test:** Open on 375px height, verify all controls accessible
 
 #### 5. Assessment Modal
-**Location:** `/Users/rob/Desktop/Kiwi AAC/src/components/Assessment.jsx:328-338`
+**Location:** `/Users/rob/Desktop/Kiwi Voice/src/components/Assessment.jsx:328-338`
 **Issue:** "Not Sure" modal is absolutely positioned, may cover content
 **Test:** Open modal, verify readability and buttons not overlapped
 

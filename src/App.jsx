@@ -8,6 +8,7 @@ import EssentialSkillsMode from './components/EssentialSkillsMode';
 import SplashScreen from './components/SplashScreen';
 import LevelIntro from './components/LevelIntro';
 import Phase1TargetSelector from './components/Phase1TargetSelector';
+import A2HSModal from './components/A2HSModal';
 
 // Lazy load heavy components - only downloaded when needed
 const Dashboard = lazy(() => import('./components/Dashboard'));
@@ -1206,6 +1207,23 @@ function App() {
           triggerPaywall={triggerPaywall}
           bellSound={bellSound}
           onUpdateBellSound={setBellSound}
+          onAddFavorites={(favorites) => {
+            const newFavs = favorites.map((fav, i) => ({
+              id: `fav-${Date.now()}-${i}`,
+              type: 'button',
+              word: fav.word || fav.label,
+              icon: fav.icon,
+              bgColor: '#FFF3E0'
+            }));
+            const list = [...rootItems];
+            let insertIndex = 0;
+            for (let i = 0; i < list.length; i++) {
+              if (list[i].category === 'starter') insertIndex = i + 1;
+              else break;
+            }
+            list.splice(insertIndex, 0, ...newFavs);
+            setRootItems(list);
+          }}
           progressData={progressData}
         />
       )}
@@ -1404,6 +1422,7 @@ function App() {
           setShowOnboarding(false);
         }} />
       )}
+      <A2HSModal />
     </div>
   );
 }

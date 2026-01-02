@@ -81,11 +81,14 @@ body {
   overflow: hidden;
   user-select: none;
   -webkit-user-select: none;
-  touch-action: manipulation;
+  touch-action: pan-x pan-y; /* Allow scrolling but disable browser gestures like swipe to go back if possible */
   -webkit-touch-callout: none;
-  overscroll-behavior: none;
+  overscroll-behavior: none; /* Prevents browser bounce */
   color: var(--text-primary);
   padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
   transition: var(--transition-zen);
 }
 
@@ -147,16 +150,19 @@ body.literacy-mode {
   letter-spacing: 0.5px;
 }
 
-/* Grid */
+/* Grid - Optimized for minimal scrolling and side-grip safety */
 #grid-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
-  padding: 20px;
-  overflow-y: auto;
-  flex: 1;
-  -webkit-overflow-scrolling: touch;
+  gap: 10px;
+  padding: 12px 12px;
   padding-bottom: 120px;
+  overflow-y: auto;
+  overscroll-behavior-y: auto; /* Allow bounce on scrollable area */
+  -webkit-overflow-scrolling: touch;
+  place-content: center;
+  /* Center items both vertically and horizontally */
+  min-height: 100%;
 }
 
 @media (min-width: 768px) {
@@ -319,8 +325,9 @@ body.literacy-mode {
   max-width: 600px;
   max-height: 92dvh;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   position: relative;
-  transform: translateY(100%);
+  transform: translateY(100%); /* Start off-screen */
   transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
   box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
   padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));

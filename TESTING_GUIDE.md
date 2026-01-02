@@ -1,4 +1,4 @@
-# Comprehensive Mobile Testing Guide - Kiwi AAC
+# Comprehensive Mobile Testing Guide - Kiwi Voice
 
 ## Quick Start
 

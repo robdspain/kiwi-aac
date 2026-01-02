@@ -1,4 +1,4 @@
-# Mobile Testing Report - Kiwi AAC App
+# Mobile Testing Report - Kiwi Voice App
 **Test Date:** 2025-12-23
 **Viewport:** 375x667 (iPhone SE size)
 **Test URL:** http://localhost:5174/

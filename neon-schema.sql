@@ -1,4 +1,4 @@
--- Kiwi AAC Database Schema for Neon PostgreSQL
+-- Kiwi Voice Database Schema for Neon PostgreSQL
 -- Run this in your Neon SQL Editor after creating a database
 
 -- Enable UUID extension

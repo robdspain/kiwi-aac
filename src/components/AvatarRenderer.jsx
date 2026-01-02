@@ -1,6 +1,3 @@
-import React from 'react';
-import { ASSETS } from '../utils/avatarAssets';
-
 const AvatarRenderer = ({ recipe, size = 100 }) => {
     const { 
         head = 'round', 
@@ -41,7 +38,7 @@ const AvatarRenderer = ({ recipe, size = 100 }) => {
             <g filter="url(#shadow)">
                 {/* 1. Head Base */}
                 <g fill={skin}>
-                    {React.createElement('g', { dangerouslySetInnerHTML: { __html: headSvg } })}
+                    <g dangerouslySetInnerHTML={{ __html: headSvg }} />
                 </g>
 
                 {/* 2. Eyes */}

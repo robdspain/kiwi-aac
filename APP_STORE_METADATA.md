@@ -1,15 +1,15 @@
-# Kiwi AAC - App Store Metadata
+# Kiwi Voice - App Store Metadata
 
 **Developer:** Behavior School LLC
 
 ## App Name
-**Kiwi AAC - Simple Communication**
+**Kiwi Voice - Simple Communication**
 
 ## Subtitle
 Give Your Child a Voice
 
 ## Description
-Kiwi AAC is a powerful, intuitive communication app designed for children and adults learning to express themselves through structured picture exchange.
+Kiwi Voice is a powerful, intuitive communication app designed for children and adults learning to express themselves through structured picture exchange.
 
 **Perfect for:**
 • Children with autism or speech delays
@@ -46,7 +46,7 @@ Create separate boards for Home, School, or Grandparents with individual setting
 🌐 **Works Offline**
 No internet required - all communication data stays private and secure on your device.
 
-Download Kiwi AAC today and give the gift of communication!
+Download Kiwi Voice today and give the gift of communication!
 
 ---
 

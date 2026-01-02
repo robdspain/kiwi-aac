@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		D4431EDB2EFB36D7008021DF /* Kiwi AAC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Kiwi AAC.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D4431EDB2EFB36D7008021DF /* Kiwi Voice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Kiwi Voice.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		D4431EDD2EFB36D7008021DF /* Kiwi AAC */ = {
+		D4431EDD2EFB36D7008021DF /* Kiwi Voice */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Kiwi AAC";
+			path = "Kiwi Voice";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -32,7 +32,7 @@
 		D4431ED22EFB36D7008021DF = {
 			isa = PBXGroup;
 			children = (
-				D4431EDD2EFB36D7008021DF /* Kiwi AAC */,
+				D4431EDD2EFB36D7008021DF /* Kiwi Voice */,
 				D4431EDC2EFB36D7008021DF /* Products */,
 			);
 			sourceTree = "<group>";
@@ -40,7 +40,7 @@
 		D4431EDC2EFB36D7008021DF /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D4431EDB2EFB36D7008021DF /* Kiwi AAC.app */,
+				D4431EDB2EFB36D7008021DF /* Kiwi Voice.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,9 +48,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		D4431EDA2EFB36D7008021DF /* Kiwi AAC */ = {
+		D4431EDA2EFB36D7008021DF /* Kiwi Voice */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D4431EE62EFB36D9008021DF /* Build configuration list for PBXNativeTarget "Kiwi AAC" */;
+			buildConfigurationList = D4431EE62EFB36D9008021DF /* Build configuration list for PBXNativeTarget "Kiwi Voice" */;
 			buildPhases = (
 				D4431ED72EFB36D7008021DF /* Sources */,
 				D4431ED82EFB36D7008021DF /* Frameworks */,
@@ -61,13 +61,13 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				D4431EDD2EFB36D7008021DF /* Kiwi AAC */,
+				D4431EDD2EFB36D7008021DF /* Kiwi Voice */,
 			);
-			name = "Kiwi AAC";
+			name = "Kiwi Voice";
 			packageProductDependencies = (
 			);
-			productName = "Kiwi AAC";
-			productReference = D4431EDB2EFB36D7008021DF /* Kiwi AAC.app */;
+			productName = "Kiwi Voice";
+			productReference = D4431EDB2EFB36D7008021DF /* Kiwi Voice.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -85,7 +85,7 @@
 					};
 				};
 			};
-			buildConfigurationList = D4431ED62EFB36D7008021DF /* Build configuration list for PBXProject "Kiwi AAC" */;
+			buildConfigurationList = D4431ED62EFB36D7008021DF /* Build configuration list for PBXProject "Kiwi Voice" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -99,7 +99,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D4431EDA2EFB36D7008021DF /* Kiwi AAC */,
+				D4431EDA2EFB36D7008021DF /* Kiwi Voice */,
 			);
 		};
 /* End PBXProject section */
@@ -313,7 +313,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D4431ED62EFB36D7008021DF /* Build configuration list for PBXProject "Kiwi AAC" */ = {
+		D4431ED62EFB36D7008021DF /* Build configuration list for PBXProject "Kiwi Voice" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D4431EE42EFB36D9008021DF /* Debug */,
@@ -322,7 +322,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D4431EE62EFB36D9008021DF /* Build configuration list for PBXNativeTarget "Kiwi AAC" */ = {
+		D4431EE62EFB36D9008021DF /* Build configuration list for PBXNativeTarget "Kiwi Voice" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D4431EE72EFB36D9008021DF /* Debug */,

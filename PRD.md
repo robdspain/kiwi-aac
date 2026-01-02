@@ -1,8 +1,8 @@
-# PRODUCT REQUIREMENT DOCUMENT (PRD) - KIWI AAC
+# PRODUCT REQUIREMENT DOCUMENT (PRD) - KIWI VOICE
 ## Project: Library Builder v3.2
 
 ### 1. Project Overview
-Kiwi AAC is a specialized tool designed to curate and customize icon libraries for Augmentative and Alternative Communication (AAC). It allows users (caregivers, therapists, or developers) to browse, filter, skin-tone-customize, and export a specific set of emojis/icons for use in communication boards.
+Kiwi Voice is a specialized tool designed to curate and customize icon libraries for Augmentative and Alternative Communication (AAC). It allows users (caregivers, therapists, or developers) to browse, filter, skin-tone-customize, and export a specific set of emojis/icons for use in communication boards.
 
 ### 2. Objectives
 - Provide a high-performance, mobile-first interface for emoji selection.
@@ -172,6 +172,6 @@ Integrating key features from the product roadmap:
 - [x] **Diversity Toggles:** Support 6+ skin tones, varied hair textures (curly, coily, straight), and facial hair options.
 - [x] **Accessibility Accessories:** Include options for hearing aids, glasses, and "AAC devices" in the avatar builder.
 - [x] **Recipe-Based Export:** Store avatars as "Recipes" (JSON objects) in `iconsData.json` rather than flat images to preserve scalability and editability.
-- [ ] **Default Personas:** Pre-populate "My People" with default Mom (Black hair) and Dad (Brown hair, Blue eyes, Short beard) characters.
+- [x] **Default Personas:** Pre-populate "My People" with default Mom (Black hair) and Dad (Brown hair, Blue eyes, Short beard) characters.
 
 

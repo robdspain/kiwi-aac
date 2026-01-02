@@ -9,11 +9,11 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Kiwi Talk" />
+  <meta name="apple-mobile-web-app-title" content="Kiwi Voice" />
   <meta name="theme-color" content="#1a1a2e" />
   <link rel="manifest" href="/manifest.json" />
   <link rel="apple-touch-icon" href="/icon-192.png" />
-  <title>Kiwi Talk</title>
+  <title>Kiwi Voice</title>
   <style>
     @keyframes loading {
       0% { width: 0; }
@@ -56,7 +56,7 @@
         left: 50%;
         transform: translate(-50%, -50%);
       "></div>
-      <img src="/icon-512.png" alt="Kiwi Talk Logo" style="
+      <img src="/icon-512.png" alt="Kiwi Voice Logo" style="
         width: 140px;
         height: 140px;
         margin-bottom: 30px;
@@ -71,7 +71,7 @@
         letter-spacing: -2px;
         text-transform: uppercase;
         text-shadow: 0 0 20px rgba(78, 205, 196, 0.5);
-      ">Kiwi Talk</h1>
+      ">Kiwi Voice</h1>
       
       <div style="
         width: 240px;
