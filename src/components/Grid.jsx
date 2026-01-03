@@ -52,17 +52,17 @@ const Grid = ({
         return <VisualSchedule folder={folder} onBack={onBack} />;
     }
 
+    // Logic for Large 2x2 Grid
+    // Phase 1 & 2: Always 2x2
+    // Phase 3: 2x2 if <= 4 items, otherwise standard shrink
+    const useLargeGrid = (currentPhase === 1 || currentPhase === 2) || (currentPhase === 3 && items.length <= 4);
+
     // Determine if we should use categorized view
     // 1. Must be enabled via settings
     // 2. Must not have any items with fixed 'pos' (Motor Planning mode)
     // 3. Not in Training Mode (which handles its own sorting/layout)
     const hasFixedPositions = items.some(item => !!item.pos);
     const useCategorizedView = isCategorizationEnabled && !hasFixedPositions && !isTrainingMode && !useLargeGrid;
-
-    // Logic for Large 2x2 Grid
-    // Phase 1 & 2: Always 2x2
-    // Phase 3: 2x2 if <= 4 items, otherwise standard shrink
-    const useLargeGrid = (currentPhase === 1 || currentPhase === 2) || (currentPhase === 3 && items.length <= 4);
 
     const gridClass = `${useLargeGrid ? 'phase-large-grid' : ''} size-${gridSize}`;
 
