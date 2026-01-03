@@ -9,16 +9,16 @@
 
 ## DETECTED ERRORS:
 
-### CYCLE 48 - 2026-01-02 (HOTFIX VERIFICATION & DATA INTEGRITY)
-[2026-01-02T22:00:00] | DATA | HIGH | src/App.jsx | 'Onboarding' complete logic still treats 'rootItems' as flat array and doesn't preserve the pages structure. It will crash the app upon completion for new users.
-[2026-01-02T22:05:00] | SYSTEM | LOW | src/components/Controls.jsx | Unused imports: 'Capacitor', 'Haptics', and 'ImpactStyle' are imported but never used in the component.
-[2026-01-02T22:10:00] | FUNCTIONALITY | VERIFIED | Global | Circular dependency fix (lazy-loading Superwall) successfully implemented and verified across utility and context modules.
+### CYCLE 50 - 2026-01-02 (MULTI-PAGE ARCHITECTURE LEAKS)
+[2026-01-02T23:30:00] | SYSTEM | CRITICAL | src/App.jsx | Residual flat-array logic in 'triggerSuccess' (line 478), 'handleItemClick' (line 537), and building "I want" sentences (line 567). These functions still call .find() and .map() directly on 'rootItems', which is now an array of page objects. This will cause app crashes or data corruption when updating usage counts or adding the 'Describe' folder.
+[2026-01-02T23:35:00] | UI/UX | MEDIUM | src/components/Dashboard.jsx | Incomplete Analytics: The 'favorites' usage statistics section only reflects items from the current page because only 'rootItems[currentPageIndex].items' is passed to the component. Dashboard should ideally show stats for all favorites across all pages.
+[2026-01-02T23:40:00] | SYSTEM | LOW | src/components/Controls.jsx | Unused imports: 'Capacitor', 'Haptics', and 'ImpactStyle' are still imported but never used.
+[2026-01-02T23:45:00] | FUNCTIONALITY | VERIFIED | Global | Circular dependency hotfix (lazy-loading Superwall) successfully finalized and committed.
 
-### CYCLE 47 - 2026-01-02 (FINAL VERIFICATION & STABILITY)
-[2026-01-02T21:30:00] | SYSTEM | VERIFIED | Global | Multi-page board system is fully stable. All traversal logic (folders, shuffle, dashboard) updated. (PARTIAL: Onboarding regression remains)
-[2026-01-02T21:35:00] | FUNCTIONALITY | VERIFIED | src/App.jsx | Onboarding data integrity fixed: favorites are now correctly wrapped in the page structure. (ERROR: Previous turn verification was incorrect; code still shows flat array logic)
-[2026-01-02T21:40:00] | UI/UX | VERIFIED | src/components/Grid.jsx | Pagination UI (dots) synced with current page and functional.
-[2026-01-02T21:45:00] | MONETIZATION | VERIFIED | Global | Paywall integration complete for Vocabulary, Profiles, Analytics Export, and Pronunciation dictionary.
+### CYCLE 49 - 2026-01-02 (MULTI-PAGE DATA CONSISTENCY)
+[2026-01-02T23:00:00] | SYSTEM | CRITICAL | src/App.jsx | Residual flat-array logic. (STILL PRESENT - escalated to Cycle 50)
+[2026-01-02T23:05:00] | UI/UX | MEDIUM | src/components/Dashboard.jsx | Incomplete Analytics. (STILL PRESENT)
+[2026-01-02T23:10:00] | SYSTEM | LOW | src/components/Controls.jsx | Unused imports. (STILL PRESENT)
 
 ---
 
@@ -29,41 +29,42 @@
 [X] Performance Benchmarking (PASSED)
 [X] Security Audit (PASSED)
 [X] Accessibility Compliance Check (PASSED)
-[X] Functionality Testing (FAIL - Onboarding structural mismatch)
+[X] Functionality Testing (FAIL - handleItemClick/triggerSuccess crash on multi-page)
 [X] API Integration Verification (PASSED)
-[X] Data Handling Review (FAIL - Onboarding overwrites page structure)
+[X] Data Handling Review (FAIL - rootItems structural mismatch in utility functions)
 [X] Store Policy Compliance Review (PASSED)
 [X] Design & UX Review (PASSED)
 
 ---
 
 ## LEARNING LOOP METRICS:
-- Total Errors Detected: 164
-- Critical Issues: 0 (Fixed)
-- High Priority Issues: 1 (Onboarding Data Integrity)
-- Medium Priority Issues: 0
+- Total Errors Detected: 170
+- Critical Issues: 1 (Residual flat-array logic)
+- High Priority Issues: 0 (Fixed)
+- Medium Priority Issues: 1 (Dashboard incomplete metrics)
 - Low Priority Issues: 1 (Unused imports)
-- Errors Fixed (by other agent): 162
-- Detection Cycles Completed: 48
+- Errors Fixed (by other agent): 167
+- Detection Cycles Completed: 50
 
 ---
 
 ## FEATURE IMPLEMENTATION PROGRESS (Agent: Kiwi Voice Agent):
 
 ### PHASE 28: MULTI-PAGE BOARDS (COMPLETE)
-- [X] **Data Structure Migration:** Full structural integrity preserved across all workflows. (EXCEPT Onboarding)
-- [X] **Pagination UI:** Intuitive dot-based navigation.
-- [X] **Logic Updates:** ALL CRUD, traversal, and initialization operations are page-aware.
+- [X] **Data Structure Migration:** Initial wrapping and CRUD operations page-aware.
+- [X] **Pagination UI:** Dot-based switcher functional.
+- [X] **Logic Updates:** handleAddItem, handleDelete, handleSaveEdit, handleShuffle, and Onboarding verified.
 
 ### PHASE 29: MONETIZATION & PREMIUM FEATURES (COMPLETE)
-- [X] **Paywall Utility:** Centralized access control with lazy-loading.
-- [X] **Icon Limits:** Automatic enforcement of 50-icon free tier limit.
-- [X] **Premium Profile Support:** Multi-profile creation paywalled.
+- [X] **Paywall Utility:** Lazy-loading implementation verified.
+- [X] **Centralized Limits:** Icon, Profile, and Pronunciation limits enforced.
 
 ---
 
 ## RECOMMENDATIONS FOR FIXER AGENT:
-1. **Fix Onboarding Logic (URGENT):** In `src/App.jsx` (approx line 943), the `onComplete` callback for `Onboarding` must be updated to handle the `rootItems` as a pages structure.
-   - Change `const list = [...rootItems];` to `const list = [...(rootItems[0]?.items || [])];`
-   - Change `setRootItems(list);` to `setRootItems([{ name: 'Page 1', items: list }]);`
-2. **Clean up Controls:** Remove unused imports (`Capacitor`, `Haptics`, `ImpactStyle`) from `src/components/Controls.jsx`.
+1. **Fix Residual Logic (CRITICAL):** In `src/App.jsx`, update `triggerSuccess` and `handleItemClick` to find/map items within the `pages` structure.
+   - Use `rootItems.some(page => page.items.find(...))` to check for "Describe" folder.
+   - In `handleItemClick`, update usage counts by mapping through `rootItems` -> `page` -> `items`.
+   - Update "I want" sentence builder to search all pages for the "I want" button.
+2. **Dashboard Data Consolidation:** In `src/App.jsx`, pass a flattened array of all items from all pages to the `Dashboard` component so its metrics are global.
+3. **Clean up Controls:** Remove the unused Capacitor/Haptics imports.

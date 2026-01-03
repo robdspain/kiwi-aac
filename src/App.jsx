@@ -281,6 +281,66 @@ function App() {
 
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
 
+  const currentPageItems = rootItems[currentPageIndex]?.items || [];
+  let itemsToShow = currentPath.length === 0 
+    ? currentPageItems 
+    : currentPath.reduce((acc, i) => acc[i].contents, currentPageItems);
+  
+  // Dynamic Core Overlay: Prepend core words if at root (and not in Training Mode)
+  if (currentPath.length === 0 && !isTrainingMode && currentPhase > 2) {
+    // Only prepend if they aren't already there (to avoid duplication if they were saved in rootItems)
+    const coreIds = new Set(CORE_WORDS_DATA.map(c => c.id));
+    const fringeItems = itemsToShow.filter(i => !coreIds.has(i.id));
+    itemsToShow = [...CORE_WORDS_DATA, ...fringeItems];
+  }
+
+  // Phase Filtering
+  if (isTrainingMode && shuffledItems) {
+    itemsToShow = shuffledItems.map(obj => obj.item);
+  } else if (currentPhase === 1 || currentPhase === 2) {
+    let target = phase1TargetId ? currentPageItems.find(i => i.id === phase1TargetId) : null;
+    if (!target) { 
+      const allowedIds = ['snack-generic', 'play-generic', 'toy-generic', 'mom', 'dad']; 
+      target = currentPageItems.find(i => i.type === 'button' && allowedIds.includes(i.id)); 
+    }
+    itemsToShow = target ? [target] : [];
+  } else if (currentPhase === 3) {
+    itemsToShow = currentPageItems.filter(i => i.type === 'button' && i.category !== 'starter').slice(0, 20);
+  } else if (currentPhase > 0 && currentPhase < 6) {
+    itemsToShow = itemsToShow.filter(i => i.category !== 'starter');
+  }
+
+  // Categorization Sorting
+  if (isCategorizationEnabled && !isTrainingMode && currentPhase > 2 && currentPath.length === 0) {
+    const categoryOrder = ['core', 'pronoun', 'verb', 'adj', 'noun', 'social', 'question', 'misc', 'unknown'];
+    itemsToShow = [...itemsToShow].sort((a, b) => {
+      const getCat = (item) => {
+        const lexiconEntry = item.word ? AAC_LEXICON[item.word.toLowerCase()] : null;
+        return item.category || item.wc || lexiconEntry?.type || 'unknown';
+      };
+      const catA = getCat(a);
+      const catB = getCat(b);
+      return categoryOrder.indexOf(catA) - categoryOrder.indexOf(catB);
+    });
+  }
+
+  // Progressive Revelation Logic
+  itemsToShow = itemsToShow.map((item, index) => {
+    let isRevealed = true;
+    if (proficiencyLevel === 'beginner' && index >= 20) isRevealed = false;
+    else if (proficiencyLevel === 'intermediate' && index >= 50) isRevealed = false;
+    if (item.category === 'core') isRevealed = true; // Always show core
+    return { ...item, isRevealed };
+  });
+
+  // Filter for Auto-Scanning (excluding collapsed sections)
+  const visibleItemsForScanning = itemsToShow.filter(item => {
+    if (!isCategorizationEnabled) return true;
+    const lexiconEntry = item.word ? AAC_LEXICON[item.word.toLowerCase()] : null;
+    const category = item.category || item.wc || lexiconEntry?.type || 'unknown';
+    return !collapsedSections.includes(category);
+  });
+
   const triggerPaywall = (feature, cb) => { if (cb) cb(); };
 
   useEffect(() => { localStorage.setItem('kiwi-contexts', JSON.stringify(contexts)); }, [contexts]);
@@ -734,65 +794,8 @@ function App() {
     }
   };
 
-  const currentPageItems = rootItems[currentPageIndex]?.items || [];
-  let itemsToShow = currentPath.length === 0 
-    ? currentPageItems 
-    : currentPath.reduce((acc, i) => acc[i].contents, currentPageItems);
-  
-  // Dynamic Core Overlay: Prepend core words if at root (and not in Training Mode)
-  if (currentPath.length === 0 && !isTrainingMode && currentPhase > 2) {
-    // Only prepend if they aren't already there (to avoid duplication if they were saved in rootItems)
-    const coreIds = new Set(CORE_WORDS_DATA.map(c => c.id));
-    const fringeItems = itemsToShow.filter(i => !coreIds.has(i.id));
-    itemsToShow = [...CORE_WORDS_DATA, ...fringeItems];
-  }
+  // Logic moved to top to prevent ReferenceError in useEffect
 
-  // Phase Filtering
-  if (isTrainingMode && shuffledItems) {
-    itemsToShow = shuffledItems.map(obj => obj.item);
-  } else if (currentPhase === 1 || currentPhase === 2) {
-    let target = phase1TargetId ? currentPageItems.find(i => i.id === phase1TargetId) : null;
-    if (!target) { 
-      const allowedIds = ['snack-generic', 'play-generic', 'toy-generic', 'mom', 'dad']; 
-      target = currentPageItems.find(i => i.type === 'button' && allowedIds.includes(i.id)); 
-    }
-    itemsToShow = target ? [target] : [];
-  } else if (currentPhase === 3) {
-    itemsToShow = currentPageItems.filter(i => i.type === 'button' && i.category !== 'starter').slice(0, 20);
-  } else if (currentPhase > 0 && currentPhase < 6) {
-    itemsToShow = itemsToShow.filter(i => i.category !== 'starter');
-  }
-
-  // Categorization Sorting
-  if (isCategorizationEnabled && !isTrainingMode && currentPhase > 2 && currentPath.length === 0) {
-    const categoryOrder = ['core', 'pronoun', 'verb', 'adj', 'noun', 'social', 'question', 'misc', 'unknown'];
-    itemsToShow = [...itemsToShow].sort((a, b) => {
-      const getCat = (item) => {
-        const lexiconEntry = item.word ? AAC_LEXICON[item.word.toLowerCase()] : null;
-        return item.category || item.wc || lexiconEntry?.type || 'unknown';
-      };
-      const catA = getCat(a);
-      const catB = getCat(b);
-      return categoryOrder.indexOf(catA) - categoryOrder.indexOf(catB);
-    });
-  }
-
-  // Progressive Revelation Logic
-  itemsToShow = itemsToShow.map((item, index) => {
-    let isRevealed = true;
-    if (proficiencyLevel === 'beginner' && index >= 20) isRevealed = false;
-    else if (proficiencyLevel === 'intermediate' && index >= 50) isRevealed = false;
-    if (item.category === 'core') isRevealed = true; // Always show core
-    return { ...item, isRevealed };
-  });
-
-  // Filter for Auto-Scanning (excluding collapsed sections)
-  const visibleItemsForScanning = itemsToShow.filter(item => {
-    if (!isCategorizationEnabled) return true;
-    const lexiconEntry = item.word ? AAC_LEXICON[item.word.toLowerCase()] : null;
-    const category = item.category || item.wc || lexiconEntry?.type || 'unknown';
-    return !collapsedSections.includes(category);
-  });
 
   if (showSplash) {
     return <SplashScreen onComplete={() => setShowSplash(false)} />;
