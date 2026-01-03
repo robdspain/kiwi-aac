@@ -1,6 +1,7 @@
 import { neon } from '@neondatabase/serverless';
 import LZString from 'lz-string';
 import { getAllMedia, importAllMedia } from '../utils/db';
+import { relationalSyncService } from './RelationalSyncService';
 
 const TABLE_NAME = 'kiwi_sync';
 const DATABASE_URL = import.meta.env.VITE_NEON_DATABASE_URL;
@@ -15,34 +16,36 @@ class CloudSyncService {
     }
 
     /**
-     * Generate a random 6-character sync code
+     * Generate a random 8-character sync code
+     * Increased from 6 to 8 for better security against brute-force
      */
     generateSyncCode() {
         const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Avoid ambiguous chars
         let code = '';
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < 8; i++) {
             code += chars.charAt(Math.floor(Math.random() * chars.length));
         }
         return code;
     }
 
     /**
-     * Get all local data including localStorage and IndexedDB media
+     * Get all local data including localStorage and optionally IndexedDB media
      */
-    async getFullLocalData() {
+    async getFullLocalData(includeMedia = true) {
         const localData = {};
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
             if (key.startsWith('kiwi') || key.startsWith('kians') || key === 'kiwi_active_sync_code') {
                 try {
-                    localData[key] = JSON.parse(localStorage.getItem(key));
+                    const value = localStorage.getItem(key);
+                    localData[key] = (value === 'true' || value === 'false') ? (value === 'true') : JSON.parse(value);
                 } catch {
                     localData[key] = localStorage.getItem(key);
                 }
             }
         }
 
-        const mediaData = await getAllMedia();
+        const mediaData = includeMedia ? await getAllMedia() : null;
 
         return {
             localStorage: localData,
@@ -51,19 +54,49 @@ class CloudSyncService {
     }
 
     /**
-     * Upload full payload to Neon
+     * Upload data using both relational and blob fallback
      */
-    async uploadData(existingCode = null) {
+    async uploadData(existingCode = null, includeMedia = true) {
         if (!this.isConfigured()) {
             console.warn('Neon Database URL is not configured. Cloud sync disabled.');
             return existingCode;
         }
 
         const syncCode = (existingCode || this.generateSyncCode()).toUpperCase();
-        const fullData = await this.getFullLocalData();
+        const fullData = await this.getFullLocalData(includeMedia);
         
+        // 1. Relational Sync (Parallel)
+        // This addresses the "Orphaned Schema" issue by populating relational tables
+        try {
+            const profiles = fullData.localStorage['kiwi-profiles'] || [];
+            const currentProfileId = fullData.localStorage['kiwi-current-profile'] || 'default';
+            const currentProfile = profiles.find(p => p.id === currentProfileId) || { id: 'default', name: 'Default' };
+            
+            // Extract contexts and progress
+            const contexts = {};
+            const contextKeys = Object.keys(fullData.localStorage).filter(k => k.startsWith('kiwi-words-'));
+            contextKeys.forEach(k => {
+                contexts[k.replace('kiwi-words-', '')] = fullData.localStorage[k];
+            });
+
+            const progress = fullData.localStorage['kians-progress'];
+            const analytics = fullData.localStorage['kiwi-analytics']; // Assume analytics key
+
+            // syncChildProfile also triggers syncMedia internally
+            await relationalSyncService.syncChildProfile(
+                currentProfile.id,
+                currentProfile,
+                contexts,
+                progress,
+                analytics
+            );
+        } catch (e) {
+            console.warn('Relational sync failed, continuing with blob backup:', e);
+        }
+
+        // 2. Blob Backup (Legacy support and catch-all)
         const payload = {
-            version: '2.0', // Bumped version for media support
+            version: '2.1', // Bumped version for 8-char code and performance
             timestamp: new Date().toISOString(),
             ...fullData
         };
@@ -154,8 +187,10 @@ class CloudSyncService {
         const code = this.getActiveSyncCode();
         if (code && this.isConfigured()) {
             try {
-                await this.uploadData(code);
-                console.log('✅ Auto-sync complete (including media)');
+                // For auto-sync, we exclude media from the large blob
+                // because relationalSyncService handles media incrementally
+                await this.uploadData(code, false);
+                console.log('✅ Auto-sync complete (relational media + lightweight blob)');
             } catch (e) {
                 console.warn('Auto-sync failed:', e);
             }

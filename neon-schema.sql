@@ -71,7 +71,17 @@ CREATE TABLE IF NOT EXISTS kiwi_sync (
   last_updated TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Media storage (for custom photos and audio)
+CREATE TABLE IF NOT EXISTS media (
+  id TEXT PRIMARY KEY, -- UUID or Hash
+  child_id UUID REFERENCES child_profiles(id) ON DELETE CASCADE,
+  media_data TEXT NOT NULL, -- Base64 data
+  content_type TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 CREATE INDEX IF NOT EXISTS idx_kiwi_sync_updated ON kiwi_sync(last_updated);
+CREATE INDEX IF NOT EXISTS idx_media_child ON media(child_id);
 
 -- Update timestamp trigger function
 CREATE OR REPLACE FUNCTION update_updated_at()
