@@ -212,7 +212,7 @@ const Controls = ({
                 <div className="drag-handle"></div>
                 <div id="parent-header">
                     <span>Adult Settings</span>
-                    <button id="close-settings" onClick={onToggleMenu}>✕</button>
+                    <button id="close-settings" onClick={onToggleMenu} aria-label="Close Settings">✕</button>
                 </div>
 
                 {/* Edit Panel */}
@@ -423,6 +423,7 @@ const Controls = ({
                                                     if (newLabel) onRenameContext(ctx.id, newLabel, ctx.icon);
                                                 }}
                                                 style={{ border: 'none', background: '#F2F2F7', borderRadius: '0.375rem', padding: '0.25rem 0.5rem', fontSize: '0.75rem', minHeight: '2.75rem', minWidth: '2.75rem' }}
+                                                aria-label="Rename Location"
                                             >✎</button>
                                             {contexts.length > 1 && (
                                                 <button 
@@ -431,6 +432,7 @@ const Controls = ({
                                                         onDeleteContext(ctx.id);
                                                     }}
                                                     style={{ border: 'none', background: '#FFE5E5', color: '#FF3B30', borderRadius: '0.375rem', padding: '0.25rem 0.5rem', fontSize: '0.75rem', minHeight: '2.75rem', minWidth: '2.75rem' }}
+                                                    aria-label="Delete Location"
                                                 >×</button>
                                             )}
                                             {currentContext === ctx.id && <span style={{ color: 'var(--primary)', fontWeight: 800 }}>✓</span>}
