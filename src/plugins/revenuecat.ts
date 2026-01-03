@@ -89,7 +89,7 @@ export const getRevenueCat = (): RevenueCatPlugin => {
           try {
             await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
             await Purchases.configure({
-              apiKey: options.apiKey || 'test_GVsVAPHELhFcgnBFbWlVyrYGiUS',
+              apiKey: options.apiKey || (import.meta.env.VITE_REVENUECAT_API_KEY || 'test_GVsVAPHELhFcgnBFbWlVyrYGiUS'),
               appUserID: options.appUserID,
             });
             isConfigured = true;

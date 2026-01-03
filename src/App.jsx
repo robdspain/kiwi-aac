@@ -40,6 +40,7 @@ import { CORE_WORDS_LAYOUT } from './data/aacData';
 import { useProfile } from './context/ProfileContext';
 import { getRevenueCat } from './plugins/revenuecat';
 import { Capacitor } from '@capacitor/core';
+import cloudSyncService from './services/CloudSyncService';
 
 const synth = window.speechSynthesis || null;
 
@@ -378,6 +379,8 @@ function App() {
 
   useEffect(() => {
     configureRevenueCat();
+    // Auto-sync if a cloud code is active
+    cloudSyncService.autoSync();
   }, []);
 
   useEffect(() => { localStorage.setItem('kiwi-contexts', JSON.stringify(contexts)); }, [contexts]);

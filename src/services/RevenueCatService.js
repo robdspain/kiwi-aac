@@ -9,7 +9,8 @@
  * Configuration
  */
 const CONFIG = {
-  API_KEY: 'test_GVsVAPHELhFcgnBFbWlVyrYGiUS', // Your test API key
+  // Use Vite environment variables for production
+  API_KEY: import.meta.env.VITE_REVENUECAT_API_KEY || 'test_GVsVAPHELhFcgnBFbWlVyrYGiUS',
   ENTITLEMENTS: {
     PRO: 'pro', // Main premium entitlement
   },

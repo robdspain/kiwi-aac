@@ -47,7 +47,7 @@ const showPaywall = async (feature) => {
 export const checkColorThemeAccess = async () => {
   const hasAccess = await checkPremiumAccess();
   if (!hasAccess) {
-    await showPaywall('colorThemes');
+    return await showPaywall('colorThemes');
   }
   return hasAccess;
 };
@@ -59,7 +59,7 @@ export const checkColorThemeAccess = async () => {
 export const checkAdvancedAnalytics = async () => {
   const hasAccess = await checkPremiumAccess();
   if (!hasAccess) {
-    await showPaywall('advancedAnalytics');
+    return await showPaywall('advancedAnalytics');
   }
   return hasAccess;
 };
@@ -70,7 +70,7 @@ export const checkAdvancedAnalytics = async () => {
 export const checkExportAnalytics = async () => {
   const hasAccess = await checkPremiumAccess();
   if (!hasAccess) {
-    await showPaywall('exportAnalytics');
+    return await showPaywall('exportAnalytics');
   }
   return hasAccess;
 };
@@ -82,7 +82,7 @@ export const checkExportAnalytics = async () => {
 export const checkPremiumTemplates = async () => {
   const hasAccess = await checkPremiumAccess();
   if (!hasAccess) {
-    await showPaywall('premiumTemplates');
+    return await showPaywall('premiumTemplates');
   }
   return hasAccess;
 };
@@ -90,7 +90,7 @@ export const checkPremiumTemplates = async () => {
 export const checkApplyTemplate = async (templateId) => {
   const hasAccess = await checkPremiumAccess();
   if (!hasAccess) {
-    await showPaywall('applyTemplate');
+    return await showPaywall('applyTemplate');
   }
   return hasAccess;
 };
@@ -102,7 +102,7 @@ export const checkApplyTemplate = async (templateId) => {
 export const checkCloudSync = async () => {
   const hasAccess = await checkPremiumAccess();
   if (!hasAccess) {
-    await showPaywall('cloudSync');
+    return await showPaywall('cloudSync');
   }
   return hasAccess;
 };
@@ -110,7 +110,7 @@ export const checkCloudSync = async () => {
 export const checkTeamSharing = async () => {
   const hasAccess = await checkPremiumAccess();
   if (!hasAccess) {
-    await showPaywall('teamSharing');
+    return await showPaywall('teamSharing');
   }
   return hasAccess;
 };
@@ -122,7 +122,7 @@ export const checkTeamSharing = async () => {
 export const checkPremiumVoice = async () => {
   const hasAccess = await checkPremiumAccess();
   if (!hasAccess) {
-    await showPaywall('premiumVoice');
+    return await showPaywall('premiumVoice');
   }
   return hasAccess;
 };
@@ -130,7 +130,7 @@ export const checkPremiumVoice = async () => {
 export const checkVoicePresets = async () => {
   const hasAccess = await checkPremiumAccess();
   if (!hasAccess) {
-    await showPaywall('voicePresets');
+    return await showPaywall('voicePresets');
   }
   return hasAccess;
 };
@@ -144,7 +144,7 @@ export const checkPronunciationLimit = async (currentCount) => {
   }
   const hasAccess = await checkPremiumAccess();
   if (!hasAccess) {
-    await showPaywall('premiumVoice');
+    return await showPaywall('premiumVoice');
   }
   return hasAccess;
 };
@@ -159,7 +159,7 @@ export const checkUnlimitedPeople = async (currentCount) => {
   }
   const hasAccess = await checkPremiumAccess();
   if (!hasAccess) {
-    await showPaywall('unlimitedPeople');
+    return await showPaywall('unlimitedPeople');
   }
   return hasAccess;
 };
@@ -167,7 +167,7 @@ export const checkUnlimitedPeople = async (currentCount) => {
 export const checkAddCustomCharacter = async () => {
   const hasAccess = await checkPremiumAccess();
   if (!hasAccess) {
-    await showPaywall('addCustomCharacter');
+    return await showPaywall('addCustomCharacter');
   }
   return hasAccess;
 };
@@ -182,7 +182,7 @@ export const checkUnlimitedVocabulary = async (currentIconCount) => {
   }
   const hasAccess = await checkPremiumAccess();
   if (!hasAccess) {
-    await showPaywall('unlimitedVocabulary');
+    return await showPaywall('unlimitedVocabulary');
   }
   return hasAccess;
 };
@@ -190,7 +190,7 @@ export const checkUnlimitedVocabulary = async (currentIconCount) => {
 export const checkAddIcon51 = async () => {
   const hasAccess = await checkPremiumAccess();
   if (!hasAccess) {
-    await showPaywall('addIcon51');
+    return await showPaywall('addIcon51');
   }
   return hasAccess;
 };
@@ -205,7 +205,7 @@ export const checkMultiProfiles = async (currentProfileCount) => {
   }
   const hasAccess = await checkPremiumAccess();
   if (!hasAccess) {
-    await showPaywall('multiProfiles');
+    return await showPaywall('multiProfiles');
   }
   return hasAccess;
 };
@@ -213,7 +213,7 @@ export const checkMultiProfiles = async (currentProfileCount) => {
 export const checkAddProfile2 = async () => {
   const hasAccess = await checkPremiumAccess();
   if (!hasAccess) {
-    await showPaywall('addProfile2');
+    return await showPaywall('addProfile2');
   }
   return hasAccess;
 };
@@ -228,7 +228,7 @@ export const checkCustomPhotoLimit = async (currentPhotoCount) => {
   }
   const hasAccess = await checkPremiumAccess();
   if (!hasAccess) {
-    await showPaywall('customPhotos');
+    return await showPaywall('customPhotos');
   }
   return hasAccess;
 };
@@ -237,9 +237,9 @@ export const checkCustomPhotoLimit = async (currentPhotoCount) => {
  * Generic paywall trigger for any feature
  */
 export const triggerPaywall = async (feature, params = {}) => {
-  const hasAccess = await checkPremiumAccess();
+  let hasAccess = await checkPremiumAccess();
   if (!hasAccess) {
-    await showPaywall(feature);
+    hasAccess = await showPaywall(feature);
   }
   return {
     hasAccess,

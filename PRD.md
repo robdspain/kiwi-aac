@@ -388,6 +388,28 @@ if (!isPremium) {
 - User satisfaction score > 4.5/5
 - App Store rating > 4.7/5
 
+#### 7.8. RevenueCat Paywall Audit (Current Implementation)
+
+The following features are currently integrated with RevenueCat using the `premium` entitlement (pro tier).
+
+| Feature Category | Free Tier Limit | Premium (Kiwi Pro) Access | Status |
+| :--- | :--- | :--- | :--- |
+| **Vocabulary Size** | Max 50 Icons | Unlimited Icons | ✅ Active |
+| **Custom Photos** | Max 20 Photos | Unlimited Photos | ✅ Active |
+| **Profiles** | 1 Learner Profile | Unlimited Profiles | ✅ Active |
+| **Characters** | Max 3 Custom People | Unlimited Memojis/Characters | ✅ Active |
+| **Color Themes** | Default Theme only | All Premium Themes (Ocean, Forest, etc.) | ✅ Active |
+| **Analytics** | Last 7 Days History | Unlimited History & Data Export (CSV) | ✅ Active |
+| **Speech/Voice** | System Voices | Voice Presets & Custom Pronunciation | ✅ Active |
+| **Templates** | Starter Templates | All Premium Contextual Boards | ✅ Active |
+| **Multi-Page** | Single Page Boards | Unlimited Pages & Page Management | ✅ Active |
+| **Cloud Sync** | Local-only Storage | Real-time Cloud Backup & Team Sharing | ⏳ Infrastructure Ready |
+
+**Technical Implementation:**
+- **Trigger:** `src/utils/paywall.js`
+- **Service:** `src/services/RevenueCatService.js`
+- **SDK:** `@revenuecat/purchases-capacitor` + `purchases-capacitor-ui` (Native Paywalls)
+
 ---
 
 ### 8. Roadmap & Implementation Status

@@ -64,6 +64,15 @@ CREATE INDEX IF NOT EXISTS idx_progress_child ON progress(child_id);
 CREATE INDEX IF NOT EXISTS idx_contexts_child ON contexts(child_id);
 CREATE INDEX IF NOT EXISTS idx_analytics_child ON analytics(child_id);
 
+-- Anonymous device synchronization
+CREATE TABLE IF NOT EXISTS kiwi_sync (
+  sync_code TEXT PRIMARY KEY,
+  data TEXT NOT NULL, -- Compressed Base64 payload (includes localStorage + media)
+  last_updated TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_kiwi_sync_updated ON kiwi_sync(last_updated);
+
 -- Update timestamp trigger function
 CREATE OR REPLACE FUNCTION update_updated_at()
 RETURNS TRIGGER AS $$
@@ -92,4 +101,8 @@ CREATE TRIGGER contexts_updated_at BEFORE UPDATE ON contexts
 
 DROP TRIGGER IF EXISTS analytics_updated_at ON analytics;
 CREATE TRIGGER analytics_updated_at BEFORE UPDATE ON analytics
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+DROP TRIGGER IF EXISTS kiwi_sync_updated_at ON kiwi_sync;
+CREATE TRIGGER kiwi_sync_updated_at BEFORE UPDATE ON kiwi_sync
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();

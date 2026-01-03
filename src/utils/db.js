@@ -59,3 +59,48 @@ export const deleteMedia = async (id) => {
         request.onerror = () => reject(request.error);
     });
 };
+
+/**
+ * Get all media items for export/sync
+ */
+export const getAllMedia = async () => {
+    const db = await initDB();
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction([STORE_NAME], 'readonly');
+        const store = transaction.objectStore(STORE_NAME);
+        const request = store.getAll();
+        const keysRequest = store.getAllKeys();
+
+        keysRequest.onsuccess = () => {
+            const keys = keysRequest.result;
+            request.onsuccess = () => {
+                const values = request.result;
+                const mediaMap = {};
+                keys.forEach((key, index) => {
+                    mediaMap[key] = values[index];
+                });
+                resolve(mediaMap);
+            };
+        };
+        request.onerror = () => reject(request.error);
+    });
+};
+
+/**
+ * Bulk import media items
+ */
+export const importAllMedia = async (mediaMap) => {
+    if (!mediaMap || Object.keys(mediaMap).length === 0) return;
+    const db = await initDB();
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction([STORE_NAME], 'readwrite');
+        const store = transaction.objectStore(STORE_NAME);
+        
+        Object.entries(mediaMap).forEach(([id, data]) => {
+            store.put(data, id);
+        });
+
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error);
+    });
+};
