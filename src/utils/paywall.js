@@ -25,7 +25,8 @@ const getSuperwall = async () => {
   if (!SuperwallModule) {
     try {
       const module = await import('../plugins/superwall');
-      SuperwallModule = module.default;
+      // The module now exports { get: getSuperwall }
+      SuperwallModule = module.getSuperwall();
     } catch (error) {
       console.error('Failed to load Superwall plugin:', error);
       return null;

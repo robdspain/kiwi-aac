@@ -21,8 +21,18 @@ export interface SuperwallPlugin {
   restore(): Promise<{ result: 'restored' | 'failed' }>;
 }
 
-const Superwall = registerPlugin<SuperwallPlugin>('Superwall', {
-  web: () => import('./superwall-web').then(m => new m.SuperwallWeb()),
-});
+// Lazy initialization to prevent circular dependencies
+// The plugin is only registered when first accessed, not at module load time
+let superwallInstance: SuperwallPlugin | null = null;
 
-export default Superwall;
+export const getSuperwall = (): SuperwallPlugin => {
+  if (!superwallInstance) {
+    superwallInstance = registerPlugin<SuperwallPlugin>('Superwall', {
+      web: () => import('./superwall-web').then(m => new m.SuperwallWeb()),
+    });
+  }
+  return superwallInstance;
+};
+
+// Export the getter, NOT the instance
+export default { get: getSuperwall };
