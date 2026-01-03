@@ -38,7 +38,8 @@ import {
 import { AAC_LEXICON } from './data/aacLexicon';
 import { CORE_WORDS_LAYOUT } from './data/aacData';
 import { useProfile } from './context/ProfileContext';
-import { configureRevenueCat } from './plugins/revenuecat';
+import { getRevenueCat } from './plugins/revenuecat';
+import { Capacitor } from '@capacitor/core';
 
 const synth = window.speechSynthesis || null;
 
@@ -358,6 +359,22 @@ function App() {
   };
 
   const triggerPaywall = (feature, cb) => { if (cb) cb(); };
+
+  // Initialize RevenueCat SDK on app startup
+  const configureRevenueCat = async () => {
+    try {
+      // Import the RevenueCat service
+      const { default: revenueCatService } = await import('./services/RevenueCatService');
+
+      // Initialize with optional user ID (can be null for anonymous)
+      const userId = currentProfile?.id || null;
+      await revenueCatService.initialize(userId);
+
+      console.log('✅ RevenueCat initialized in App.jsx');
+    } catch (error) {
+      console.error('❌ Failed to initialize RevenueCat:', error);
+    }
+  };
 
   useEffect(() => {
     configureRevenueCat();

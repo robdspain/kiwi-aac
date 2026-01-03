@@ -1,4 +1,5 @@
-import { Purchases } from '@revenuecat/purchases-capacitor';
+import { Purchases, LOG_LEVEL } from '@revenuecat/purchases-capacitor';
+import { RevenueCatUI } from '@revenuecat/purchases-capacitor-ui';
 
 export interface RevenueCatPlugin {
   /**
@@ -52,6 +53,28 @@ export interface RevenueCatPlugin {
    * Check if user has an active entitlement
    */
   checkEntitlement(entitlementId: string): Promise<boolean>;
+
+  /**
+   * Present native paywall UI
+   */
+  presentPaywall(options?: { offering?: string }): Promise<{
+    customerInfo: any;
+  }>;
+
+  /**
+   * Present native paywall if needed (only shows if user doesn't have entitlement)
+   */
+  presentPaywallIfNeeded(options: {
+    requiredEntitlementIdentifier: string;
+    offering?: string;
+  }): Promise<{
+    customerInfo: any;
+  }>;
+
+  /**
+   * Present Customer Center (manage subscriptions)
+   */
+  presentCustomerCenter(): Promise<void>;
 }
 
 // Lazy initialization to prevent circular dependencies
@@ -63,11 +86,17 @@ export const getRevenueCat = (): RevenueCatPlugin => {
     revenueCatInstance = {
       configure: async (options) => {
         if (!isConfigured) {
-          await Purchases.configure({
-            apiKey: options.apiKey,
-            appUserID: options.appUserID,
-          });
-          isConfigured = true;
+          try {
+            await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
+            await Purchases.configure({
+              apiKey: options.apiKey || 'test_GVsVAPHELhFcgnBFbWlVyrYGiUS',
+              appUserID: options.appUserID,
+            });
+            isConfigured = true;
+            console.log('RevenueCat configured successfully');
+          } catch (error) {
+            console.error('RevenueCat configuration error:', error);
+          }
         }
       },
 
@@ -122,6 +151,44 @@ export const getRevenueCat = (): RevenueCatPlugin => {
         } catch (error) {
           console.error('Error checking entitlement:', error);
           return false;
+        }
+      },
+
+      presentPaywall: async (options = {}) => {
+        try {
+          const result = await RevenueCatUI.presentPaywall({
+            offering: options.offering,
+          });
+          return {
+            customerInfo: result.customerInfo,
+          };
+        } catch (error) {
+          console.error('Error presenting paywall:', error);
+          throw error;
+        }
+      },
+
+      presentPaywallIfNeeded: async (options) => {
+        try {
+          const result = await RevenueCatUI.presentPaywallIfNeeded({
+            requiredEntitlementIdentifier: options.requiredEntitlementIdentifier,
+            offering: options.offering,
+          });
+          return {
+            customerInfo: result.customerInfo,
+          };
+        } catch (error) {
+          console.error('Error presenting paywall if needed:', error);
+          throw error;
+        }
+      },
+
+      presentCustomerCenter: async () => {
+        try {
+          await RevenueCatUI.presentCustomerCenter();
+        } catch (error) {
+          console.error('Error presenting customer center:', error);
+          throw error;
         }
       },
     };

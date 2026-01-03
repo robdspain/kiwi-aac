@@ -180,6 +180,16 @@ const Controls = ({
         }
     };
 
+    const handleCustomerCenter = async () => {
+        try {
+            const { showCustomerCenter } = await import('../utils/paywall');
+            await showCustomerCenter();
+        } catch (error) {
+            console.error('Customer Center error:', error);
+            alert("Unable to open Customer Center. Please try again.");
+        }
+    };
+
     const handleLock = () => {
         if (isIOS) {
             setShowGuidedAccess(true);
@@ -929,6 +939,10 @@ const Controls = ({
 
                             <div className="ios-setting-group-header">Billing & Info</div>
                             <div className="ios-setting-card">
+                                <div className="ios-row" onClick={handleCustomerCenter}>
+                                    <span style={{ color: '#007AFF', fontWeight: 600 }}>⚙️ Manage Subscription</span>
+                                    <span className="ios-chevron">›</span>
+                                </div>
                                 <div className="ios-row" onClick={handleRestore}>
                                     <span>{isRestoring ? 'Restoring...' : 'Restore Purchases'}</span>
                                     <span className="ios-chevron">›</span>

@@ -3,104 +3,21 @@
  *
  * This module provides centralized paywall trigger functions for all premium features.
  * Each function returns true if the user has access, false if paywalled.
+ *
+ * Uses RevenueCatService for all subscription management.
  */
 
-/**
- * RevenueCat Configuration
- * TODO: Replace with your actual RevenueCat API keys
- */
-const REVENUECAT_CONFIG = {
-  // Get these from RevenueCat Dashboard -> Projects -> API Keys
-  IOS_API_KEY: 'appl_YOUR_IOS_API_KEY_HERE',
-  ANDROID_API_KEY: 'goog_YOUR_ANDROID_API_KEY_HERE',
-  WEB_API_KEY: 'rc_YOUR_WEB_API_KEY_HERE', // For web testing
-};
+import revenueCatService, { FREE_TIER_LIMITS } from '../services/RevenueCatService';
 
-/**
- * RevenueCat Entitlement IDs
- * These should match the entitlement identifiers in your RevenueCat dashboard
- */
-const ENTITLEMENTS = {
-  PRO: 'pro', // Main premium subscription entitlement
-};
-
-/**
- * Free tier limits
- */
-export const FREE_TIER_LIMITS = {
-  MAX_ICONS: 50,
-  MAX_PROFILES: 1,
-  MAX_CUSTOM_PEOPLE: 3,
-  MAX_PRONUNCIATION_ENTRIES: 10,
-  ANALYTICS_HISTORY_DAYS: 7,
-  MAX_CUSTOM_PHOTOS: 20
-};
-
-/**
- * Lazy-load RevenueCat to avoid circular dependencies
- */
-let RevenueCatModule = null;
-let isInitialized = false;
-
-const getRevenueCat = async () => {
-  if (!RevenueCatModule) {
-    try {
-      const module = await import('../plugins/revenuecat');
-      RevenueCatModule = module.getRevenueCat();
-
-      // Initialize RevenueCat on first access
-      if (!isInitialized) {
-        // Determine API key based on platform
-        const platform = getPlatform();
-        let apiKey;
-
-        if (platform === 'ios') {
-          apiKey = REVENUECAT_CONFIG.IOS_API_KEY;
-        } else if (platform === 'android') {
-          apiKey = REVENUECAT_CONFIG.ANDROID_API_KEY;
-        } else {
-          apiKey = REVENUECAT_CONFIG.WEB_API_KEY;
-        }
-
-        await RevenueCatModule.configure({ apiKey });
-        isInitialized = true;
-        console.log('RevenueCat initialized successfully');
-      }
-    } catch (error) {
-      console.error('Failed to load RevenueCat plugin:', error);
-      return null;
-    }
-  }
-  return RevenueCatModule;
-};
-
-/**
- * Detect current platform
- */
-const getPlatform = () => {
-  // Check if running in Capacitor
-  if (window.Capacitor) {
-    return window.Capacitor.getPlatform();
-  }
-  // Fallback to web
-  return 'web';
-};
+// Re-export FREE_TIER_LIMITS for backward compatibility
+export { FREE_TIER_LIMITS };
 
 /**
  * Helper to check if user has premium access
  */
 const checkPremiumAccess = async () => {
   try {
-    const RevenueCat = await getRevenueCat();
-    if (!RevenueCat) {
-      // If RevenueCat isn't available, grant access (development mode)
-      console.warn('RevenueCat not available, granting access for development');
-      return true;
-    }
-
-    // Check if user has the PRO entitlement
-    const hasAccess = await RevenueCat.checkEntitlement(ENTITLEMENTS.PRO);
-    return hasAccess;
+    return await revenueCatService.hasPremiumAccess();
   } catch (error) {
     console.error('Error checking premium access:', error);
     // In development or if check fails, grant access
@@ -109,33 +26,14 @@ const checkPremiumAccess = async () => {
 };
 
 /**
- * Show paywall and attempt purchase
- * This will show the available offerings to the user
+ * Show native RevenueCat paywall
+ * This displays the beautiful native paywall configured in RevenueCat dashboard
  */
 const showPaywall = async (feature) => {
   try {
-    const RevenueCat = await getRevenueCat();
-    if (!RevenueCat) {
-      console.warn('RevenueCat not available');
-      return false;
-    }
-
-    // Get available offerings
-    const offerings = await RevenueCat.getOfferings();
-
-    if (!offerings.current || !offerings.current.availablePackages.length) {
-      console.warn('No offerings available');
-      return false;
-    }
-
-    // For now, just log the offerings
-    // In a real implementation, you'd show a UI to let the user pick a package
-    console.log('Available offerings:', offerings.current.availablePackages);
-    console.log(`Feature "${feature}" requires premium subscription`);
-
-    // TODO: Implement actual paywall UI
-    // For now, just return false (no purchase made)
-    return false;
+    await revenueCatService.showPaywallIfNeeded(feature);
+    // After paywall dismissal, check if user subscribed
+    return await checkPremiumAccess();
   } catch (error) {
     console.error('Error showing paywall:', error);
     return false;
@@ -354,24 +252,7 @@ export const triggerPaywall = async (feature, params = {}) => {
  */
 export const getSubscriptionStatus = async () => {
   try {
-    const RevenueCat = await getRevenueCat();
-    if (!RevenueCat) {
-      return {
-        isSubscribed: false,
-        tier: 'free',
-        expiresAt: null
-      };
-    }
-
-    const customerInfo = await RevenueCat.getCustomerInfo();
-    const hasProAccess = customerInfo.entitlements[ENTITLEMENTS.PRO]?.isActive || false;
-
-    return {
-      isSubscribed: hasProAccess,
-      tier: hasProAccess ? 'pro' : 'free',
-      expiresAt: customerInfo.entitlements[ENTITLEMENTS.PRO]?.expirationDate || null,
-      activeSubscriptions: customerInfo.activeSubscriptions
-    };
+    return await revenueCatService.getSubscriptionStatus();
   } catch (error) {
     console.error('Error getting subscription status:', error);
     return {
@@ -387,17 +268,23 @@ export const getSubscriptionStatus = async () => {
  */
 export const restorePurchases = async () => {
   try {
-    const RevenueCat = await getRevenueCat();
-    if (!RevenueCat) {
-      console.warn('RevenueCat not available');
-      return false;
-    }
-
-    const result = await RevenueCat.restorePurchases();
-    console.log('Purchases restored successfully', result);
+    await revenueCatService.restorePurchases();
+    console.log('✅ Purchases restored successfully');
     return true;
   } catch (error) {
-    console.error('Restore purchases error:', error);
+    console.error('❌ Restore purchases error:', error);
     return false;
+  }
+};
+
+/**
+ * Show Customer Center (subscription management UI)
+ * Allows users to manage their subscription
+ */
+export const showCustomerCenter = async () => {
+  try {
+    await revenueCatService.showCustomerCenter();
+  } catch (error) {
+    console.error('Error showing customer center:', error);
   }
 };
