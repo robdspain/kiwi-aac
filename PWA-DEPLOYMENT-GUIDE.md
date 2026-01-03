@@ -208,26 +208,27 @@ This opens Android Studio. You can then:
 
 ## Paywall Integration Status
 
-### Superwall Integration:
-- ✅ TypeScript plugin implemented
-- ✅ Web SDK wrapper ready
-- ✅ `restore()` method implemented (prevents crashes)
-- ✅ Event registration working
-- ⚠️ Requires Superwall API key in production
+### RevenueCat Integration:
+- ✅ Capacitor SDK implemented (`@revenuecat/purchases-capacitor`)
+- ✅ Native Paywall UI integration (`@revenuecat/purchases-capacitor-ui`)
+- ✅ Centralized service layer (`src/services/RevenueCatService.js`)
+- ✅ Entitlement checking for premium features
+- ⚠️ Requires RevenueCat Production API key in `.env`
 
-### Configured Paywalls:
-1. **Color Themes** - Event: `colorThemes`
-2. **Advanced Analytics** - Event: `advancedAnalytics` (TO ADD)
-3. **Premium Templates** - Event: `premiumTemplates` (TO ADD)
-4. **Cloud Sync** - Event: `cloudSync` (TO ADD)
-5. **Unlimited Vocabulary** - Event: `unlimitedVocabulary` (TO ADD)
+### Configured Paywall Triggers:
+1. **Color Themes**
+2. **Advanced Analytics**
+3. **Premium Templates**
+4. **Cloud Sync**
+5. **Unlimited Vocabulary**
+6. **Multi-Profile Support**
 
 ### To Complete Paywall Setup:
-1. Create Superwall account at https://superwall.com
-2. Configure paywalls in Superwall dashboard
-3. Add Superwall API key to environment variables
-4. Test all premium feature triggers
-5. Configure subscription products in App Store Connect / Play Console
+1. Configure products in RevenueCat Dashboard (see `PRODUCT-SETUP-CHECKLIST.md`)
+2. Link App Store and Google Play credentials to RevenueCat
+3. Add Production API key to environment variables
+4. Test all premium feature triggers in sandbox mode
+5. Publish RevenueCat Paywalls via Paywall Builder
 
 ---
 
@@ -250,7 +251,7 @@ This opens Android Studio. You can then:
 
 1. **Deploy to staging environment** (Netlify/Vercel)
 2. **Test PWA installation** on real iOS and Android devices
-3. **Complete Superwall setup** and test premium features
+3. **Complete RevenueCat setup** and test premium features
 4. **Run Lighthouse audit** and optimize if needed
 5. **Prepare App Store assets** (screenshots, descriptions)
 6. **Submit for beta testing** (TestFlight for iOS, Internal Testing for Android)

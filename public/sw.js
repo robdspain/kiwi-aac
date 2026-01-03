@@ -26,7 +26,7 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Skip cross-origin requests (like Superwall, Analytics, etc.)
+  // Skip cross-origin requests (like Analytics, etc.)
   if (!event.request.url.startsWith(self.location.origin)) {
     return;
   }

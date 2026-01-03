@@ -63,20 +63,20 @@ npm run preview
 
 ---
 
-## Setup Superwall (After Testing)
+## Setup RevenueCat (After Testing)
 
-1. Go to https://superwall.com
-2. Create account → Get API key
-3. Edit `public/index.html` → Add your API key
-4. Configure campaigns in dashboard
-5. Redeploy and test subscription flow
+1. Go to https://app.revenuecat.com
+2. Create account → Link store credentials
+3. Configure products (`kiwi_monthly`, `kiwi_annual`)
+4. Add Production API key to `.env`
+5. Test subscription flow in Sandbox mode
 
 ---
 
 ## Files Created for You
 
 - `PWA-DEPLOYMENT-GUIDE.md` - Full deployment instructions
-- `SUPERWALL-SETUP.md` - Complete paywall setup guide
+- `REVENUECAT-SETUP-GUIDE.md` - Complete paywall setup guide
 - `DEPLOYMENT-READY-SUMMARY.md` - What was completed
 - `src/utils/paywall.js` - Paywall helper functions
 

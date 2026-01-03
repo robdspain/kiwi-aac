@@ -14,7 +14,7 @@
 - Essential Skills Training - FCR & Denial Tolerance (COMPLETE)
 - QR Code Board Sharing (COMPLETE)
 - Usage Analytics Dashboard (COMPLETE)
-- Premium Color Themes with Superwall integration (COMPLETE)
+- Premium Color Themes with RevenueCat integration (COMPLETE)
 
 ---
 
@@ -36,8 +36,8 @@
 - ✅ **84% cheaper** than premium competitors ($39.99 vs $249-299)
 - ✅ **Cross-platform PWA** works everywhere (iOS, Android, web, tablets)
 - ✅ **Core communication always free** (ethical accessibility commitment)
-- ✅ **Modern UX** with Memoji aesthetic vs dated competitors
 - ✅ **Evidence-based training** modes (FCR, denial tolerance) built-in
+- ✅ **Native Paywalls** via RevenueCat for seamless subscriptions
 - ✅ **Fast iteration** via web deployment vs app store delays
 
 ---

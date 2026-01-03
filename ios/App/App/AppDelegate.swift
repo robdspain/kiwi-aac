@@ -1,6 +1,5 @@
 import UIKit
 import Capacitor
-import SuperwallKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -9,13 +8,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-
-        // Configure Superwall with API key from Info.plist
-        if let apiKey = Bundle.main.object(forInfoDictionaryKey: "SuperwallAPIKey") as? String {
-            Superwall.configure(apiKey: apiKey)
-        } else {
-            print("Warning: SuperwallAPIKey not found in Info.plist")
-        }
 
         return true
     }

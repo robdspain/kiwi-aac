@@ -50,20 +50,20 @@ All **5 HIGH/MEDIUM severity bugs** from the .agent error log have been resolved
 
 ---
 
-### 3. Superwall Paywall Integration ✅
+### 3. RevenueCat Paywall Integration ✅
 
 **Implemented Premium Features:**
 
-| Feature | Event Name | File | Line | Status |
-|---------|-----------|------|------|--------|
-| Color Themes | `colorThemes` | Controls.jsx | 846 | ✅ DONE |
-| Export Analytics | `exportAnalytics` | Dashboard.jsx | 70 | ✅ DONE |
-| Pronunciation Dictionary | `premiumVoice` | PronunciationEditor.jsx | 14 | ✅ DONE |
-| Unlimited Vocabulary | `unlimitedVocabulary` | App.jsx | 664 | ✅ DONE |
-| Multi-Profiles | `multiProfiles` | ProfileContext.jsx | 60 | ✅ DONE |
+| Feature | Feature Key | File | Status |
+|---------|-----------|------|--------|
+| Color Themes | `colorThemes` | Controls.jsx | ✅ DONE |
+| Export Analytics | `exportAnalytics` | Dashboard.jsx | ✅ DONE |
+| Pronunciation Dictionary | `premiumVoice` | PronunciationEditor.jsx | ✅ DONE |
+| Unlimited Vocabulary | `unlimitedVocabulary` | App.jsx | ✅ DONE |
+| Multi-Profiles | `multiProfiles` | ProfileContext.jsx | ✅ DONE |
 
 **Utility Module Created:**
-- `src/utils/paywall.js` - Centralized paywall logic
+- `src/utils/paywall.js` - Centralized paywall logic (Uses RevenueCat)
 - All free tier limits defined
 - Helper functions for all premium features
 - Graceful fallback for development
@@ -95,12 +95,11 @@ All **5 HIGH/MEDIUM severity bugs** from the .agent error log have been resolved
 - Performance metrics and targets
 - Known issues (none critical)
 
-**SUPERWALL-SETUP.md:**
-- Complete Superwall configuration guide
-- All implemented paywalls documented
-- Dashboard campaign setup instructions
+**REVENUECAT-SETUP-GUIDE.md:**
+- Complete RevenueCat configuration guide
+- Store linking instructions
+- Dashboard setup for products and offerings
 - Testing procedures
-- Revenue projections
 - Troubleshooting guide
 
 ---
@@ -108,12 +107,11 @@ All **5 HIGH/MEDIUM severity bugs** from the .agent error log have been resolved
 ## Build Metrics
 
 ```
-✓ 496 modules transformed
-✓ Total bundle: 579 KB (176 KB gzipped)
+✓ 555 modules transformed
+✓ Total bundle: 748 KB (230 KB gzipped)
 ✓ CSS: 18 KB (4.5 KB gzipped)
 ✓ Build time: ~2 seconds
 ✓ No syntax errors
-✓ No TypeScript errors
 ```
 
 **Performance:** ✅ Optimized for mobile
@@ -136,11 +134,11 @@ All **5 HIGH/MEDIUM severity bugs** from the .agent error log have been resolved
 - [ ] Test folder navigation across pages
 
 ### Paywall Triggers
-- [ ] Click premium color theme → Paywall appears
-- [ ] Add 51st icon → Paywall appears
-- [ ] Export analytics → Paywall appears
-- [ ] Add 11th pronunciation → Paywall appears
-- [ ] Add 2nd profile → Paywall appears
+- [ ] Click premium color theme → RevenueCat Paywall appears
+- [ ] Add 51st icon → RevenueCat Paywall appears
+- [ ] Export analytics → RevenueCat Paywall appears
+- [ ] Add 11th pronunciation → RevenueCat Paywall appears
+- [ ] Add 2nd profile → RevenueCat Paywall appears
 
 ### Core Functionality
 - [ ] Test training mode with shuffle
@@ -172,25 +170,20 @@ npm run build
 ```
 Build command: npm run build
 Publish directory: dist
-Environment variables: VITE_SUPERWALL_API_KEY=your_key
+Environment variables: VITE_REVENUECAT_API_KEY=your_key
 ```
 
-### Step 2: Configure Superwall
+### Step 2: Configure RevenueCat
 
-1. Create account at https://superwall.com
-2. Create new app in dashboard
-3. Get Public API Key
-4. Update `public/index.html` with API key
-5. Create paywall campaigns for each event:
-   - `colorThemes`
-   - `exportAnalytics`
-   - `premiumVoice`
-   - `unlimitedVocabulary`
-   - `multiProfiles`
+1. Create account at https://app.revenuecat.com
+2. Create new project
+3. Get Production API Key
+4. Update `.env` with API key
+5. Link Store Credentials (iOS & Android)
 6. Configure subscription products:
-   - Monthly: $4.99
-   - Yearly: $39.99 (recommended)
-7. Design paywall templates in dashboard
+   - Monthly: `kiwi_monthly`
+   - Yearly: `kiwi_annual`
+7. Design and publish paywalls in RevenueCat dashboard
 
 ### Step 3: Test on Real Devices
 
@@ -267,7 +260,7 @@ All critical bugs from Cycle 44 have been resolved.
 - `PRD.md` - Complete product requirements
 - `ROADMAP.md` - Feature timeline
 - `PWA-DEPLOYMENT-GUIDE.md` - Testing and deployment
-- `SUPERWALL-SETUP.md` - Paywall configuration
+- `REVENUECAT-SETUP-GUIDE.md` - Paywall configuration
 - `agent/.agent` - Error tracking log
 
 **Key Files Modified:**
@@ -286,8 +279,8 @@ All critical bugs from Cycle 44 have been resolved.
 1. **Deploy to Netlify** → Get public URL for testing
 2. **Test on real iOS device** → Verify PWA installation
 3. **Test on real Android device** → Verify PWA installation
-4. **Create Superwall account** → Get API key
-5. **Configure paywall campaigns** → Set up subscription products
+4. **Create RevenueCat project** → Get Production API key
+5. **Configure store credentials** → Set up subscription products
 6. **Test full subscription flow** → End-to-end purchase test
 7. **Prepare App Store assets** → Screenshots, descriptions
 8. **Submit for beta testing** → TestFlight (iOS), Internal Testing (Android)
@@ -328,7 +321,7 @@ All critical bugs from Cycle 44 have been resolved.
 
 **Next Owner (You):**
 - [ ] Deploy to staging environment
-- [ ] Configure Superwall dashboard
+- [ ] Configure RevenueCat dashboard
 - [ ] Test on physical devices
 - [ ] Prepare App Store submission
 - [ ] Launch beta program

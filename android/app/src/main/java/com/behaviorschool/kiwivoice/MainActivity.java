@@ -1,4 +1,4 @@
-package com.kiwiaac.app;
+package com.behaviorschool.kiwivoice;
 
 import com.getcapacitor.BridgeActivity;
 

@@ -24,9 +24,8 @@ const CONFIG = {
  * These should match your RevenueCat dashboard configuration
  */
 export const PRODUCT_IDS = {
-  MONTHLY: 'monthly',
-  YEARLY: 'yearly',
-  LIFETIME: 'lifetime',
+  MONTHLY: 'kiwi_monthly',
+  YEARLY: 'kiwi_annual',
 };
 
 /**

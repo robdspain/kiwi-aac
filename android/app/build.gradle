@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "com.behaviorschool.kiwiaac"
+    namespace = "com.behaviorschool.kiwivoice"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.behaviorschool.kiwiaac"
+        applicationId "com.behaviorschool.kiwivoice"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

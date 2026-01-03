@@ -359,7 +359,16 @@ function App() {
     }
   };
 
-  const triggerPaywall = (feature, cb) => { if (cb) cb(); };
+  const triggerPaywall = async (feature, cb) => {
+    try {
+      const { triggerPaywall: trigger } = await import('./utils/paywall');
+      const { hasAccess } = await trigger(feature);
+      if (hasAccess && cb) cb();
+    } catch (error) {
+      console.error('Paywall trigger failed:', error);
+      if (cb) cb(); // Fallback to allowing access
+    }
+  };
 
   // Initialize RevenueCat SDK on app startup
   const configureRevenueCat = async () => {

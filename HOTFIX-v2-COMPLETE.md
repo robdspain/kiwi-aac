@@ -31,7 +31,7 @@ This created a complex initialization order dependency chain that caused the "Ui
 ### Changed ALL paywall imports to use **lazy loading** with dynamic imports:
 
 #### 1. src/utils/paywall.js
-✅ Already fixed - lazy loads Superwall plugin internally
+✅ Already fixed - lazy loads RevenueCatService internally
 
 #### 2. src/App.jsx
 **Before:**
@@ -178,13 +178,13 @@ const hasAccess = await checkColorThemeAccess();
 import { checkColorThemeAccess } from '../utils/paywall'; // DON'T DO THIS!
 ```
 
-**Exception:** Only `paywall.js` itself can import Superwall, and it does so lazily.
+**Exception:** Only `paywall.js` itself can import RevenueCatService, and it does so lazily.
 
 ---
 
 ## Files Modified
 
-1. ✅ src/utils/paywall.js - Lazy loads Superwall
+1. ✅ src/utils/paywall.js - Lazy loads RevenueCat
 2. ✅ src/App.jsx - Dynamic paywall import
 3. ✅ src/components/Controls.jsx - Dynamic paywall import
 4. ✅ src/components/Dashboard.jsx - Dynamic paywall import

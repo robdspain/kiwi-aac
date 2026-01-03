@@ -55,7 +55,5 @@
 	<string>Kiwi Voice needs photo library access to select photos for custom communication icons.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Kiwi Voice needs photo library access to save photos for custom communication icons.</string>
-	<key>SuperwallAPIKey</key>
-	<string>pk_pdrADqfJ3XjhkUUMC92zI</string>
 </dict>
 </plist>
