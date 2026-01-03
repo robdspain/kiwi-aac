@@ -1,16 +1,97 @@
 import { neon } from '@neondatabase/serverless';
-import { supabase } from '../lib/supabase';
-import { getAllMedia } from '../utils/db';
+import { Device } from '@capacitor/device';
+import { getAllMedia, saveMedia } from '../utils/db';
 
 const DATABASE_URL = import.meta.env.VITE_NEON_DATABASE_URL;
 
 class RelationalSyncService {
     constructor() {
         this.sql = DATABASE_URL ? neon(DATABASE_URL) : null;
+        this.deviceId = null;
+    }
+
+    async getPersistentId() {
+        if (this.deviceId) return this.deviceId;
+        try {
+            const info = await Device.getId();
+            this.deviceId = info.identifier;
+        } catch (error) {
+            // Fallback for web or if Device API fails
+            this.deviceId = localStorage.getItem('kiwi_persistent_id');
+            if (!this.deviceId) {
+                this.deviceId = `web-${crypto.randomUUID()}`;
+                localStorage.setItem('kiwi_persistent_id', this.deviceId);
+            }
+        }
+        return this.deviceId;
     }
 
     isConfigured() {
         return !!this.sql;
+    }
+
+    /**
+     * Restore data from Neon using the persistent device ID
+     * This allows "restore without auth" after app reinstall
+     */
+    async restoreFromCloud() {
+        if (!this.isConfigured()) return null;
+
+        try {
+            const deviceId = await this.getPersistentId();
+            
+            // 1. Find profile by device ID
+            const profiles = await this.sql`
+                SELECT id FROM profiles WHERE auth_user_id = ${deviceId}
+            `;
+            if (profiles.length === 0) return null;
+            const parentId = profiles[0].id;
+
+            // 2. Get child profile
+            const children = await this.sql`
+                SELECT * FROM child_profiles WHERE parent_id = ${parentId} LIMIT 1
+            `;
+            if (children.length === 0) return null;
+            const child = children[0];
+
+            // 3. Get contexts (boards)
+            const contexts = await this.sql`
+                SELECT context_name, symbols FROM contexts WHERE child_id = ${child.id}
+            `;
+            
+            // 4. Get media
+            const mediaResult = await this.sql`
+                SELECT id, media_data FROM media WHERE child_id = ${child.id}
+            `;
+
+            // Transform back to local format
+            const boards = {};
+            contexts.forEach(c => {
+                boards[c.context_name] = c.symbols;
+            });
+
+            // Save media back to local IndexedDB
+            for (const item of mediaResult) {
+                await saveMedia(item.id, item.media_data);
+            }
+
+            // Save symbols back to localStorage
+            if (Object.keys(boards).length > 0) {
+                Object.entries(boards).forEach(([contextName, data]) => {
+                    // Only save if we don't have local data? Or overwrite?
+                    // For restore, we overwrite.
+                    localStorage.setItem(`kiwi-words-${contextName}`, JSON.stringify(data));
+                });
+            }
+
+            return {
+                profile: child,
+                boards: boards
+            };
+        } catch (error) {
+            console.error('Failed to restore from cloud:', error);
+            return null;
+        }
     }
 
     /**
@@ -20,13 +101,11 @@ class RelationalSyncService {
         if (!this.isConfigured()) return;
 
         try {
-            // 1. Ensure parent profile exists (using a placeholder if no auth)
-            const authUser = (await supabase?.auth.getUser())?.data.user;
-            const authUserId = authUser?.id || `anon-${profileId}`;
+            const deviceId = await this.getPersistentId();
             
             const profileResult = await this.sql`
                 INSERT INTO profiles (auth_user_id, email, name)
-                VALUES (${authUserId}, ${authUser?.email || null}, ${profileData.name})
+                VALUES (${deviceId}, ${null}, ${profileData.name})
                 ON CONFLICT (auth_user_id) 
                 DO UPDATE SET updated_at = NOW()
                 RETURNING id
