@@ -38,6 +38,7 @@ import {
 import { AAC_LEXICON } from './data/aacLexicon';
 import { CORE_WORDS_LAYOUT } from './data/aacData';
 import { useProfile } from './context/ProfileContext';
+import { configureRevenueCat } from './plugins/revenuecat';
 
 const synth = window.speechSynthesis || null;
 
@@ -357,6 +358,10 @@ function App() {
   };
 
   const triggerPaywall = (feature, cb) => { if (cb) cb(); };
+
+  useEffect(() => {
+    configureRevenueCat();
+  }, []);
 
   useEffect(() => { localStorage.setItem('kiwi-contexts', JSON.stringify(contexts)); }, [contexts]);
   useEffect(() => { localStorage.setItem('kiwi-speech-delay', speechDelay.toString()); }, [speechDelay]);

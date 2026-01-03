@@ -257,12 +257,15 @@ Does it improve CORE communication?
 
 #### 7.3. Premium Tier - "Kiwi Pro" ($4.99/month or $39.99/year)
 
-**Premium Features (Superwall Integration):**
+**One-Time Access:**
+- **Founder's Lifetime Pass ($149.99):** Unlimited lifetime access to all premium features. Limited to the first 500 initial users.
+
+**Premium Features (RevenueCat Integration):**
 
 1. **🎨 Premium Color Themes** (IMPLEMENTED)
    - Ocean, Sunset, Forest, Berry, Candy themes
-   - Paywall trigger: `Superwall.register({ event: 'colorThemes' })`
-   - Current implementation: Controls.jsx:544
+   - Entitlement: `premium`
+   - Trigger: Display paywall if `colorThemes` offering is active
 
 2. **📊 Advanced Analytics** (RECOMMENDED)
    - Unlimited history (vs. 7 days free)
@@ -270,44 +273,44 @@ Does it improve CORE communication?
    - IEP goal tracking
    - Weekly automated reports
    - CSV export with date ranges
-   - Paywall trigger: `Superwall.register({ event: 'advancedAnalytics' })`
+   - Entitlement: `premium`
 
 3. **🎭 Character & People Builder** (RECOMMENDED)
    - Unlimited custom characters (vs. 3 free)
    - Access to all 58 Memoji characters
    - Custom voice recordings per character
-   - Paywall trigger: `Superwall.register({ event: 'unlimitedPeople' })`
+   - Entitlement: `premium`
 
 4. **📚 Premium Templates & Contexts** (RECOMMENDED)
    - Extended template library (20+ templates)
    - Context-aware boards (School, Therapy, Home, Park, Mealtime)
    - Seasonal/holiday boards
-   - Paywall trigger: `Superwall.register({ event: 'premiumTemplates' })`
+   - Entitlement: `premium`
 
 5. **☁️ Cloud Sync & Collaboration** (RECOMMENDED)
    - Sync across unlimited devices
    - Share boards with team (teachers, therapists, family)
    - Real-time collaboration
    - Board version history
-   - Paywall trigger: `Superwall.register({ event: 'cloudSync' })`
+   - Entitlement: `premium`
 
 6. **🗣️ Premium Voice Features** (RECOMMENDED)
    - Custom pronunciation dictionary (unlimited entries vs. 10 free)
    - Voice presets (Young Child, Adult, Clear Speech)
    - Voice cloning for custom TTS (future)
-   - Paywall trigger: `Superwall.register({ event: 'premiumVoice' })`
+   - Entitlement: `premium`
 
 7. **👥 Multi-Profile Support** (RECOMMENDED)
    - Unlimited learner profiles (vs. 1 free)
    - Profile-specific settings and boards
    - Easy profile switching
-   - Paywall trigger: `Superwall.register({ event: 'multiProfiles' })`
+   - Entitlement: `premium`
 
 8. **🎯 Unlimited Vocabulary** (RECOMMENDED)
    - Unlimited icons on grid (vs. 50 free)
    - Unlimited categories
    - Full emoji dataset access
-   - Paywall trigger: `Superwall.register({ event: 'unlimitedVocabulary' })`
+   - Entitlement: `premium`
 
 
 
@@ -328,39 +331,17 @@ Does it improve CORE communication?
 
 #### 7.5. Implementation Strategy
 
-**Superwall Event Mapping:**
+**RevenueCat Offering Mapping:**
 
 ```javascript
-// Color Themes (DONE)
-await Superwall.register({ event: 'colorThemes' })
+// Check for Premium Entitlement
+const { customerInfo } = await Purchases.getCustomerInfo();
+const isPremium = customerInfo.entitlements.active['premium'] !== undefined;
 
-// Analytics (TO ADD)
-await Superwall.register({ event: 'advancedAnalytics' })
-await Superwall.register({ event: 'exportAnalytics' })
-
-// Templates (TO ADD)
-await Superwall.register({ event: 'premiumTemplates' })
-await Superwall.register({ event: 'applyTemplate' })
-
-// Cloud Features (TO ADD)
-await Superwall.register({ event: 'cloudSync' })
-await Superwall.register({ event: 'teamSharing' })
-
-// Voice (TO ADD)
-await Superwall.register({ event: 'premiumVoice' })
-await Superwall.register({ event: 'voicePresets' })
-
-// People/Characters (TO ADD)
-await Superwall.register({ event: 'unlimitedPeople' })
-await Superwall.register({ event: 'addCustomCharacter' })
-
-// Vocabulary (TO ADD)
-await Superwall.register({ event: 'unlimitedVocabulary' })
-await Superwall.register({ event: 'addIcon51' }) // Trigger when adding 51st icon
-
-// Profiles (TO ADD)
-await Superwall.register({ event: 'multiProfiles' })
-await Superwall.register({ event: 'addProfile2' }) // Trigger when adding 2nd profile
+// Show Paywall for specific offerings
+if (!isPremium) {
+  await RevenueCatUI.presentPaywall({ offering: 'default' });
+}
 ```
 
 #### 7.6. Value Proposition & Positioning

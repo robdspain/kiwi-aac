@@ -1,9 +1,28 @@
 /**
- * Kiwi Voice - Superwall Paywall Integration
+ * Kiwi Voice - RevenueCat Paywall Integration
  *
  * This module provides centralized paywall trigger functions for all premium features.
  * Each function returns true if the user has access, false if paywalled.
  */
+
+/**
+ * RevenueCat Configuration
+ * TODO: Replace with your actual RevenueCat API keys
+ */
+const REVENUECAT_CONFIG = {
+  // Get these from RevenueCat Dashboard -> Projects -> API Keys
+  IOS_API_KEY: 'appl_YOUR_IOS_API_KEY_HERE',
+  ANDROID_API_KEY: 'goog_YOUR_ANDROID_API_KEY_HERE',
+  WEB_API_KEY: 'rc_YOUR_WEB_API_KEY_HERE', // For web testing
+};
+
+/**
+ * RevenueCat Entitlement IDs
+ * These should match the entitlement identifiers in your RevenueCat dashboard
+ */
+const ENTITLEMENTS = {
+  PRO: 'pro', // Main premium subscription entitlement
+};
 
 /**
  * Free tier limits
@@ -18,41 +37,108 @@ export const FREE_TIER_LIMITS = {
 };
 
 /**
- * Lazy-load Superwall to avoid circular dependencies
+ * Lazy-load RevenueCat to avoid circular dependencies
  */
-let SuperwallModule = null;
-const getSuperwall = async () => {
-  if (!SuperwallModule) {
+let RevenueCatModule = null;
+let isInitialized = false;
+
+const getRevenueCat = async () => {
+  if (!RevenueCatModule) {
     try {
-      const module = await import('../plugins/superwall');
-      // The module now exports { get: getSuperwall }
-      SuperwallModule = module.getSuperwall();
+      const module = await import('../plugins/revenuecat');
+      RevenueCatModule = module.getRevenueCat();
+
+      // Initialize RevenueCat on first access
+      if (!isInitialized) {
+        // Determine API key based on platform
+        const platform = getPlatform();
+        let apiKey;
+
+        if (platform === 'ios') {
+          apiKey = REVENUECAT_CONFIG.IOS_API_KEY;
+        } else if (platform === 'android') {
+          apiKey = REVENUECAT_CONFIG.ANDROID_API_KEY;
+        } else {
+          apiKey = REVENUECAT_CONFIG.WEB_API_KEY;
+        }
+
+        await RevenueCatModule.configure({ apiKey });
+        isInitialized = true;
+        console.log('RevenueCat initialized successfully');
+      }
     } catch (error) {
-      console.error('Failed to load Superwall plugin:', error);
+      console.error('Failed to load RevenueCat plugin:', error);
       return null;
     }
   }
-  return SuperwallModule;
+  return RevenueCatModule;
 };
 
 /**
- * Helper to check if user is subscribed
+ * Detect current platform
  */
-const checkSubscription = async (eventName) => {
+const getPlatform = () => {
+  // Check if running in Capacitor
+  if (window.Capacitor) {
+    return window.Capacitor.getPlatform();
+  }
+  // Fallback to web
+  return 'web';
+};
+
+/**
+ * Helper to check if user has premium access
+ */
+const checkPremiumAccess = async () => {
   try {
-    const Superwall = await getSuperwall();
-    if (!Superwall) {
-      // If Superwall isn't available, grant access (development mode)
+    const RevenueCat = await getRevenueCat();
+    if (!RevenueCat) {
+      // If RevenueCat isn't available, grant access (development mode)
+      console.warn('RevenueCat not available, granting access for development');
       return true;
     }
 
-    const result = await Superwall.register({ event: eventName });
-    // User has access if they're subscribed or there's no paywall rule
-    return result.result === 'userIsSubscribed' || result.result === 'noRuleMatch';
+    // Check if user has the PRO entitlement
+    const hasAccess = await RevenueCat.checkEntitlement(ENTITLEMENTS.PRO);
+    return hasAccess;
   } catch (error) {
-    console.error(`Paywall error for ${eventName}:`, error);
-    // In development or if paywall fails, grant access
+    console.error('Error checking premium access:', error);
+    // In development or if check fails, grant access
     return true;
+  }
+};
+
+/**
+ * Show paywall and attempt purchase
+ * This will show the available offerings to the user
+ */
+const showPaywall = async (feature) => {
+  try {
+    const RevenueCat = await getRevenueCat();
+    if (!RevenueCat) {
+      console.warn('RevenueCat not available');
+      return false;
+    }
+
+    // Get available offerings
+    const offerings = await RevenueCat.getOfferings();
+
+    if (!offerings.current || !offerings.current.availablePackages.length) {
+      console.warn('No offerings available');
+      return false;
+    }
+
+    // For now, just log the offerings
+    // In a real implementation, you'd show a UI to let the user pick a package
+    console.log('Available offerings:', offerings.current.availablePackages);
+    console.log(`Feature "${feature}" requires premium subscription`);
+
+    // TODO: Implement actual paywall UI
+    // For now, just return false (no purchase made)
+    return false;
+  } catch (error) {
+    console.error('Error showing paywall:', error);
+    return false;
   }
 };
 
@@ -61,7 +147,11 @@ const checkSubscription = async (eventName) => {
  * Trigger when user tries to select a premium color theme
  */
 export const checkColorThemeAccess = async () => {
-  return await checkSubscription('colorThemes');
+  const hasAccess = await checkPremiumAccess();
+  if (!hasAccess) {
+    await showPaywall('colorThemes');
+  }
+  return hasAccess;
 };
 
 /**
@@ -69,14 +159,22 @@ export const checkColorThemeAccess = async () => {
  * Trigger when user tries to access analytics beyond 7 days
  */
 export const checkAdvancedAnalytics = async () => {
-  return await checkSubscription('advancedAnalytics');
+  const hasAccess = await checkPremiumAccess();
+  if (!hasAccess) {
+    await showPaywall('advancedAnalytics');
+  }
+  return hasAccess;
 };
 
 /**
  * Export analytics data (CSV, PDF)
  */
 export const checkExportAnalytics = async () => {
-  return await checkSubscription('exportAnalytics');
+  const hasAccess = await checkPremiumAccess();
+  if (!hasAccess) {
+    await showPaywall('exportAnalytics');
+  }
+  return hasAccess;
 };
 
 /**
@@ -84,11 +182,19 @@ export const checkExportAnalytics = async () => {
  * Trigger when user tries to apply a premium template
  */
 export const checkPremiumTemplates = async () => {
-  return await checkSubscription('premiumTemplates');
+  const hasAccess = await checkPremiumAccess();
+  if (!hasAccess) {
+    await showPaywall('premiumTemplates');
+  }
+  return hasAccess;
 };
 
 export const checkApplyTemplate = async (templateId) => {
-  return await checkSubscription('applyTemplate');
+  const hasAccess = await checkPremiumAccess();
+  if (!hasAccess) {
+    await showPaywall('applyTemplate');
+  }
+  return hasAccess;
 };
 
 /**
@@ -96,11 +202,19 @@ export const checkApplyTemplate = async (templateId) => {
  * Trigger when user tries to enable cloud backup
  */
 export const checkCloudSync = async () => {
-  return await checkSubscription('cloudSync');
+  const hasAccess = await checkPremiumAccess();
+  if (!hasAccess) {
+    await showPaywall('cloudSync');
+  }
+  return hasAccess;
 };
 
 export const checkTeamSharing = async () => {
-  return await checkSubscription('teamSharing');
+  const hasAccess = await checkPremiumAccess();
+  if (!hasAccess) {
+    await showPaywall('teamSharing');
+  }
+  return hasAccess;
 };
 
 /**
@@ -108,11 +222,19 @@ export const checkTeamSharing = async () => {
  * Trigger when user tries to access voice presets or custom pronunciation beyond limit
  */
 export const checkPremiumVoice = async () => {
-  return await checkSubscription('premiumVoice');
+  const hasAccess = await checkPremiumAccess();
+  if (!hasAccess) {
+    await showPaywall('premiumVoice');
+  }
+  return hasAccess;
 };
 
 export const checkVoicePresets = async () => {
-  return await checkSubscription('voicePresets');
+  const hasAccess = await checkPremiumAccess();
+  if (!hasAccess) {
+    await showPaywall('voicePresets');
+  }
+  return hasAccess;
 };
 
 /**
@@ -122,7 +244,11 @@ export const checkPronunciationLimit = async (currentCount) => {
   if (currentCount < FREE_TIER_LIMITS.MAX_PRONUNCIATION_ENTRIES) {
     return true; // Under free limit
   }
-  return await checkSubscription('premiumVoice');
+  const hasAccess = await checkPremiumAccess();
+  if (!hasAccess) {
+    await showPaywall('premiumVoice');
+  }
+  return hasAccess;
 };
 
 /**
@@ -133,11 +259,19 @@ export const checkUnlimitedPeople = async (currentCount) => {
   if (currentCount < FREE_TIER_LIMITS.MAX_CUSTOM_PEOPLE) {
     return true; // Under free limit
   }
-  return await checkSubscription('unlimitedPeople');
+  const hasAccess = await checkPremiumAccess();
+  if (!hasAccess) {
+    await showPaywall('unlimitedPeople');
+  }
+  return hasAccess;
 };
 
 export const checkAddCustomCharacter = async () => {
-  return await checkSubscription('addCustomCharacter');
+  const hasAccess = await checkPremiumAccess();
+  if (!hasAccess) {
+    await showPaywall('addCustomCharacter');
+  }
+  return hasAccess;
 };
 
 /**
@@ -148,11 +282,19 @@ export const checkUnlimitedVocabulary = async (currentIconCount) => {
   if (currentIconCount < FREE_TIER_LIMITS.MAX_ICONS) {
     return true; // Under free limit
   }
-  return await checkSubscription('unlimitedVocabulary');
+  const hasAccess = await checkPremiumAccess();
+  if (!hasAccess) {
+    await showPaywall('unlimitedVocabulary');
+  }
+  return hasAccess;
 };
 
 export const checkAddIcon51 = async () => {
-  return await checkSubscription('addIcon51');
+  const hasAccess = await checkPremiumAccess();
+  if (!hasAccess) {
+    await showPaywall('addIcon51');
+  }
+  return hasAccess;
 };
 
 /**
@@ -163,11 +305,19 @@ export const checkMultiProfiles = async (currentProfileCount) => {
   if (currentProfileCount < FREE_TIER_LIMITS.MAX_PROFILES + 1) {
     return true; // Can have 1 profile for free
   }
-  return await checkSubscription('multiProfiles');
+  const hasAccess = await checkPremiumAccess();
+  if (!hasAccess) {
+    await showPaywall('multiProfiles');
+  }
+  return hasAccess;
 };
 
 export const checkAddProfile2 = async () => {
-  return await checkSubscription('addProfile2');
+  const hasAccess = await checkPremiumAccess();
+  if (!hasAccess) {
+    await showPaywall('addProfile2');
+  }
+  return hasAccess;
 };
 
 /**
@@ -178,41 +328,58 @@ export const checkCustomPhotoLimit = async (currentPhotoCount) => {
   if (currentPhotoCount < FREE_TIER_LIMITS.MAX_CUSTOM_PHOTOS) {
     return true; // Under free limit
   }
-  return await checkSubscription('unlimitedVocabulary');
+  const hasAccess = await checkPremiumAccess();
+  if (!hasAccess) {
+    await showPaywall('customPhotos');
+  }
+  return hasAccess;
 };
 
 /**
- * Generic paywall trigger for any event
+ * Generic paywall trigger for any feature
  */
-export const triggerPaywall = async (eventName, params = {}) => {
-  try {
-    const Superwall = await getSuperwall();
-    if (!Superwall) {
-      return { hasAccess: true, result: 'error' };
-    }
-
-    const result = await Superwall.register({ event: eventName, params });
-    return {
-      hasAccess: result.result === 'userIsSubscribed' || result.result === 'noRuleMatch',
-      result: result.result
-    };
-  } catch (error) {
-    console.error(`Paywall error for ${eventName}:`, error);
-    return { hasAccess: true, result: 'error' };
+export const triggerPaywall = async (feature, params = {}) => {
+  const hasAccess = await checkPremiumAccess();
+  if (!hasAccess) {
+    await showPaywall(feature);
   }
+  return {
+    hasAccess,
+    result: hasAccess ? 'userIsSubscribed' : 'noAccess'
+  };
 };
 
 /**
  * Get subscription status (for UI display)
  */
-export const getSubscriptionStatus = () => {
-  // This would integrate with Superwall's subscription status API
-  // For now, return a placeholder
-  return {
-    isSubscribed: false,
-    tier: 'free',
-    expiresAt: null
-  };
+export const getSubscriptionStatus = async () => {
+  try {
+    const RevenueCat = await getRevenueCat();
+    if (!RevenueCat) {
+      return {
+        isSubscribed: false,
+        tier: 'free',
+        expiresAt: null
+      };
+    }
+
+    const customerInfo = await RevenueCat.getCustomerInfo();
+    const hasProAccess = customerInfo.entitlements[ENTITLEMENTS.PRO]?.isActive || false;
+
+    return {
+      isSubscribed: hasProAccess,
+      tier: hasProAccess ? 'pro' : 'free',
+      expiresAt: customerInfo.entitlements[ENTITLEMENTS.PRO]?.expirationDate || null,
+      activeSubscriptions: customerInfo.activeSubscriptions
+    };
+  } catch (error) {
+    console.error('Error getting subscription status:', error);
+    return {
+      isSubscribed: false,
+      tier: 'free',
+      expiresAt: null
+    };
+  }
 };
 
 /**
@@ -220,13 +387,15 @@ export const getSubscriptionStatus = () => {
  */
 export const restorePurchases = async () => {
   try {
-    const Superwall = await getSuperwall();
-    if (!Superwall) {
+    const RevenueCat = await getRevenueCat();
+    if (!RevenueCat) {
+      console.warn('RevenueCat not available');
       return false;
     }
 
-    const result = await Superwall.restore();
-    return result.result === 'restored';
+    const result = await RevenueCat.restorePurchases();
+    console.log('Purchases restored successfully', result);
+    return true;
   } catch (error) {
     console.error('Restore purchases error:', error);
     return false;
