@@ -1,0 +1,188 @@
+{
+  "paywall_config": {
+    "identifier": "kiwi_pro_paywall_v1",
+    "name": "Kiwi Pro - Recipe Access",
+    "type": "template_4",
+    "template_name": "Multi-Package with Features",
+    "config": {
+      "images": {
+        "header": null,
+        "background": null
+      },
+      "colors": {
+        "background": "#FFFFFF",
+        "text1": "#1A1A1A",
+        "text2": "#666666",
+        "text3": "#999999",
+        "accent1": "#007AFF",
+        "accent2": "#34C759",
+        "accent3": "#FF3B30"
+      },
+      "blurred_background_image": false,
+      "display_restore_purchases": true,
+      "tos_url": "https://kiwi-aac.netlify.app/terms.html",
+      "privacy_url": "https://kiwi-aac.netlify.app/privacy.html"
+    },
+    "localization": {
+      "en_US": {
+        "title": "Unlock access to all recipes",
+        "subtitle": "",
+        "call_to_action": "Continue in-app",
+        "call_to_action_with_intro_offer": "Start Free Trial",
+        "offer_details": "Or, save 30%",
+        "offer_details_with_intro_offer": "Then {{ product.price_per_period_abbreviated }} after trial",
+        "features": [
+          {
+            "title": "Healthy recipes, specially curated",
+            "content": "Access our full library of nutritious and delicious recipes",
+            "icon_id": "recipes"
+          },
+          {
+            "title": "A welcoming cooking community",
+            "content": "Connect with other cooking enthusiasts and share tips",
+            "icon_id": "community"
+          },
+          {
+            "title": "New recipe recommendations",
+            "content": "Get personalized recommendations based on your preferences",
+            "icon_id": "recommendations"
+          },
+          {
+            "title": "Priority support",
+            "content": "Get help when you need it with priority customer support",
+            "icon_id": "support"
+          }
+        ]
+      }
+    },
+    "packages": [
+      {
+        "package_id": "$rc_annual",
+        "badge_text": "SAVE 30%",
+        "is_default": true
+      },
+      {
+        "package_id": "$rc_monthly",
+        "badge_text": null,
+        "is_default": false
+      }
+    ]
+  },
+  "offering_config": {
+    "identifier": "default",
+    "description": "Default offering for Kiwi Pro",
+    "packages": [
+      {
+        "identifier": "$rc_annual",
+        "platform_product_identifier": "kiwi_annual"
+      },
+      {
+        "identifier": "$rc_monthly",
+        "platform_product_identifier": "kiwi_monthly"
+      }
+    ],
+    "metadata": {
+      "recommended_package": "$rc_annual",
+      "trial_available": false,
+      "discount_percentage": 30
+    }
+  },
+  "entitlement_config": {
+    "identifier": "pro",
+    "display_name": "Kiwi Pro",
+    "products": [
+      "kiwi_monthly",
+      "kiwi_annual"
+    ]
+  },
+  "product_configs": {
+    "kiwi_monthly": {
+      "type": "auto_renewable_subscription",
+      "subscription_period": "P1M",
+      "display_name": "Kiwi Pro Monthly",
+      "description": "Full access to all premium features"
+    },
+    "kiwi_annual": {
+      "type": "auto_renewable_subscription",
+      "subscription_period": "P1Y",
+      "display_name": "Kiwi Pro Annual",
+      "description": "Full access to all premium features - Best Value!"
+    }
+  },
+  "styling": {
+    "colors": {
+      "primary": "#007AFF",
+      "success": "#34C759",
+      "danger": "#FF3B30",
+      "warning": "#FF9500",
+      "background": "#FFFFFF",
+      "card_background": "#F5F5F5",
+      "text_primary": "#1A1A1A",
+      "text_secondary": "#666666",
+      "text_tertiary": "#999999",
+      "border": "#E0E0E0"
+    },
+    "typography": {
+      "title": {
+        "font_family": "System",
+        "font_weight": "bold",
+        "font_size": 28,
+        "line_height": 34
+      },
+      "subtitle": {
+        "font_family": "System",
+        "font_weight": "regular",
+        "font_size": 20,
+        "line_height": 26
+      },
+      "feature_text": {
+        "font_family": "System",
+        "font_weight": "regular",
+        "font_size": 16,
+        "line_height": 22
+      },
+      "button_text": {
+        "font_family": "System",
+        "font_weight": "semibold",
+        "font_size": 18,
+        "line_height": 24
+      },
+      "footer_text": {
+        "font_family": "System",
+        "font_weight": "regular",
+        "font_size": 14,
+        "line_height": 20
+      }
+    },
+    "spacing": {
+      "screen_padding": 20,
+      "section_spacing": 32,
+      "feature_spacing": 16,
+      "package_spacing": 12,
+      "button_spacing": 16
+    },
+    "border_radius": {
+      "cards": 16,
+      "buttons": 12,
+      "badges": 8
+    }
+  },
+  "notes": {
+    "implementation_status": "Programmatic configuration complete",
+    "manual_steps_required": [
+      "Create products in App Store Connect and Google Play Console",
+      "Link store credentials in RevenueCat Dashboard",
+      "Create products in RevenueCat Dashboard",
+      "Create entitlement in RevenueCat Dashboard",
+      "Create offering in RevenueCat Dashboard",
+      "Configure paywall in Paywall Builder using this JSON",
+      "Test on iOS and Android devices"
+    ],
+    "pricing_recommendation": {
+      "monthly": "$4.99",
+      "annual": "$39.99",
+      "savings_percentage": "33%",
+      "discount_text": "Save 30%"
+    }
+  }
+}
