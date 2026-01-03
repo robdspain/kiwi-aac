@@ -39,6 +39,7 @@ const Grid = ({
     scanIndex = -1,
     isLayoutLocked = false,
     isColorCodingEnabled = true,
+    isCategorizationEnabled = true,
     collapsedSections = [],
     showCategoryHeaders = true,
     onToggleSection,

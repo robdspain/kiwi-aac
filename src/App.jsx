@@ -853,32 +853,33 @@ function App() {
       {callActive && <div className="call-overlay" style={{ background: 'rgba(255,255,255,0.95)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1000 }}><button onClick={() => { setCallActive(false); setIsCommunicating(true); }} style={{ background: '#FF3B30', color: 'white', border: 'none', borderRadius: '30px', padding: '40px 80px', fontSize: '2.5rem', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 10px 40px rgba(255, 59, 48, 0.4)', transition: 'transform 0.2s ease' }}>Let&apos;s talk!</button></div>}
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <div id="main-grid" role="main" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-          <Grid 
-            items={itemsToShow} 
-            currentPhase={currentPhase} 
-            gridSize={gridSize} 
-            isTrainingMode={isTrainingMode} 
-            trainingSelection={trainingSelection} 
-            isEditMode={isEditMode} 
-            onItemClick={handleItemClick} 
-            onBack={handleBack} 
-            onDelete={handleDelete} 
-            onEdit={handleEdit} 
-            onAddItem={handleAddItem} 
-            onToggleTraining={handleToggleTraining} 
+          <Grid
+            items={itemsToShow}
+            currentPhase={currentPhase}
+            gridSize={gridSize}
+            isTrainingMode={isTrainingMode}
+            trainingSelection={trainingSelection}
+            isEditMode={isEditMode}
+            onItemClick={handleItemClick}
+            onBack={handleBack}
+            onDelete={handleDelete}
+            onEdit={handleEdit}
+            onAddItem={handleAddItem}
+            onToggleTraining={handleToggleTraining}
             hasBack={currentPath.length > 0}
             trainingPanelVisible={!shuffledItems}
-            folder={currentPath.length > 0 ? currentPath.reduce((acc, i) => acc[i].contents, (rootItems[currentPageIndex]?.items || [])) : null} 
-            scanIndex={scanIndex} 
-            isLayoutLocked={isLayoutLocked} 
+            folder={currentPath.length > 0 ? currentPath.reduce((acc, i) => acc[i].contents, (rootItems[currentPageIndex]?.items || [])) : null}
+            scanIndex={scanIndex}
+            isLayoutLocked={isLayoutLocked}
             isColorCodingEnabled={isColorCodingEnabled}
+            isCategorizationEnabled={isCategorizationEnabled}
             collapsedSections={collapsedSections}
             showCategoryHeaders={showCategoryHeaders}
             pages={rootItems}
             currentPageIndex={currentPageIndex}
             onSetPage={setCurrentPageIndex}
             onToggleSection={(sectionId) => {
-              setCollapsedSections(prev => 
+              setCollapsedSections(prev =>
                 prev.includes(sectionId) ? prev.filter(id => id !== sectionId) : [...prev, sectionId]
               );
             }}
