@@ -341,6 +341,21 @@ function App() {
     return !collapsedSections.includes(category);
   });
 
+  const handleAddNewPage = () => {
+    const newPage = { name: `Page ${rootItems.length + 1}`, items: [] };
+    setRootItems([...rootItems, newPage]);
+    setCurrentPageIndex(rootItems.length);
+  };
+
+  const handleDeletePage = (index) => {
+    if (rootItems.length <= 1) return;
+    if (confirm("Delete this entire page?")) {
+      const newPages = rootItems.filter((_, i) => i !== index);
+      setRootItems(newPages);
+      setCurrentPageIndex(Math.max(0, currentPageIndex - 1));
+    }
+  };
+
   const triggerPaywall = (feature, cb) => { if (cb) cb(); };
 
   useEffect(() => { localStorage.setItem('kiwi-contexts', JSON.stringify(contexts)); }, [contexts]);
@@ -757,20 +772,6 @@ function App() {
   const handleStopTraining = () => { setIsTrainingMode(false); setShuffledItems(null); setTrainingSelection([]); setIsEditMode(false); };
   const handlePickerOpen = (setWord, setIcon) => { setPickerCallback(() => (w, i, isImage) => { setWord(w); setIcon(i, isImage); setPickerOpen(false); }); setPickerOpen(true); };
 
-  const handleAddNewPage = () => {
-    const newPage = { name: `Page ${rootItems.length + 1}`, items: [] };
-    setRootItems([...rootItems, newPage]);
-    setCurrentPageIndex(rootItems.length);
-  };
-
-  const handleDeletePage = (index) => {
-    if (rootItems.length <= 1) return;
-    if (confirm("Delete this entire page?")) {
-      const newPages = rootItems.filter((_, i) => i !== index);
-      setRootItems(newPages);
-      setCurrentPageIndex(Math.max(0, currentPageIndex - 1));
-    }
-  };
 
   const handleDragEnd = (event) => {
     if (isLayoutLocked) return;
