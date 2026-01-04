@@ -1,8 +1,13 @@
 
-
 import { motion, AnimatePresence } from 'framer-motion';
 
-const SentenceStrip = ({ stripItems = [], onClear, onPlay, onDeleteItem }) => {
+const SentenceStrip = ({
+    stripItems = [],
+    onClear,
+    onPlay,
+    onDeleteItem,
+    isGoalComplete = false  // New prop to indicate sentence meets level criteria
+}) => {
     return (
         <div id="strip-container">
             <div id="sentence-strip">
@@ -66,14 +71,27 @@ const SentenceStrip = ({ stripItems = [], onClear, onPlay, onDeleteItem }) => {
                 </div>
                 
                 <div className="strip-actions">
-                    <button 
-                        className="strip-action-btn speak-btn" 
+                    <motion.button
+                        className={`strip-action-btn speak-btn ${isGoalComplete ? 'goal-complete' : ''}`}
                         onClick={onPlay}
                         disabled={stripItems.length === 0}
                         aria-label="Speak sentence"
+                        animate={isGoalComplete ? {
+                            scale: [1, 1.1, 1],
+                            boxShadow: [
+                                '0 0 0 0 rgba(52, 199, 89, 0)',
+                                '0 0 0 8px rgba(52, 199, 89, 0.4)',
+                                '0 0 0 0 rgba(52, 199, 89, 0)'
+                            ]
+                        } : {}}
+                        transition={{
+                            duration: 1.5,
+                            repeat: Infinity,
+                            repeatDelay: 0.5
+                        }}
                     >
                         🗣️
-                    </button>
+                    </motion.button>
                     <button 
                         className="strip-action-btn clear-btn" 
                         onClick={onClear}

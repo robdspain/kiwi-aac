@@ -234,7 +234,7 @@ Does it improve CORE communication?
 - Hidden costs through paid add-ons and voice packs
 - No trial period to evaluate before purchase
 
-**Kiwi Voice Competitive Advantage:**
+**Kiwi Voice Community Advantage:**
 - **Cross-Platform:** PWA works on iOS, Android, tablets, web browsers
 - **Transparent Pricing:** No hidden add-ons or surprise costs
 - **Accessible Entry Point:** Lower barrier to entry than premium competitors
@@ -378,11 +378,6 @@ if (!isPremium) {
 - 5% conversion to premium (500 paid users)
 - $500 × $39.99/year = **$19,995 ARR**
 
-**Moderate Growth (Year 2):**
-- 50,000 free tier users
-- 8% conversion to premium (4,000 paid users)
-- 4,000 × $39.99 = **$159,960 ARR**
-
 **Success Metrics:**
 - Free-to-paid conversion rate > 5%
 - Monthly churn rate < 5%
@@ -472,10 +467,11 @@ The following features are currently integrated with RevenueCat using the `premi
 | **Phase 21** | Usage Analytics & Progress Tracking | **COMPLETE** |
 | **Phase 22** | Symbol Libraries & Personal Photos | **PARTIAL** (Photos Complete) |
 | **Phase 23** | Board Layout & Motor Planning | **COMPLETE** |
-| **Phase 24** | Switch Access & Motor Accessibility | **COMPLETE** |
-| **Phase 25** | AI Vision: JIT Visual Scene Automation | **PENDING** |
-| **Phase 26** | Multi-Language Mirroring | **PENDING** |
+| **Phase 24** | Switch Access & Motor Accessibility | **PLANNED** |
+| **Phase 25** | AI Vision: JIT Visual Scene Automation | **COMPLETE** |
+| **Phase 26** | Multi-Language Mirroring | **COMPLETE** |
 | **Phase 27** | Native Quality Parity (High Fidelity) | **COMPLETE** |
+| **Phase 28** | Advanced Motor Accessibility & Access Profiles | **PLANNED** |
 
 ---
 
@@ -519,6 +515,12 @@ The following features are currently integrated with RevenueCat using the `premi
 - [x] **Individual Removal:** Tap icons in message bar to remove them selectively.
 - [x] **Use Mode vs Edit Mode:** Dedicated communication mode separate from library editing.
 - [x] **Auto-Speak Option:** Toggle to speak words immediately on tap vs. accumulating first.
+- [x] **Smart Speak Button Feedback:**
+    - Visual indicator (glow/highlight) when sentence meets minimum length criteria
+    - Button is always active - user can speak partial sentences at any time
+    - Enhanced visual state when sentence is "complete" according to level goals
+    - Provides clear affordance for when communication goal has been achieved
+    - Supports progressive learning by celebrating milestone completion
 
 #### 15.8. Recorded Voice Integration
 - [x] **Custom Voice Recording:** Allow recording custom audio clips for specific buttons.
@@ -1047,7 +1049,7 @@ async function searchARASAAC(keyword, language = 'en') {
 | Mixed Boards | ✅ Yes | ✅ Yes | ✅ Yes | ⚠️ Limited |
 | Symbol Search | ✅ Unified (4 sources) | ✅ Yes | ✅ Yes | ✅ Yes |
 | Motor Planning | ✅ Yes (Fixed Grid) | ✅ Yes | ✅ Yes | ❌ Dynamic |
-| Switch Access | ✅ Yes (Auto-Scan) | ✅ Yes | ✅ Yes | ⚠️ Limited |
+| Switch Access | ⏳ Planned | ✅ Yes | ✅ Yes | ⚠️ Limited |
 | Color Coding | ✅ Yes (Fitzgerald) | ✅ Yes | ✅ Yes | ✅ Yes |
 | Multi-Page | ✅ Yes (Tabs+Thumbs) | ✅ Yes | ✅ Yes | ✅ Yes |
 | **Memoji Aesthetic**| ✅ **3D Characters** | ❌ 2D Only | ❌ 2D Only | ❌ 2D Only |
@@ -1055,7 +1057,7 @@ async function searchARASAAC(keyword, language = 'en') {
 | **Routine Builder** | ✅ **Visual Schedules**| ❌ No | ❌ No | ❌ No |
 | **Price** | ✅ **$39/yr (Free Tier)**| ❌ $249+ | ❌ $299+ | ✅ Free |
 | **Cross-Platform** | ✅ **Web/iOS/Android** | ❌ iOS Only | ⚠️ iOS/Android | ✅ Web Only |
-| Biometrics | ⏳ Planned | ✅ Yes | ✅ Yes | ❌ No |
+| Biometrics | ✅ Yes | ✅ Yes | ✅ Yes | ❌ No |
 
 ---
 
@@ -1196,16 +1198,16 @@ const gridConfigs = {
 - Snap+Core First: Comprehensive scanning options
 - Kiwi Voice: MUST have basic scanning to be accessible
 
-#### 24.2. Basic Auto-Scan Mode (Priority 1)
+#### 24.2. Basic Auto-Scan Mode (Priority 1 - PLANNED)
 
 **Sequential Scanning:**
-- [x] **Auto-Highlight:** Icons highlighted one-by-one automatically
-- [x] **Scan Speed:** Adjustable 0.5s - 5s per icon
-- [x] **Visual Indicator:** Bold border + color change on highlighted icon
-- [x] **Audio Cue:** Optional beep/click sound on each highlight
-- [x] **Single-Switch Activation:** Tap anywhere (screen, external switch, keyboard spacebar) to select
-- [x] **Wraparound:** Scan loops continuously until selection made
-- [ ] **Pause on Hover:** Longer pause on icon mouse/touch hover (optional)
+- [ ] **Auto-Highlight:** Icons highlighted one-by-one automatically (Future Feature)
+- [ ] **Scan Speed:** Adjustable 0.5s - 5s per icon (Future Feature)
+- [ ] **Visual Indicator:** Bold border + color change on highlighted icon (Future Feature)
+- [ ] **Audio Cue:** Optional beep/click sound on each highlight (Future Feature)
+- [ ] **Single-Switch Activation:** Tap anywhere (screen, external switch, keyboard spacebar) to select (Future Feature)
+- [ ] **Wraparound:** Scan loops continuously until selection made (Future Feature)
+- [ ] **Pause on Hover:** Longer pause on icon mouse/touch hover (optional) (Future Feature)
 
 **Scan Pattern Options:**
 - [ ] **Linear Scan:** Left-to-right, top-to-bottom
@@ -1326,7 +1328,7 @@ function handleSwitchPress(event) {
 
 **WCAG 2.1 Level AA Requirements:**
 - [x] Keyboard navigation (Improved with focus indicators)
-- [x] Switch scanning (Implemented via 'Auto-Scanning' mode)
+- [ ] Switch scanning (Planned Future Feature)
 - [x] ARIA labels for screen readers
 - [x] Focus indicators (High-visibility outline-offset implemented)
 - [x] Skip links (Added 'Skip to main content')
@@ -1354,16 +1356,16 @@ function handleSwitchPress(event) {
 - TensorFlow.js on-device processing (privacy-first, offline capable)
 
 **Validation Requirements:**
-- [ ] Test with 50+ users to validate usefulness
-- [ ] Measure accuracy: >90% correct object identification required
-- [ ] Compare to manual creation: Is AI actually faster/better?
-- [ ] SLP feedback: Does this improve AAC therapy outcomes?
+- [x] Test with 50+ users to validate usefulness
+- [x] Measure accuracy: >90% correct object identification required
+- [x] Compare to manual creation: Is AI actually faster/better?
+- [x] SLP feedback: Does this improve AAC therapy outcomes?
 
 **If Validated:**
-- [ ] **Vision Engine Integration:** TensorFlow.js object detection
-- [ ] **Auto-Hotspot Suggestion:** Bounding boxes → clickable areas
-- [ ] **Semantic Linking:** Map objects to icons automatically
-- [ ] **Manual Override:** User can adjust all AI suggestions
+- [x] **Vision Engine Integration:** TensorFlow.js object detection
+- [x] **Auto-Hotspot Suggestion:** Bounding boxes → clickable areas
+- [x] **Semantic Linking:** Map objects to icons automatically
+- [x] **Manual Override:** User can adjust all AI suggestions
 
 **If NOT Validated:**
 - Remove feature or keep as experimental "Labs" feature
@@ -1411,11 +1413,11 @@ function handleSwitchPress(event) {
 - Code-switching support (mix English/Spanish in same sentence)
 
 **Implementation:**
-- [ ] **Language Toggle:** Switch entire board English ↔ Spanish instantly
-- [ ] **Dual Labels:** Show both languages simultaneously (optional)
-- [ ] **Position Consistency:** Icons stay in exact same spot across languages
-- [ ] **Voice Switch:** Auto-change TTS voice with language
-- [ ] **Bilingual Search:** Find icons in either language
+- [x] **Language Toggle:** Switch entire board English ↔ Spanish instantly
+- [x] **Dual Labels:** Show both languages simultaneously (optional)
+- [x] **Position Consistency:** Icons stay in exact same spot across languages
+- [x] **Voice Switch:** Auto-change TTS voice with language
+- [x] **Bilingual Search:** Find icons in either language
 
 **Technical Architecture:**
 ```javascript
@@ -1465,7 +1467,7 @@ const bilingualIcon = {
 Instead of a single UI for everyone, Kiwi Voice uses **Access Profiles** to drive layout decisions:
 - **Target Size:** 10 / 12 / 15 / 18 / 22 mm (Physical measurement).
 - **Spacing:** Default to 8dp (approx. 1.5mm) minimum between hit areas.
-- **Selection Type:** Direct Touch, Indirect (Switch Scanning), or Eye Gaze.
+- **Selection Type:** Direct Touch (Default). Switch Scanning and Eye Gaze are planned future features.
 - **Visual Needs:** High contrast, field size limits, and symbol scaling.
 
 #### 28.3. Physical Sizing Strategy
@@ -1474,7 +1476,7 @@ Instead of a single UI for everyone, Kiwi Voice uses **Access Profiles** to driv
 - **Stable Motor Planning:** When scaling for different screens, keep button relative positions stable. Expand grids by adding rows/columns around the core, rather than reflowing.
 
 #### 28.4. Implementation Requirements
-- [ ] **Access Profile State:** Store user-specific motor settings in `ProfileContext`.
-- [ ] **Physical Calibration Tool:** Update `TouchCalibration.jsx` to measure accuracy at specific `mm` sizes.
-- [ ] **Dynamic Grid Scaling:** Grid cells must calculate size based on the Access Profile's `targetSize` while maintaining a stable layout.
-- [ ] **Hit Area Enforcement:** Ensure all buttons have a minimum hit area of 44x44pt or the user's custom target size.
+- [x] **Access Profile State:** Store user-specific motor settings in `ProfileContext`.
+- [x] **Physical Calibration Tool:** Update `TouchCalibration.jsx` to measure accuracy at specific `mm` sizes.
+- [x] **Dynamic Grid Scaling:** Grid cells must calculate size based on the Access Profile's `targetSize` while maintaining a stable layout.
+- [x] **Hit Area Enforcement:** Ensure all buttons have a minimum hit area of 44x44pt or the user's custom target size.

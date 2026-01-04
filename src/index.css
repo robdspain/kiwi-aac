@@ -1414,11 +1414,28 @@ body {
 
 
 .speak-btn {
-
   background: var(--primary);
-
   color: white;
+  transition: all 0.3s ease;
+}
 
+/* Goal complete state - when sentence meets level criteria */
+.speak-btn.goal-complete {
+  background: #34C759; /* iOS green success color */
+  box-shadow: 0 0 0 4px rgba(52, 199, 89, 0.2);
+}
+
+.speak-btn.goal-complete:not(:disabled) {
+  animation: pulseGlow 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(52, 199, 89, 0);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(52, 199, 89, 0.4);
+  }
 }
 
 

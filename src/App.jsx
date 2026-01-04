@@ -293,7 +293,8 @@ function App() {
 
   const { currentProfile, updateProfile, pronunciations } = useProfile();
 
-  // Sync isScanning with Access Profile Selection Type
+  /* 
+  // Sync isScanning with Access Profile Selection Type (Disabled until Switch/Eye Gaze returns)
   useEffect(() => {
     if (currentProfile?.accessProfile?.selectionType === 'scan') {
       if (!isScanning) setIsScanning(true);
@@ -303,6 +304,7 @@ function App() {
       }
     }
   }, [currentProfile?.accessProfile?.selectionType]);
+  */
 
   const currentPageItems = rootItems[currentPageIndex]?.items || [];
   let itemsToShow = currentPath.length === 0 
@@ -928,15 +930,38 @@ function App() {
     <div id="main-area">
       {showLevelIntro && <Suspense fallback={null}><LevelIntro level={currentLevel} onComplete={() => { localStorage.setItem(`kiwi-intro-seen-level-${currentLevel}`, 'true'); setShowLevelIntro(false); if (currentStage <= 2 && !phase1TargetId) setShowPhase1Selector(true); }} onChangeLevel={() => { setShowLevelIntro(false); setIsEditMode(true); }}/></Suspense>}
       {showStrip && (gridSize !== 'super-big' || localStorage.getItem('kiwi-force-strip') === 'true') && (
-        <SentenceStrip 
-          stripItems={stripItems} 
-          onClear={() => setStripItems([])} 
-          onPlay={() => { 
-            const sentence = stripItems.map(i => i.word).join(" "); 
-            trackSentence(sentence); 
-            speakSentence(stripItems); 
+        <SentenceStrip
+          stripItems={stripItems}
+          onClear={() => setStripItems([])}
+          onPlay={() => {
+            const sentence = stripItems.map(i => i.word).join(" ");
+            trackSentence(sentence);
+            speakSentence(stripItems);
           }}
           onDeleteItem={handleDeleteItemFromStrip}
+          isGoalComplete={(() => {
+            // Check if sentence meets level-specific goal criteria
+            const levelDef = getLevel(currentLevel);
+            if (!levelDef || stripItems.length === 0) return false;
+
+            // Level 4.1: Requires "I want" + item (2 words minimum)
+            if (currentLevel === 4.1) {
+              return stripItems.length >= 2 && stripItems[0]?.word === "I want";
+            }
+
+            // Level 4.2: Requires attribute (3+ words)
+            if (currentLevel === 4.2) {
+              return stripItems.length >= 3;
+            }
+
+            // Level 4.3+: Requires 4+ words
+            if (currentLevel >= 4.3) {
+              return stripItems.length >= 4;
+            }
+
+            // For other levels, any items count as goal met
+            return stripItems.length > 0;
+          })()}
         />
       )}
       
