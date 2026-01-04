@@ -6,6 +6,8 @@ import { motion } from 'framer-motion';
 import { AAC_LEXICON } from '../data/aacLexicon';
 import { getMedia } from '../utils/db';
 import { triggerHaptic } from '../utils/haptics';
+import { useProfile } from '../context/ProfileContext';
+import { MIRROR_DICTIONARY } from '../utils/translate';
 
 // Simple global cache for media to avoid repeated DB reads
 const mediaCache = new Map();
@@ -22,12 +24,24 @@ const AppItem = ({
   isLocked = false,
   isRevealed = true,
   isColorCodingEnabled = true,
+  targetPx = null,
   style: customStyle = {},
   onClick,
   onDelete,
   onEdit,
   onToggleTraining
 }) => {
+  const { currentProfile } = useProfile();
+  const lang = currentProfile?.accessProfile?.language || 'en';
+  
+  // Translation logic
+  let displayLabel = item.word;
+  if (lang !== 'en') {
+    displayLabel = item.labels?.[lang] || 
+                   MIRROR_DICTIONARY[item.word.toLowerCase()]?.[lang] || 
+                   item.word;
+  }
+
   const pointerStartPos = useRef(null);
   const [isCancelling, setIsCancelling] = useState(false);
   const [resolvedIcon, setResolvedIcon] = useState(item.icon);
@@ -84,6 +98,7 @@ const AppItem = ({
     transition,
     opacity: isDragging ? 0.5 : 1,
     zIndex: isDragging ? 1000 : 1,
+    width: targetPx ? `${targetPx}px` : undefined,
     ...customStyle
   };
 
@@ -144,7 +159,7 @@ const AppItem = ({
     else if (item.name?.toLowerCase() === 'no' || item.name?.toLowerCase() === 'stop') hapticStyle = 'heavy';
 
     triggerHaptic(hapticStyle);
-    onClick({ ...item, customAudio: resolvedAudio }, index);
+    onClick({ ...item, customAudio: resolvedAudio, displayLabel }, index);
   };
 
   const handleDelete = (e) => {
@@ -169,6 +184,7 @@ const AppItem = ({
   let iconClass = 'app-icon';
   if (isBack) iconClass += ' is-back';
   if (item.type === 'folder') iconClass += ' is-folder';
+  if (item.type === 'visual_scene') iconClass += ' is-scene';
 
   // Fitzgerald Key Logic
   const lexiconEntry = item.word ? AAC_LEXICON[item.word.toLowerCase()] : null;
@@ -190,7 +206,10 @@ const AppItem = ({
 
   const iconStyle = {
     background: getBackgroundColor(),
-    color: getTextColor()
+    color: getTextColor(),
+    width: targetPx ? `${targetPx}px` : undefined,
+    height: targetPx ? `${targetPx}px` : undefined,
+    fontSize: targetPx ? `${targetPx * 0.5}px` : undefined
   };
 
   return (
@@ -204,12 +223,23 @@ const AppItem = ({
       whileTap={{ scale: 0.95 }}
       role="button"
       tabIndex={0}
-      aria-label={isBack ? 'Go back' : `${item.word}${item.type === 'folder' ? ', folder' : ''}`}
+      aria-label={isBack ? 'Go back' : `${displayLabel}${item.type === 'folder' ? ', folder' : ''}`}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleAction(); }}
       {...attributes}
       {...listeners}
     >
       <div className={iconClass} style={iconStyle}>
+        {item.type === 'visual_scene' && (
+          <div style={{
+            position: 'absolute', top: '0.25rem', right: '0.25rem',
+            background: 'var(--primary)', color: 'white',
+            width: '1.5rem', height: '1.5rem', borderRadius: '50%',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '0.8rem', zIndex: 5, boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+          }}>
+            🖼️
+          </div>
+        )}
         {isCancelling && (
           <div style={{
             position: 'absolute',
@@ -256,7 +286,7 @@ const AppItem = ({
           </div>
         ) : (
           typeof resolvedIcon === 'string' && (resolvedIcon.startsWith('/') || resolvedIcon.startsWith('data:') || resolvedIcon.includes('.')) ? (
-            <img src={resolvedIcon} alt={item.word} />
+            <img src={resolvedIcon} alt={displayLabel} />
           ) : (
             resolvedIcon
           )
@@ -304,12 +334,12 @@ const AppItem = ({
 
       {isEditMode && !isBack && !isTrainingMode && !isLocked && (
         <>
-          <div className="del-badge" onClick={handleDelete} role="button" aria-label={`Delete ${item.word}`} tabIndex={0}></div>
-          <div className="edit-badge" onClick={handleEdit} role="button" aria-label={`Edit ${item.word}`} tabIndex={0}>✎</div>
+          <div className="del-badge" onClick={handleDelete} role="button" aria-label={`Delete ${displayLabel}`} tabIndex={0}></div>
+          <div className="edit-badge" onClick={handleEdit} role="button" aria-label={`Edit ${displayLabel}`} tabIndex={0}>✎</div>
         </>
       )}
 
-      <div className="app-label">{item.word}</div>
+      <div className="app-label">{displayLabel}</div>
     </motion.div>
   );
 };

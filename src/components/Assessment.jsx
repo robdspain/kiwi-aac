@@ -149,7 +149,7 @@ const Assessment = ({ onComplete }) => {
             <div style={{
                 position: 'fixed',
                 inset: 0,
-                background: 'linear-gradient(135deg, #FFF5E1, #FFE4B5)',
+                background: 'var(--bg-color)',
                 display: 'flex',
                 flexDirection: 'column',
                 padding: '1.5rem',
@@ -168,7 +168,7 @@ const Assessment = ({ onComplete }) => {
                 <h1 style={{
                     fontSize: '1.5rem',
                     fontWeight: 800,
-                    color: '#2D3436',
+                    color: 'var(--text-primary)',
                     textAlign: 'center',
                     marginBottom: '0.5rem'
                 }}>
@@ -176,7 +176,7 @@ const Assessment = ({ onComplete }) => {
                 </h1>
 
                 <p style={{
-                    color: '#636E72',
+                    color: 'var(--text-secondary)',
                     fontSize: '0.95rem',
                     textAlign: 'center',
                     marginBottom: '1.5rem',
@@ -199,11 +199,11 @@ const Assessment = ({ onComplete }) => {
                                 onClick={() => handleFavoriteToggle(fav)}
                                 style={{
                                     background: isSelected
-                                        ? 'linear-gradient(135deg, #FFD700, #FFA500)'
-                                        : 'white',
+                                        ? 'var(--fitz-noun)'
+                                        : 'var(--card-bg)',
                                     border: isSelected
-                                        ? '0.1875rem solid #FF8C00'
-                                        : '0.125rem solid #E5E5EA',
+                                        ? '0.1875rem solid var(--primary-dark)'
+                                        : '0.125rem solid var(--gray-border)',
                                     borderRadius: '1rem',
                                     padding: '1rem 0.5rem',
                                     cursor: 'pointer',
@@ -214,7 +214,7 @@ const Assessment = ({ onComplete }) => {
                                     transition: 'all 0.2s ease',
                                     transform: isSelected ? 'scale(1.05)' : 'scale(1)',
                                     boxShadow: isSelected
-                                        ? '0 0.5rem 1.25rem rgba(255, 165, 0, 0.4)'
+                                        ? '0 0.5rem 1.25rem rgba(255, 235, 59, 0.4)'
                                         : '0 0.125rem 0.5rem rgba(0, 0, 0, 0.1)',
                                     minHeight: '4.5rem'
                                 }}
@@ -223,7 +223,7 @@ const Assessment = ({ onComplete }) => {
                                 <span style={{
                                     fontSize: '0.85rem',
                                     fontWeight: isSelected ? '700' : '600',
-                                    color: isSelected ? 'white' : '#2D3436'
+                                    color: 'var(--text-primary)'
                                 }}>
                                     {fav.word}
                                 </span>
@@ -244,7 +244,7 @@ const Assessment = ({ onComplete }) => {
 
                 <div style={{
                     textAlign: 'center',
-                    color: '#636E72',
+                    color: 'var(--text-secondary)',
                     fontSize: '0.9rem',
                     marginBottom: '1rem'
                 }}>
@@ -261,22 +261,11 @@ const Assessment = ({ onComplete }) => {
                         setShowLiteracyCheck(true); // Show literacy check next
                     }}
                     disabled={selectedFavorites.length < 1}
+                    className="primary-button"
                     style={{
-                        background: selectedFavorites.length >= 1
-                            ? 'linear-gradient(135deg, #4ECDC4, #3DB8B0)'
-                            : '#D1D5DB',
-                        color: 'var(--primary-text)',
-                        border: 'none',
-                        padding: '1.125rem',
-                        borderRadius: '1rem',
-                        fontSize: '1.1rem',
-                        fontWeight: 700,
-                        cursor: selectedFavorites.length >= 1 ? 'pointer' : 'not-allowed',
-                        boxShadow: selectedFavorites.length >= 1
-                            ? '0 0.375rem 1.25rem rgba(78, 205, 196, 0.3)'
-                            : 'none',
                         marginBottom: '1rem',
-                        minHeight: '3.5rem'
+                        minHeight: '3.5rem',
+                        opacity: selectedFavorites.length < 1 ? 0.5 : 1
                     }}
                 >
                     Continue →
@@ -291,7 +280,7 @@ const Assessment = ({ onComplete }) => {
                     style={{
                         background: 'transparent',
                         border: 'none',
-                        color: '#636E72',
+                        color: 'var(--text-muted)',
                         fontSize: '0.85rem',
                         cursor: 'pointer',
                         textDecoration: 'underline',
@@ -310,7 +299,7 @@ const Assessment = ({ onComplete }) => {
             <div style={{
                 position: 'fixed',
                 inset: 0,
-                background: 'linear-gradient(135deg, #E3F2FD, #BBDEFB)',
+                background: 'var(--bg-color)',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -328,7 +317,7 @@ const Assessment = ({ onComplete }) => {
                 <h1 style={{
                     fontSize: '1.5rem',
                     fontWeight: 800,
-                    color: '#2D3436',
+                    color: 'var(--text-primary)',
                     textAlign: 'center',
                     marginBottom: '0.75rem'
                 }}>
@@ -336,7 +325,7 @@ const Assessment = ({ onComplete }) => {
                 </h1>
 
                 <p style={{
-                    color: '#636E72',
+                    color: 'var(--text-secondary)',
                     fontSize: '0.95rem',
                     textAlign: 'center',
                     marginBottom: '2.5rem',
@@ -360,16 +349,8 @@ const Assessment = ({ onComplete }) => {
                             setShowLiteracyCheck(false);
                             setShowResult(true);
                         }}
+                        className="primary-button"
                         style={{
-                            background: 'linear-gradient(135deg, #4ECDC4, #3DB8B0)',
-                            color: 'var(--primary-text)',
-                            border: 'none',
-                            padding: '1.25rem',
-                            borderRadius: '1rem',
-                            fontSize: '1.1rem',
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                            boxShadow: '0 0.375rem 1.25rem rgba(78, 205, 196, 0.3)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -391,9 +372,9 @@ const Assessment = ({ onComplete }) => {
                             setShowResult(true);
                         }}
                         style={{
-                            background: 'white',
-                            color: '#2D3436',
-                            border: '0.125rem solid #E5E5EA',
+                            background: 'var(--card-bg)',
+                            color: 'var(--text-primary)',
+                            border: '0.125rem solid var(--gray-border)',
                             padding: '1.25rem',
                             borderRadius: '1rem',
                             fontSize: '1.1rem',
@@ -420,9 +401,9 @@ const Assessment = ({ onComplete }) => {
                             setShowResult(true);
                         }}
                         style={{
-                            background: '#FFF3CD',
-                            color: '#856404',
-                            border: 'none',
+                            background: 'var(--gray-light)',
+                            color: 'var(--text-primary)',
+                            border: '1px solid var(--gray-border)',
                             padding: '1rem',
                             borderRadius: '1rem',
                             fontSize: '0.95rem',
@@ -449,7 +430,7 @@ const Assessment = ({ onComplete }) => {
                     style={{
                         background: 'transparent',
                         border: 'none',
-                        color: '#636E72',
+                        color: 'var(--text-muted)',
                         fontSize: '0.85rem',
                         cursor: 'pointer',
                         textDecoration: 'underline',
@@ -469,7 +450,7 @@ const Assessment = ({ onComplete }) => {
             <div style={{
                 position: 'fixed',
                 inset: 0,
-                background: 'linear-gradient(135deg, #FDF8F3, #F5F0EB)',
+                background: 'var(--bg-color)',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -505,7 +486,7 @@ const Assessment = ({ onComplete }) => {
                 <h1 style={{
                     fontSize: '1.5rem',
                     fontWeight: 800,
-                    color: '#2D3436',
+                    color: 'var(--text-primary)',
                     textAlign: 'center',
                     marginBottom: '0.75rem'
                 }}>
@@ -513,13 +494,13 @@ const Assessment = ({ onComplete }) => {
                 </h1>
 
                 <div style={{
-                    background: 'linear-gradient(135deg, #4ECDC4, #3DB8B0)',
-                    color: 'var(--primary-text)',
+                    background: 'var(--btn-primary-bg)',
+                    color: 'var(--btn-primary-text)',
                     padding: '1.25rem 1.75rem',
                     borderRadius: '1.25rem',
                     textAlign: 'center',
                     marginBottom: '1.25rem',
-                    boxShadow: '0 0.5rem 1.5rem rgba(78, 205, 196, 0.3)',
+                    boxShadow: '0 0.5rem 1.5rem rgba(0,0,0,0.1)',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center'
@@ -527,7 +508,7 @@ const Assessment = ({ onComplete }) => {
                     <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.5rem' }}>
                         {phaseInfo.name}
                     </div>
-                    <div style={{ fontSize: '0.9rem', opacity: 0.9, marginBottom: '0.75rem' }}>
+                    <div style={{ fontSize: '0.9rem', color: 'var(--primary-text)', marginBottom: '0.75rem' }}>
                         {phaseInfo.description}
                     </div>
 
@@ -537,7 +518,7 @@ const Assessment = ({ onComplete }) => {
                             style={{
                                 background: 'rgba(255,255,255,0.2)',
                                 border: '0.0625rem solid rgba(255,255,255,0.4)',
-                                color: 'white',
+                                color: 'var(--primary-text)',
                                 padding: '0.5rem 1rem',
                                 borderRadius: '1.25rem',
                                 fontSize: '0.85rem',
@@ -556,16 +537,9 @@ const Assessment = ({ onComplete }) => {
 
                 <button
                     onClick={() => handleContinue(result)}
+                    className="primary-button"
                     style={{
-                        background: 'linear-gradient(135deg, #4ECDC4, #3DB8B0)',
-                        color: 'var(--primary-text)',
-                        border: 'none',
                         padding: '1.125rem 3rem',
-                        borderRadius: '1rem',
-                        fontSize: '1.1rem',
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                        boxShadow: '0 0.375rem 1.25rem rgba(78, 205, 196, 0.3)',
                         marginBottom: '1rem',
                         minHeight: '3.5rem'
                     }}
@@ -582,7 +556,7 @@ const Assessment = ({ onComplete }) => {
                     style={{
                         background: 'transparent',
                         border: 'none',
-                        color: '#636E72',
+                        color: 'var(--text-muted)',
                         fontSize: '0.9rem',
                         cursor: 'pointer',
                         textDecoration: 'underline',
@@ -599,7 +573,7 @@ const Assessment = ({ onComplete }) => {
         <div style={{
             position: 'fixed',
             inset: 0,
-            background: 'linear-gradient(135deg, #FDF8F3, #F5F0EB)',
+            background: 'var(--bg-color)',
             display: 'flex',
             flexDirection: 'column',
             padding: '1.5rem',
@@ -617,7 +591,7 @@ const Assessment = ({ onComplete }) => {
                         border: 'none',
                         fontSize: '1.5rem',
                         cursor: 'pointer',
-                        color: '#636E72',
+                        color: 'var(--text-muted)',
                         padding: '0.625rem',
                         zIndex: 10,
                         minWidth: '2.75rem',
@@ -644,9 +618,8 @@ const Assessment = ({ onComplete }) => {
                             height: '0.625rem',
                             borderRadius: '0.625rem',
                             background: i <= currentQuestion
-                                ? 'linear-gradient(135deg, #4ECDC4, #3DB8B0)'
-                                : '#D1D5DB',
-                            color: 'var(--primary-text)',
+                                ? 'var(--primary-dark)'
+                                : 'var(--gray-border)',
                             transition: 'all 0.3s ease'
                         }}
                     />
@@ -656,7 +629,7 @@ const Assessment = ({ onComplete }) => {
             {/* Question number */}
             <div style={{
                 textAlign: 'center',
-                color: '#636E72',
+                color: 'var(--text-muted)',
                 fontSize: '0.85rem',
                 marginBottom: '0.5rem'
             }}>
@@ -676,7 +649,7 @@ const Assessment = ({ onComplete }) => {
             <h2 style={{
                 fontSize: '1.4rem',
                 fontWeight: 700,
-                color: '#2D3436',
+                color: 'var(--text-primary)',
                 textAlign: 'center',
                 marginBottom: '0.75rem',
                 lineHeight: 1.3,
@@ -687,7 +660,7 @@ const Assessment = ({ onComplete }) => {
 
             {/* Hint */}
             <p style={{
-                color: '#636E72',
+                color: 'var(--text-secondary)',
                 fontSize: '0.9rem',
                 textAlign: 'center',
                 marginBottom: '2.5rem',
@@ -706,20 +679,8 @@ const Assessment = ({ onComplete }) => {
             }}>
                 <button
                     onClick={() => handleAnswer(true)}
+                    className="primary-button"
                     style={{
-                        background: 'linear-gradient(135deg, #4ECDC4, #3DB8B0)',
-                        color: 'var(--primary-text)',
-                        border: 'none',
-                        padding: '1.125rem',
-                        borderRadius: '1rem',
-                        fontSize: '1.1rem',
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                        boxShadow: '0 0.375rem 1.25rem rgba(78, 205, 196, 0.3)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '0.625rem',
                         minHeight: '3.5rem'
                     }}
                 >
@@ -729,9 +690,9 @@ const Assessment = ({ onComplete }) => {
                 <button
                     onClick={() => handleAnswer(false)}
                     style={{
-                        background: 'white',
-                        color: '#2D3436',
-                        border: '0.125rem solid #E5E5EA',
+                        background: 'var(--card-bg)',
+                        color: 'var(--text-primary)',
+                        border: '0.125rem solid var(--gray-border)',
                         padding: '1.125rem',
                         borderRadius: '1rem',
                         fontSize: '1.1rem',
@@ -750,9 +711,9 @@ const Assessment = ({ onComplete }) => {
                 <button
                     onClick={() => setShowNotSureOptions(true)}
                     style={{
-                        background: '#FFF3CD',
-                        color: '#856404',
-                        border: 'none',
+                        background: 'var(--gray-light)',
+                        color: 'var(--text-primary)',
+                        border: '1px solid var(--gray-border)',
                         padding: '0.875rem',
                         borderRadius: '1rem',
                         fontSize: '0.95rem',
@@ -782,7 +743,7 @@ const Assessment = ({ onComplete }) => {
                     padding: '1.25rem'
                 }}>
                     <div style={{
-                        background: 'white',
+                        background: 'var(--card-bg)',
                         borderRadius: '1.5rem',
                         padding: '1.5rem',
                         maxWidth: '21.25rem',
@@ -791,10 +752,10 @@ const Assessment = ({ onComplete }) => {
                         flexDirection: 'column',
                         gap: '1rem'
                     }}>
-                        <h3 style={{ margin: 0, fontSize: '1.2rem', textAlign: 'center', color: '#2D3436' }}>
+                        <h3 style={{ margin: 0, fontSize: '1.2rem', textAlign: 'center', color: 'var(--text-primary)' }}>
                             No problem! 👍
                         </h3>
-                        <p style={{ margin: 0, fontSize: '0.9rem', textAlign: 'center', color: '#636E72' }}>
+                        <p style={{ margin: 0, fontSize: '0.9rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
                             You can test this skill together, or start at a beginner level.
                         </p>
 
@@ -804,24 +765,12 @@ const Assessment = ({ onComplete }) => {
                                 // Start at Level 1 (beginner) and let them discover naturally
                                 onComplete(1);
                             }}
+                            className="primary-button"
                             style={{
-                                background: 'linear-gradient(135deg, #4ECDC4, #3DB8B0)',
-                                color: 'var(--primary-text)',
-                                border: 'none',
-                                padding: '1rem',
-                                borderRadius: '0.875rem',
-                                fontSize: '1rem',
-                                fontWeight: 700,
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '0.5rem',
-                                minHeight: '3rem'
+                                minHeight: '3.5rem'
                             }}
                         >
                             🚀 Start at Level 1
-                            <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>(Recommended)</span>
                         </button>
 
                         <button
@@ -835,9 +784,9 @@ const Assessment = ({ onComplete }) => {
                                 }
                             }}
                             style={{
-                                background: '#F5F5F7',
-                                color: '#2D3436',
-                                border: 'none',
+                                background: 'var(--gray-light)',
+                                color: 'var(--text-primary)',
+                                border: '1px solid var(--gray-border)',
                                 padding: '0.875rem',
                                 borderRadius: '0.875rem',
                                 fontSize: '0.95rem',
@@ -854,7 +803,7 @@ const Assessment = ({ onComplete }) => {
                             style={{
                                 background: 'transparent',
                                 border: 'none',
-                                color: '#636E72',
+                                color: 'var(--text-muted)',
                                 fontSize: '0.85rem',
                                 cursor: 'pointer',
                                 padding: '0.5rem',
@@ -873,12 +822,13 @@ const Assessment = ({ onComplete }) => {
                 style={{
                     background: 'transparent',
                     border: 'none',
-                    color: '#636E72',
+                    color: 'var(--text-muted)',
                     fontSize: '0.85rem',
                     cursor: 'pointer',
                     textAlign: 'center',
                     marginBottom: '1.25rem',
-                    minHeight: '2.75rem'
+                    minHeight: '2.75rem',
+                    textDecoration: 'underline'
                 }}
             >
                 Skip assessment entirely

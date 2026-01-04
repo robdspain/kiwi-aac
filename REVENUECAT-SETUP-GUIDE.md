@@ -401,3 +401,36 @@ You now have a **production-ready** RevenueCat integration with:
 2. Design your paywall
 3. Test on device
 4. Ship! 🚀
+
+---
+
+## 🌐 Web Payments (Stripe Integration)
+
+If you are deploying as a PWA/Website, you can use **RevenueCat Billing** with Stripe to accept payments on the web.
+
+### Automated Helper Script
+
+We have created a helper script to guide you through the Stripe setup process:
+
+```bash
+# Make executable
+chmod +x scripts/connect-stripe.sh
+
+# Run the script
+./scripts/connect-stripe.sh
+```
+
+### Manual Setup Steps
+
+1. **Create Stripe Account:** Go to [Stripe Dashboard](https://dashboard.stripe.com)
+2. **Create Restricted Key:**
+   - Go to Developers > API Keys
+   - Create a Restricted Key with "Write" permissions for: Customers, PaymentIntents, Subscriptions, Invoices.
+3. **Connect to RevenueCat:**
+   - Go to RevenueCat Dashboard > Project Settings > Apps
+   - Click "New App" → "Stripe"
+   - Paste your Restricted Key
+4. **Configure Project:**
+   - Add `VITE_STRIPE_PUBLIC_KEY` to your `.env` file.
+
+This allows RevenueCat to manage web subscriptions alongside iOS and Android!

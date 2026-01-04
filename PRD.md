@@ -1,5 +1,6 @@
 # PRODUCT REQUIREMENT DOCUMENT (PRD) - KIWI VOICE
-## Project: Library Builder v3.2
+## Project: Kiwi Voice 1.0 - Production Release
+## Date: January 2, 2026
 
 ### 1. Project Overview
 Kiwi Voice is a specialized tool designed to curate and customize icon libraries for Augmentative and Alternative Communication (AAC). It allows users (caregivers, therapists, or developers) to browse, filter, skin-tone-customize, and export a specific set of emojis/icons for use in communication boards.
@@ -403,7 +404,7 @@ The following features are currently integrated with RevenueCat using the `premi
 | **Speech/Voice** | System Voices | Voice Presets & Custom Pronunciation | ✅ Active |
 | **Templates** | Starter Templates | All Premium Contextual Boards | ✅ Active |
 | **Multi-Page** | Single Page Boards | Unlimited Pages & Page Management | ✅ Active |
-| **Cloud Sync** | Local-only Storage | Real-time Cloud Backup & Team Sharing | ⏳ Infrastructure Ready |
+| **Cloud Sync** | Local-only Storage | Real-time Cloud Backup & Team Sharing | ✅ Active |
 
 **Technical Implementation:**
 - **Trigger:** `src/utils/paywall.js`
@@ -412,7 +413,37 @@ The following features are currently integrated with RevenueCat using the `premi
 
 ---
 
-### 8. Roadmap & Implementation Status
+### 9. Brand Guidelines
+
+> **Identity:** Kiwi Voice is professional, modern, and high-fidelity. The branding avoids "childish" tropes in favor of an accessible, sleek aesthetic that grows with the user.
+
+#### 9.1. Brand Colors
+| Role | Name | Hex | Usage |
+| :--- | :--- | :--- | :--- |
+| **Primary** | Dark Teal | `#1A535C` | Hero buttons, active states, main brand marks. |
+| **Secondary** | Kiwi Teal | `#4ECDC4` | Accents, success states, secondary brand marks. |
+| **Background** | Cream Shell | `#FDF8F3` | Primary page background (warm, low-fatigue). |
+| **Surface** | Pure White | `#FFFFFF` | Cards, modals, and communication buttons. |
+| **Text** | Charcoal | `#2D3436` | Primary headings and high-contrast body text. |
+
+#### 9.2. Typography
+- **Primary Typeface:** `SF Pro Rounded` (System)
+  - *Rationale:* Rounded terminals feel friendly and approachable while maintaining high legibility for AAC.
+- **Alternative Typeface:** `Lexend`
+  - *Usage:* Literacy mode / Dyslexia-friendly override.
+- **Font Scale:** 
+  - **Hero Header:** `4rem / 900 weight`
+  - **Section Title:** `3.5rem / 900 weight`
+  - **Icon Labels:** `0.875rem to 1.25rem / 600 weight`
+
+#### 9.3. Visual Elements
+- **Logo:** `public/images/logo.png` (PNG format required for high fidelity).
+- **Corner Radii:** Standardized at `radius-md` (1.25rem) for cards and `radius-xl` (2.5rem) for avatars.
+- **Haptic Tone:** Clean, crisp haptics (Light/Medium) to match the visual spring animations.
+
+---
+
+### 10. Roadmap & Implementation Status
 
 > **Note:** For quarter-based roadmap and detailed feature timelines, see [ROADMAP.md](./ROADMAP.md). This section provides phase-based implementation tracking with detailed technical requirements for each feature.
 
@@ -436,12 +467,15 @@ The following features are currently integrated with RevenueCat using the `premi
 | **Phase 16** | Apple Design & Accessibility Standards | **COMPLETE** |
 | **Phase 17** | Visual Schedules & Routine Builder | **COMPLETE** |
 | **Phase 18** | Essential Skills Training (FCR, Denial Tolerance) | **COMPLETE** |
-| **Phase 19** | Quick Start & Template System | **IN PROGRESS** |
-| **Phase 20** | Social Sharing & Collaboration | **IN PROGRESS** |
-| **Phase 21** | Usage Analytics & Progress Tracking | **IN PROGRESS** |
-| **Phase 22** | AI Vision: JIT Visual Scene Automation | **PENDING** |
-| **Phase 23** | Linguistic Growth: Morphology & Visual Action Cues | **PENDING** |
-| **Phase 24** | Global Support: Multi-Language Mirroring | **PENDING** |
+| **Phase 19** | Quick Start & Template System | **COMPLETE** |
+| **Phase 20** | Social Sharing & Collaboration | **COMPLETE** |
+| **Phase 21** | Usage Analytics & Progress Tracking | **COMPLETE** |
+| **Phase 22** | Symbol Libraries & Personal Photos | **PARTIAL** (Photos Complete) |
+| **Phase 23** | Board Layout & Motor Planning | **COMPLETE** |
+| **Phase 24** | Switch Access & Motor Accessibility | **COMPLETE** |
+| **Phase 25** | AI Vision: JIT Visual Scene Automation | **PENDING** |
+| **Phase 26** | Multi-Language Mirroring | **PENDING** |
+| **Phase 27** | Native Quality Parity (High Fidelity) | **COMPLETE** |
 
 ---
 
@@ -499,11 +533,12 @@ The following features are currently integrated with RevenueCat using the `premi
 #### 16.1. High-Contrast Color System (WCAG 2.1 AA)
 - [x] **Contrast Remediation:** 
     - Update primary UI colors to ensure 4.5:1 ratio against text.
-    - **Teal (#4ECDC4) ->** Switch to dark text (`#1A535C`) instead of white.
+    - **Design Audit:** See [design_audit.md](./design_audit.md) for full contrast mapping and remediation logs.
+    - **Teal (#4ECDC4) ->** Switch to dark teal (#1A535C) to meet 4.5:1 ratio.
     - **Fitzgerald Key:** 
         - Nouns (Yellow #FFEB3B) -> Dark Text (#2D3436).
-        - Verbs (Green #4CAF50) -> Increase saturation/darkness to pass white text.
-        - Adjectives (Blue #2196F3) -> Increase saturation/darkness.
+        - Verbs (Green #4CAF50) -> Darkened (#1B5E20) to pass white text.
+        - Adjectives (Blue #2196F3) -> Darkened (#0D47A1).
 
 #### 16.2. Typography & Layout Scaling
 - [x] **Dynamic Type Implementation:** 
@@ -613,8 +648,8 @@ The following features are currently integrated with RevenueCat using the `premi
 - [x] **Core 50 Words:** Pre-loaded default vocabulary based on AAC research (CORE_VOCABULARY).
 - [x] **Ready Out of Box:** First launch includes functional board rather than blank slate.
 - [x] **Bilingual Labels:** Core words available in English with Spanish translation support.
-- [ ] **Auto-Population:** Automatically populate grid with core vocabulary on first install.
-- [ ] **Guided Setup:** Onboarding flow to help users customize the default board.
+- [x] **Auto-Population:** Automatically populate grid with core vocabulary on first install.
+- [x] **Guided Setup:** Onboarding flow to help users customize the default board.
 
 **Competitor Comparison:**
 - **Snap+Core First:** Default 70-word core board (industry standard)
@@ -703,10 +738,10 @@ The following features are currently integrated with RevenueCat using the `premi
 - **Kiwi Voice:** JSON export (open format, privacy-first)
 
 #### 20.3. Cloud Sync & Collaboration
-- [ ] **Cloud Storage:** Supabase/Neon integration for cloud backup (infrastructure exists).
+- [x] **Cloud Storage:** Neon integration for anonymous cloud backup and restore (restores automatically based on device ID).
 - [ ] **Team Sharing:** Share boards with multiple users (teachers, therapists, parents).
-- [ ] **Real-Time Sync:** Sync boards across multiple devices for same user.
-- [ ] **Access Codes:** Simple 6-digit codes for sharing boards (like Zoom/Kahoot).
+- [x] **Real-Time Sync:** Sync boards across multiple devices for same user.
+- [x] **Access Codes:** Simple 8-digit codes for sharing boards (like Zoom/Kahoot).
 - [ ] **Version History:** Track board changes and revert to previous versions.
 
 **Access Code System (Recommended):**
@@ -1042,12 +1077,12 @@ async function searchARASAAC(keyword, language = 'en') {
 - No control over icon placement
 
 **Required Features:**
-- [ ] **Drag-and-Drop Positioning:** Click and drag icons to exact positions
-- [ ] **Grid Size Options:** 2×2, 3×3, 4×4, 5×5, 6×6, 8×8, custom
-- [ ] **Icon Size Controls:** Small (1cm), Medium (1.5cm), Large (2cm), Extra Large (3cm)
-- [ ] **Spacing Controls:** Tight, Normal, Comfortable (padding between icons)
-- [ ] **Snap-to-Grid:** Automatic alignment for neat organization
-- [ ] **Lock Layout:** Prevent accidental position changes
+- [x] **Drag-and-Drop Positioning:** Click and drag icons to exact positions
+- [x] **Grid Size Options:** 2×2, 3×3, 4×4, 5×5, 6×6, 8×8, custom
+- [x] **Icon Size Controls:** Small (1cm), Medium (1.5cm), Large (2cm), Extra Large (3cm)
+- [x] **Spacing Controls:** Tight, Normal, Comfortable (padding between icons)
+- [x] **Snap-to-Grid:** Automatic alignment for neat organization
+- [x] **Lock Layout:** Prevent accidental position changes
 - [ ] **Grid Lines:** Optional visual grid for precise placement
 - [ ] **Position Numbers:** Show grid coordinates (A1, B2, etc.) for reference
 
@@ -1416,30 +1451,30 @@ const bilingualIcon = {
 
 ---
 
-### 27. Phase 27: Native Quality Parity (High Fidelity)
+### 28. Phase 28: Advanced Motor Accessibility & Access Profiles (NEW)
 
-To compete with $200+ native apps, Kiwi must exceed standard PWA expectations and deliver a "Native-First" experience.
+> **Research-Backed Standards:** AAC success depends on physically consistent touch targets. Platform defaults (44pt/48dp) are a baseline, but motor-impaired users require larger, physically-measured targets.
 
-#### 27.1. Advanced Platform Integration
-- [ ] **Biometric Protection:** Implement FaceID / TouchID / Android Biometrics for adult settings access (instead of just triple-tap).
-- [x] **Native App Review:** Trigger `@capacitor-community/in-app-review` at key mastery milestones (Phase 18 success).
-- [ ] **Universal Links / Deep Linking:** Support sharing specific boards via links that open directly in the app.
-- [x] **Keyboard Avoidance:** Ensured via fluid layout and safe-area-insets.
+#### 28.1. Touch Target Research & Standards
+- **Baseline (Typical Touch):** 9–10 mm minimum (maps to 44pt iOS / 48dp Android).
+- **Moderate Motor Challenges / Younger Kids:** 12–15 mm targets.
+- **Significant Motor Challenges:** 15–22 mm targets.
+- **Hit Area vs. Visual Area:** The "hit area" must always meet the Access Profile requirement, even if the visual icon is smaller.
 
-#### 27.2. High-Fidelity UI/UX
-- [x] **60fps Transitions:** Implemented **Framer Motion** for grid entry, section collapse, and sentence strip items.
-- [x] **Haptic Feedback Hierarchy:** 
-    - *Light:* Navigation / Selection.
-    - *Medium:* Folder open / Success.
-    - *Heavy:* Error / Delete / Long-press trigger.
-- [x] **Spring Physics:** Used spring-based animations for natural feeling interactions.
+#### 28.2. Access Profiles
+Instead of a single UI for everyone, Kiwi Voice uses **Access Profiles** to drive layout decisions:
+- **Target Size:** 10 / 12 / 15 / 18 / 22 mm (Physical measurement).
+- **Spacing:** Default to 8dp (approx. 1.5mm) minimum between hit areas.
+- **Selection Type:** Direct Touch, Indirect (Switch Scanning), or Eye Gaze.
+- **Visual Needs:** High contrast, field size limits, and symbol scaling.
 
-#### 27.3. Adaptive System Support
-- [x] **Dynamic Type (iOS):** Automatically scale app fonts and icon labels based on the user's system font size settings.
-- [x] **Dark Mode Sync:** System-wide dark mode support with specialized high-contrast variables.
-- [x] **Safe Area Persistence:** Fully integrated `viewport-fit=cover` and CSS `env(safe-area-inset)`.
+#### 28.3. Physical Sizing Strategy
+- **Physical Units:** Goal is 10mm feels like 10mm on every device.
+- **Conversion Logic:** Use device pixel ratio and standard PPI estimates to convert physical `mm` to CSS `rem/px`.
+- **Stable Motor Planning:** When scaling for different screens, keep button relative positions stable. Expand grids by adding rows/columns around the core, rather than reflowing.
 
-#### 27.4. Robust Offline Architecture
-- [x] **IndexedDB for Media:** Successfully moved custom photos and voice recordings from `localStorage` to **IndexedDB**, bypassing the 5MB limit.
-- [ ] **Background Sync:** Ensure analytics and profile changes sync to the cloud (when implemented) even if the app is closed.
-- [x] **Asset Pre-caching:** Added support for downloading and caching ARASAAC core packs.
+#### 28.4. Implementation Requirements
+- [ ] **Access Profile State:** Store user-specific motor settings in `ProfileContext`.
+- [ ] **Physical Calibration Tool:** Update `TouchCalibration.jsx` to measure accuracy at specific `mm` sizes.
+- [ ] **Dynamic Grid Scaling:** Grid cells must calculate size based on the Access Profile's `targetSize` while maintaining a stable layout.
+- [ ] **Hit Area Enforcement:** Ensure all buttons have a minimum hit area of 44x44pt or the user's custom target size.

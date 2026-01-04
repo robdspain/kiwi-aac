@@ -2,17 +2,33 @@ import { createContext, useContext, useState, useEffect } from 'react';
 
 const ProfileContext = createContext();
 
+const DEFAULT_ACCESS_PROFILE = {
+    targetSize: 10, // mm
+    spacing: 1.5, // mm
+    selectionType: 'touch', // 'touch' | 'scan' | 'eye'
+    visualContrast: 'standard',
+    fieldSize: 'unlimited',
+    language: 'en', // 'en' | 'es'
+    biometricLock: false
+};
+
 const DEFAULT_PROFILE = {
     id: 'default',
     name: 'Default',
     avatar: '👤',
-    createdAt: Date.now()
+    createdAt: Date.now(),
+    accessProfile: DEFAULT_ACCESS_PROFILE
 };
 
 export const ProfileProvider = ({ children }) => {
     const [profiles, setProfiles] = useState(() => {
         const saved = localStorage.getItem('kiwi-profiles');
-        return saved ? JSON.parse(saved) : [DEFAULT_PROFILE];
+        const data = saved ? JSON.parse(saved) : [DEFAULT_PROFILE];
+        // Migration for existing profiles
+        return data.map(p => ({
+            ...p,
+            accessProfile: p.accessProfile || DEFAULT_ACCESS_PROFILE
+        }));
     });
 
     const [currentProfileId, setCurrentProfileId] = useState(() => {
@@ -37,6 +53,12 @@ export const ProfileProvider = ({ children }) => {
     }, [pronunciations]);
 
     const currentProfile = profiles.find(p => p.id === currentProfileId) || DEFAULT_PROFILE;
+
+    const updateAccessProfile = (updates) => {
+        updateProfile(currentProfileId, {
+            accessProfile: { ...currentProfile.accessProfile, ...updates }
+        });
+    };
 
     const getStorageKey = (key) => {
         return `kiwi-${currentProfileId}-${key}`;
@@ -73,7 +95,8 @@ export const ProfileProvider = ({ children }) => {
             id: 'profile-' + Date.now(),
             name,
             avatar: avatar || '👤',
-            createdAt: Date.now()
+            createdAt: Date.now(),
+            accessProfile: DEFAULT_ACCESS_PROFILE
         };
         setProfiles([...profiles, newProfile]);
         return newProfile;
@@ -118,7 +141,8 @@ export const ProfileProvider = ({ children }) => {
             deleteProfile,
             switchProfile,
             addPronunciation,
-            deletePronunciation
+            deletePronunciation,
+            updateAccessProfile
         }}>
             {children}
         </ProfileContext.Provider>

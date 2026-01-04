@@ -186,37 +186,37 @@ export const STAGES = {
     1: {
         name: 'Exchange',
         icon: '🤝',
-        color: '#4CAF50',
+        color: '#2E7D32',
         description: 'Learning to request by exchanging a picture'
     },
     2: {
         name: 'Persistence',
         icon: '📣',
-        color: '#2196F3',
+        color: '#1565C0',
         description: 'Getting attention and traveling to communicate'
     },
     3: {
         name: 'Discrimination',
         icon: '🎯',
-        color: '#9C27B0',
+        color: '#6A1B9A',
         description: 'Selecting the right picture from choices'
     },
     4: {
         name: 'Sentences',
         icon: '💬',
-        color: '#FF9800',
+        color: '#E65100',
         description: 'Building multi-word requests with attributes'
     },
     5: {
         name: 'Responding',
         icon: '❓',
-        color: '#E91E63',
+        color: '#C2185B',
         description: 'Answering questions about wants and observations'
     },
     6: {
         name: 'Commenting',
         icon: '💭',
-        color: '#00BCD4',
+        color: '#00838F',
         description: 'Making spontaneous comments about the world'
     }
 };

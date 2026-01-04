@@ -4,7 +4,7 @@ import VoiceRecorder from './VoiceRecorder';
 import MemojiPicker from './MemojiPicker';
 import { saveMedia, getMedia, deleteMedia } from '../utils/db';
 
-const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item, triggerPaywall }) => {
+const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item }) => {
     const [word, setWord] = useState('');
     const [icon, setIcon] = useState('');
     const [bgColor, setBgColor] = useState('');

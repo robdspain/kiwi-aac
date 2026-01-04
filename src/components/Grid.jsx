@@ -1,4 +1,3 @@
-
 import AppItem from './AppItem';
 import VisualSchedule from './VisualSchedule';
 import { AAC_LEXICON } from '../data/aacLexicon';
@@ -7,6 +6,8 @@ import {
     SortableContext,
     rectSortingStrategy
 } from '@dnd-kit/sortable';
+import { useProfile } from '../context/ProfileContext';
+import { getPxFromMm } from '../utils/imageUtils';
 
 const CATEGORY_METADATA = {
     'core': { label: 'Core Words', color: 'rgba(78, 205, 196, 0.1)', icon: '⭐' },
@@ -47,6 +48,9 @@ const Grid = ({
     currentPageIndex = 0,
     onSetPage
 }) => {
+    const { currentProfile } = useProfile();
+    const accessProfile = currentProfile?.accessProfile || { targetSize: 10, spacing: 1.5 };
+
     // If we're inside a folder and it's in schedule mode, show the VisualSchedule view
     if (folder && folder.type === 'folder' && folder.viewMode === 'schedule') {
         return <VisualSchedule folder={folder} onBack={onBack} />;
@@ -66,21 +70,45 @@ const Grid = ({
 
     const gridClass = `${useLargeGrid ? 'phase-large-grid' : ''} size-${gridSize}`;
 
-    // Calculate grid dimensions based on gridSize
+    // Calculate grid dimensions based on targetSize (mm)
     const getGridDimensions = () => {
         if (useLargeGrid) return { rows: 2, cols: 2 };
-        switch(gridSize) {
-            case 'super-big': return { rows: 2, cols: 2 };
-            case 'big': return { rows: 3, cols: 3 };
-            case 'standard': return { rows: 4, cols: 4 };
-            default: return { rows: 4, cols: 4 };
+        
+        // Calculate based on Access Profile physical target size
+        const targetPx = getPxFromMm(accessProfile.targetSize);
+        const spacingPx = getPxFromMm(accessProfile.spacing);
+        
+        // Use container size if available, otherwise estimate
+        const containerWidth = window.innerWidth - 40; // Approx padding
+        const containerHeight = window.innerHeight - 200; // Approx headers/sentence strip
+        
+        const calculatedCols = Math.max(2, Math.floor(containerWidth / (targetPx + spacingPx)));
+        const calculatedRows = Math.max(2, Math.floor(containerHeight / (targetPx + spacingPx)));
+
+        // Legacy overrides if gridSize is explicitly set and not 'auto'
+        if (gridSize !== 'auto') {
+            switch(gridSize) {
+                case 'super-big': return { rows: 2, cols: 2 };
+                case 'big': return { rows: 3, cols: 3 };
+                case 'standard': return { rows: 4, cols: 4 };
+                case 'medium': return { rows: 5, cols: 5 };
+                case 'dense': return { rows: 6, cols: 6 };
+            }
         }
+
+        return { rows: calculatedRows, cols: calculatedCols };
     };
 
-    const { rows, cols } = getGridDimensions();
+    const { cols } = getGridDimensions();
+    const targetPx = getPxFromMm(accessProfile.targetSize);
+    const spacingPx = getPxFromMm(accessProfile.spacing);
+
+    // Apply Field Size Limit
+    const limit = accessProfile.fieldSize === 'unlimited' ? Infinity : parseInt(accessProfile.fieldSize, 10);
+    const displayedItems = items.slice(0, limit);
 
     // Grouping Logic for Sections
-    const groupedItems = items.reduce((acc, item, index) => {
+    const groupedItems = displayedItems.reduce((acc, item, index) => {
         const lexiconEntry = item.word ? AAC_LEXICON[item.word.toLowerCase()] : null;
         const category = item.category || item.wc || lexiconEntry?.type || 'unknown';
         if (!acc[category]) acc[category] = [];
@@ -103,18 +131,28 @@ const Grid = ({
                 padding: '2.5rem',
                 textAlign: 'center'
             }}>
-                <div style={{ fontSize: '4rem', marginBottom: '1.25rem' }}>🥝</div>
+                <img 
+                    src="/images/logo.png" 
+                    alt="Kiwi Voice Logo" 
+                    style={{ 
+                        width: '8rem', 
+                        height: '8rem', 
+                        marginBottom: '1.25rem',
+                        borderRadius: '1.5rem',
+                        boxShadow: '0 8px 16px rgba(0,0,0,0.05)'
+                    }} 
+                />
                 <h2 style={{
                     fontSize: '1.5rem',
                     fontWeight: '700',
-                    color: '#333',
+                    color: 'var(--text-primary)',
                     margin: '0 0 0.75rem 0'
                 }}>
                     {hasBack ? 'This folder is empty' : 'Let\'s add some icons!'}
                 </h2>
                 <p style={{
                     fontSize: '1rem',
-                    color: '#666',
+                    color: 'var(--text-secondary)',
                     maxWidth: '18.75rem',
                     lineHeight: '1.5',
                     margin: '0 0 1.5rem 0'
@@ -126,20 +164,18 @@ const Grid = ({
                 {!hasBack && (
                     <div
                         onClick={() => onAddItem('', '', 'button')}
+                        className="primary-button"
                         style={{
                             display: 'flex',
                             alignItems: 'center',
                             gap: '0.5rem',
                             padding: '0.75rem 1.5rem',
-                            background: '#007AFF', // Solid primary color
-                            color: 'white',
                             borderRadius: '1.875rem',
                             fontSize: '1.2rem',
                             fontWeight: '600',
                             cursor: 'pointer',
-                            boxShadow: '0 4px 12px rgba(0,122,255,0.3)',
-                            transition: 'transform 0.2s',
-                            minHeight: '2.75rem'
+                            minHeight: '3.5rem',
+                            justifyContent: 'center'
                         }}
                         onMouseDown={e => e.currentTarget.style.transform = 'scale(0.95)'}
                         onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
@@ -151,163 +187,168 @@ const Grid = ({
         );
     }
 
-    if (useLargeGrid || !useCategorizedView) {
-        return (
-            <div 
-                id="grid-container" 
-                className={gridClass}
-                style={!useLargeGrid ? {
-                    display: 'grid',
-                    gridTemplateColumns: `repeat(${cols}, 1fr)`,
-                    gridTemplateRows: `repeat(${rows}, 1fr)`,
-                    gap: '1rem',
-                    padding: '1.25rem'
-                } : {}}
-            >
-                <SortableContext
-                    items={items.map(i => i.id || i.word)}
-                    strategy={rectSortingStrategy}
-                >
-                    {items.map((item, index) => {
-                        const isSelected = trainingSelection.includes(index);
-                        const displayIcon = item.image || item.icon;
-                        
-                        const itemStyle = item.pos ? {
-                            gridRowStart: item.pos.r + 1,
-                            gridColumnStart: item.pos.c + 1
-                        } : {};
-
-                        return (
-                            <AppItem
-                                key={item.id || index}
-                                item={{ ...item, icon: displayIcon }}
-                                index={index}
-                                isEditMode={isEditMode}
-                                isTrainingMode={isTrainingMode}
-                                isSelected={isSelected}
-                                isDimmed={isTrainingMode && !trainingPanelVisible && !isSelected}
-                                isScanned={scanIndex === index}
-                                isLocked={isLayoutLocked || !!item.pos}
-                                isRevealed={item.isRevealed !== false}
-                                isColorCodingEnabled={isColorCodingEnabled}
-                                style={itemStyle}
-                                onClick={onItemClick}
-                                onDelete={onDelete}
-                                onEdit={onEdit}
-                                onToggleTraining={onToggleTraining}
-                            />
+            if (useLargeGrid || !useCategorizedView) {
+                return (
+                    <div 
+                        id="grid-container" 
+                        className={`${gridClass} ${accessProfile.visualContrast === 'high' ? 'high-contrast' : ''}`}
+                        style={!useLargeGrid ? {
+                            display: 'grid',
+                            gridTemplateColumns: `repeat(${cols}, ${targetPx}px)`,
+                            justifyContent: 'center',
+                            alignContent: 'start',
+                            gap: `${spacingPx}px`,
+                            padding: '1.25rem'
+                        } : {}}
+                    >
+                        <SortableContext
+                            items={displayedItems.map(i => i.id || i.word)}
+                            strategy={rectSortingStrategy}
+                        >
+                            {displayedItems.map((item, index) => {                            const isSelected = trainingSelection.includes(index);
+                            const displayIcon = item.image || item.icon;
+                            
+                            const itemStyle = item.pos ? {
+                                gridRowStart: item.pos.r + 1,
+                                gridColumnStart: item.pos.c + 1
+                            } : {};
+    
+                            return (
+                                <AppItem
+                                    key={item.id || index}
+                                    item={{ ...item, icon: displayIcon }}
+                                    index={index}
+                                    isEditMode={isEditMode}
+                                    isTrainingMode={isTrainingMode}
+                                    isSelected={isSelected}
+                                    isDimmed={isTrainingMode && !trainingPanelVisible && !isSelected}
+                                    isScanned={scanIndex === index}
+                                    isLocked={isLayoutLocked || !!item.pos}
+                                    isRevealed={item.isRevealed !== false}
+                                    isColorCodingEnabled={isColorCodingEnabled}
+                                    targetPx={targetPx}
+                                    style={itemStyle}
+                                    onClick={onItemClick}
+                                    onDelete={onDelete}
+                                    onEdit={onEdit}
+                                    onToggleTraining={onToggleTraining}
+                                />
+                            );
+                        })}
+                    </SortableContext>
+                </div>
+            );
+        }
+    
+            return (
+                <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                    <div 
+                        id="grid-container" 
+                        className={`${gridClass} ${accessProfile.visualContrast === 'high' ? 'high-contrast' : ''}`} 
+                        style={{ display: 'block', padding: '1rem', flex: 1, overflowY: 'auto' }}
+                    >
+                        <AnimatePresence mode="popLayout">                        {categoryOrder.map(catId => {
+                        const sectionItems = groupedItems[catId];
+                        if (!sectionItems || sectionItems.length === 0) return null;
+    
+                        const meta = CATEGORY_METADATA[catId] || CATEGORY_METADATA['unknown'];
+                        const isCollapsed = collapsedSections.includes(catId);
+    
+                                        return (
+                                            <motion.div 
+                                                key={catId} 
+                                                layout
+                                                initial={{ opacity: 0, y: 20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, scale: 0.95 }}
+                                                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                                style={showCategoryHeaders ? { 
+                                                    marginBottom: '1.5rem', 
+                                                    background: meta.color, 
+                                                    borderRadius: '1.25rem',
+                                                    padding: '0.75rem',
+                                                    border: `1px solid rgba(0,0,0,0.05)`
+                                                } : { marginBottom: '1rem' }}
+                                            >
+                                                {showCategoryHeaders && (
+                                                    <div 
+                                                        onClick={() => onToggleSection && onToggleSection(catId)}
+                                                        style={{ 
+                                                            display: 'flex', 
+                                                            alignItems: 'center', 
+                                                            gap: '0.5rem', 
+                                                            marginBottom: isCollapsed ? 0 : '0.75rem',
+                                                            cursor: 'pointer',
+                                                            padding: '0.25rem 0.5rem'
+                                                        }}
+                                                    >
+                                                        <span style={{ fontSize: '1.25rem' }}>{meta.icon}</span>
+                                                        <span style={{ fontWeight: 800, fontSize: '0.875rem', textTransform: 'uppercase', color: 'var(--text-secondary)', flex: 1 }}>{meta.label}</span>
+                                                        <span style={{ opacity: 0.4 }}>{isCollapsed ? '➕' : '➖'}</span>
+                                                    </div>
+                                                )}
+                                <AnimatePresence>
+                                    {!isCollapsed && (
+                                        <motion.div 
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: 'auto', opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                                            style={{ overflow: 'hidden' }}
+                                        >
+                                            <div style={{
+                                                display: 'grid',
+                                                gridTemplateColumns: `repeat(${cols}, ${targetPx}px)`,
+                                                justifyContent: 'center',
+                                                gap: `${spacingPx}px`,
+                                                paddingTop: '0.5rem'
+                                            }}>
+                                                <SortableContext
+                                                    items={sectionItems.map(i => i.id || i.word)}
+                                                    strategy={rectSortingStrategy}
+                                                >
+                                                    {sectionItems.map((item) => {
+                                                        const index = item.originalIndex;
+                                                        const isSelected = trainingSelection.includes(index);
+                                                        const displayIcon = item.image || item.icon;
+                                                        
+                                                        const itemStyle = item.pos ? {
+                                                            gridRowStart: item.pos.r + 1,
+                                                            gridColumnStart: item.pos.c + 1
+                                                        } : {};
+    
+                                                        return (
+                                                            <AppItem
+                                                                key={item.id || index}
+                                                                item={{ ...item, icon: displayIcon }}
+                                                                index={index}
+                                                                isEditMode={isEditMode}
+                                                                isTrainingMode={isTrainingMode}
+                                                                isSelected={isSelected}
+                                                                isDimmed={isTrainingMode && !trainingPanelVisible && !isSelected}
+                                                                isScanned={scanIndex === index}
+                                                                isLocked={isLayoutLocked || !!item.pos}
+                                                                isRevealed={item.isRevealed !== false}
+                                                                isColorCodingEnabled={isColorCodingEnabled}
+                                                                targetPx={targetPx}
+                                                                style={itemStyle}
+                                                                onClick={onItemClick}
+                                                                onDelete={onDelete}
+                                                                onEdit={onEdit}
+                                                                onToggleTraining={onToggleTraining}
+                                                            />
+                                                        );
+                                                    })}
+                                                </SortableContext>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </motion.div>
                         );
                     })}
-                </SortableContext>
-            </div>
-        );
-    }
-
-    return (
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <div id="grid-container" className={gridClass} style={{ display: 'block', padding: '1rem', flex: 1, overflowY: 'auto' }}>
-                <AnimatePresence mode="popLayout">
-                    {categoryOrder.map(catId => {
-                    const sectionItems = groupedItems[catId];
-                    if (!sectionItems || sectionItems.length === 0) return null;
-
-                    const meta = CATEGORY_METADATA[catId] || CATEGORY_METADATA['unknown'];
-                    const isCollapsed = collapsedSections.includes(catId);
-
-                                    return (
-                                        <motion.div 
-                                            key={catId} 
-                                            layout
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, scale: 0.95 }}
-                                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                            style={showCategoryHeaders ? { 
-                                                marginBottom: '1.5rem', 
-                                                background: meta.color, 
-                                                borderRadius: '1.25rem',
-                                                padding: '0.75rem',
-                                                border: `1px solid rgba(0,0,0,0.05)`
-                                            } : { marginBottom: '1rem' }}
-                                        >
-                                            {showCategoryHeaders && (
-                                                <div 
-                                                    onClick={() => onToggleSection && onToggleSection(catId)}
-                                                    style={{ 
-                                                        display: 'flex', 
-                                                        alignItems: 'center', 
-                                                        gap: '0.5rem', 
-                                                        marginBottom: isCollapsed ? 0 : '0.75rem',
-                                                        cursor: 'pointer',
-                                                        padding: '0.25rem 0.5rem'
-                                                    }}
-                                                >
-                                                    <span style={{ fontSize: '1.25rem' }}>{meta.icon}</span>
-                                                    <span style={{ fontWeight: 800, fontSize: '0.875rem', textTransform: 'uppercase', color: '#666', flex: 1 }}>{meta.label}</span>
-                                                    <span style={{ opacity: 0.4 }}>{isCollapsed ? '➕' : '➖'}</span>
-                                                </div>
-                                            )}
-                            <AnimatePresence>
-                                {!isCollapsed && (
-                                    <motion.div 
-                                        initial={{ height: 0, opacity: 0 }}
-                                        animate={{ height: 'auto', opacity: 1 }}
-                                        exit={{ height: 0, opacity: 0 }}
-                                        transition={{ duration: 0.3, ease: "easeInOut" }}
-                                        style={{ overflow: 'hidden' }}
-                                    >
-                                        <div style={{
-                                            display: 'grid',
-                                            gridTemplateColumns: `repeat(${cols}, 1fr)`,
-                                            gap: '1rem',
-                                            paddingTop: '0.5rem'
-                                        }}>
-                                            <SortableContext
-                                                items={sectionItems.map(i => i.id || i.word)}
-                                                strategy={rectSortingStrategy}
-                                            >
-                                                {sectionItems.map((item) => {
-                                                    const index = item.originalIndex;
-                                                    const isSelected = trainingSelection.includes(index);
-                                                    const displayIcon = item.image || item.icon;
-                                                    
-                                                    const itemStyle = item.pos ? {
-                                                        gridRowStart: item.pos.r + 1,
-                                                        gridColumnStart: item.pos.c + 1
-                                                    } : {};
-
-                                                    return (
-                                                        <AppItem
-                                                            key={item.id || index}
-                                                            item={{ ...item, icon: displayIcon }}
-                                                            index={index}
-                                                            isEditMode={isEditMode}
-                                                            isTrainingMode={isTrainingMode}
-                                                            isSelected={isSelected}
-                                                            isDimmed={isTrainingMode && !trainingPanelVisible && !isSelected}
-                                                            isScanned={scanIndex === index}
-                                                            isLocked={isLayoutLocked || !!item.pos}
-                                                            isRevealed={item.isRevealed !== false}
-                                                            isColorCodingEnabled={isColorCodingEnabled}
-                                                            style={itemStyle}
-                                                            onClick={onItemClick}
-                                                            onDelete={onDelete}
-                                                            onEdit={onEdit}
-                                                            onToggleTraining={onToggleTraining}
-                                                        />
-                                                    );
-                                                })}
-                                            </SortableContext>
-                                        </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </motion.div>
-                    );
-                })}
-            </AnimatePresence>
-        </div>
-
+                    </AnimatePresence>
+                </div>
         {/* Pagination Dots */}
         {pages && pages.length > 1 && (
             <div style={{

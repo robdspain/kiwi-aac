@@ -137,23 +137,23 @@ Communication is growing! 🥝
                             {/* Current Level Card */}
                             {currentLevel && (
                                 <div className="dashboard-card" style={{
-                                    background: `linear-gradient(135deg, ${getStage(currentLevel).color}15, ${getStage(currentLevel).color}30)`,
+                                    background: `linear-gradient(135deg, ${getStage(currentLevel).color}10, ${getStage(currentLevel).color}20)`,
                                     border: `0.125rem solid ${getStage(currentLevel).color}`
                                 }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <div>
-                                            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>Current Level</div>
+                                            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.25rem', fontWeight: 600 }}>Current Level</div>
                                             <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: getStage(currentLevel).color }}>
                                                 {getStage(currentLevel).icon} Level {currentLevel}
                                             </div>
-                                            <div style={{ fontSize: '0.9rem', color: '#555' }}>{getLevel(currentLevel)?.name}</div>
+                                            <div style={{ fontSize: '0.9rem', color: 'var(--text-primary)', fontWeight: 500 }}>{getLevel(currentLevel)?.name}</div>
                                         </div>
                                         {levelProgress[currentLevel] && (
                                             <div style={{ textAlign: 'right' }}>
                                                 <div style={{ fontSize: '2rem', fontWeight: 'bold', color: getStage(currentLevel).color }}>
                                                     {levelProgress[currentLevel].attempts}
                                                 </div>
-                                                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>attempts</div>
+                                                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>attempts</div>
                                             </div>
                                         )}
                                     </div>
@@ -162,29 +162,30 @@ Communication is growing! 🥝
                                             display: 'flex',
                                             gap: '0.9375rem',
                                             marginTop: '0.9375rem',
-                                            background: 'white',
+                                            background: 'var(--card-bg)',
                                             padding: '0.75rem',
-                                            borderRadius: '0.625rem'
+                                            borderRadius: '0.625rem',
+                                            border: '1px solid var(--gray-border)'
                                         }}>
                                             <div style={{ flex: 1, textAlign: 'center' }}>
                                                 <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--success)' }}>
                                                     {levelProgress[currentLevel].independent}
                                                 </div>
-                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Independent</div>
+                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Independent</div>
                                             </div>
                                             <div style={{ flex: 1, textAlign: 'center' }}>
                                                 <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--warning)' }}>
                                                     {levelProgress[currentLevel].prompted}
                                                 </div>
-                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Prompted</div>
+                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Prompted</div>
                                             </div>
                                             <div style={{ flex: 1, textAlign: 'center' }}>
-                                                <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--primary)' }}>
+                                                <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--primary-dark)' }}>
                                                     {levelProgress[currentLevel].attempts > 0
                                                         ? Math.round((levelProgress[currentLevel].independent / levelProgress[currentLevel].attempts) * 100)
                                                         : 0}%
                                                 </div>
-                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Accuracy</div>
+                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Accuracy</div>
                                             </div>
                                         </div>
                                     )}
@@ -193,7 +194,7 @@ Communication is growing! 🥝
 
                             {/* All Levels Progress */}
                             <div className="dashboard-card" style={{ background: 'var(--gray-light)' }}>
-                                <h3 style={{ margin: '0 0 0.9375rem 0', fontSize: '1rem' }}>Level History</h3>
+                                <h3 style={{ margin: '0 0 0.9375rem 0', fontSize: '1rem', color: 'var(--text-primary)' }}>Level History</h3>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
                                     {sortedLevels.map(lvl => {
                                         const progress = levelProgress[lvl];
@@ -213,33 +214,33 @@ Communication is growing! 🥝
                                             <div
                                                 key={lvl}
                                                 style={{
-                                                    background: 'white',
+                                                    background: 'var(--card-bg)',
                                                     padding: '0.75rem 0.9375rem',
                                                     borderRadius: '0.625rem',
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     gap: '0.75rem',
-                                                    border: isCurrent ? `0.125rem solid ${stageDef?.color || '#007AFF'}` : '0.0625rem solid #eee'
+                                                    border: isCurrent ? `0.125rem solid ${stageDef?.color || 'var(--primary-dark)'}` : '1px solid var(--gray-border)'
                                                 }}
                                             >
                                                 <div style={{
                                                     width: '2.25rem',
                                                     height: '2.25rem',
                                                     borderRadius: '50%',
-                                                    background: isPassed ? 'var(--success)' : (stageDef?.color || '#E5E5EA') + '30',
+                                                    background: isPassed ? 'var(--success)' : (stageDef?.color || 'var(--gray-border)') + '20',
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
                                                     fontSize: isPassed ? '1rem' : '0.9rem',
-                                                    color: isPassed ? 'white' : stageDef?.color || '#666'
+                                                    color: isPassed ? 'white' : stageDef?.color || 'var(--text-muted)'
                                                 }}>
                                                     {isPassed ? '✓' : stageDef?.icon || '📍'}
                                                 </div>
                                                 <div style={{ flex: 1 }}>
-                                                    <div style={{ fontWeight: '600', fontSize: '0.9rem' }}>
+                                                    <div style={{ fontWeight: '700', fontSize: '0.9rem', color: 'var(--text-primary)' }}>
                                                         Level {lvl} {levelDef?.name && `– ${levelDef.name}`}
                                                     </div>
-                                                    <div style={{ fontSize: '0.75rem', color: '#888' }}>
+                                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
                                                         {progress.attempts} attempts • {accuracy}% accuracy
                                                         {timeSpent > 0 && ` • ${timeSpent} day${timeSpent !== 1 ? 's' : ''}`}
                                                     </div>
@@ -252,24 +253,26 @@ Communication is growing! 🥝
                                                             padding: '0.25rem 0.625rem',
                                                             borderRadius: '0.75rem',
                                                             fontSize: '0.75rem',
-                                                            fontWeight: '600'
+                                                            fontWeight: '700'
                                                         }}>Passed</span>
                                                     ) : isCurrent ? (
                                                         <span style={{
-                                                            background: stageDef?.color || 'var(--primary)',
+                                                            background: stageDef?.color || 'var(--primary-dark)',
                                                             color: 'white',
                                                             padding: '0.25rem 0.625rem',
                                                             borderRadius: '0.75rem',
                                                             fontSize: '0.75rem',
-                                                            fontWeight: '600'
+                                                            fontWeight: '700'
                                                         }}>Current</span>
                                                     ) : (
                                                         <span style={{
-                                                            background: '#E5E5EA',
-                                                            color: '#666',
+                                                            background: 'var(--gray-light)',
+                                                            color: 'var(--text-secondary)',
                                                             padding: '0.25rem 0.625rem',
                                                             borderRadius: '0.75rem',
-                                                            fontSize: '0.75rem'
+                                                            fontSize: '0.75rem',
+                                                            fontWeight: 600,
+                                                            border: '1px solid var(--gray-border)'
                                                         }}>In Progress</span>
                                                     )}
                                                 </div>
@@ -305,18 +308,18 @@ Communication is growing! 🥝
 
                 {/* Weekly Activity Chart */}
                 <div className="dashboard-card" style={{ background: 'var(--gray-light)' }}>
-                    <h3 style={{ margin: '0 0 0.9375rem 0', fontSize: '1rem' }}>Weekly Activity</h3>
+                    <h3 style={{ margin: '0 0 0.9375rem 0', fontSize: '1rem', color: 'var(--text-primary)' }}>Weekly Activity</h3>
                     <div style={{ display: 'flex', alignItems: 'flex-end', gap: '0.5rem', height: '6.25rem' }}>
                         {dailyStats.map((day, i) => (
                             <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                 <div style={{
                                     width: '100%',
                                     height: `${(day.clicks / maxDaily) * 5}rem`,
-                                    background: 'linear-gradient(180deg, var(--primary), var(--primary-dark))',
+                                    background: 'var(--btn-primary-bg)',
                                     borderRadius: '0.3125rem 0.3125rem 0 0',
                                     minHeight: '0.25rem'
                                 }} />
-                                <span style={{ fontSize: '0.7rem', marginTop: '0.3125rem' }}>{day.label}</span>
+                                <span style={{ fontSize: '0.7rem', marginTop: '0.3125rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{day.label}</span>
                             </div>
                         ))}
                     </div>
@@ -324,7 +327,7 @@ Communication is growing! 🥝
 
                 {/* Independence Trend Chart */}
                 {trials.length > 5 && (
-                    <div className="dashboard-card" style={{ background: 'white', border: '0.0625rem solid #eee' }}>
+                    <div className="dashboard-card" style={{ background: 'var(--card-bg)', border: '1px solid var(--gray-border)' }}>
                         <h3 style={{ margin: '0 0 0.9375rem 0', color: 'var(--text-primary)', fontSize: '1rem' }}>📈 Independence Trend (Last 7 Days)</h3>
                         {(() => {
                             // Calculate daily independence rates
@@ -352,16 +355,16 @@ Communication is growing! 🥝
                                 <div style={{ position: 'relative', height: '7.5rem', width: '100%' }}>
                                     <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
                                         {/* Grid lines */}
-                                        <line x1="0" y1="0" x2="100" y2="0" stroke="#eee" strokeWidth="0.5" />
-                                        <line x1="0" y1="50" x2="100" y2="50" stroke="#eee" strokeWidth="0.5" />
-                                        <line x1="0" y1="100" x2="100" y2="100" stroke="#eee" strokeWidth="0.5" />
+                                        <line x1="0" y1="0" x2="100" y2="0" stroke="var(--gray-border)" strokeWidth="0.5" />
+                                        <line x1="0" y1="50" x2="100" y2="50" stroke="var(--gray-border)" strokeWidth="0.5" />
+                                        <line x1="0" y1="100" x2="100" y2="100" stroke="var(--gray-border)" strokeWidth="0.5" />
 
                                         {/* Trend Line */}
                                         <polyline
                                             points={points}
                                             fill="none"
                                             stroke="var(--success)"
-                                            strokeWidth="2"
+                                            strokeWidth="3"
                                             strokeLinecap="round"
                                             strokeLinejoin="round"
                                         />
@@ -372,14 +375,14 @@ Communication is growing! 🥝
                                                 key={i}
                                                 cx={(i / 6) * 100}
                                                 cy={100 - d.rate}
-                                                r={d.hasData ? "2" : "1"}
-                                                fill={d.hasData ? "var(--success)" : "#ddd"}
+                                                r={d.hasData ? "3" : "1.5"}
+                                                fill={d.hasData ? "var(--success)" : "var(--gray-border)"}
                                             />
                                         ))}
                                     </svg>
 
                                     {/* Labels */}
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.3125rem', fontSize: '0.7rem', color: '#666' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
                                         {days.map((d, i) => (
                                             <span key={i}>{d.label}</span>
                                         ))}
@@ -392,13 +395,13 @@ Communication is growing! 🥝
 
                 {/* Top Items */}
                 {topItems.length > 0 && (
-                    <div className="dashboard-card" style={{ background: '#f0f0ff' }}>
-                        <h3 style={{ margin: '0 0 0.625rem 0', fontSize: '1rem' }}>🏆 Most Used Items</h3>
+                    <div className="dashboard-card" style={{ background: 'var(--gray-light)' }}>
+                        <h3 style={{ margin: '0 0 0.625rem 0', fontSize: '1rem', color: 'var(--text-primary)' }}>🏆 Most Used Items</h3>
                         {topItems.map((item, i) => (
                             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '0.5rem' }}>
-                                <span style={{ width: '1.5rem', fontWeight: 'bold', color: '#666' }}>#{i + 1}</span>
-                                <span style={{ flex: 1 }}>{item.word}</span>
-                                <span style={{ background: 'var(--primary)', color: 'var(--primary-text)', padding: '0.25rem 0.75rem', borderRadius: '0.625rem', fontSize: '0.9rem' }}>{item.count}</span>
+                                <span style={{ width: '1.5rem', fontWeight: 'bold', color: 'var(--text-secondary)' }}>#{i + 1}</span>
+                                <span style={{ flex: 1, color: 'var(--text-primary)', fontWeight: 600 }}>{item.word}</span>
+                                <span style={{ background: 'var(--primary-dark)', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '0.625rem', fontSize: '0.9rem', fontWeight: 700 }}>{item.count}</span>
                             </div>
                         ))}
                     </div>
@@ -406,10 +409,10 @@ Communication is growing! 🥝
 
                 {/* Favorites Usage */}
                 {favorites.length > 0 && (
-                    <div className="dashboard-card" style={{ background: 'linear-gradient(135deg, #FFF5E1, #FFE4B5)', border: '0.125rem solid #FFD700' }}>
+                    <div className="dashboard-card" style={{ background: 'var(--bg-color)', border: '2px solid var(--fitz-noun)' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '0.9375rem' }}>
-                            <h3 style={{ margin: 0, fontSize: '1rem' }}>⭐ Favorite Usage</h3>
-                            <span style={{ background: '#FFD700', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '0.625rem', fontSize: '0.85rem', fontWeight: 'bold' }}>
+                            <h3 style={{ margin: 0, fontSize: '1rem', color: 'var(--text-primary)' }}>⭐ Favorite Usage</h3>
+                            <span style={{ background: 'var(--fitz-noun)', color: 'var(--fitz-noun-text)', padding: '0.25rem 0.75rem', borderRadius: '0.625rem', fontSize: '0.85rem', fontWeight: 'bold', border: '1px solid var(--gray-border)' }}>
                                 {totalFavoriteUses} total uses
                             </span>
                         </div>
@@ -419,40 +422,41 @@ Communication is growing! 🥝
                                 const lastUsedDate = fav.lastUsed ? new Date(fav.lastUsed).toLocaleDateString() : 'Never';
                                 return (
                                     <div key={i} style={{
-                                        background: 'white',
+                                        background: 'var(--card-bg)',
                                         padding: '1rem',
                                         borderRadius: '0.75rem',
                                         boxShadow: '0 0.125rem 0.5rem rgba(0,0,0,0.1)',
                                         display: 'flex',
                                         flexDirection: 'column',
-                                        gap: '0.5rem'
+                                        gap: '0.5rem',
+                                        border: '1px solid var(--gray-border)'
                                     }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                             <span style={{ fontSize: '2rem' }}>{fav.icon}</span>
                                             <div style={{ flex: 1 }}>
-                                                <div style={{ fontWeight: 'bold', fontSize: '0.95rem' }}>{fav.word}</div>
-                                                <div style={{ fontSize: '0.75rem', color: '#666' }}>Last: {lastUsedDate}</div>
+                                                <div style={{ fontWeight: 'bold', fontSize: '0.95rem', color: 'var(--text-primary)' }}>{fav.word}</div>
+                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500 }}>Last: {lastUsedDate}</div>
                                             </div>
                                         </div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                             <div style={{
                                                 flex: 1,
                                                 height: '0.5rem',
-                                                background: '#E5E5EA',
+                                                background: 'var(--gray-light)',
                                                 borderRadius: '0.25rem',
                                                 overflow: 'hidden'
                                             }}>
                                                 <div style={{
                                                     width: `${usagePercent}%`,
                                                     height: '100%',
-                                                    background: 'linear-gradient(90deg, #FFD700, #FFA500)',
+                                                    background: 'var(--fitz-noun)',
                                                     transition: 'width 0.3s ease'
                                                 }} />
                                             </div>
                                             <span style={{
                                                 fontSize: '0.85rem',
                                                 fontWeight: 'bold',
-                                                color: '#FF8C00',
+                                                color: 'var(--text-primary)',
                                                 minWidth: '2.5rem',
                                                 textAlign: 'right'
                                             }}>
@@ -463,33 +467,28 @@ Communication is growing! 🥝
                                 );
                             })}
                         </div>
-                        {favorites.length === 0 && (
-                            <p style={{ textAlign: 'center', color: '#666', margin: '1.25rem 0', fontStyle: 'italic', fontSize: '0.875rem' }}>
-                                No favorites used yet. Tap ⭐ Add More Favorites in Adult Settings!
-                            </p>
-                        )}
                     </div>
                 )}
 
                 <h2 className="dashboard-section-title">🏃 Communication Progress</h2>
                 <div className="dashboard-stat-grid" style={{gridTemplateColumns: 'repeat(3, 1fr)'}}>
-                    <div className="dashboard-stat-card" style={{ background: '#F3E5F5' }}>
-                        <div className="dashboard-stat-value" style={{ color: '#9C27B0' }}>{independentTrials}</div>
+                    <div className="dashboard-stat-card" style={{ borderBottom: '4px solid var(--fitz-social)' }}>
+                        <div className="dashboard-stat-value" style={{ color: 'var(--fitz-social)' }}>{independentTrials}</div>
                         <div className="dashboard-stat-label">Independent</div>
                     </div>
-                    <div className="dashboard-stat-card" style={{ background: '#FFFDE7' }}>
-                        <div className="dashboard-stat-value" style={{ color: '#FBC02D' }}>{promptedTrials}</div>
+                    <div className="dashboard-stat-card" style={{ borderBottom: '4px solid var(--fitz-noun)' }}>
+                        <div className="dashboard-stat-value" style={{ color: 'var(--warning)' }}>{promptedTrials}</div>
                         <div className="dashboard-stat-label">Prompted</div>
                     </div>
-                    <div className="dashboard-stat-card" style={{ background: '#E0F2F1' }}>
-                        <div className="dashboard-stat-value" style={{ color: '#00897B' }}>{independenceRate}%</div>
+                    <div className="dashboard-stat-card" style={{ borderBottom: '4px solid var(--fitz-verb)' }}>
+                        <div className="dashboard-stat-value" style={{ color: 'var(--fitz-verb)' }}>{independenceRate}%</div>
                         <div className="dashboard-stat-label">Independence</div>
                     </div>
                 </div>
 
                 {trials.length > 0 && (
-                    <div className="dashboard-card" style={{ background: '#f0efff' }}>
-                        <h3 style={{ margin: '0 0 0.625rem 0', fontSize: '1rem' }}>Trial History</h3>
+                    <div className="dashboard-card" style={{ background: 'var(--gray-light)' }}>
+                        <h3 style={{ margin: '0 0 0.625rem 0', fontSize: '1rem', color: 'var(--text-primary)' }}>Trial History (Last 20)</h3>
                         <div style={{ display: 'flex', gap: '0.3125rem', flexWrap: 'wrap' }}>
                             {trials.slice(-20).map((t, i) => (
                                 <div
@@ -497,9 +496,10 @@ Communication is growing! 🥝
                                     style={{
                                         width: '0.75rem',
                                         height: '1.5rem',
-                                        background: t.isPrompted ? '#FBC02D' : '#9C27B0',
+                                        background: t.isPrompted ? 'var(--warning)' : 'var(--fitz-social)',
                                         borderRadius: '0.1875rem'
                                     }}
+                                    title={t.isPrompted ? 'Prompted' : 'Independent'}
                                 />
                             ))}
                         </div>

@@ -267,7 +267,7 @@ This opens Android Studio. You can then:
 
 ### Future Enhancements:
 - Biometric authentication for settings access
-- Cloud backup integration (Supabase/Neon ready)
+- Cloud backup integration (Neon ready)
 - Community board gallery
 - Additional symbol libraries (ARASAAC integration planned)
 

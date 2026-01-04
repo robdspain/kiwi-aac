@@ -1,3 +1,7 @@
+// Standard PPI estimate for mobile devices (can be refined per platform)
+export const PPI_ESTIMATE = 160; 
+export const getPxFromMm = (mm) => (mm / 25.4) * PPI_ESTIMATE;
+
 /**
  * Converts an emoji character to its OpenMoji SVG URL.
  * @param {string} emoji - The emoji character (e.g., '🍎')

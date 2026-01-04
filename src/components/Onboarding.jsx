@@ -36,8 +36,18 @@ const Onboarding = ({ onComplete }) => {
             title: "Welcome to Kiwi Voice! 🥝",
             content: (
                 <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '5rem', marginBottom: '1.25rem' }}>🥝</div>
-                    <p style={{ fontSize: '1.1rem', color: '#636E72', lineHeight: 1.5 }}>
+                    <img 
+                        src="/images/logo.png" 
+                        alt="Kiwi Voice Logo" 
+                        style={{ 
+                            width: '10rem', 
+                            height: '10rem', 
+                            marginBottom: '1.25rem',
+                            borderRadius: '2rem',
+                            boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
+                        }} 
+                    />
+                    <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
                         A powerful communication tool designed for children learning to express themselves.
                     </p>
                 </div>
@@ -51,9 +61,9 @@ const Onboarding = ({ onComplete }) => {
                         onClick={takePhoto}
                         style={{ 
                             width: '8rem', height: '8rem', borderRadius: '50%', 
-                            background: '#F2F2F7', display: 'flex', alignItems: 'center', 
+                            background: 'var(--gray-light)', display: 'flex', alignItems: 'center', 
                             justifyContent: 'center', fontSize: '3rem', cursor: 'pointer',
-                            overflow: 'hidden', border: '0.25rem solid white',
+                            overflow: 'hidden', border: '0.25rem solid var(--card-bg)',
                             boxShadow: '0 0.5rem 1rem rgba(0,0,0,0.1)'
                         }}
                     >
@@ -64,7 +74,7 @@ const Onboarding = ({ onComplete }) => {
                         )}
                     </div>
                     <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        <label style={{ fontSize: '0.875rem', fontWeight: 700, color: '#666', marginLeft: '0.5rem' }}>LEARNER&apos;S NAME</label>
+                        <label style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-secondary)', marginLeft: '0.5rem' }}>LEARNER&apos;S NAME</label>
                         <input 
                             type="text" 
                             placeholder="Enter name (optional)" 
@@ -72,12 +82,12 @@ const Onboarding = ({ onComplete }) => {
                             onChange={(e) => setLearnerName(e.target.value)}
                             style={{ 
                                 width: '100%', padding: '1rem 1.25rem', borderRadius: '1rem', 
-                                border: 'none', background: 'white', fontSize: '1.1rem',
-                                boxShadow: '0 2px 4px rgba(0,0,0,0.05)', outline: 'none'
+                                border: '1px solid var(--gray-border)', background: 'var(--card-bg)', fontSize: '1.1rem',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.05)', outline: 'none', color: 'var(--text-primary)'
                             }}
                         />
                     </div>
-                    <p style={{ fontSize: '0.9rem', color: '#95A5A6', textAlign: 'center', lineHeight: 1.4 }}>
+                    <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', textAlign: 'center', lineHeight: 1.4 }}>
                         Adding a name and photo makes the app feel like it belongs to them!
                     </p>
                 </div>
@@ -87,7 +97,7 @@ const Onboarding = ({ onComplete }) => {
             title: "How to Use",
             content: (
                 <div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9375rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9375rem', color: 'var(--text-primary)' }}>
                         <div style={{ display: 'flex', gap: '0.9375rem', alignItems: 'center' }}>
                             <div style={{ fontSize: '2rem', width: '3.125rem', textAlign: 'center' }}>👆</div>
                             <div>
@@ -105,7 +115,7 @@ const Onboarding = ({ onComplete }) => {
                                 <img 
                                     src="/images/settings-gear.png" 
                                     alt="Settings" 
-                                    style={{ width: '3.125rem', height: '3.125rem', objectFit: 'contain', opacity: 0.5 }} 
+                                    style={{ width: '3.125rem', height: '3.125rem', objectFit: 'contain', opacity: 0.8 }} 
                                 />
                             </div>
                             <div>
@@ -126,17 +136,17 @@ const Onboarding = ({ onComplete }) => {
             title: "Tips for Success",
             content: (
                 <div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        <div style={{ background: 'rgba(78, 205, 196, 0.15)', padding: '0.9375rem', borderRadius: '0.75rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', color: 'var(--text-primary)' }}>
+                        <div style={{ background: 'var(--gray-light)', border: '1px solid var(--gray-border)', padding: '0.9375rem', borderRadius: '0.75rem' }}>
                             💡 <strong>Start simple</strong> — Begin with one item that could have multiple meanings such as play, snack or toy
                         </div>
-                        <div style={{ background: 'rgba(126, 217, 87, 0.15)', padding: '0.9375rem', borderRadius: '0.75rem' }}>
+                        <div style={{ background: 'var(--gray-light)', border: '1px solid var(--gray-border)', padding: '0.9375rem', borderRadius: '0.75rem' }}>
                             🎯 <strong>Be consistent</strong> — Practice during natural routines
                         </div>
-                        <div style={{ background: 'rgba(255, 107, 107, 0.15)', padding: '0.9375rem', borderRadius: '0.75rem' }}>
+                        <div style={{ background: 'var(--gray-light)', border: '1px solid var(--gray-border)', padding: '0.9375rem', borderRadius: '0.75rem' }}>
                             🎉 <strong>Celebrate</strong> — Reinforce every communication attempt
                         </div>
-                        <div style={{ background: 'rgba(255, 184, 77, 0.15)', padding: '0.9375rem', borderRadius: '0.75rem' }}>
+                        <div style={{ background: 'var(--gray-light)', border: '1px solid var(--gray-border)', padding: '0.9375rem', borderRadius: '0.75rem' }}>
                             📷 <strong>Personalize</strong> — Add photos of family, pets, favorite foods
                         </div>
                     </div>
@@ -150,11 +160,11 @@ const Onboarding = ({ onComplete }) => {
                     <img
                         src="/images/guided-access.png"
                         alt="Guided Access Instructions"
-                        style={{ width: '100%', maxWidth: '25rem', marginBottom: '1.25rem', borderRadius: '1rem' }}
+                        style={{ width: '100%', maxWidth: '25rem', marginBottom: '1.25rem', borderRadius: '1rem', border: '1px solid var(--gray-border)' }}
                     />
-                    <div style={{ textAlign: 'left', background: 'rgba(88, 86, 214, 0.1)', padding: '1.25rem', borderRadius: '1rem', marginTop: '0.9375rem' }}>
-                        <div style={{ fontSize: '1.5rem', marginBottom: '0.75rem', textAlign: 'center' }}>📱 Enable Guided Access</div>
-                        <div style={{ fontSize: '1rem', lineHeight: 1.7, color: '#636E72' }}>
+                    <div style={{ textAlign: 'left', background: 'var(--gray-light)', border: '1px solid var(--gray-border)', padding: '1.25rem', borderRadius: '1rem', marginTop: '0.9375rem' }}>
+                        <div style={{ fontSize: '1.5rem', marginBottom: '0.75rem', textAlign: 'center', color: 'var(--text-primary)', fontWeight: 'bold' }}>📱 Enable Guided Access</div>
+                        <div style={{ fontSize: '1rem', lineHeight: 1.7, color: 'var(--text-secondary)' }}>
                             <p style={{ marginBottom: '0.75rem' }}><strong>Step 1:</strong> Go to Settings → Accessibility → Guided Access</p>
                             <p style={{ marginBottom: '0.75rem' }}><strong>Step 2:</strong> Turn it ON and set a passcode</p>
                             <p style={{ marginBottom: '0.75rem' }}><strong>Step 3:</strong> Open Kiwi Voice and <strong>triple-click the Side Button</strong></p>
@@ -162,7 +172,7 @@ const Onboarding = ({ onComplete }) => {
                             <p style={{ marginBottom: '0' }}><strong>To Exit:</strong> Triple-click Side Button again and enter passcode</p>
                         </div>
                     </div>
-                    <div style={{ marginTop: '0.9375rem', fontSize: '0.95rem', color: '#95A5A6', textAlign: 'center' }}>
+                    <div style={{ marginTop: '0.9375rem', fontSize: '0.95rem', color: 'var(--text-muted)', textAlign: 'center' }}>
                         This prevents accidental exits and keeps your child focused on communication
                     </div>
                 </div>
@@ -223,7 +233,7 @@ const Onboarding = ({ onComplete }) => {
     return (
         <div style={{
             position: 'fixed', inset: 0,
-            background: 'linear-gradient(180deg, #FDF8F3 0%, #F5F0EB 100%)',
+            background: 'var(--bg-color)',
             zIndex: 1000, display: 'flex', flexDirection: 'column',
             padding: '2.5rem 1.5625rem', boxSizing: 'border-box'
         }}>
@@ -235,8 +245,8 @@ const Onboarding = ({ onComplete }) => {
                         height: '0.625rem',
                         borderRadius: '0.625rem',
                         background: i <= step
-                            ? 'linear-gradient(135deg, #4ECDC4, #3DB8B0)'
-                            : '#D1D5DB',
+                            ? 'var(--primary-dark)'
+                            : 'var(--gray-border)',
                         transition: 'all 0.3s ease'
                     }} />
                 ))}
@@ -248,7 +258,7 @@ const Onboarding = ({ onComplete }) => {
                 marginBottom: '1.25rem',
                 fontSize: '1.8rem',
                 fontWeight: 800,
-                color: '#2D3436'
+                color: 'var(--text-primary)'
             }}>
                 {steps[step].title}
             </h1>
@@ -265,12 +275,12 @@ const Onboarding = ({ onComplete }) => {
                         onClick={handleSkip}
                         style={{
                             flex: 1, padding: '1rem',
-                            background: 'white',
-                            border: '0.125rem solid #E5E5EA',
+                            background: 'var(--card-bg)',
+                            border: '0.125rem solid var(--gray-border)',
                             borderRadius: '1rem',
-                            fontSize: '1rem',
+                            fontSize: '1.1rem',
                             fontWeight: 600,
-                            color: '#636E72',
+                            color: 'var(--text-secondary)',
                             cursor: 'pointer',
                             minHeight: '3.5rem'
                         }}
@@ -280,16 +290,11 @@ const Onboarding = ({ onComplete }) => {
                 )}
                 <button
                     onClick={handleNext}
+                    className="primary-button"
                     style={{
                         flex: 2, padding: '1rem',
-                        background: 'linear-gradient(135deg, #4ECDC4, #3DB8B0)',
-                        color: 'var(--primary-text)',
-                        border: 'none',
-                        borderRadius: '1rem',
-                        fontSize: '1rem',
+                        fontSize: '1.1rem',
                         fontWeight: 700,
-                        cursor: 'pointer',
-                        boxShadow: '0 6px 20px rgba(78, 205, 196, 0.3)',
                         minHeight: '3.5rem'
                     }}
                 >

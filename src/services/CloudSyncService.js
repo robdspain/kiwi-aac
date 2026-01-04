@@ -3,7 +3,6 @@ import LZString from 'lz-string';
 import { getAllMedia, importAllMedia } from '../utils/db';
 import { relationalSyncService } from './RelationalSyncService';
 
-const TABLE_NAME = 'kiwi_sync';
 const DATABASE_URL = import.meta.env.VITE_NEON_DATABASE_URL;
 
 class CloudSyncService {
@@ -113,8 +112,8 @@ class CloudSyncService {
             `;
             return syncCode;
         } catch (error) {
-            console.error('Cloud upload error:', error);
-            throw new Error('Failed to upload data to cloud.');
+            console.error('Error during cloud restore:', error);
+            return null;
         }
     }
 
@@ -143,7 +142,7 @@ class CloudSyncService {
             try {
                 const decompressed = LZString.decompressFromUTF16(data);
                 payload = JSON.parse(decompressed);
-            } catch (e) {
+            } catch {
                 // Compatibility for uncompressed or old versions
                 payload = JSON.parse(data);
             }

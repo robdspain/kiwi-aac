@@ -118,7 +118,7 @@
 #### ☁️ Cloud Sync & Team Collaboration
 
 **Cloud Infrastructure:**
-- Supabase/Neon backend for board storage
+- Neon backend for board storage and anonymous sync
 - Real-time sync across devices for same user
 - Team sharing: Invite therapists, teachers, family via email
 - Access codes: Simple 6-digit codes like Zoom (vs complex account management)

@@ -9,13 +9,23 @@ const SplashScreen = ({ onComplete }) => {
     return (
         <div style={{
             position: 'fixed', inset: 0,
-            background: 'linear-gradient(135deg, #4ECDC4 0%, #45B7AF 100%)',
+            background: 'linear-gradient(135deg, #1A535C 0%, #113F46 100%)',
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
             color: 'white', zIndex: 99999,
             animation: 'fadeIn 0.5s ease-out'
         }}>
-            <div style={{ fontSize: '6rem', marginBottom: '20px', filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.1))' }}>🥝</div>
-                                <h1 style={{ margin: 0, fontSize: '3rem', fontWeight: 'bold', color: 'white' }}>Kiwi Voice</h1>            <div style={{
+            <img 
+                src="/images/logo.png" 
+                alt="Kiwi Voice Logo" 
+                style={{ 
+                    width: '12rem', 
+                    height: '12rem', 
+                    marginBottom: '20px', 
+                    filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.2))',
+                    borderRadius: '2.5rem'
+                }} 
+            />
+            <h1 style={{ margin: 0, fontSize: '3rem', fontWeight: 'bold', color: 'white' }}>Kiwi Voice</h1>            <div style={{
                 marginTop: '20px',
                 width: '40px',
                 height: '4px',

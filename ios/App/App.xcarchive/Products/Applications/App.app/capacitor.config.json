@@ -1,0 +1,16 @@
+{
+	"appId": "com.behaviorschool.kiwivoice",
+	"appName": "Kiwi Voice",
+	"webDir": "dist",
+	"packageClassList": [
+		"InAppReviewPlugin",
+		"CAPCameraPlugin",
+		"DevicePlugin",
+		"FilesystemPlugin",
+		"HapticsPlugin",
+		"SharePlugin",
+		"PurchasesPlugin",
+		"RevenueCatUIPlugin",
+		"VoiceRecorder"
+	]
+}

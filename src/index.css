@@ -1,18 +1,14 @@
 :root {
-  /* High-Contrast Modern Palette */
+  /* High-Contrast Modern Palette - Light Mode Default */
   --bg-color: #FDF8F3;
   --bg-gradient: linear-gradient(180deg, #FDF8F3 0%, #F5F0EB 100%);
   --card-bg: #FFFFFF;
-  --primary: #4ECDC4;
-  --primary-dark: #1A535C; /* Darker for better contrast */
-  --primary-text: #1A535C; /* Dark Teal for 4.5:1 on Primary */
-  --accent: #D63031; /* More accessible red */
-  --accent-light: #FF7675;
-  --success: #1B5E20; /* Darker Green for WCAG */
-  --warning: #E67E22;
-  --danger: #B71C1C; /* Darker Red for WCAG */
+  --primary: #1A535C; 
+  --primary-light: #4ECDC4;
+  --primary-dark: #113F46;
+  --primary-text: #FFFFFF; /* For use on dark backgrounds like --primary */
   --text-primary: #2D3436;
-  --text-secondary: #444; /* Darker for contrast */
+  --text-secondary: #444444; 
   --text-muted: #636E72;
   --shadow-color: rgba(26, 83, 92, 0.1);
   --shadow-soft: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.05);
@@ -21,22 +17,28 @@
   --radius-md: 1.25rem;
   --radius-lg: 1.75rem;
   --radius-xl: 2.5rem;
+
+  /* Button Specific Variables (High Contrast) */
+  --btn-primary-bg: #1A535C;
+  --btn-primary-text: #FFFFFF;
+  --btn-blue-bg: #0056D2;
+  --btn-blue-text: #FFFFFF;
   
   /* Fitzgerald Key (WCAG 2.1 AA Optimized) */
   --fitz-noun: #FFEB3B;
   --fitz-noun-text: #2D3436;
-  --fitz-verb: #2E7D32; /* Saturated dark green */
+  --fitz-verb: #1B5E20; 
   --fitz-verb-text: #FFFFFF;
-  --fitz-adj: #1565C0; /* Saturated dark blue */
+  --fitz-adj: #0D47A1; 
   --fitz-adj-text: #FFFFFF;
-  --fitz-social: #C2185B; /* Deep pink */
+  --fitz-social: #880E4F; 
   --fitz-social-text: #FFFFFF;
-  --fitz-misc: #E65100; /* Deep orange */
+  --fitz-misc: #BF360C; 
   --fitz-misc-text: #FFFFFF;
-  --fitz-question: #6A1B9A; /* Purple */
+  --fitz-question: #4A148C; 
   --fitz-question-text: #FFFFFF;
   
-  /* Additional Dashboard Colors (Standardized) */
+  /* Standard UI Colors */
   --gray-light: #F2F2F7;
   --gray-border: #E5E5EA;
   
@@ -46,29 +48,79 @@
   --transition-spring: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+/* Contrast Guardian: Force accessible text colors on common light components */
+.ios-setting-card, 
+.ios-row, 
+.ios-modal-content, 
+.ios-bottom-sheet, 
+.ios-sheet-content,
+.dashboard-content,
+.dashboard-stat-card,
+.dashboard-card,
+#controls-content,
+#strip-container {
+  color: var(--text-primary) !important;
+}
+
+/* Ensure headings in light modals are always dark */
+.ios-modal-header h3,
+.ios-sheet-title,
+.dashboard-stat-label {
+  color: var(--text-primary) !important;
+}
+
+/* Fix for buttons using translucent white backgrounds */
+button[style*="rgba(255,255,255,0.2)"] {
+  color: #FFFFFF !important;
+  background: rgba(0, 0, 0, 0.3) !important; /* Switch to translucent black for better contrast */
+  border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
 /* Native Dark Mode Sync */
 @media (prefers-color-scheme: dark) {
   :root {
     --bg-color: #000000;
     --bg-gradient: linear-gradient(180deg, #1C1C1E 0%, #000000 100%);
     --card-bg: #1C1C1E;
-    --primary-dark: #4ECDC4;
-    --primary-text: #FFFFFF;
+    --primary: #4ECDC4;
+    --primary-dark: #4ECDC4; /* Light teal for visibility */
+    --primary-text: #000000; /* Dark text for contrast on light teal */
     --text-primary: #FFFFFF;
     --text-secondary: #EBEBF5;
     --text-muted: #8E8E93;
     --shadow-color: rgba(0, 0, 0, 0.5);
     --gray-light: #1C1C1E;
     --gray-border: #38383A;
+
+    /* Button Specific Variables (Dark Mode) */
+    --btn-primary-bg: #4ECDC4;
+    --btn-primary-text: #000000;
+    --btn-blue-bg: #0A84FF;
+    --btn-blue-text: #FFFFFF;
   }
 
   body {
     background: #000000;
   }
 
-  .ios-setting-card, .ios-row, #strip-container, #controls-content {
+  .ios-setting-card, 
+  .ios-row, 
+  .ios-modal-content, 
+  .ios-bottom-sheet, 
+  .ios-sheet-content,
+  .dashboard-content,
+  .dashboard-stat-card,
+  .dashboard-card,
+  #controls-content,
+  #strip-container {
     background: #1C1C1E;
-    color: white;
+    color: white !important; /* Force white text in dark mode */
+  }
+
+  .ios-modal-header h3,
+  .ios-sheet-title,
+  .dashboard-stat-label {
+    color: white !important;
   }
 
   .ios-row {
@@ -99,6 +151,26 @@
   .app-item:not(.is-hidden) .app-label {
     color: white;
   }
+}
+
+/* High Contrast Mode Body Class (Manual Override) */
+body.high-contrast {
+  --bg-color: #ffffff;
+  --bg-gradient: none;
+  --card-bg: #ffffff;
+  --text-primary: #000000;
+  --text-secondary: #000000;
+  --primary: #000000;
+  --primary-dark: #000000;
+}
+
+body.high-contrast .app-icon {
+  border: 4px solid #000 !important;
+}
+
+body.high-contrast .app-label {
+  color: #000 !important;
+  font-weight: 900 !important;
 }
 
 /* Literacy Mode */
@@ -148,7 +220,7 @@ body.literacy-mode {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Text", Roboto, sans-serif;
+  font-family: "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "SF Pro Text", Roboto, "Helvetica Neue", Arial, sans-serif;
   background: var(--bg-gradient);
   background-attachment: fixed;
   margin: 0;
@@ -172,11 +244,20 @@ body {
 }
 
 /* Updated Primary Button for High Contrast */
-button.primary {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: var(--primary-text);
-  box-shadow: 0 0.25rem 1rem rgba(78, 205, 196, 0.3);
+button.primary, .primary-button {
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  box-shadow: 0 0.25rem 1rem rgba(26, 83, 92, 0.3);
   font-weight: 800;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 1rem 2rem;
+  cursor: pointer;
+  transition: var(--transition-pop);
+}
+
+.primary-button:active, button.primary:active {
+  transform: scale(0.95);
 }
 
 #breadcrumbs {
@@ -226,7 +307,8 @@ button.primary {
   gap: 0.625rem;
   position: relative;
   cursor: pointer;
-  min-width: 4.5rem; /* 72px min for superior hit area */
+  /* Use target size if provided, otherwise fallback to 4.5rem */
+  min-width: 4.5rem; 
   min-height: 4.5rem;
   animation: fadeIn 0.3s ease;
   touch-action: manipulation;
@@ -237,10 +319,12 @@ button.primary {
   opacity: 0.7;
 }
 
-/* Touch Target Size Definitions */
-.size-standard .app-item { width: calc(25% - 1rem); max-width: 8.75rem; }
-.size-big .app-item { width: calc(33.33% - 1rem); max-width: 11.25rem; }
-.size-super-big .app-item { width: calc(50% - 1rem); max-width: 15rem; }
+/* Legacy Touch Target Size Definitions - Only applied if not overridden by Access Profile */
+.size-standard:not([style*="grid-template-columns"]) .app-item { width: calc(25% - 1rem); max-width: 8.75rem; }
+.size-big:not([style*="grid-template-columns"]) .app-item { width: calc(33.33% - 1rem); max-width: 11.25rem; }
+.size-super-big:not([style*="grid-template-columns"]) .app-item { width: calc(50% - 1rem); max-width: 15rem; }
+.size-medium:not([style*="grid-template-columns"]) .app-item { width: calc(20% - 1rem); max-width: 6.25rem; min-width: 3.5rem; }
+.size-dense:not([style*="grid-template-columns"]) .app-item { width: calc(16.66% - 1rem); max-width: 5rem; min-width: 3rem; }
 
 /* Level 1/2 Focus Mode Card Refinement */
 .phase-large-grid {
@@ -265,6 +349,8 @@ button.primary {
   border: none !important;
   margin: auto !important;
   height: auto !important;
+  width: auto !important; /* Allow auto width in focus mode */
+  min-width: 0 !important;
 }
 
 .size-standard.phase-large-grid .app-item { width: 80vw !important; max-width: 20rem !important; }
@@ -310,6 +396,26 @@ button.primary {
   position: relative;
   transition: var(--transition-pop);
   overflow: hidden;
+}
+
+/* High Contrast Mode Overrides */
+.high-contrast .app-icon {
+  border: 4px solid #000 !important;
+  box-shadow: none !important;
+  background: #fff !important;
+}
+
+.high-contrast .app-label {
+  color: #000 !important;
+  font-weight: 900 !important;
+  background: #fff;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.high-contrast .app-item.is-scanned .app-icon {
+  border-color: #007AFF !important;
+  box-shadow: 0 0 0 8px #007AFF !important;
 }
 
 .phrase-storyboard {
@@ -790,23 +896,6 @@ button.primary {
 .dashboard-btn.success { background: var(--success); color: var(--text-primary); }
 .dashboard-btn.secondary { background: var(--gray-light); color: var(--text-secondary); }
 
-/* Common UI Elements */
-.primary-button {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: var(--text-primary);
-  border: none;
-  padding: 16px 32px;
-  border-radius: var(--radius-md);
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 8px 20px var(--shadow-color);
-  transition: var(--transition-pop);
-}
-
-.primary-button:active {
-  transform: scale(0.95);
-}
-
 /* iOS Modal Styles */
 .ios-modal-overlay {
   position: fixed;
@@ -886,8 +975,8 @@ button.primary {
 }
 
 .apple-blue-button {
-  background: #007AFF;
-  color: white;
+  background: var(--btn-blue-bg);
+  color: var(--btn-blue-text);
   border: none;
   border-radius: 0.75rem;
   padding: 0.875rem;

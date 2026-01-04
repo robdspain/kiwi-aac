@@ -173,36 +173,38 @@ const AdvancementModal = ({ currentPhase, onAdvance, onWait }) => {
                 margin: '1.25rem',
                 borderRadius: '1.5rem',
                 textAlign: 'center',
-                overflowY: 'auto'
+                overflowY: 'auto',
+                background: 'var(--card-bg)'
             }}>
                 <div style={{ fontSize: '3rem', marginBottom: '0.625rem' }}>🚀</div>
-                <h1 style={{ margin: '0 0 0.625rem 0', fontSize: '2rem' }}>Great Progress!</h1>
-                <p style={{ color: '#666', fontSize: '1.1rem' }}>
+                <h1 style={{ margin: '0 0 0.625rem 0', fontSize: '2rem', color: 'var(--text-primary)' }}>Great Progress!</h1>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>
                     Your child has successfully completed 3 trials a day for 3 days in a row. They may be ready for the next level!
                 </p>
 
                 <div style={{
-                    background: 'white',
+                    background: 'var(--gray-light)',
                     padding: '1.25rem',
                     borderRadius: '1rem',
                     margin: '1.25rem 0',
                     textAlign: 'left',
                     boxShadow: '0 4px 10px rgba(0,0,0,0.05)'
                 }}>
-                    <h3 style={{ margin: '0 0 0.3125rem 0', color: 'var(--primary)' }}>Next: {details.nextGoal}</h3>
-                    <p style={{ margin: 0, fontSize: '1rem' }}>{details.nextSummary}</p>
+                    <h3 style={{ margin: '0 0 0.3125rem 0', color: 'var(--primary-dark)' }}>Next: {details.nextGoal}</h3>
+                    <p style={{ margin: 0, fontSize: '1rem', color: 'var(--text-primary)' }}>{details.nextSummary}</p>
                 </div>
 
                 {showFullInstructions && (
                     <div style={{
-                        background: 'linear-gradient(135deg, #f8f9fa, #e9ecef)',
+                        background: 'var(--bg-color)',
                         padding: '1.25rem',
                         borderRadius: '1rem',
                         marginBottom: '1.25rem',
                         textAlign: 'left',
-                        fontSize: '0.9rem'
+                        fontSize: '0.9rem',
+                        border: '1px solid var(--gray-border)'
                     }}>
-                        <strong style={{ color: 'var(--primary)', fontSize: '1rem' }}>
+                        <strong style={{ color: 'var(--primary-dark)', fontSize: '1rem' }}>
                             📖 How to Teach {details.nextGoal}
                         </strong>
 
@@ -231,7 +233,7 @@ const AdvancementModal = ({ currentPhase, onAdvance, onWait }) => {
                             fontFamily: 'inherit',
                             fontSize: '0.85rem',
                             lineHeight: 1.6,
-                            color: '#333'
+                            color: 'var(--text-primary)'
                         }}>
                             {details.instruction}
                         </pre>
@@ -246,19 +248,20 @@ const AdvancementModal = ({ currentPhase, onAdvance, onWait }) => {
                         }}>
                             {details.teachingPoints.map((point, i) => (
                                 <div key={i} style={{
-                                    background: 'white',
+                                    background: 'var(--card-bg)',
                                     padding: '0.625rem 0.875rem',
                                     borderRadius: '1.25rem',
                                     fontSize: '0.8rem',
                                     fontWeight: 600,
-                                    color: 'var(--primary)',
+                                    color: 'var(--primary-dark)',
                                     boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '0.375rem'
+                                    gap: '0.375rem',
+                                    border: '1px solid var(--gray-border)'
                                 }}>
                                     <span style={{
-                                        background: 'var(--primary)',
+                                        background: 'var(--primary-dark)',
                                         color: 'white',
                                         width: '1.25rem',
                                         height: '1.25rem',
@@ -276,13 +279,13 @@ const AdvancementModal = ({ currentPhase, onAdvance, onWait }) => {
                 )}
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
-                    <button className="primary" onClick={onAdvance} style={{ minHeight: '2.75rem' }}>
+                    <button className="primary-button" onClick={onAdvance} style={{ minHeight: '3.5rem' }}>
                         Advance to Level {currentPhase + 1}
                     </button>
-                    <button onClick={() => setShowFullInstructions(!showFullInstructions)} style={{ minHeight: '2.75rem' }}>
+                    <button className="secondary-button" onClick={() => setShowFullInstructions(!showFullInstructions)} style={{ minHeight: '3.25rem', background: 'var(--gray-light)', border: 'none', borderRadius: '0.75rem', fontWeight: '600' }}>
                         {showFullInstructions ? "Hide" : "📖 Show"} Teaching Instructions
                     </button>
-                    <button style={{ color: '#FF3B30', minHeight: '2.75rem' }} onClick={onWait}>
+                    <button style={{ color: 'var(--danger)', minHeight: '2.75rem', background: 'none', border: 'none', fontWeight: 'bold', cursor: 'pointer' }} onClick={onWait}>
                         Stay in Level {currentPhase} for now
                     </button>
                 </div>

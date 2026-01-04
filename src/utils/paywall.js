@@ -87,7 +87,7 @@ export const checkPremiumTemplates = async () => {
   return hasAccess;
 };
 
-export const checkApplyTemplate = async (templateId) => {
+export const checkApplyTemplate = async () => {
   const hasAccess = await checkPremiumAccess();
   if (!hasAccess) {
     return await showPaywall('applyTemplate');
@@ -236,7 +236,7 @@ export const checkCustomPhotoLimit = async (currentPhotoCount) => {
 /**
  * Generic paywall trigger for any feature
  */
-export const triggerPaywall = async (feature, params = {}) => {
+export const triggerPaywall = async (feature) => {
   let hasAccess = await checkPremiumAccess();
   if (!hasAccess) {
     hasAccess = await showPaywall(feature);

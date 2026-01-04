@@ -15,7 +15,7 @@ class RelationalSyncService {
         try {
             const info = await Device.getId();
             this.deviceId = info.identifier;
-        } catch (error) {
+        } catch {
             // Fallback for web or if Device API fails
             this.deviceId = localStorage.getItem('kiwi_persistent_id');
             if (!this.deviceId) {

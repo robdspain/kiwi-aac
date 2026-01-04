@@ -19,7 +19,7 @@ const LevelIntro = ({ level, onComplete, onChangeLevel }) => {
         <div style={{
             position: 'fixed',
             inset: 0,
-            background: 'linear-gradient(135deg, #FDF8F3, #F5F0EB)',
+            background: 'var(--bg-color)',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -34,7 +34,7 @@ const LevelIntro = ({ level, onComplete, onChangeLevel }) => {
             <div
                 className="no-scrollbar"
                 style={{
-                    background: 'white',
+                    background: 'var(--card-bg)',
                     borderRadius: '24px',
                     padding: '30px',
                     maxWidth: '600px',
@@ -53,28 +53,29 @@ const LevelIntro = ({ level, onComplete, onChangeLevel }) => {
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: '8px',
-                        background: stageDef.color + '20',
+                        background: stageDef.color + '15',
                         color: stageDef.color,
                         padding: '6px 16px',
                         borderRadius: '20px',
                         fontSize: '0.85rem',
-                        fontWeight: '600',
-                        marginBottom: '12px'
+                        fontWeight: '700',
+                        marginBottom: '12px',
+                        border: `1px solid ${stageDef.color}40`
                     }}>
                         {stageDef.icon} Stage {Math.floor(level)}: {stageDef.name}
                     </div>
                     <h1 style={{
                         margin: 0,
                         fontSize: '1.8rem',
-                        color: '#2D3436'
+                        color: 'var(--text-primary)'
                     }}>
                         {instructions.emoji} Level {level}
                     </h1>
                     <h2 style={{
                         margin: '8px 0 0 0',
                         fontSize: '1.3rem',
-                        color: '#636E72',
-                        fontWeight: '500'
+                        color: 'var(--text-secondary)',
+                        fontWeight: '600'
                     }}>
                         {instructions.title}
                     </h2>
@@ -84,7 +85,7 @@ const LevelIntro = ({ level, onComplete, onChangeLevel }) => {
                 <div style={{
                     textAlign: 'center',
                     fontSize: '1.1rem',
-                    color: '#555',
+                    color: 'var(--text-primary)',
                     lineHeight: 1.5,
                     padding: '0 10px'
                 }}>
@@ -93,16 +94,17 @@ const LevelIntro = ({ level, onComplete, onChangeLevel }) => {
 
                 {/* Steps */}
                 <div style={{
-                    background: '#f8f9fa',
+                    background: 'var(--gray-light)',
                     padding: '20px',
                     borderRadius: '16px',
-                    border: '1px solid #e9ecef'
+                    border: '1px solid var(--gray-border)'
                 }}>
                     <h3 style={{
                         marginTop: 0,
                         marginBottom: '12px',
                         color: stageDef.color,
-                        fontSize: '1rem',
+                        fontSize: '1.1rem',
+                        fontWeight: '800',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '8px'
@@ -118,9 +120,9 @@ const LevelIntro = ({ level, onComplete, onChangeLevel }) => {
                     }}>
                         {instructions.steps.map((step, i) => (
                             <li key={i} style={{
-                                fontSize: '0.95rem',
+                                fontSize: '1rem',
                                 lineHeight: 1.5,
-                                color: '#444'
+                                color: 'var(--text-primary)'
                             }}>
                                 {step}
                             </li>
@@ -131,14 +133,16 @@ const LevelIntro = ({ level, onComplete, onChangeLevel }) => {
                 {/* Tips */}
                 {instructions.tips && (
                     <div style={{
-                        background: '#E3F2FD',
+                        background: 'rgba(88, 86, 214, 0.1)',
                         padding: '16px',
-                        borderRadius: '12px'
+                        borderRadius: '12px',
+                        border: '1px solid rgba(88, 86, 214, 0.2)'
                     }}>
                         <h4 style={{
                             margin: '0 0 10px 0',
-                            color: '#1565C0',
-                            fontSize: '0.9rem'
+                            color: '#5856D6',
+                            fontSize: '1rem',
+                            fontWeight: '800'
                         }}>
                             💡 Tips
                         </h4>
@@ -151,8 +155,9 @@ const LevelIntro = ({ level, onComplete, onChangeLevel }) => {
                         }}>
                             {instructions.tips.map((tip, i) => (
                                 <li key={i} style={{
-                                    fontSize: '0.85rem',
-                                    color: '#1565C0'
+                                    fontSize: '0.9rem',
+                                    color: 'var(--text-primary)',
+                                    fontWeight: '500'
                                 }}>
                                     {tip}
                                 </li>
@@ -175,7 +180,7 @@ const LevelIntro = ({ level, onComplete, onChangeLevel }) => {
                                 width: l === level ? '24px' : '8px',
                                 height: '8px',
                                 borderRadius: '4px',
-                                background: l === level ? stageDef.color : '#E5E5EA',
+                                background: l === level ? stageDef.color : 'var(--gray-border)',
                                 transition: 'all 0.3s ease'
                             }}
                         />
@@ -186,16 +191,14 @@ const LevelIntro = ({ level, onComplete, onChangeLevel }) => {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <button
                         onClick={onComplete}
+                        className="primary-button"
                         style={{
                             padding: '18px',
-                            background: `linear-gradient(135deg, ${stageDef.color}, ${stageDef.color}dd)`,
+                            background: stageDef.color,
                             color: 'white',
-                            border: 'none',
                             borderRadius: '16px',
-                            fontSize: '1.1rem',
-                            fontWeight: 'bold',
-                            cursor: 'pointer',
-                            boxShadow: `0 8px 20px ${stageDef.color}40`
+                            fontSize: '1.2rem',
+                            minHeight: '4rem'
                         }}
                     >
                         Start Level {level}
@@ -207,12 +210,13 @@ const LevelIntro = ({ level, onComplete, onChangeLevel }) => {
                             style={{
                                 padding: '12px',
                                 background: 'transparent',
-                                border: '2px solid #E5E5EA',
-                                color: '#636E72',
+                                border: '2px solid var(--gray-border)',
+                                color: 'var(--text-secondary)',
                                 borderRadius: '16px',
-                                fontSize: '0.9rem',
-                                fontWeight: '600',
-                                cursor: 'pointer'
+                                fontSize: '1rem',
+                                fontWeight: '700',
+                                cursor: 'pointer',
+                                minHeight: '3.5rem'
                             }}
                         >
                             Select Another Level

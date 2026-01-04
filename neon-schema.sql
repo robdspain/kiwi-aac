@@ -4,10 +4,10 @@
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- User profiles (linked to Supabase Auth user ID)
+-- User profiles (linked to persistent device ID for anonymous sync)
 CREATE TABLE IF NOT EXISTS profiles (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  auth_user_id TEXT NOT NULL UNIQUE,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    auth_user_id TEXT UNIQUE NOT NULL, -- Persistent Device ID (from @capacitor/device)
   email TEXT,
   name TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
