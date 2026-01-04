@@ -394,63 +394,57 @@ function App() {
   const handleAdvance = () => { const nextLevel = getNextLevel(currentLevel); if (nextLevel) handleSetLevel(nextLevel); setShowAdvancementModal(false); };
   const handleWait = () => { setShowAdvancementModal(false); const resetProgress = { ...progressData, currentStreak: 0, successDates: [], lastSuccessTime: null }; setProgressData(resetProgress); localStorage.setItem('kians-progress', JSON.stringify(resetProgress)); };
 
-  // Initialize RevenueCat SDK on app startup
-  const configureRevenueCat = async () => {
-    try {
-      // Import the RevenueCat service
-      const { default: revenueCatService } = await import('./services/RevenueCatService');
 
-      // Initialize with optional user ID (can be null for anonymous)
-      const userId = currentProfile?.id || null;
-      await revenueCatService.initialize(userId);
-
-      console.log('✅ RevenueCat initialized in App.jsx');
-    } catch (error) {
-      console.error('❌ Failed to initialize RevenueCat:', error);
-    }
-  };
-
-  const attemptCloudRestore = async () => {
-    // Only attempt restore if no local data exists (fresh install)
-    const onboardingComplete = localStorage.getItem('kiwi-onboarding-complete');
-    if (onboardingComplete) return;
-
-    try {
-      const { relationalSyncService } = await import('./services/RelationalSyncService');
-      const restored = await relationalSyncService.restoreFromCloud();
-      
-      if (restored) {
-        console.log('☁️ Data restored automatically from cloud');
-        // Update local state with restored data
-        if (restored.profile) {
-          updateProfile('default', {
-            name: restored.profile.name,
-            avatar: restored.profile.avatar,
-            pecs_phase: restored.profile.pecs_phase
-          });
-          if (restored.profile.onboarding_complete) {
-            localStorage.setItem('kiwi-onboarding-complete', 'true');
-            setShowOnboarding(false);
-          }
-          if (restored.profile.pecs_phase) {
-            handleSetLevel(migratePhaseToLevel(restored.profile.pecs_phase));
-          }
-        }
-        
-        if (restored.boards && restored.boards.home) {
-          const homeData = restored.boards.home;
-          setRootItems(Array.isArray(homeData) ? [{ name: 'Page 1', items: homeData }] : homeData);
-        }
-        
-        // Refresh the page or update state to reflect changes
-        window.location.reload(); 
-      }
-    } catch (error) {
-      console.error('Cloud restore failed:', error);
-    }
-  };
 
   useEffect(() => {
+    // Initialize RevenueCat SDK on app startup
+    const configureRevenueCat = async () => {
+      try {
+        const { default: revenueCatService } = await import('./services/RevenueCatService');
+        const userId = currentProfile?.id || null;
+        await revenueCatService.initialize(userId);
+        console.log('✅ RevenueCat initialized in App.jsx');
+      } catch (error) {
+        console.error('❌ Failed to initialize RevenueCat:', error);
+      }
+    };
+
+    const attemptCloudRestore = async () => {
+      const onboardingComplete = localStorage.getItem('kiwi-onboarding-complete');
+      if (onboardingComplete) return;
+
+      try {
+        const { relationalSyncService } = await import('./services/RelationalSyncService');
+        const restored = await relationalSyncService.restoreFromCloud();
+        
+        if (restored) {
+          console.log('☁️ Data restored automatically from cloud');
+          if (restored.profile) {
+            updateProfile('default', {
+              name: restored.profile.name,
+              avatar: restored.profile.avatar,
+              pecs_phase: restored.profile.pecs_phase
+            });
+            if (restored.profile.onboarding_complete) {
+              localStorage.setItem('kiwi-onboarding-complete', 'true');
+              setShowOnboarding(false);
+            }
+            if (restored.profile.pecs_phase) {
+              handleSetLevel(migratePhaseToLevel(restored.profile.pecs_phase));
+            }
+          }
+          
+          if (restored.boards && restored.boards.home) {
+            const homeData = restored.boards.home;
+            setRootItems(Array.isArray(homeData) ? [{ name: 'Page 1', items: homeData }] : homeData);
+          }
+          window.location.reload(); 
+        }
+      } catch (error) {
+        console.error('Cloud restore failed:', error);
+      }
+    };
+
     configureRevenueCat();
     attemptCloudRestore();
     // Auto-sync if a cloud code is active
