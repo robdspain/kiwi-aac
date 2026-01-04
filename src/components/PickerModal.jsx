@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { EMOJI_DATA } from '../utils/emojiData';
 import { getOpenMojiUrl } from '../utils/imageUtils';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 const iconsData = {
     'TV': [{ w: 'Elmo', i: '🔴' }, { w: 'Bluey', i: '🐶' }, { w: 'Music', i: '🎵' }, { w: 'Book', i: '📚' }],
@@ -37,6 +38,17 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
     const fileInputRef = useRef(null);
     const lastCustomizingItemIdRef = useRef(null);
     const peekTimerRef = useRef(null);
+
+    const triggerHaptic = async (style) => {
+        try {
+            let impactStyle = ImpactStyle.Medium;
+            if (style === 'light') impactStyle = ImpactStyle.Light;
+            if (style === 'heavy') impactStyle = ImpactStyle.Heavy;
+            await Haptics.impact({ style: impactStyle });
+        } catch {
+            // Ignore haptic errors
+        }
+    };
 
     const handlePointerDown = (word, icon, isImage) => {
         peekTimerRef.current = setTimeout(() => {
