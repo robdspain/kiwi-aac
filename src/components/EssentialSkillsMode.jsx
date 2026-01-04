@@ -145,7 +145,7 @@ const EssentialSkillsMode = ({ onExit, sensitivity = 0.4, onLogEvent }) => {
 
             </div>
 
-            <div style={{ padding: '20px', textAlign: 'center', color: '#8E8E93', fontSize: '0.8rem' }}>
+            <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
                 Essential Skills Mode • Based on Dr. Hanley&apos;s SBT
             </div>
         </div>

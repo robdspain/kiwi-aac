@@ -47,13 +47,13 @@ const VoiceRecorder = ({ currentAudio, onSave, onRemove }) => {
     const formatTime = (s) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
 
     return (
-        <div style={{ background: '#f8f8f8', padding: '0.75rem', borderRadius: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
+        <div style={{ background: '#f8f8f8', padding: '0.75rem', borderRadius: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             <div role="status" aria-live="polite" style={{ position: 'absolute', width: '1px', height: '1px', padding: '0', margin: '-1px', overflow: 'hidden', clip: 'rect(0, 0, 0, 0)', whiteSpace: 'nowrap', border: '0' }}>
                 {isRecording ? 'Recording started' : audioUrl && !isRecording ? 'Recording stopped' : ''}
             </div>
             <label style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>Custom Voice</label>
             {isRecording ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                     <div style={{ width: '0.75rem', height: '0.75rem', borderRadius: '50%', background: '#FF3B30', animation: 'pulse 1s infinite' }} />
                     <span style={{ flex: 1, fontWeight: 'bold', color: '#FF3B30' }}>Recording... {formatTime(recordingTime)}</span>
                     <button onClick={stopRecording} style={{ padding: '0.5rem 1rem', background: '#FF3B30', color: 'white', border: 'none', borderRadius: '0.5rem', cursor: 'pointer', fontWeight: 'bold', minHeight: '2.75rem' }}>⏹ Stop</button>
@@ -65,7 +65,7 @@ const VoiceRecorder = ({ currentAudio, onSave, onRemove }) => {
                     <button onClick={handleRemove} style={{ padding: '0.5rem 0.75rem', background: '#FF3B30', color: 'white', border: 'none', borderRadius: '0.5rem', cursor: 'pointer', minHeight: '2.75rem', minWidth: '2.75rem' }}>🗑️</button>
                 </div>
             ) : (
-                <button onClick={startRecording} style={{ padding: '0.625rem', background: '#FF3B30', color: 'white', border: 'none', borderRadius: '0.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', minHeight: '2.75rem' }}>🎤 Record Voice</button>
+                <button onClick={startRecording} style={{ padding: '0.75rem', background: '#FF3B30', color: 'white', border: 'none', borderRadius: '0.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', minHeight: '2.75rem' }}>🎤 Record Voice</button>
             )}
         </div>
     );

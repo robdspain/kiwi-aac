@@ -36,7 +36,7 @@ const FavoritesPicker = ({ onComplete }) => {
             padding: '1.5rem'
         }}>
             <div style={{ textAlign: 'center', marginBottom: '1.25rem', marginTop: '2.5rem' }}>
-                <div style={{ fontSize: '3rem', marginBottom: '0.625rem' }}>❤️</div>
+                <div style={{ fontSize: '3rem', marginBottom: '0.75rem' }}>❤️</div>
                 <h1 style={{ fontSize: '1.8rem', color: '#2D3436', marginBottom: '0.5rem' }}>
                     What do they love?
                 </h1>
@@ -59,8 +59,8 @@ const FavoritesPicker = ({ onComplete }) => {
                             key={item.id}
                             onClick={() => toggleItem(item)}
                             style={{
-                                background: isSelected ? '#4ECDC4' : 'white',
-                                border: isSelected ? '0.125rem solid #3DB8B0' : '0.125rem solid #E5E5EA',
+                                background: isSelected ? 'var(--primary)' : 'var(--card-bg)',
+                                border: isSelected ? '0.125rem solid var(--primary-dark)' : '0.125rem solid var(--gray-border)',
                                 borderRadius: '1rem',
                                 padding: '1rem 0.5rem',
                                 display: 'flex',
@@ -70,7 +70,7 @@ const FavoritesPicker = ({ onComplete }) => {
                                 cursor: 'pointer',
                                 transition: 'all 0.2s',
                                 transform: isSelected ? 'scale(1.05)' : 'scale(1)',
-                                boxShadow: isSelected ? '0 0.25rem 0.75rem rgba(78, 205, 196, 0.4)' : 'none',
+                                boxShadow: isSelected ? '0 0.25rem 0.75rem var(--shadow-color)' : 'none',
                                 minHeight: '4.5rem'
                             }}
                         >
@@ -78,7 +78,7 @@ const FavoritesPicker = ({ onComplete }) => {
                             <span style={{
                                 fontSize: '0.85rem',
                                 fontWeight: 700,
-                                color: isSelected ? 'white' : '#636E72'
+                                color: isSelected ? 'var(--primary-text)' : 'var(--text-secondary)'
                             }}>
                                 {item.label}
                             </span>

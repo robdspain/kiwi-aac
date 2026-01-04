@@ -182,7 +182,7 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item 
                             />
                         </div>
                         {item?.type === 'folder' && (
-                            <div className="ios-row" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.625rem', padding: '1rem' }}>
+                            <div className="ios-row" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.75rem', padding: '1rem' }}>
                                 <span style={{ fontWeight: 600, fontSize: '0.8125rem', textTransform: 'uppercase', color: '#6e6e73' }}>View Mode</span>
                                 <div className="ios-segmented-control" style={{ marginBottom: 0 }}>
                                     <div 

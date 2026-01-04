@@ -37,7 +37,7 @@ const Phase1TargetSelector = ({ onSelect, rootItems = [] }) => {
                 width: '100%',
                 textAlign: 'center'
             }}>
-                <h1 style={{ color: 'var(--text-primary)', marginBottom: '0.625rem', fontSize: '2rem', fontWeight: 'bold' }}>Choose a Target Item</h1>
+                <h1 style={{ color: 'var(--text-primary)', marginBottom: '0.75rem', fontSize: '2rem', fontWeight: 'bold' }}>Choose a Target Item</h1>
                 <p style={{ fontSize: '1.15rem', color: 'var(--text-secondary)', marginBottom: '2.5rem', lineHeight: 1.5, fontWeight: 500 }}>
                     Pick one item that is highly motivating and can have multiple meanings (e.g. &quot;Play&quot; can mean tickles, chase, or ball).
                 </p>
@@ -66,7 +66,7 @@ const Phase1TargetSelector = ({ onSelect, rootItems = [] }) => {
                                 boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
                             }}
                         >
-                            <span style={{ fontSize: '4rem', marginBottom: '0.625rem' }}>{typeof item.icon === 'string' && (item.icon.startsWith('/') || item.icon.startsWith('data:') || item.icon.includes('.')) ? '🖼️' : item.icon}</span>
+                            <span style={{ fontSize: '4rem', marginBottom: '0.75rem' }}>{typeof item.icon === 'string' && (item.icon.startsWith('/') || item.icon.startsWith('data:') || item.icon.includes('.')) ? '🖼️' : item.icon}</span>
                             <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)' }}>{item.word}</span>
                         </button>
                     ))}

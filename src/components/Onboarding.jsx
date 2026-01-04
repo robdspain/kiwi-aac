@@ -59,19 +59,27 @@ const Onboarding = ({ onComplete }) => {
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
                     <div 
                         onClick={takePhoto}
+                        aria-label="Take or upload photo"
                         style={{ 
                             width: '8rem', height: '8rem', borderRadius: '50%', 
-                            background: 'var(--gray-light)', display: 'flex', alignItems: 'center', 
+                            background: 'var(--gray-light, #F2F2F7)', display: 'flex', alignItems: 'center', 
                             justifyContent: 'center', fontSize: '3rem', cursor: 'pointer',
-                            overflow: 'hidden', border: '0.25rem solid var(--card-bg)',
-                            boxShadow: '0 0.5rem 1rem rgba(0,0,0,0.1)'
+                            overflow: 'hidden', border: '0.25rem solid var(--card-bg, #FFFFFF)',
+                            boxShadow: '0 0.5rem 1rem rgba(0,0,0,0.1)',
+                            position: 'relative'
                         }}
                     >
                         {learnerPhoto ? (
                             <img src={learnerPhoto} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         ) : (
-                            '📸'
+                            <span style={{ fontSize: '3.5rem' }}>📸</span>
                         )}
+                        <div style={{
+                            position: 'absolute', bottom: 0, width: '100%', 
+                            background: 'rgba(0,0,0,0.5)', color: 'white', 
+                            fontSize: '0.7rem', fontWeight: 'bold', padding: '4px 0',
+                            textAlign: 'center'
+                        }}>EDIT</div>
                     </div>
                     <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                         <label style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-secondary)', marginLeft: '0.5rem' }}>LEARNER&apos;S NAME</label>
@@ -111,13 +119,7 @@ const Onboarding = ({ onComplete }) => {
                             </div>
                         </div>
                         <div style={{ display: 'flex', gap: '0.9375rem', alignItems: 'center' }}>
-                            <div style={{ width: '3.125rem', textAlign: 'center' }}>
-                                <img 
-                                    src="/images/settings-gear.png" 
-                                    alt="Settings" 
-                                    style={{ width: '3.125rem', height: '3.125rem', objectFit: 'contain', opacity: 0.8 }} 
-                                />
-                            </div>
+                            <div style={{ fontSize: '2.5rem', width: '3.125rem', textAlign: 'center' }}>⚙️</div>
                             <div>
                                 <strong>Adult Settings</strong> to customize and edit
                             </div>
@@ -241,9 +243,9 @@ const Onboarding = ({ onComplete }) => {
             <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginBottom: '1.875rem' }}>
                 {steps.map((_, i) => (
                     <div key={i} style={{
-                        width: i === step ? '1.5rem' : '0.625rem',
-                        height: '0.625rem',
-                        borderRadius: '0.625rem',
+                        width: i === step ? '1.5rem' : '0.75rem',
+                        height: '0.75rem',
+                        borderRadius: '0.75rem',
                         background: i <= step
                             ? 'var(--primary-dark)'
                             : 'var(--gray-border)',

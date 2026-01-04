@@ -320,7 +320,7 @@ const Controls = ({
                                     <span className="ios-chevron">›</span>
                                 </div>
                                 <div className="ios-row" style={{ minHeight: 'auto', padding: '0.5rem 0.9375rem', background: '#F2F2F7' }}>
-                                    <p style={{ fontSize: '0.625rem', color: '#8E8E93', margin: 0 }}>
+                                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
                                         Current Page: {currentPageIndex + 1}
                                     </p>
                                 </div>
@@ -355,7 +355,7 @@ const Controls = ({
                                                     gap: '0.125rem',
                                                     background: isActive ? stage.color : '#E5E5EA',
                                                     color: isActive ? 'var(--primary-text)' : 'black',
-                                                    borderRadius: '0.625rem',
+                                                    borderRadius: '0.75rem',
                                                     border: 'none',
                                                     cursor: 'pointer'
                                                 }}
@@ -371,7 +371,7 @@ const Controls = ({
                                     <div style={{
                                         background: getStage(currentLevel).color + '15',
                                         padding: '0.75rem',
-                                        borderRadius: '0.625rem',
+                                        borderRadius: '0.75rem',
                                         border: `0.0625rem solid ${getStage(currentLevel).color}40`
                                     }}>
                                         <div style={{ fontSize: '0.6875rem', fontWeight: 700, color: getStage(currentLevel).color, marginBottom: '0.5rem', textTransform: 'uppercase' }}>
@@ -407,7 +407,7 @@ const Controls = ({
 
                                 {/* Quick swap for Level 1 */}
                                 {currentPhase === 1 && (
-                                    <div style={{ marginTop: '0.9375rem', padding: '0.75rem', background: 'linear-gradient(135deg, #FFF5E1, #FFE4B5)', borderRadius: '0.625rem', border: '0.0625rem solid #FFA500' }}>
+                                    <div style={{ marginTop: '0.9375rem', padding: '0.75rem', background: 'linear-gradient(135deg, #FFF5E1, #FFE4B5)', borderRadius: '0.75rem', border: '0.0625rem solid #FFA500' }}>
                                         <div style={{ fontSize: '0.6875rem', fontWeight: 700, color: '#D2691E', marginBottom: '0.5rem', textTransform: 'uppercase' }}>
                                             🎯 Choose Target Icon
                                         </div>
@@ -427,7 +427,7 @@ const Controls = ({
                                                             minWidth: '3.125rem',
                                                             height: '3.125rem',
                                                             padding: '0.25rem',
-                                                            borderRadius: '0.625rem',
+                                                            borderRadius: '0.75rem',
                                                             background: isSelected ? 'var(--primary)' : 'white',
                                                             border: isSelected ? '0.125rem solid #007AFF' : '0.0625rem solid #DDD',
                                                             fontSize: '1.2rem',
@@ -458,7 +458,7 @@ const Controls = ({
                                             <span style={{ fontSize: '1.25rem' }}>{ctx.icon}</span>
                                             <span style={{ fontWeight: currentContext === ctx.id ? 700 : 400 }}>{ctx.label}</span>
                                         </div>
-                                        <div style={{ display: 'flex', gap: '0.625rem' }}>
+                                        <div style={{ display: 'flex', gap: '0.75rem' }}>
                                             <button 
                                                 onClick={(e) => {
                                                     e.stopPropagation();
@@ -496,32 +496,8 @@ const Controls = ({
                     {/* Access Tab (NEW) */}
                     {activeTab === 'access' && (
                         <div style={{ background: '#F2F2F7', margin: '0 -1.5rem', padding: '0 1.5rem 1.5rem', flex: 1 }}>
-                            <div className="ios-setting-group-header">Selection Type</div>
+                            <div className="ios-setting-group-header">Security</div>
                             <div className="ios-setting-card">
-                                <div className="ios-row" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.625rem', padding: '1rem' }}>
-                                    <div className="ios-segmented-control" style={{ marginBottom: 0 }}>
-                                        <div 
-                                            className="selection-pill" 
-                                            style={{ 
-                                                width: 'calc(33.33% - 4px)',
-                                                transform: accessProfile.selectionType === 'touch' ? 'translateX(0)' : 
-                                                           accessProfile.selectionType === 'scan' ? 'translateX(100%)' : 'translateX(200%)' 
-                                            }} 
-                                        />
-                                        <button onClick={() => {
-                                            updateAccessProfile({ selectionType: 'touch' });
-                                            if (isScanning) onToggleScanning();
-                                        }} style={{ minHeight: '2.75rem' }}>Direct Touch</button>
-                                        <button onClick={() => {
-                                            updateAccessProfile({ selectionType: 'scan' });
-                                            if (!isScanning) onToggleScanning();
-                                        }} style={{ minHeight: '2.75rem' }}>Switch Scan</button>
-                                        <button onClick={() => {
-                                            updateAccessProfile({ selectionType: 'eye' });
-                                            if (isScanning) onToggleScanning();
-                                        }} style={{ minHeight: '2.75rem' }}>Eye Gaze</button>
-                                    </div>
-                                </div>
                                 {isBiometryAvailable && (
                                     <div className="ios-row" onClick={() => updateAccessProfile({ biometricLock: !accessProfile.biometricLock })}>
                                         <span>🛡️ Use FaceID / TouchID</span>
@@ -548,7 +524,7 @@ const Controls = ({
                                     </div>
                                 )}
                                 <div className="ios-row" style={{ minHeight: 'auto', padding: '0.5rem 0.9375rem', background: '#F2F2F7' }}>
-                                    <p style={{ fontSize: '0.625rem', color: '#8E8E93', margin: 0 }}>
+                                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
                                         {isBiometryAvailable 
                                             ? 'Secure adult settings with biometrics. Triple-tap fallback is always available.'
                                             : 'Triple-tap the bottom bar to unlock adult settings.'}
@@ -583,7 +559,7 @@ const Controls = ({
                                                 </button>
                                             ))}
                                         </div>
-                                        <p style={{ fontSize: '0.625rem', color: '#8E8E93', marginTop: '0.625rem', marginInline: '0.25rem' }}>
+                                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.75rem', marginInline: '0.25rem' }}>
                                             {accessProfile.targetSize <= 10 ? 'Standard baseline (44pt/48dp).' : 
                                              accessProfile.targetSize <= 15 ? 'Best for moderate motor challenges.' : 'Optimized for significant motor needs.'}
                                         </p>
@@ -624,7 +600,7 @@ const Controls = ({
                                         <button onClick={() => updateAccessProfile({ language: 'en' })}>🇺🇸 English</button>
                                         <button onClick={() => updateAccessProfile({ language: 'es' })}>🇪🇸 Español</button>
                                     </div>
-                                    <p style={{ fontSize: '0.625rem', color: '#8E8E93', marginInline: '0.25rem' }}>
+                                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginInline: '0.25rem' }}>
                                         Switching language will translate the board labels while keeping icons in the same position.
                                     </p>
                                 </div>
@@ -671,7 +647,7 @@ const Controls = ({
                                         <button onClick={() => updateAccessProfile({ fieldSize: '12' })}>12</button>
                                         <button onClick={() => updateAccessProfile({ fieldSize: 'unlimited' })}>All</button>
                                     </div>
-                                    <p style={{ fontSize: '0.625rem', color: '#8E8E93', marginInline: '0.25rem' }}>
+                                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginInline: '0.25rem' }}>
                                         Limits the number of icons shown at once to reduce visual clutter.
                                     </p>
                                 </div>
@@ -758,7 +734,7 @@ const Controls = ({
                                     </div>
                                 </div>
                                 <div className="ios-row" style={{ minHeight: 'auto', padding: '0.5rem 0.9375rem', background: '#F2F2F7' }}>
-                                    <p style={{ fontSize: '0.625rem', color: '#8E8E93', margin: 0 }}>
+                                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
                                         Prevents icons from being moved or deleted, ensuring consistent motor planning.
                                     </p>
                                 </div>
@@ -819,11 +795,11 @@ const Controls = ({
                                     </div>
                                 </div>
                                 <div className="ios-row" style={{ minHeight: 'auto', padding: '0.5rem 0.9375rem', background: '#F2F2F7' }}>
-                                    <p style={{ fontSize: '0.625rem', color: '#8E8E93', margin: 0 }}>
+                                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
                                         Organizes your board into labeled sections like &apos;Actions&apos; or &apos;Describe&apos;.
                                     </p>
                                 </div>
-                                <div className="ios-row" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.625rem', padding: '1rem' }}>
+                                <div className="ios-row" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.75rem', padding: '1rem' }}>
                                     <span style={{ fontWeight: 600, fontSize: '0.875rem' }}>🎯 Vocabulary Level</span>
                                     <div className="ios-segmented-control" style={{ marginBottom: 0 }}>
                                         <div 
@@ -838,7 +814,7 @@ const Controls = ({
                                         <button onClick={() => onUpdateProficiencyLevel('intermediate')} style={{ minHeight: '2.75rem' }}>Intermediate</button>
                                         <button onClick={() => onUpdateProficiencyLevel('advanced')} style={{ minHeight: '2.75rem' }}>Advanced</button>
                                     </div>
-                                    <p style={{ fontSize: '0.625rem', color: '#8E8E93', margin: 0 }}>
+                                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
                                         {proficiencyLevel === 'beginner' ? 'Shows core words + 10 fringe icons. Others are grayed out.' : 
                                          proficiencyLevel === 'intermediate' ? 'Shows core words + 40 fringe icons.' : 'Shows all vocabulary icons.'}
                                     </p>
@@ -849,7 +825,7 @@ const Controls = ({
                                 </div>
                                 <div className="ios-row" style={{ minHeight: 'auto', padding: '0.9375rem' }}>
                                     <div style={{ width: '100%' }}>
-                                        <div className="ios-setting-group-header" style={{ margin: '0 0 0.625rem 0' }}>Grid Layout</div>
+                                        <div className="ios-setting-group-header" style={{ margin: '0 0 0.75rem 0' }}>Grid Layout</div>
                                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.375rem' }}>
                                             {[ 
                                                 { id: 'super-big', label: '🐘', title: '2x2' },
@@ -870,7 +846,7 @@ const Controls = ({
                                                         justifyContent: 'center',
                                                         background: gridSize === size.id ? 'var(--primary)' : 'var(--gray-light)',
                                                         color: gridSize === size.id ? 'white' : 'var(--text-primary)',
-                                                        borderRadius: '0.625rem',
+                                                        borderRadius: '0.75rem',
                                                         border: gridSize === size.id ? 'none' : '1px solid var(--gray-border)',
                                                         fontWeight: 600,
                                                         fontSize: '1.25rem'
@@ -1015,7 +991,7 @@ const Controls = ({
 
                                 {isIOS && (
                                     <div className="ios-row" style={{ minHeight: 'auto', padding: '0.5rem 0.9375rem' }}>
-                                        <p style={{ fontSize: '0.625rem', color: '#8E8E93', margin: 0 }}>
+                                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
                                             💡 Tip: Download &quot;Enhanced&quot; voices in iOS Settings → Accessibility → Spoken Content → Voices for better quality.
                                         </p>
                                     </div>
@@ -1092,7 +1068,7 @@ const Controls = ({
 
                             <div className="ios-setting-group-header">Appearance</div>
                             <div className="ios-setting-card" style={{ padding: '0.9375rem' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.625rem' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
                                     {COLOR_THEMES.map(theme => (
                                         <div 
                                             key={theme.id}
@@ -1122,8 +1098,8 @@ const Controls = ({
                                             }}
                                         >
                                             <span style={{ fontSize: '1.25rem' }}>{theme.icon}</span>
-                                            <span style={{ fontSize: '0.625rem', fontWeight: 700 }}>{theme.label}</span>
-                                            {theme.premium && <span style={{ position: 'absolute', top: 2, right: 2, fontSize: '0.625rem' }}>👑</span>}
+                                            <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>{theme.label}</span>
+                                            {theme.premium && <span style={{ position: 'absolute', top: 2, right: 2, fontSize: '0.75rem' }}>👑</span>}
                                         </div>
                                     ))}
                                 </div>
@@ -1149,20 +1125,20 @@ const Controls = ({
                             
                             <div className="ios-setting-group-header">Overview</div>
                             <div className="ios-setting-card" style={{ padding: '0.9375rem' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.625rem' }}>
-                                    <div style={{ background: '#F2F2F7', padding: '0.625rem', borderRadius: '0.5rem', textAlign: 'center' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
+                                    <div style={{ background: '#F2F2F7', padding: '0.75rem', borderRadius: '0.5rem', textAlign: 'center' }}>
                                         <div style={{ fontSize: '1.25rem' }}>{STAGES[Math.floor(currentLevel)]?.icon || '📱'}</div>
-                                        <div style={{ fontSize: '0.625rem', color: '#666', marginTop: '0.25rem', fontWeight: 700 }}>Level {Math.floor(currentLevel)}</div>
+                                        <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.25rem', fontWeight: 700 }}>Level {Math.floor(currentLevel)}</div>
                                     </div>
-                                    <div style={{ background: '#F2F2F7', padding: '0.625rem', borderRadius: '0.5rem', textAlign: 'center' }}>
+                                    <div style={{ background: '#F2F2F7', padding: '0.75rem', borderRadius: '0.5rem', textAlign: 'center' }}>
                                         <div style={{ fontSize: '1.125rem', fontWeight: 'bold', color: '#007AFF' }}>{rootItems.length}</div>
-                                        <div style={{ fontSize: '0.625rem', color: '#666', marginTop: '0.25rem', fontWeight: 700 }}>Icons</div>
+                                        <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.25rem', fontWeight: 700 }}>Icons</div>
                                     </div>
-                                    <div style={{ background: '#F2F2F7', padding: '0.625rem', borderRadius: '0.5rem', textAlign: 'center' }}>
+                                    <div style={{ background: '#F2F2F7', padding: '0.75rem', borderRadius: '0.5rem', textAlign: 'center' }}>
                                         <div style={{ fontSize: '1.125rem', fontWeight: 'bold', color: '#34C759' }}>
                                             {Object.values(progressData || {}).reduce((acc, curr) => acc + (curr.totalUses || 0), 0) || 0}
                                         </div>
-                                        <div style={{ fontSize: '0.625rem', color: '#666', marginTop: '0.25rem', fontWeight: 700 }}>Total Taps</div>
+                                        <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.25rem', fontWeight: 700 }}>Total Taps</div>
                                     </div>
                                 </div>
                             </div>
@@ -1207,7 +1183,7 @@ const Controls = ({
                                 </div>
                             </div>
                             
-                            <p style={{ fontSize: '0.625rem', color: '#999', textAlign: 'center', marginTop: '0.625rem' }}>
+                            <p style={{ fontSize: '0.75rem', color: '#999', textAlign: 'center', marginTop: '0.75rem' }}>
                                 © 2024 Behavior School LLC. All rights reserved.
                             </p>
                         </div>

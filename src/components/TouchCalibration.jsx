@@ -94,7 +94,7 @@ const TouchCalibration = ({ onComplete }) => {
                 padding: '1.25rem', textAlign: 'center', zIndex: 1200
             }}>
                 <div style={{ fontSize: '4rem', marginBottom: '1.25rem' }}>🎯</div>
-                <h1 style={{ marginBottom: '0.625rem', fontSize: '2rem', color: 'var(--text-primary)' }}>Touch Assessment</h1>
+                <h1 style={{ marginBottom: '0.75rem', fontSize: '2rem', color: 'var(--text-primary)' }}>Touch Assessment</h1>
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '1.875rem', maxWidth: '18.75rem', fontSize: '1.1rem', lineHeight: '1.5' }}>
                     We&apos;ll check your touch accuracy to set the best button size for you.
                 </p>
@@ -149,7 +149,7 @@ const TouchCalibration = ({ onComplete }) => {
                     borderRadius: '1.25rem',
                     background: 'var(--card-bg)',
                     border: '4px solid var(--primary)',
-                    boxShadow: '0 0.625rem 1.25rem rgba(0,0,0,0.15)',
+                    boxShadow: '0 0.75rem 1.25rem rgba(0,0,0,0.15)',
                     fontSize: `${sizePx * 0.6}px`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     cursor: 'pointer',

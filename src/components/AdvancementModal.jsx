@@ -176,8 +176,8 @@ const AdvancementModal = ({ currentPhase, onAdvance, onWait }) => {
                 overflowY: 'auto',
                 background: 'var(--card-bg)'
             }}>
-                <div style={{ fontSize: '3rem', marginBottom: '0.625rem' }}>🚀</div>
-                <h1 style={{ margin: '0 0 0.625rem 0', fontSize: '2rem', color: 'var(--text-primary)' }}>Great Progress!</h1>
+                <div style={{ fontSize: '3rem', marginBottom: '0.75rem' }}>🚀</div>
+                <h1 style={{ margin: '0 0 0.75rem 0', fontSize: '2rem', color: 'var(--text-primary)' }}>Great Progress!</h1>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>
                     Your child has successfully completed 3 trials a day for 3 days in a row. They may be ready for the next level!
                 </p>
@@ -249,7 +249,7 @@ const AdvancementModal = ({ currentPhase, onAdvance, onWait }) => {
                             {details.teachingPoints.map((point, i) => (
                                 <div key={i} style={{
                                     background: 'var(--card-bg)',
-                                    padding: '0.625rem 0.875rem',
+                                    padding: '0.75rem 0.875rem',
                                     borderRadius: '1.25rem',
                                     fontSize: '0.8rem',
                                     fontWeight: 600,
@@ -278,7 +278,7 @@ const AdvancementModal = ({ currentPhase, onAdvance, onWait }) => {
                     </div>
                 )}
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                     <button className="primary-button" onClick={onAdvance} style={{ minHeight: '3.5rem' }}>
                         Advance to Level {currentPhase + 1}
                     </button>

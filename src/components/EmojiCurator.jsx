@@ -374,10 +374,10 @@ const EmojiCurator = () => {
           {isMobile && <button onClick={() => setShowSidebar(!showSidebar)} style={{ background: 'transparent', border: 'none', color: 'white', fontSize: '1.5rem', cursor: 'pointer', minHeight: '2.75rem', minWidth: '2.75rem' }}>☰</button>}
           <span style={{ fontSize: isMobile ? '1.2rem' : '1.5rem' }}>🥝</span>{!isMobile && <h1 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 'bold' }}>LIBRARY BUILDER</h1>}
         </div>
-        <div style={{ display: 'flex', gap: isMobile ? '0.625rem' : '1.25rem', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: isMobile ? '0.75rem' : '1.25rem', alignItems: 'center' }}>
           <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: isMobile ? '0.8rem' : '0.9rem', minHeight: '2.75rem' }}><input type="checkbox" checked={showCoreOnly} onChange={(e) => setShowCoreOnly(e.target.checked)}/>Core Only</label>
           <div style={{ position: 'relative' }}>
-              <button onClick={() => setShowToolsMenu(!showToolsMenu)} style={{ padding: '0.625rem', background: '#333', color: 'white', border: 'none', borderRadius: '0.5rem', cursor: 'pointer', minHeight: '2.75rem' }}>Tools ▾</button>
+              <button onClick={() => setShowToolsMenu(!showToolsMenu)} style={{ padding: '0.75rem', background: '#333', color: 'white', border: 'none', borderRadius: '0.5rem', cursor: 'pointer', minHeight: '2.75rem' }}>Tools ▾</button>
               {showToolsMenu && (
                   <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: '10px', background: 'white', borderRadius: '12px', padding: '10px', boxShadow: '0 10px 30px rgba(0,0,0,0.2)', width: '200px', display: 'flex', flexDirection: 'column', gap: '5px', zIndex: 2000 }}>
                       <button onClick={() => { setShowSmartImport(true); setShowToolsMenu(false); }}>📥 Bulk Import</button>
@@ -393,7 +393,7 @@ const EmojiCurator = () => {
             <button
               onClick={generateShareUrl}
               style={{
-                padding: isMobile ? '0.5rem 0.75rem' : '0.625rem 1.25rem',
+                padding: isMobile ? '0.5rem 0.75rem' : '0.75rem 1.25rem',
                 background: '#333',
                 color: 'white',
                 border: 'none',
@@ -409,7 +409,7 @@ const EmojiCurator = () => {
             <button
               onClick={exportSelected}
               style={{
-                padding: isMobile ? '0.5rem 0.9375rem' : '0.625rem 1.5625rem',
+                padding: isMobile ? '0.5rem 0.9375rem' : '0.75rem 1.5625rem',
                 background: '#4ECDC4',
                 color: '#2D3436',
                 border: 'none',
@@ -425,12 +425,12 @@ const EmojiCurator = () => {
         </div>
       </div>
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
-        <div style={{ width: '17.5rem', height: '100%', overflowY: 'auto', background: 'white', borderRight: '0.0625rem solid #ddd', padding: '1.25rem 0.625rem', display: 'flex', flexDirection: 'column', gap: '0.125rem', position: isMobile ? 'absolute' : 'relative', zIndex: 100, left: 0, top: 0, transform: showSidebar ? 'translateX(0)' : (isMobile ? 'translateX(-100%)' : 'translateX(0)'), transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)', boxShadow: isMobile && showSidebar ? '0.25rem 0 0.9375rem rgba(0,0,0,0.1)' : 'none' }}>
+        <div style={{ width: '17.5rem', height: '100%', overflowY: 'auto', background: 'white', borderRight: '0.0625rem solid #ddd', padding: '1.25rem 0.75rem', display: 'flex', flexDirection: 'column', gap: '0.125rem', position: isMobile ? 'absolute' : 'relative', zIndex: 100, left: 0, top: 0, transform: showSidebar ? 'translateX(0)' : (isMobile ? 'translateX(-100%)' : 'translateX(0)'), transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)', boxShadow: isMobile && showSidebar ? '0.25rem 0 0.9375rem rgba(0,0,0,0.1)' : 'none' }}>
           <div style={{ padding: '0 0.9375rem 0.9375rem 0.9375rem' }}>
-            <div style={{ fontSize: '0.7rem', color: '#999', fontWeight: 'bold', marginBottom: '0.625rem' }}>CATEGORIES</div>
-            <div style={{ position: 'relative' }}><input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} style={{ width: '100%', padding: '0.5rem 1.875rem', borderRadius: '0.375rem', border: '0.0625rem solid #ddd' }} /><span style={{ position: 'absolute', left: '0.625rem', top: '50%', transform: 'translateY(-50%)' }}>🔍</span></div>
+            <div style={{ fontSize: '0.7rem', color: '#999', fontWeight: 'bold', marginBottom: '0.75rem' }}>CATEGORIES</div>
+            <div style={{ position: 'relative' }}><input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} style={{ width: '100%', padding: '0.5rem 1.875rem', borderRadius: '0.375rem', border: '0.0625rem solid #ddd' }} /><span style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)' }}>🔍</span></div>
           </div>
-          {!searchQuery && categories.map(cat => ( <button key={cat} onClick={() => { setActiveCategory(cat); if (isMobile) setShowSidebar(false); }} style={{ textAlign: 'left', padding: '0.625rem 0.9375rem', borderRadius: '0.375rem', border: 'none', background: activeCategory === cat ? '#f0f7ff' : 'transparent', color: activeCategory === cat ? '#007AFF' : '#555', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: '2.75rem' }}><span>{cat}</span>                {selectedEmojis[cat]?.length > 0 && (
+          {!searchQuery && categories.map(cat => ( <button key={cat} onClick={() => { setActiveCategory(cat); if (isMobile) setShowSidebar(false); }} style={{ textAlign: 'left', padding: '0.75rem 0.9375rem', borderRadius: '0.375rem', border: 'none', background: activeCategory === cat ? '#f0f7ff' : 'transparent', color: activeCategory === cat ? '#007AFF' : '#555', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: '2.75rem' }}><span>{cat}</span>                {selectedEmojis[cat]?.length > 0 && (
                   <span style={{ 
                     background: '#4ECDC4',
                     color: '#2D3436',
@@ -450,10 +450,10 @@ const EmojiCurator = () => {
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#f8f9fa' }}>
           <div style={{ padding: isMobile ? '0.9375rem' : '1.25rem 1.875rem', background: 'white', borderBottom: '0.0625rem solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: '4.375rem' }}>
             <h2 style={{ margin: 0, fontSize: isMobile ? '1rem' : '1.1rem' }}>{searchQuery ? `Search results for &quot;${searchQuery}&quot;` : activeCategory}</h2>
-            {!searchQuery && <div style={{ display: 'flex', gap: '0.625rem' }}><button onClick={() => { const all = (groupedEmojiData[activeCategory] || []).map(i => i.emoji); setSelectedEmojis(prev => ({ ...prev, [activeCategory]: all })); }} style={{ padding: '0.375rem 0.75rem', background: '#f0f2f5', border: '0.0625rem solid #ddd', borderRadius: '0.375rem', fontSize: '0.8rem', cursor: 'pointer', minHeight: '2.75rem' }}>Select All</button></div>}
+            {!searchQuery && <div style={{ display: 'flex', gap: '0.75rem' }}><button onClick={() => { const all = (groupedEmojiData[activeCategory] || []).map(i => i.emoji); setSelectedEmojis(prev => ({ ...prev, [activeCategory]: all })); }} style={{ padding: '0.375rem 0.75rem', background: '#f0f2f5', border: '0.0625rem solid #ddd', borderRadius: '0.375rem', fontSize: '0.8rem', cursor: 'pointer', minHeight: '2.75rem' }}>Select All</button></div>}
           </div>
           <div ref={gridRef} onScroll={handleScroll} style={{ flex: 1, overflowY: 'auto', padding: isMobile ? '0.9375rem' : '1.875rem' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(auto-fill, minmax(5.3125rem, 1fr))' : 'repeat(auto-fill, minmax(8.125rem, 1fr))', gap: isMobile ? '0.625rem' : '1.25rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(auto-fill, minmax(5.3125rem, 1fr))' : 'repeat(auto-fill, minmax(8.125rem, 1fr))', gap: isMobile ? '0.75rem' : '1.25rem' }}>
               {(filteredEmojis || []).slice(0, visibleCount).map((item, idx) => {
                 const sel = getSelectedInGroup(activeCategory, item); const isChecked = !!sel; const disp = sel || item.emoji;
                 const meta = emojiMetadata[disp] || {};
@@ -485,7 +485,7 @@ const EmojiCurator = () => {
                       display: 'flex', 
                       flexDirection: 'column', 
                       alignItems: 'center', 
-                      gap: '0.625rem', 
+                      gap: '0.75rem', 
                       position: 'relative', 
                       transition: 'transform 0.1s active' 
                     }}

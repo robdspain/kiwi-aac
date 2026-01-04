@@ -223,7 +223,7 @@ const Assessment = ({ onComplete }) => {
                                 <span style={{
                                     fontSize: '0.85rem',
                                     fontWeight: isSelected ? '700' : '600',
-                                    color: 'var(--text-primary)'
+                                    color: isSelected ? 'var(--fitz-noun-text)' : 'var(--text-primary)'
                                 }}>
                                     {fav.word}
                                 </span>
@@ -354,7 +354,7 @@ const Assessment = ({ onComplete }) => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            gap: '0.625rem',
+                            gap: '0.75rem',
                             minHeight: '4.5rem'
                         }}
                     >
@@ -383,7 +383,7 @@ const Assessment = ({ onComplete }) => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            gap: '0.625rem',
+                            gap: '0.75rem',
                             minHeight: '4.5rem'
                         }}
                     >
@@ -592,7 +592,7 @@ const Assessment = ({ onComplete }) => {
                         fontSize: '1.5rem',
                         cursor: 'pointer',
                         color: 'var(--text-muted)',
-                        padding: '0.625rem',
+                        padding: '0.75rem',
                         zIndex: 10,
                         minWidth: '2.75rem',
                         minHeight: '2.75rem'
@@ -614,9 +614,9 @@ const Assessment = ({ onComplete }) => {
                     <div
                         key={i}
                         style={{
-                            width: i === currentQuestion ? '1.5rem' : '0.625rem',
-                            height: '0.625rem',
-                            borderRadius: '0.625rem',
+                            width: i === currentQuestion ? '1.5rem' : '0.75rem',
+                            height: '0.75rem',
+                            borderRadius: '0.75rem',
                             background: i <= currentQuestion
                                 ? 'var(--primary-dark)'
                                 : 'var(--gray-border)',
@@ -653,7 +653,7 @@ const Assessment = ({ onComplete }) => {
                 textAlign: 'center',
                 marginBottom: '0.75rem',
                 lineHeight: 1.3,
-                padding: '0 0.625rem'
+                padding: '0 0.75rem'
             }}>
                 {question.question}
             </h2>
@@ -701,7 +701,7 @@ const Assessment = ({ onComplete }) => {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        gap: '0.625rem',
+                        gap: '0.75rem',
                         minHeight: '3.5rem'
                     }}
                 >

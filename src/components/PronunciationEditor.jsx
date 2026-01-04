@@ -76,14 +76,14 @@ const PronunciationEditor = ({ onClose }) => {
                             type="submit" 
                             className="apple-blue-button" 
                             disabled={!word || !phonetic}
-                            style={{ marginTop: '0.625rem', minHeight: '2.75rem' }}
+                            style={{ marginTop: '0.75rem', minHeight: '2.75rem' }}
                         >
                             Add Override
                         </button>
                     </form>
 
                     <div style={{ marginTop: '1.875rem' }}>
-                        <h4 style={{ fontSize: '0.8125rem', color: '#8E8E93', marginBottom: '0.625rem', textTransform: 'uppercase' }}>
+                        <h4 style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', marginBottom: '0.75rem', textTransform: 'uppercase' }}>
                             Existing Overrides
                         </h4>
                         <div className="ios-setting-card" style={{ maxHeight: '12.5rem', overflowY: 'auto' }}>

@@ -35,7 +35,7 @@ const A2HSModal = () => {
             background: 'var(--card-bg)',
             borderRadius: '1.5rem',
             padding: '1.5rem',
-            boxShadow: '0 0.625rem 2.5rem rgba(0,0,0,0.2)',
+            boxShadow: '0 0.75rem 2.5rem rgba(0,0,0,0.2)',
             zIndex: 10000,
             display: 'flex',
             flexDirection: 'column',
@@ -44,7 +44,7 @@ const A2HSModal = () => {
             animation: 'slideUp 0.5s cubic-bezier(0.32, 0.72, 0, 1)'
         }}>
             <div style={{ fontSize: '2.5rem', marginBottom: '0.9375rem' }}>📱</div>
-            <h2 style={{ margin: '0 0 0.625rem 0', fontSize: '1.2rem', color: 'var(--text-primary)' }}>Install Kiwi Voice</h2>
+            <h2 style={{ margin: '0 0 0.75rem 0', fontSize: '1.2rem', color: 'var(--text-primary)' }}>Install Kiwi Voice</h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.5', margin: '0 0 1.25rem 0' }}>
                 Install this app on your home screen for a full-screen experience and quick access.
             </p>
@@ -57,7 +57,7 @@ const A2HSModal = () => {
                 textAlign: 'left',
                 marginBottom: '1.25rem'
             }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '0.625rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
                     <div style={{ 
                         width: '1.5rem', height: '1.5rem', background: 'var(--primary-dark)', color: 'var(--primary-text)', 
                         borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -65,7 +65,7 @@ const A2HSModal = () => {
                     }}>1</div>
                     <span style={{ fontSize: '0.9rem', color: 'var(--text-primary)' }}>Tap the <strong>Share</strong> button <span style={{ fontSize: '1.2rem' }}>⎋</span> below.</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                     <div style={{ 
                         width: '1.5rem', height: '1.5rem', background: 'var(--primary-dark)', color: 'var(--primary-text)', 
                         borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',

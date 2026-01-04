@@ -164,7 +164,7 @@ Communication is growing! 🥝
                                             marginTop: '0.9375rem',
                                             background: 'var(--card-bg)',
                                             padding: '0.75rem',
-                                            borderRadius: '0.625rem',
+                                            borderRadius: '0.75rem',
                                             border: '1px solid var(--gray-border)'
                                         }}>
                                             <div style={{ flex: 1, textAlign: 'center' }}>
@@ -195,7 +195,7 @@ Communication is growing! 🥝
                             {/* All Levels Progress */}
                             <div className="dashboard-card" style={{ background: 'var(--gray-light)' }}>
                                 <h3 style={{ margin: '0 0 0.9375rem 0', fontSize: '1rem', color: 'var(--text-primary)' }}>Level History</h3>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                                     {sortedLevels.map(lvl => {
                                         const progress = levelProgress[lvl];
                                         const levelDef = getLevel(lvl);
@@ -216,7 +216,7 @@ Communication is growing! 🥝
                                                 style={{
                                                     background: 'var(--card-bg)',
                                                     padding: '0.75rem 0.9375rem',
-                                                    borderRadius: '0.625rem',
+                                                    borderRadius: '0.75rem',
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     gap: '0.75rem',
@@ -250,7 +250,7 @@ Communication is growing! 🥝
                                                         <span style={{
                                                             background: 'var(--success)',
                                                             color: 'white',
-                                                            padding: '0.25rem 0.625rem',
+                                                            padding: '0.25rem 0.75rem',
                                                             borderRadius: '0.75rem',
                                                             fontSize: '0.75rem',
                                                             fontWeight: '700'
@@ -259,7 +259,7 @@ Communication is growing! 🥝
                                                         <span style={{
                                                             background: stageDef?.color || 'var(--primary-dark)',
                                                             color: 'white',
-                                                            padding: '0.25rem 0.625rem',
+                                                            padding: '0.25rem 0.75rem',
                                                             borderRadius: '0.75rem',
                                                             fontSize: '0.75rem',
                                                             fontWeight: '700'
@@ -268,7 +268,7 @@ Communication is growing! 🥝
                                                         <span style={{
                                                             background: 'var(--gray-light)',
                                                             color: 'var(--text-secondary)',
-                                                            padding: '0.25rem 0.625rem',
+                                                            padding: '0.25rem 0.75rem',
                                                             borderRadius: '0.75rem',
                                                             fontSize: '0.75rem',
                                                             fontWeight: 600,
@@ -396,12 +396,12 @@ Communication is growing! 🥝
                 {/* Top Items */}
                 {topItems.length > 0 && (
                     <div className="dashboard-card" style={{ background: 'var(--gray-light)' }}>
-                        <h3 style={{ margin: '0 0 0.625rem 0', fontSize: '1rem', color: 'var(--text-primary)' }}>🏆 Most Used Items</h3>
+                        <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem', color: 'var(--text-primary)' }}>🏆 Most Used Items</h3>
                         {topItems.map((item, i) => (
-                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '0.5rem' }}>
+                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
                                 <span style={{ width: '1.5rem', fontWeight: 'bold', color: 'var(--text-secondary)' }}>#{i + 1}</span>
                                 <span style={{ flex: 1, color: 'var(--text-primary)', fontWeight: 600 }}>{item.word}</span>
-                                <span style={{ background: 'var(--primary-dark)', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '0.625rem', fontSize: '0.9rem', fontWeight: 700 }}>{item.count}</span>
+                                <span style={{ background: 'var(--primary-dark)', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '0.75rem', fontSize: '0.9rem', fontWeight: 700 }}>{item.count}</span>
                             </div>
                         ))}
                     </div>
@@ -410,9 +410,9 @@ Communication is growing! 🥝
                 {/* Favorites Usage */}
                 {favorites.length > 0 && (
                     <div className="dashboard-card" style={{ background: 'var(--bg-color)', border: '2px solid var(--fitz-noun)' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '0.9375rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.9375rem' }}>
                             <h3 style={{ margin: 0, fontSize: '1rem', color: 'var(--text-primary)' }}>⭐ Favorite Usage</h3>
-                            <span style={{ background: 'var(--fitz-noun)', color: 'var(--fitz-noun-text)', padding: '0.25rem 0.75rem', borderRadius: '0.625rem', fontSize: '0.85rem', fontWeight: 'bold', border: '1px solid var(--gray-border)' }}>
+                            <span style={{ background: 'var(--fitz-noun)', color: 'var(--fitz-noun-text)', padding: '0.25rem 0.75rem', borderRadius: '0.75rem', fontSize: '0.85rem', fontWeight: 'bold', border: '1px solid var(--gray-border)' }}>
                                 {totalFavoriteUses} total uses
                             </span>
                         </div>
@@ -488,7 +488,7 @@ Communication is growing! 🥝
 
                 {trials.length > 0 && (
                     <div className="dashboard-card" style={{ background: 'var(--gray-light)' }}>
-                        <h3 style={{ margin: '0 0 0.625rem 0', fontSize: '1rem', color: 'var(--text-primary)' }}>Trial History (Last 20)</h3>
+                        <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem', color: 'var(--text-primary)' }}>Trial History (Last 20)</h3>
                         <div style={{ display: 'flex', gap: '0.3125rem', flexWrap: 'wrap' }}>
                             {trials.slice(-20).map((t, i) => (
                                 <div

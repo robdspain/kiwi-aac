@@ -9,8 +9,8 @@ const GuidedAccessModal = ({ onClose }) => {
                 </div>
                 
                 <div className="ios-sheet-content" style={{ textAlign: 'center', background: 'var(--gray-light)' }}>
-                    <div style={{ fontSize: '3rem', marginBottom: '0.625rem' }}>🔒</div>
-                    <h3 style={{ margin: '0 0 0.625rem 0', fontSize: '1.2rem', color: 'var(--text-primary)' }}>Lock Screen (iOS)</h3>
+                    <div style={{ fontSize: '3rem', marginBottom: '0.75rem' }}>🔒</div>
+                    <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1.2rem', color: 'var(--text-primary)' }}>Lock Screen (iOS)</h3>
                     <p style={{ color: 'var(--text-secondary)', lineHeight: '1.5', marginBottom: '1.5625rem', fontSize: '0.9375rem' }}>
                         Keep your child focused by locking the app on screen using <strong>Guided Access</strong>.
                     </p>
@@ -30,9 +30,9 @@ const GuidedAccessModal = ({ onClose }) => {
 
                     <div className="ios-setting-card">
                         <div className="ios-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '0.5rem' }}>
-                            <div style={{ display: 'flex', gap: '0.625rem' }}><span style={{ color: 'var(--primary-dark)', fontWeight: 700 }}>1</span> <span style={{ color: 'var(--text-primary)' }}>Open this app to the screen you want.</span></div>
-                            <div style={{ display: 'flex', gap: '0.625rem' }}><span style={{ color: 'var(--primary-dark)', fontWeight: 700 }}>2</span> <span style={{ color: 'var(--text-primary)' }}><strong>Triple-click</strong> the side button.</span></div>
-                            <div style={{ display: 'flex', gap: '0.625rem' }}><span style={{ color: 'var(--primary-dark)', fontWeight: 700 }}>3</span> <span style={{ color: 'var(--text-primary)' }}>Tap <strong>Start</strong> in the corner.</span></div>
+                            <div style={{ display: 'flex', gap: '0.75rem' }}><span style={{ color: 'var(--primary-dark)', fontWeight: 700 }}>1</span> <span style={{ color: 'var(--text-primary)' }}>Open this app to the screen you want.</span></div>
+                            <div style={{ display: 'flex', gap: '0.75rem' }}><span style={{ color: 'var(--primary-dark)', fontWeight: 700 }}>2</span> <span style={{ color: 'var(--text-primary)' }}><strong>Triple-click</strong> the side button.</span></div>
+                            <div style={{ display: 'flex', gap: '0.75rem' }}><span style={{ color: 'var(--primary-dark)', fontWeight: 700 }}>3</span> <span style={{ color: 'var(--text-primary)' }}>Tap <strong>Start</strong> in the corner.</span></div>
                         </div>
                     </div>
 

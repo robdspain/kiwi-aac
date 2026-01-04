@@ -148,7 +148,7 @@ const FavoritesPickerModal = ({ onClose, onAddFavorites, existingFavorites = [] 
                         `✨ ${selectedFavorites.length} selected`}
                 </div>
 
-                <div style={{ display: 'flex', gap: '0.625rem' }}>
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
                     <button
                         onClick={onClose}
                         style={{
