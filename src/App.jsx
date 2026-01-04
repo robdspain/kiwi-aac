@@ -495,33 +495,6 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isScanning, scanSpeed, visibleItemsForScanning.length, editModalOpen, pickerOpen, showDashboard, showOnboarding, showLevelIntro, showAdvancementModal, showCalibration]);
 
-  // Global Switch Listener (Space/Enter or Screen Tap when scanning)
-  useEffect(() => {
-    const handleGlobalSwitch = (e) => {
-      if (!isScanning) return;
-      
-      // If it's a keyboard event, check for Space or Enter
-      if (e.type === 'keydown' && e.key !== ' ' && e.key !== 'Enter') return;
-      
-      // If it's a click, we only trigger if it's NOT on a settings button or modal
-      if (e.type === 'click') {
-        if (e.target.closest('#settings-button') || e.target.closest('#controls-content') || e.target.closest('.ios-bottom-sheet')) return;
-      }
-
-      if (scanIndex >= 0 && scanIndex < visibleItemsForScanning.length) {
-        e.preventDefault();
-        e.stopPropagation();
-        handleItemClick(visibleItemsForScanning[scanIndex], scanIndex);
-      }
-    };
-
-    window.addEventListener('keydown', handleGlobalSwitch);
-    window.addEventListener('click', handleGlobalSwitch, true); // Use capture phase
-    return () => {
-      window.removeEventListener('keydown', handleGlobalSwitch);
-      window.removeEventListener('click', handleGlobalSwitch, true);
-    };
-  }, [isScanning, scanIndex, visibleItemsForScanning, handleItemClick]);
 
   useEffect(() => {
     if (typeof currentLevel === 'number' && !isNaN(currentLevel)) {
@@ -787,6 +760,33 @@ function App() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rootItems, currentPath, currentProfile, speechDelay, stripItems, currentPhase, autoSpeak, showStrip, voiceSettings, pronunciations]);
+  // Global Switch Listener (Space/Enter or Screen Tap when scanning)
+  useEffect(() => {
+    const handleGlobalSwitch = (e) => {
+      if (!isScanning) return;
+      
+      // If it's a keyboard event, check for Space or Enter
+      if (e.type === 'keydown' && e.key !== ' ' && e.key !== 'Enter') return;
+      
+      // If it's a click, we only trigger if it's NOT on a settings button or modal
+      if (e.type === 'click') {
+        if (e.target.closest('#settings-button') || e.target.closest('#controls-content') || e.target.closest('.ios-bottom-sheet')) return;
+      }
+
+      if (scanIndex >= 0 && scanIndex < visibleItemsForScanning.length) {
+        e.preventDefault();
+        e.stopPropagation();
+        handleItemClick(visibleItemsForScanning[scanIndex], scanIndex);
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalSwitch);
+    window.addEventListener('click', handleGlobalSwitch, true); // Use capture phase
+    return () => {
+      window.removeEventListener('keydown', handleGlobalSwitch);
+      window.removeEventListener('click', handleGlobalSwitch, true);
+    };
+  }, [isScanning, scanIndex, visibleItemsForScanning, handleItemClick]);
 
   const handleDeleteItemFromStrip = (index) => {
     const newItems = [...stripItems];
