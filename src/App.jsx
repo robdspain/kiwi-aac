@@ -389,6 +389,11 @@ function App() {
     }
   };
 
+  const handleSetLevel = (newLevel) => { setCurrentLevel(newLevel); const resetProgress = { ...progressData, currentStreak: 0, successDates: [], lastSuccessTime: null }; setProgressData(resetProgress); localStorage.setItem('kians-progress', JSON.stringify(resetProgress)); };
+  const handleSetPhase = (newPhase) => handleSetLevel(migratePhaseToLevel(newPhase));
+  const handleAdvance = () => { const nextLevel = getNextLevel(currentLevel); if (nextLevel) handleSetLevel(nextLevel); setShowAdvancementModal(false); };
+  const handleWait = () => { setShowAdvancementModal(false); const resetProgress = { ...progressData, currentStreak: 0, successDates: [], lastSuccessTime: null }; setProgressData(resetProgress); localStorage.setItem('kians-progress', JSON.stringify(resetProgress)); };
+
   // Initialize RevenueCat SDK on app startup
   const configureRevenueCat = async () => {
     try {
@@ -839,10 +844,7 @@ function App() {
     setEditModalOpen(false); setEditingItemIndex(null);
   };
 
-  const handleSetLevel = (newLevel) => { setCurrentLevel(newLevel); const resetProgress = { ...progressData, currentStreak: 0, successDates: [], lastSuccessTime: null }; setProgressData(resetProgress); localStorage.setItem('kians-progress', JSON.stringify(resetProgress)); };
-  const handleSetPhase = (newPhase) => handleSetLevel(migratePhaseToLevel(newPhase));
-  const handleAdvance = () => { const nextLevel = getNextLevel(currentLevel); if (nextLevel) handleSetLevel(nextLevel); setShowAdvancementModal(false); };
-  const handleWait = () => { setShowAdvancementModal(false); const resetProgress = { ...progressData, currentStreak: 0, successDates: [], lastSuccessTime: null }; setProgressData(resetProgress); localStorage.setItem('kians-progress', JSON.stringify(resetProgress)); };
+
 
   const handleAddItem = async (word, icon, type) => {
     const currentPageItems = rootItems[currentPageIndex]?.items || [];
