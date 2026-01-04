@@ -8,9 +8,20 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          // Split heavy dependencies into separate chunks
           'dnd-kit': ['@dnd-kit/core', '@dnd-kit/sortable', '@dnd-kit/utilities'],
           'vendor': ['react', 'react-dom', 'react-router-dom'],
+          'capacitor': [
+            '@capacitor/core',
+            '@capacitor/haptics',
+            '@capacitor/camera',
+            '@capacitor/device',
+            '@capacitor/share',
+            '@capacitor/filesystem',
+            '@capacitor-community/in-app-review'
+          ],
+          'revenuecat': ['@revenuecat/purchases-capacitor', '@revenuecat/purchases-capacitor-ui'],
+          'ai-models': ['@tensorflow/tfjs', '@tensorflow-models/coco-ssd'],
+          'ui-utils': ['framer-motion', 'qrcode.react'],
         }
       }
     },
