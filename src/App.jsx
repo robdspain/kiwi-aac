@@ -1,4 +1,4 @@
-import { useState, useEffect, Suspense, lazy, useRef } from 'react';
+import { useState, useEffect, Suspense, lazy, useRef, useCallback } from 'react';
 import Grid from './components/Grid';
 import SentenceStrip from './components/SentenceStrip';
 import Controls from './components/Controls';
