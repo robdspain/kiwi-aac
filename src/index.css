@@ -450,11 +450,25 @@ button.primary, .primary-button {
   overflow: hidden;
 }
 
+/* Ensure emoji content is always visible */
+.app-icon:not(:has(img)):not(:has(.folder-grid)):not(:has(.phrase-storyboard)) {
+  min-height: 3rem;
+  line-height: 1;
+}
+
 /* High Contrast Mode Overrides */
 .high-contrast .app-icon {
   border: 4px solid #000 !important;
   box-shadow: none !important;
   background: #fff !important;
+  font-size: 3.5rem !important; /* Larger emoji for better visibility */
+  filter: grayscale(0) !important; /* Ensure emojis keep their color */
+}
+
+/* Ensure emoji text is visible in high contrast */
+.high-contrast .app-icon:not(:has(img)) {
+  color: #000 !important;
+  text-shadow: none !important;
 }
 
 .high-contrast .app-label {
