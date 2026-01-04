@@ -14,93 +14,282 @@ const CharacterBuilder = ({ onSave, onClose }) => {
         accessory: 'none'
     });
     const [name, setName] = useState('');
+    const [currentStep, setCurrentStep] = useState(0);
 
     const update = (key, val) => setRecipe(prev => ({ ...prev, [key]: val }));
 
     const sections = [
-        { label: 'Skin', key: 'skin', options: SKIN_TONES.map(s => ({ id: s.color, color: s.color, label: s.label })) },
-        { label: 'Hair Style', key: 'hair', options: Object.keys(ASSETS.hair).map(h => ({ id: h, label: h })) },
-        { label: 'Hair Color', key: 'hairColor', options: HAIR_COLORS.map(c => ({ id: c.color, color: c.color })) },
-        { label: 'Head Shape', key: 'head', options: Object.keys(ASSETS.heads).map(h => ({ id: h, label: h })) },
-        { label: 'Facial Hair', key: 'facialHair', options: Object.keys(ASSETS.facial_hair).map(h => ({ id: h, label: h })) },
-        { label: 'Eyes', key: 'eyes', options: Object.keys(ASSETS.eyes).map(h => ({ id: h, label: h })) },
-        { label: 'Accessories', key: 'accessory', options: Object.keys(ASSETS.accessories).map(h => ({ id: h, label: h })) }
+        { label: 'Name', key: 'name', icon: '✏️', type: 'text' },
+        { label: 'Skin Tone', key: 'skin', icon: '🎨', type: 'color', options: SKIN_TONES.map(s => ({ id: s.color, color: s.color, label: s.label })) },
+        { label: 'Hair Style', key: 'hair', icon: '💇', type: 'choice', options: Object.keys(ASSETS.hair).map(h => ({ id: h, label: h })) },
+        { label: 'Hair Color', key: 'hairColor', icon: '🌈', type: 'color', options: HAIR_COLORS.map(c => ({ id: c.color, color: c.color, label: c.label })) },
+        { label: 'Eyes', key: 'eyes', icon: '👀', type: 'choice', options: Object.keys(ASSETS.eyes).map(h => ({ id: h, label: h })) },
+        { label: 'Facial Hair', key: 'facialHair', icon: '🧔', type: 'choice', options: Object.keys(ASSETS.facial_hair).map(h => ({ id: h, label: h })) },
+        { label: 'Accessories', key: 'accessory', icon: '👓', type: 'choice', options: Object.keys(ASSETS.accessories).map(h => ({ id: h, label: h })) }
     ];
+
+    const currentSection = sections[currentStep];
+    const isFirstStep = currentStep === 0;
+    const isLastStep = currentStep === sections.length - 1;
+
+    const handleNext = () => {
+        if (isFirstStep && !name) {
+            alert('Please enter a name');
+            return;
+        }
+        if (isLastStep) {
+            onSave(name, recipe);
+        } else {
+            setCurrentStep(prev => Math.min(prev + 1, sections.length - 1));
+        }
+    };
+
+    const handleBack = () => {
+        setCurrentStep(prev => Math.max(prev - 1, 0));
+    };
+
+    const renderStepContent = () => {
+        if (currentSection.type === 'text') {
+            return (
+                <div style={{ width: '100%', maxWidth: '24rem' }}>
+                    <input
+                        placeholder="Person's Name (e.g. Dad, Mom, Teacher)"
+                        value={name}
+                        onChange={e => setName(e.target.value)}
+                        autoFocus
+                        style={{
+                            width: '100%',
+                            padding: '1rem 1.5rem',
+                            borderRadius: '1rem',
+                            border: '2px solid #E5E5EA',
+                            fontSize: '1.25rem',
+                            textAlign: 'center',
+                            outline: 'none',
+                            transition: 'border-color 0.2s'
+                        }}
+                        onFocus={(e) => e.target.style.borderColor = '#007AFF'}
+                        onBlur={(e) => e.target.style.borderColor = '#E5E5EA'}
+                    />
+                </div>
+            );
+        }
+
+        if (currentSection.type === 'color') {
+            return (
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(4.5rem, 1fr))',
+                    gap: '1rem',
+                    width: '100%',
+                    maxWidth: '28rem'
+                }}>
+                    {currentSection.options.map(opt => (
+                        <button
+                            key={opt.id}
+                            onClick={() => update(currentSection.key, opt.id)}
+                            style={{
+                                width: '100%',
+                                aspectRatio: '1',
+                                borderRadius: '1rem',
+                                background: opt.color,
+                                border: recipe[currentSection.key] === opt.id ? '4px solid #007AFF' : '2px solid #E5E5EA',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s',
+                                boxShadow: recipe[currentSection.key] === opt.id ? '0 4px 12px rgba(0,122,255,0.3)' : '0 2px 8px rgba(0,0,0,0.1)',
+                                transform: recipe[currentSection.key] === opt.id ? 'scale(1.05)' : 'scale(1)'
+                            }}
+                            title={opt.label}
+                        />
+                    ))}
+                </div>
+            );
+        }
+
+        if (currentSection.type === 'choice') {
+            return (
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(7rem, 1fr))',
+                    gap: '0.75rem',
+                    width: '100%',
+                    maxWidth: '32rem'
+                }}>
+                    {currentSection.options.map(opt => (
+                        <button
+                            key={opt.id}
+                            onClick={() => update(currentSection.key, opt.id)}
+                            style={{
+                                padding: '1rem 1.25rem',
+                                borderRadius: '0.75rem',
+                                background: recipe[currentSection.key] === opt.id ? '#007AFF' : 'white',
+                                color: recipe[currentSection.key] === opt.id ? 'white' : '#2D3436',
+                                border: recipe[currentSection.key] === opt.id ? 'none' : '2px solid #E5E5EA',
+                                cursor: 'pointer',
+                                fontSize: '0.9375rem',
+                                fontWeight: 600,
+                                transition: 'all 0.2s',
+                                textTransform: 'capitalize',
+                                boxShadow: recipe[currentSection.key] === opt.id ? '0 4px 12px rgba(0,122,255,0.3)' : 'none'
+                            }}
+                        >
+                            {opt.label}
+                        </button>
+                    ))}
+                </div>
+            );
+        }
+    };
 
     return (
         <div style={{
-            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 11000,
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 11000,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            backdropFilter: 'blur(4px)'
         }} onClick={onClose}>
             <div style={{
-                background: 'white', padding: '30px', borderRadius: '24px',
-                width: '95%', maxWidth: '800px', height: '90vh',
-                display: 'flex', flexDirection: 'column',
-                boxShadow: '0 25px 50px rgba(0,0,0,0.3)'
+                background: 'white',
+                borderRadius: '1.5rem',
+                width: '95%',
+                maxWidth: '42rem',
+                maxHeight: '90vh',
+                display: 'flex',
+                flexDirection: 'column',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+                overflow: 'hidden'
             }} onClick={e => e.stopPropagation()}>
-                
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
-                    <h2 style={{ margin: 0 }}>Create "Circle of Support" Person</h2>
-                    <button onClick={onClose} style={{ border: 'none', background: 'none', fontSize: '1.5rem', cursor: 'pointer' }}>×</button>
-                </div>
 
-                <div style={{ flex: 1, display: 'flex', gap: '30px', overflow: 'hidden' }}>
-                    {/* Preview Area */}
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#F8F9FA', borderRadius: '20px' }}>
-                        <div style={{ background: 'white', borderRadius: '50%', padding: '20px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
-                            <AvatarRenderer recipe={recipe} size={250} />
-                        </div>
-                        <input 
-                            placeholder="Person's Name (e.g. Dad)" 
-                            value={name}
-                            onChange={e => setName(e.target.value)}
-                            style={{ marginTop: '30px', padding: '12px 20px', borderRadius: '12px', border: '2px solid #ddd', width: '80%', fontSize: '1.2rem', textAlign: 'center' }}
-                        />
+                {/* Header */}
+                <div style={{
+                    padding: '1.5rem',
+                    borderBottom: '1px solid #E5E5EA',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                }}>
+                    <div>
+                        <h2 style={{ margin: '0 0 0.25rem 0', fontSize: '1.25rem', fontWeight: 700 }}>
+                            Create Person
+                        </h2>
+                        <p style={{ margin: 0, fontSize: '0.875rem', color: '#6C757D' }}>
+                            Step {currentStep + 1} of {sections.length}
+                        </p>
                     </div>
-
-                    {/* Controls Area */}
-                    <div style={{ flex: 1, overflowY: 'auto', paddingRight: '10px' }}>
-                        {sections.map(sec => (
-                            <div key={sec.key} style={{ marginBottom: '25px' }}>
-                                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '10px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#999' }}>{sec.label}</label>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                                    {sec.options.map(opt => (
-                                        <button
-                                            key={opt.id}
-                                            onClick={() => update(sec.key, opt.id)}
-                                            style={{
-                                                width: opt.color ? '40px' : 'auto',
-                                                height: opt.color ? '40px' : 'auto',
-                                                padding: opt.color ? '0' : '8px 15px',
-                                                borderRadius: opt.color ? '50%' : '10px',
-                                                background: opt.color || (recipe[sec.key] === opt.id ? '#4ECDC4' : '#eee'),
-                                                color: opt.color ? 'transparent' : (recipe[sec.key] === opt.id ? 'white' : '#333'),
-                                                border: recipe[sec.key] === opt.id ? '3px solid #000' : '2px solid transparent',
-                                                cursor: 'pointer',
-                                                fontSize: '0.8rem',
-                                                fontWeight: 'bold',
-                                                transition: 'all 0.2s'
-                                            }}
-                                        >
-                                            {opt.label}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <div style={{ marginTop: '20px', display: 'flex', gap: '15px' }}>
-                    <button onClick={onClose} style={{ flex: 1, padding: '15px', background: '#eee', border: 'none', borderRadius: '15px', cursor: 'pointer', fontWeight: 'bold' }}>Cancel</button>
-                    <button 
-                        onClick={() => {
-                            if (!name) return alert('Please enter a name');
-                            onSave(name, recipe);
+                    <button
+                        onClick={onClose}
+                        style={{
+                            background: 'transparent',
+                            border: 'none',
+                            color: '#007AFF',
+                            fontSize: '1.0625rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            padding: '0.5rem 0.75rem'
                         }}
-                        style={{ flex: 2, padding: '15px', background: '#4ECDC4', color: 'white', border: 'none', borderRadius: '15px', cursor: 'pointer', fontWeight: 'bold', fontSize: '1.1rem' }}
                     >
-                        Save to "My People"
+                        Cancel
+                    </button>
+                </div>
+
+                {/* Progress Bar */}
+                <div style={{
+                    height: '4px',
+                    background: '#F2F2F7'
+                }}>
+                    <div style={{
+                        height: '100%',
+                        background: '#007AFF',
+                        width: `${((currentStep + 1) / sections.length) * 100}%`,
+                        transition: 'width 0.3s ease'
+                    }} />
+                </div>
+
+                {/* Content */}
+                <div style={{
+                    flex: 1,
+                    padding: '2rem 1.5rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '2rem',
+                    overflowY: 'auto'
+                }}>
+                    {/* Avatar Preview */}
+                    <div style={{
+                        background: '#F8F9FA',
+                        borderRadius: '50%',
+                        padding: '1.5rem',
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.1)'
+                    }}>
+                        <AvatarRenderer recipe={recipe} size={200} />
+                    </div>
+
+                    {/* Step Title */}
+                    <div style={{ textAlign: 'center' }}>
+                        <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>
+                            {currentSection.icon}
+                        </div>
+                        <h3 style={{
+                            margin: '0 0 0.5rem 0',
+                            fontSize: '1.5rem',
+                            fontWeight: 700,
+                            color: '#2D3436'
+                        }}>
+                            {currentSection.label}
+                        </h3>
+                        <p style={{
+                            margin: 0,
+                            fontSize: '0.9375rem',
+                            color: '#6C757D'
+                        }}>
+                            {currentSection.type === 'text' ? 'Enter the person\'s name' : 'Choose an option below'}
+                        </p>
+                    </div>
+
+                    {/* Options */}
+                    {renderStepContent()}
+                </div>
+
+                {/* Navigation */}
+                <div style={{
+                    padding: '1.5rem',
+                    borderTop: '1px solid #E5E5EA',
+                    display: 'flex',
+                    gap: '0.75rem'
+                }}>
+                    {!isFirstStep && (
+                        <button
+                            onClick={handleBack}
+                            style={{
+                                flex: 1,
+                                padding: '1rem',
+                                background: '#F2F2F7',
+                                border: 'none',
+                                borderRadius: '0.75rem',
+                                cursor: 'pointer',
+                                fontSize: '1rem',
+                                fontWeight: 600,
+                                color: '#2D3436'
+                            }}
+                        >
+                            ← Back
+                        </button>
+                    )}
+                    <button
+                        onClick={handleNext}
+                        style={{
+                            flex: 2,
+                            padding: '1rem',
+                            background: '#007AFF',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '0.75rem',
+                            cursor: 'pointer',
+                            fontSize: '1rem',
+                            fontWeight: 600,
+                            boxShadow: '0 4px 12px rgba(0,122,255,0.3)'
+                        }}
+                    >
+                        {isLastStep ? 'Save Person →' : 'Next →'}
                     </button>
                 </div>
             </div>
