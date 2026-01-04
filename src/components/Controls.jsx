@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Capacitor } from '@capacitor/core';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import GuidedAccessModal from './GuidedAccessModal';
 import FavoritesPickerModal from './FavoritesPickerModal';
 import PronunciationEditor from './PronunciationEditor';
-import MemojiPicker from './MemojiPicker';
 import { STAGES, LEVEL_ORDER, getLevel, getStage } from '../data/levelDefinitions';
 import { BELL_SOUNDS, playBellSound } from '../utils/sounds';
 import { useProfile } from '../context/ProfileContext';
+import { isHighQualityVoice, getVoicesReady, pickBestVoice } from '../utils/voiceUtils';
+import { NativeBiometric } from 'capacitor-native-biometric';
+import { Capacitor } from '@capacitor/core';
 
 import BackupRestore from './BackupRestore';
 
@@ -26,6 +26,7 @@ const Controls = ({
     onAddItem,
     onSetLevel,
     onStartTraining,
+    onStartEssentialSkills,
     onReset,
     onShuffle,
     onStopTraining,
@@ -68,7 +69,7 @@ const Controls = ({
 }) => {
 
     const COLOR_THEMES = [
-        { id: 'default', label: 'Kiwi', icon: '🥝', primary: '#4ECDC4', bg: '#FDF8F3', premium: false },
+        { id: 'default', label: 'Kiwi', icon: <img src="/images/logo.png" alt="" style={{ width: '20px', height: '20px', borderRadius: '4px' }} />, primary: '#1A535C', bg: '#FDF8F3', premium: false },
         { id: 'ocean', label: 'Ocean', icon: '🌊', primary: '#0EA5E9', bg: '#E8F4FC', premium: true },
         { id: 'sunset', label: 'Sunset', icon: '🌅', primary: '#F97316', bg: '#FFF7ED', premium: true },
         { id: 'forest', label: 'Forest', icon: '🌲', primary: '#22C55E', bg: '#F0FDF4', premium: true },
@@ -82,18 +83,25 @@ const Controls = ({
     const [showBackupRestore, setShowBackupRestore] = useState(false);
     const [availableVoices, setAvailableVoices] = useState([]);
     const [isRestoring, setIsRestoring] = useState(false);
-    const [showAdvanced, setShowAdvanced] = useState(false);
     const [activeTab, setActiveTab] = useState('basic');
 
     const tabs = [
         { id: 'basic', label: '⚡ Basic' },
         { id: 'character', label: '✨ Avatar' },
+        { id: 'access', label: '♿ Access' },
         { id: 'advanced', label: '⚙️ Extra' },
         { id: 'data', label: '📊 Data' }
     ];
     const activeTabIndex = tabs.findIndex(t => t.id === activeTab);
 
-    const { pronunciations } = useProfile();
+    const { currentProfile, updateAccessProfile, pronunciations } = useProfile();
+    const accessProfile = currentProfile?.accessProfile || { 
+        targetSize: 10, 
+        spacing: 1.5, 
+        selectionType: 'touch',
+        visualContrast: 'standard',
+        fieldSize: 'unlimited'
+    };
 
     const testVoice = () => {
         const text = "Hello, I am ready to talk.";
@@ -122,6 +130,38 @@ const Controls = ({
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
     const [selectedLang, setSelectedLang] = useState('en');
+    const [isRefreshingVoices, setIsRefreshingVoices] = useState(false);
+    const [isBiometryAvailable, setIsBiometryAvailable] = useState(false);
+
+    useEffect(() => {
+        const checkBiometry = async () => {
+            if (Capacitor.isNativePlatform()) {
+                try {
+                    const result = await NativeBiometric.isAvailable();
+                    setIsBiometryAvailable(result.isAvailable);
+                } catch (e) {
+                    console.warn('Biometry check failed');
+                }
+            }
+        };
+        checkBiometry();
+    }, []);
+
+    const refreshVoices = async () => {
+        setIsRefreshingVoices(true);
+        const voices = await getVoicesReady(3000);
+        setAvailableVoices(voices);
+        
+        // Auto-pick best if current is generic/robotic
+        const currentVoice = voices.find(v => v.voiceURI === voiceSettings.voiceURI);
+        if (!isHighQualityVoice(currentVoice)) {
+            const best = pickBestVoice(voices, accessProfile.language === 'es' ? 'es-ES' : 'en-US');
+            if (best) {
+                onUpdateVoiceSettings({ ...voiceSettings, voiceURI: best.voiceURI });
+            }
+        }
+        setIsRefreshingVoices(false);
+    };
 
     useEffect(() => {
         const loadVoices = () => {
@@ -211,7 +251,10 @@ const Controls = ({
             <div id="controls-content">
                 <div className="drag-handle"></div>
                 <div id="parent-header">
-                    <span>Adult Settings</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <img src="/images/logo.png" alt="Logo" style={{ width: '24px', height: '24px', borderRadius: '6px' }} />
+                        <span>Adult Settings</span>
+                    </div>
                     <button id="close-settings" onClick={onToggleMenu} aria-label="Close Settings">✕</button>
                 </div>
 
@@ -450,17 +493,189 @@ const Controls = ({
                         </div>
                     )}
 
-                    {/* Character Tab */}
-                    {activeTab === 'character' && (
-                        <div style={{ background: '#F2F2F7', margin: '0 -1.5rem', padding: '1.5rem', flex: 1 }}>
-                            <MemojiPicker
-                                onSelect={(url, config) => {
-                                    onAddItem(config.name || 'Character', url, 'button');
-                                    alert(`${config.name || 'Character'} added to your library!`);
-                                    setActiveTab('basic');
-                                }}
-                                onClose={() => setActiveTab('basic')}
-                            />
+                    {/* Access Tab (NEW) */}
+                    {activeTab === 'access' && (
+                        <div style={{ background: '#F2F2F7', margin: '0 -1.5rem', padding: '0 1.5rem 1.5rem', flex: 1 }}>
+                            <div className="ios-setting-group-header">Selection Type</div>
+                            <div className="ios-setting-card">
+                                <div className="ios-row" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.625rem', padding: '1rem' }}>
+                                    <div className="ios-segmented-control" style={{ marginBottom: 0 }}>
+                                        <div 
+                                            className="selection-pill" 
+                                            style={{ 
+                                                width: 'calc(33.33% - 4px)',
+                                                transform: accessProfile.selectionType === 'touch' ? 'translateX(0)' : 
+                                                           accessProfile.selectionType === 'scan' ? 'translateX(100%)' : 'translateX(200%)' 
+                                            }} 
+                                        />
+                                        <button onClick={() => {
+                                            updateAccessProfile({ selectionType: 'touch' });
+                                            if (isScanning) onToggleScanning();
+                                        }} style={{ minHeight: '2.75rem' }}>Direct Touch</button>
+                                        <button onClick={() => {
+                                            updateAccessProfile({ selectionType: 'scan' });
+                                            if (!isScanning) onToggleScanning();
+                                        }} style={{ minHeight: '2.75rem' }}>Switch Scan</button>
+                                        <button onClick={() => {
+                                            updateAccessProfile({ selectionType: 'eye' });
+                                            if (isScanning) onToggleScanning();
+                                        }} style={{ minHeight: '2.75rem' }}>Eye Gaze</button>
+                                    </div>
+                                </div>
+                                {isBiometryAvailable && (
+                                    <div className="ios-row" onClick={() => updateAccessProfile({ biometricLock: !accessProfile.biometricLock })}>
+                                        <span>🛡️ Use FaceID / TouchID</span>
+                                        <div style={{ 
+                                            width: '51px', 
+                                            height: '31px', 
+                                            background: accessProfile.biometricLock ? '#34C759' : '#E5E5EA', 
+                                            borderRadius: '15.5px', 
+                                            position: 'relative',
+                                            transition: 'background 0.2s'
+                                        }}>
+                                            <div style={{ 
+                                                width: '27px', 
+                                                height: '27px', 
+                                                background: 'white', 
+                                                borderRadius: '50%', 
+                                                position: 'absolute', 
+                                                top: '2px', 
+                                                left: accessProfile.biometricLock ? '22px' : '2px',
+                                                transition: 'left 0.2s',
+                                                boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
+                                            }} />
+                                        </div>
+                                    </div>
+                                )}
+                                <div className="ios-row" style={{ minHeight: 'auto', padding: '0.5rem 0.9375rem', background: '#F2F2F7' }}>
+                                    <p style={{ fontSize: '0.625rem', color: '#8E8E93', margin: 0 }}>
+                                        {isBiometryAvailable 
+                                            ? 'Secure adult settings with biometrics. Triple-tap fallback is always available.'
+                                            : 'Triple-tap the bottom bar to unlock adult settings.'}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="ios-setting-group-header">Physical Target Size</div>
+                            <div className="ios-setting-card">
+                                <div className="ios-row" style={{ padding: '0.9375rem' }}>
+                                    <div style={{ width: '100%' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                                            <span style={{ fontSize: '0.875rem' }}>🎯 Hit Area Diameter</span>
+                                            <span style={{ fontSize: '0.875rem', fontWeight: 700 }}>{accessProfile.targetSize}mm</span>
+                                        </div>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.375rem' }}>
+                                            {[10, 12, 15, 18, 22].map(size => (
+                                                <button
+                                                    key={size}
+                                                    onClick={() => updateAccessProfile({ targetSize: size })}
+                                                    style={{
+                                                        height: '2.75rem',
+                                                        background: accessProfile.targetSize === size ? 'var(--primary)' : 'white',
+                                                        color: accessProfile.targetSize === size ? 'white' : 'black',
+                                                        borderRadius: '0.5rem',
+                                                        border: '1px solid #ddd',
+                                                        fontWeight: 600,
+                                                        fontSize: '0.75rem'
+                                                    }}
+                                                >
+                                                    {size}mm
+                                                </button>
+                                            ))}
+                                        </div>
+                                        <p style={{ fontSize: '0.625rem', color: '#8E8E93', marginTop: '0.625rem', marginInline: '0.25rem' }}>
+                                            {accessProfile.targetSize <= 10 ? 'Standard baseline (44pt/48dp).' : 
+                                             accessProfile.targetSize <= 15 ? 'Best for moderate motor challenges.' : 'Optimized for significant motor needs.'}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="ios-setting-group-header">Hit-Area Spacing</div>
+                            <div className="ios-setting-card">
+                                <div className="ios-row" style={{ padding: '0.9375rem' }}>
+                                    <div style={{ width: '100%' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                                            <span style={{ fontSize: '0.875rem' }}>↔️ Gap between buttons</span>
+                                            <span style={{ fontSize: '0.875rem', fontWeight: 700 }}>{accessProfile.spacing}mm</span>
+                                        </div>
+                                        <input
+                                            type="range" min="0" max="10" step="0.5"
+                                            value={accessProfile.spacing}
+                                            onChange={(e) => updateAccessProfile({ spacing: parseFloat(e.target.value) })}
+                                            style={{ width: '100%', height: '2.75rem' }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="ios-setting-group-header">Visual Needs</div>
+                            <div className="ios-setting-card">
+                                <div className="ios-row" style={{ padding: '0.9375rem', flexDirection: 'column', alignItems: 'flex-start', gap: '0.5rem' }}>
+                                    <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>🌐 App Language (Mirroring)</span>
+                                    <div className="ios-segmented-control" style={{ marginBottom: 0, width: '100%' }}>
+                                        <div 
+                                            className="selection-pill" 
+                                            style={{ 
+                                                width: 'calc(50% - 4px)',
+                                                transform: accessProfile.language === 'en' ? 'translateX(0)' : 'translateX(100%)'
+                                            }} 
+                                        />
+                                        <button onClick={() => updateAccessProfile({ language: 'en' })}>🇺🇸 English</button>
+                                        <button onClick={() => updateAccessProfile({ language: 'es' })}>🇪🇸 Español</button>
+                                    </div>
+                                    <p style={{ fontSize: '0.625rem', color: '#8E8E93', marginInline: '0.25rem' }}>
+                                        Switching language will translate the board labels while keeping icons in the same position.
+                                    </p>
+                                </div>
+                                <div className="ios-row" onClick={() => {
+                                    const newContrast = accessProfile.visualContrast === 'high' ? 'standard' : 'high';
+                                    updateAccessProfile({ visualContrast: newContrast });
+                                    if (newContrast === 'high') document.body.classList.add('high-contrast');
+                                    else document.body.classList.remove('high-contrast');
+                                }}>
+                                    <span>👁️ High Contrast Symbols</span>
+                                    <div style={{ 
+                                        width: '51px', 
+                                        height: '31px', 
+                                        background: accessProfile.visualContrast === 'high' ? '#34C759' : '#E5E5EA', 
+                                        borderRadius: '15.5px', 
+                                        position: 'relative'
+                                    }}>
+                                        <div style={{ 
+                                            width: '27px', 
+                                            height: '27px', 
+                                            background: 'white', 
+                                            borderRadius: '50%', 
+                                            position: 'absolute', 
+                                            top: '2px', 
+                                            left: accessProfile.visualContrast === 'high' ? '22px' : '2px',
+                                            transition: 'left 0.2s'
+                                        }} />
+                                    </div>
+                                </div>
+                                <div className="ios-row" style={{ padding: '0.9375rem', flexDirection: 'column', alignItems: 'flex-start', gap: '0.5rem' }}>
+                                    <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>🔲 Field Size Limit</span>
+                                    <div className="ios-segmented-control" style={{ marginBottom: 0, width: '100%' }}>
+                                        <div 
+                                            className="selection-pill" 
+                                            style={{ 
+                                                width: 'calc(25% - 4px)',
+                                                transform: accessProfile.fieldSize === '4' ? 'translateX(0)' : 
+                                                           accessProfile.fieldSize === '8' ? 'translateX(100%)' : 
+                                                           accessProfile.fieldSize === '12' ? 'translateX(200%)' : 'translateX(300%)' 
+                                            }} 
+                                        />
+                                        <button onClick={() => updateAccessProfile({ fieldSize: '4' })}>4</button>
+                                        <button onClick={() => updateAccessProfile({ fieldSize: '8' })}>8</button>
+                                        <button onClick={() => updateAccessProfile({ fieldSize: '12' })}>12</button>
+                                        <button onClick={() => updateAccessProfile({ fieldSize: 'unlimited' })}>All</button>
+                                    </div>
+                                    <p style={{ fontSize: '0.625rem', color: '#8E8E93', marginInline: '0.25rem' }}>
+                                        Limits the number of icons shown at once to reduce visual clutter.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     )}
 
@@ -605,7 +820,7 @@ const Controls = ({
                                 </div>
                                 <div className="ios-row" style={{ minHeight: 'auto', padding: '0.5rem 0.9375rem', background: '#F2F2F7' }}>
                                     <p style={{ fontSize: '0.625rem', color: '#8E8E93', margin: 0 }}>
-                                        Organizes your board into labeled sections like 'Actions' or 'Describe'.
+                                        Organizes your board into labeled sections like &apos;Actions&apos; or &apos;Describe&apos;.
                                     </p>
                                 </div>
                                 <div className="ios-row" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.625rem', padding: '1rem' }}>
@@ -635,25 +850,34 @@ const Controls = ({
                                 <div className="ios-row" style={{ minHeight: 'auto', padding: '0.9375rem' }}>
                                     <div style={{ width: '100%' }}>
                                         <div className="ios-setting-group-header" style={{ margin: '0 0 0.625rem 0' }}>Grid Layout</div>
-                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.375rem' }}>
                                             {[ 
-                                                { id: 'super-big', label: '🐘 2x2' },
-                                                { id: 'big', label: '🦒 3x3' },
-                                                { id: 'standard', label: '🐕 4x4' },
+                                                { id: 'super-big', label: '🐘', title: '2x2' },
+                                                { id: 'big', label: '🦒', title: '3x3' },
+                                                { id: 'standard', label: '🐕', title: '4x4' },
+                                                { id: 'medium', label: '🐈', title: '5x5' },
+                                                { id: 'dense', label: '🐜', title: '6x6' },
                                             ].map(size => (
                                                 <button
                                                     key={size.id}
                                                     onClick={() => onUpdateGridSize(size.id)}
+                                                    title={size.title}
                                                     style={{
-                                                        height: '2.75rem',
-                                                        background: gridSize === size.id ? 'var(--primary)' : '#E5E5EA',
-                                                        color: gridSize === size.id ? 'white' : 'black',
+                                                        height: '3rem',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        background: gridSize === size.id ? 'var(--primary)' : 'var(--gray-light)',
+                                                        color: gridSize === size.id ? 'white' : 'var(--text-primary)',
                                                         borderRadius: '0.625rem',
-                                                        border: 'none',
-                                                        fontWeight: 600
+                                                        border: gridSize === size.id ? 'none' : '1px solid var(--gray-border)',
+                                                        fontWeight: 600,
+                                                        fontSize: '1.25rem'
                                                     }}
                                                 >
-                                                    {size.label}
+                                                    <span>{size.label}</span>
+                                                    <span style={{ fontSize: '0.5rem', marginTop: '2px', color: gridSize === size.id ? 'white' : 'var(--text-muted)' }}>{size.title}</span>
                                                 </button>
                                             ))}
                                         </div>
@@ -761,7 +985,7 @@ const Controls = ({
                                             <optgroup key={lang} label={lang}>
                                                 {filteredVoices.filter(v => v.lang === lang).map(v => (
                                                     <option key={v.voiceURI} value={v.voiceURI}>
-                                                        {(v.name.includes('Enhanced') || v.name.includes('Premium') || v.name.includes('Siri')) ? '✨ ' : ''}
+                                                        {isHighQualityVoice(v) ? '✨ ' : ''}
                                                         {v.name.replace(/System |Apple |Microsoft |\(Enhanced\)|Premium /g, '').trim()}
                                                     </option>
                                                 ))}
@@ -769,10 +993,30 @@ const Controls = ({
                                         ))}
                                     </select>
                                 </div>
+                                
+                                {/* High Quality Guidance Card */}
+                                {!isHighQualityVoice(availableVoices.find(v => v.voiceURI === voiceSettings.voiceURI)) && (
+                                    <div style={{ margin: '10px 15px', padding: '15px', background: '#FFF9E6', borderRadius: '12px', border: '1px solid #FFE4B5' }}>
+                                        <div style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#856404', marginBottom: '8px' }}>🤖 Robotic Voice detected?</div>
+                                        <p style={{ fontSize: '0.75rem', color: '#856404', margin: '0 0 12px 0', lineHeight: '1.4' }}>
+                                            {isIOS 
+                                                ? 'Get high-quality "Enhanced" voices in: iOS Settings → Accessibility → Spoken Content → Voices.' 
+                                                : 'Install higher-quality voice data in: System Settings → Text-to-speech → Install voice data.'}
+                                        </p>
+                                        <button 
+                                            onClick={refreshVoices}
+                                            disabled={isRefreshingVoices}
+                                            style={{ width: '100%', padding: '8px', borderRadius: '8px', border: 'none', background: 'white', color: '#856404', fontSize: '0.75rem', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', cursor: 'pointer' }}
+                                        >
+                                            {isRefreshingVoices ? 'Searching...' : '🔄 I downloaded a new voice, refresh list'}
+                                        </button>
+                                    </div>
+                                )}
+
                                 {isIOS && (
                                     <div className="ios-row" style={{ minHeight: 'auto', padding: '0.5rem 0.9375rem' }}>
                                         <p style={{ fontSize: '0.625rem', color: '#8E8E93', margin: 0 }}>
-                                            💡 Tip: Download "Enhanced" voices in iOS Settings → Accessibility → Spoken Content → Voices for better quality.
+                                            💡 Tip: Download &quot;Enhanced&quot; voices in iOS Settings → Accessibility → Spoken Content → Voices for better quality.
                                         </p>
                                     </div>
                                 )}
@@ -935,6 +1179,10 @@ const Controls = ({
                                 </div>
                                 <div className="ios-row" onClick={onStartTraining}>
                                     <span style={{ color: '#5856D6', fontWeight: 600 }}>🧠 Training Mode</span>
+                                    <span className="ios-chevron">›</span>
+                                </div>
+                                <div className="ios-row" onClick={onStartEssentialSkills}>
+                                    <span style={{ color: '#FF2D55', fontWeight: 600 }}>✋ Essential Skills (FCR)</span>
                                     <span className="ios-chevron">›</span>
                                 </div>
                             </div>

@@ -8,11 +8,13 @@ import SplashScreen from './components/SplashScreen';
 import LevelIntro from './components/LevelIntro';
 import Phase1TargetSelector from './components/Phase1TargetSelector';
 import A2HSModal from './components/A2HSModal';
+import EssentialSkillsMode from './components/EssentialSkillsMode';
 
 const Dashboard = lazy(() => import('./components/Dashboard'));
 const EditModal = lazy(() => import('./components/EditModal'));
 const Onboarding = lazy(() => import('./components/Onboarding'));
 const TouchCalibration = lazy(() => import('./components/TouchCalibration'));
+const VisualSceneView = lazy(() => import('./components/VisualSceneView'));
 import { playBellSound } from './utils/sounds';
 import { trackSentence, trackItemClick } from './utils/AnalyticsService';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -38,8 +40,10 @@ import {
 import { AAC_LEXICON } from './data/aacLexicon';
 import { CORE_WORDS_LAYOUT } from './data/aacData';
 import { useProfile } from './context/ProfileContext';
-import { getRevenueCat } from './plugins/revenuecat';
+import { MIRROR_DICTIONARY } from './utils/translate';
+import { ensureDefaultVoice } from './utils/voiceUtils';
 import { Capacitor } from '@capacitor/core';
+import { NativeBiometric } from 'capacitor-native-biometric';
 import cloudSyncService from './services/CloudSyncService';
 
 const synth = window.speechSynthesis || null;
@@ -209,6 +213,7 @@ function App() {
   });
 
   const [isTrainingMode, setIsTrainingMode] = useState(false);
+  const [isEssentialSkillsMode, setIsEssentialSkillsMode] = useState(false);
   const [trainingSelection, setTrainingSelection] = useState([]);
   const [isScanning, setIsScanning] = useState(() => localStorage.getItem('kiwi-is-scanning') === 'true');
   const [isLayoutLocked, setIsLayoutLocked] = useState(() => localStorage.getItem('kiwi-layout-locked') === 'true');
@@ -216,7 +221,7 @@ function App() {
     const saved = localStorage.getItem('kiwi-color-coding-enabled');
     return saved !== null ? saved === 'true' : true;
   });
-  const [isCategorizationEnabled, setIsCategorizationEnabled] = useState(() => {
+  const [isCategorizationEnabled] = useState(() => {
     const saved = localStorage.getItem('kiwi-categorization-enabled');
     return saved !== null ? saved === 'true' : true;
   });
@@ -238,6 +243,7 @@ function App() {
   const [showDashboard, setShowDashboard] = useState(false);
   const [showAdvancementModal, setShowAdvancementModal] = useState(false);
   const [showCalibration, setShowCalibration] = useState(false);
+  const [activeVisualScene, setActiveVisualScene] = useState(null);
   const [progressData, setProgressData] = useState(() => {
     try {
       const saved = localStorage.getItem('kians-progress');
@@ -252,7 +258,7 @@ function App() {
   const [bellSound, setBellSound] = useState(() => localStorage.getItem('kiwi-bell-sound') || 'traditional');
   const [gridSize, setGridSize] = useState(() => {
     const saved = localStorage.getItem('kiwi-grid-size');
-    const valid = ['super-big', 'big', 'standard'];
+    const valid = ['super-big', 'big', 'standard', 'medium', 'dense'];
     return valid.includes(saved) ? saved : 'big';
   });
   const [colorTheme, setColorTheme] = useState(() => localStorage.getItem('kiwi-color-theme') || 'default');
@@ -283,6 +289,19 @@ function App() {
   const lastSpeakTimeRef = useRef({});
 
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
+
+  const { currentProfile, updateProfile, pronunciations } = useProfile();
+
+  // Sync isScanning with Access Profile Selection Type
+  useEffect(() => {
+    if (currentProfile?.accessProfile?.selectionType === 'scan') {
+      if (!isScanning) setIsScanning(true);
+    } else {
+      if (isScanning && currentProfile?.accessProfile?.selectionType) { // Avoid false positive on initial load
+        setIsScanning(false);
+      }
+    }
+  }, [currentProfile?.accessProfile?.selectionType]);
 
   const currentPageItems = rootItems[currentPageIndex]?.items || [];
   let itemsToShow = currentPath.length === 0 
@@ -386,10 +405,61 @@ function App() {
     }
   };
 
+  const attemptCloudRestore = async () => {
+    // Only attempt restore if no local data exists (fresh install)
+    const onboardingComplete = localStorage.getItem('kiwi-onboarding-complete');
+    if (onboardingComplete) return;
+
+    try {
+      const { relationalSyncService } = await import('./services/RelationalSyncService');
+      const restored = await relationalSyncService.restoreFromCloud();
+      
+      if (restored) {
+        console.log('☁️ Data restored automatically from cloud');
+        // Update local state with restored data
+        if (restored.profile) {
+          updateProfile('default', {
+            name: restored.profile.name,
+            avatar: restored.profile.avatar,
+            pecs_phase: restored.profile.pecs_phase
+          });
+          if (restored.profile.onboarding_complete) {
+            localStorage.setItem('kiwi-onboarding-complete', 'true');
+            setShowOnboarding(false);
+          }
+          if (restored.profile.pecs_phase) {
+            handleSetLevel(migratePhaseToLevel(restored.profile.pecs_phase));
+          }
+        }
+        
+        if (restored.boards && restored.boards.home) {
+          const homeData = restored.boards.home;
+          setRootItems(Array.isArray(homeData) ? [{ name: 'Page 1', items: homeData }] : homeData);
+        }
+        
+        // Refresh the page or update state to reflect changes
+        window.location.reload(); 
+      }
+    } catch (error) {
+      console.error('Cloud restore failed:', error);
+    }
+  };
+
   useEffect(() => {
     configureRevenueCat();
+    attemptCloudRestore();
     // Auto-sync if a cloud code is active
     cloudSyncService.autoSync();
+
+    // Ensure a high-quality voice is selected
+    const initVoice = async () => {
+      const bestUri = await ensureDefaultVoice(voiceSettings.voiceURI, currentProfile?.accessProfile?.language === 'es' ? 'es-ES' : 'en-US');
+      if (bestUri && bestUri !== voiceSettings.voiceURI) {
+        setVoiceSettings(prev => ({ ...prev, voiceURI: bestUri }));
+      }
+    };
+    initVoice();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => { localStorage.setItem('kiwi-contexts', JSON.stringify(contexts)); }, [contexts]);
@@ -423,6 +493,7 @@ function App() {
     }, scanSpeed);
 
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isScanning, scanSpeed, visibleItemsForScanning.length, editModalOpen, pickerOpen, showDashboard, showOnboarding, showLevelIntro, showAdvancementModal, showCalibration]);
 
   // Global Switch Listener (Space/Enter or Screen Tap when scanning)
@@ -451,7 +522,7 @@ function App() {
       window.removeEventListener('keydown', handleGlobalSwitch);
       window.removeEventListener('click', handleGlobalSwitch, true);
     };
-  }, [isScanning, scanIndex, visibleItemsForScanning]);
+  }, [isScanning, scanIndex, visibleItemsForScanning, handleItemClick]);
 
   useEffect(() => {
     if (typeof currentLevel === 'number' && !isNaN(currentLevel)) {
@@ -500,12 +571,12 @@ function App() {
     }
   };
 
-  const { profiles, updateProfile, pronunciations } = useProfile();
-
   const speak = (text, customAudio = null) => {
     if (customAudio) { new Audio(customAudio).play(); return; }
     if (!synth) return;
     if (synth.speaking) synth.cancel();
+
+    const lang = currentProfile?.accessProfile?.language || 'en';
 
     // Phonetic Override Logic
     let processedText = text;
@@ -519,6 +590,7 @@ function App() {
     }
 
     const u = new SpeechSynthesisUtterance(processedText);
+    u.lang = lang === 'es' ? 'es-ES' : 'en-US';
     u.rate = voiceSettings.rate; 
     u.pitch = voiceSettings.pitch;
     u.volume = voiceSettings.volume || 1;
@@ -526,7 +598,18 @@ function App() {
     if (voiceSettings.voiceURI) {
       const voices = synth.getVoices();
       const selectedVoice = voices.find(v => v.voiceURI === voiceSettings.voiceURI);
-      if (selectedVoice) u.voice = selectedVoice;
+      if (selectedVoice) {
+        u.voice = selectedVoice;
+      } else {
+        // Fallback to any voice matching current lang
+        const langVoice = voices.find(v => v.lang.startsWith(lang));
+        if (langVoice) u.voice = langVoice;
+      }
+    } else {
+      // Auto-select a voice for the current language if none saved
+      const voices = synth.getVoices();
+      const langVoice = voices.find(v => v.lang.startsWith(lang));
+      if (langVoice) u.voice = langVoice;
     }
     synth.speak(u);
   };
@@ -624,7 +707,7 @@ function App() {
     setTimeout(() => { document.body.classList.remove('success-flash'); setShowSuccess(false); if (currentPhase === 2) setIsCommunicating(false); }, 1200);
   };
 
-  const handleItemClick = async (item, index) => {
+  const handleItemClick = useCallback(async (item, index) => {
     // Analytics tracking
     trackItemClick(item.id || item.word, item.word);
 
@@ -647,10 +730,17 @@ function App() {
       setRootItems(updatedItems);
     }
     if (item.type === 'folder') setCurrentPath([...currentPath, index]);
+    else if (item.type === 'visual_scene') {
+      setActiveVisualScene(item);
+    }
     else {
       // Repetition Delay Logic
-      // eslint-disable-next-line react-hooks/purity
       const now = Date.now();
+      const lang = currentProfile?.accessProfile?.language || 'en';
+      const localizedWord = item.labels?.[lang] || 
+                            MIRROR_DICTIONARY[item.word.toLowerCase()]?.[lang] || 
+                            item.word;
+
       const lastTime = lastSpeakTimeRef.current[item.word] || 0;
       if (now - lastTime < speechDelay * 1000) {
           console.log(`Speech delay active for: ${item.word}`);
@@ -669,9 +759,9 @@ function App() {
           }
       }
 
-      if (currentPhase === 1 || currentPhase === 2) { speak(item.word, item.customAudio); triggerSuccess(); return; }
+      if (currentPhase === 1 || currentPhase === 2) { speak(localizedWord, item.customAudio); triggerSuccess(); return; }
       if (currentPhase === 4 && stripItems.length === 0) {
-        if (item.word === "I want") { setStripItems([item]); if (autoSpeak) speak(item.word, item.customAudio); }
+        if (item.word === "I want") { setStripItems([item]); if (autoSpeak) speak(localizedWord, item.customAudio); }
         else {
           const iWantRoot = rootItems.find(i => i.word === "I want");
           if (iWantRoot) { 
@@ -680,7 +770,8 @@ function App() {
                 if (iWantRoot.customAudio) {
                     speakSentence([iWantRoot, item]);
                 } else {
-                    speak("I want " + item.word, item.customAudio); 
+                    const iWantLocalized = iWantRoot.labels?.[lang] || MIRROR_DICTIONARY["i want"]?.[lang] || "I want";
+                    speak(iWantLocalized + " " + localizedWord, item.customAudio); 
                 }
             }
             triggerSuccess(); 
@@ -690,12 +781,13 @@ function App() {
       }
       if (showStrip) { 
         setStripItems([...stripItems, item]); 
-        if (autoSpeak) speak(item.word, item.customAudio); 
+        if (autoSpeak) speak(localizedWord, item.customAudio); 
         if (currentPhase >= 3) triggerSuccess(); 
       }
-      else { speak(item.word, item.customAudio); triggerSuccess(); }
+      else { speak(localizedWord, item.customAudio); triggerSuccess(); }
     }
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rootItems, currentPath, currentProfile, speechDelay, stripItems, currentPhase, autoSpeak, showStrip, voiceSettings, pronunciations]);
 
   const handleDeleteItemFromStrip = (index) => {
     const newItems = [...stripItems];
@@ -921,7 +1013,7 @@ function App() {
         </div>
       </DndContext>
       {!isLocked && !isEditMode && !isTrainingMode && <button id="settings-button" onClick={() => setIsEditMode(true)} aria-label="Open Settings">⚙️</button>}
-      {!isLocked && <Controls isEditMode={isEditMode} isTrainingMode={isTrainingMode} currentPhase={currentPhase} currentLevel={currentLevel} showStrip={showStrip} currentContext={currentContext} contexts={contexts} onSetContext={handleSetContext} onToggleMenu={() => setIsEditMode(!isEditMode)} onAddItem={handleAddItem} onAddContext={handleAddContext} onRenameContext={handleRenameContext} onDeleteContext={handleDeleteContext} onSetLevel={handleSetLevel} onStartTraining={() => { setIsTrainingMode(true); setTrainingSelection([]); }} onReset={() => { if (confirm("Reset everything?")) { localStorage.clear(); location.reload(); } }} onShuffle={handleShuffle} onStopTraining={handleStopTraining} onOpenPicker={handlePickerOpen} onToggleDashboard={() => setShowDashboard(true)} onRedoCalibration={() => setShowCalibration(true)} onToggleLock={() => setIsLocked(true)} voiceSettings={voiceSettings} onUpdateVoiceSettings={setVoiceSettings} gridSize={gridSize} onUpdateGridSize={setGridSize} phase1TargetId={phase1TargetId} onSetPhase1Target={setPhase1TargetId} rootItems={currentPageItems} colorTheme={colorTheme} onSetColorTheme={setColorTheme} triggerPaywall={triggerPaywall} bellSound={bellSound} onUpdateBellSound={setBellSound} speechDelay={speechDelay} onUpdateSpeechDelay={setSpeechDelay} autoSpeak={autoSpeak} onUpdateAutoSpeak={setAutoSpeak} isScanning={isScanning} onToggleScanning={() => setIsScanning(!isScanning)} scanSpeed={scanSpeed} onUpdateScanSpeed={setScanSpeed} isLayoutLocked={isLayoutLocked} onToggleLayoutLock={() => setIsLayoutLocked(!isLayoutLocked)} isColorCodingEnabled={isColorCodingEnabled} onToggleColorCoding={() => setIsColorCodingEnabled(!isColorCodingEnabled)} showCategoryHeaders={showCategoryHeaders} onToggleCategoryHeaders={() => setShowCategoryHeaders(!showCategoryHeaders)} proficiencyLevel={proficiencyLevel} onUpdateProficiencyLevel={setProficiencyLevel} onAddPage={handleAddNewPage} onDeletePage={handleDeletePage} currentPageIndex={currentPageIndex}           onAddFavorites={(favorites) => {
+      {!isLocked && <Controls isEditMode={isEditMode} isTrainingMode={isTrainingMode} currentPhase={currentPhase} currentLevel={currentLevel} showStrip={showStrip} currentContext={currentContext} contexts={contexts} onSetContext={handleSetContext} onToggleMenu={() => setIsEditMode(!isEditMode)} onAddItem={handleAddItem} onAddContext={handleAddContext} onRenameContext={handleRenameContext} onDeleteContext={handleDeleteContext} onSetLevel={handleSetLevel} onStartTraining={() => { setIsTrainingMode(true); setTrainingSelection([]); }} onStartEssentialSkills={() => setIsEssentialSkillsMode(true)} onReset={() => { if (confirm("Reset everything?")) { localStorage.clear(); location.reload(); } }} onShuffle={handleShuffle} onStopTraining={handleStopTraining} onOpenPicker={handlePickerOpen} onToggleDashboard={() => setShowDashboard(true)} onRedoCalibration={() => setShowCalibration(true)} onToggleLock={() => setIsLocked(true)} voiceSettings={voiceSettings} onUpdateVoiceSettings={setVoiceSettings} gridSize={gridSize} onUpdateGridSize={setGridSize} phase1TargetId={phase1TargetId} onSetPhase1Target={setPhase1TargetId} rootItems={currentPageItems} colorTheme={colorTheme} onSetColorTheme={setColorTheme} triggerPaywall={triggerPaywall} bellSound={bellSound} onUpdateBellSound={setBellSound} speechDelay={speechDelay} onUpdateSpeechDelay={setSpeechDelay} autoSpeak={autoSpeak} onUpdateAutoSpeak={setAutoSpeak} isScanning={isScanning} onToggleScanning={() => setIsScanning(!isScanning)} scanSpeed={scanSpeed} onUpdateScanSpeed={setScanSpeed} isLayoutLocked={isLayoutLocked} onToggleLayoutLock={() => setIsLayoutLocked(!isLayoutLocked)} isColorCodingEnabled={isColorCodingEnabled} onToggleColorCoding={() => setIsColorCodingEnabled(!isColorCodingEnabled)} showCategoryHeaders={showCategoryHeaders} onToggleCategoryHeaders={() => setShowCategoryHeaders(!showCategoryHeaders)} proficiencyLevel={proficiencyLevel} onUpdateProficiencyLevel={setProficiencyLevel} onAddPage={handleAddNewPage} onDeletePage={handleDeletePage} currentPageIndex={currentPageIndex}           onAddFavorites={(favorites) => {
             const nowTime = new Date().getTime();
             const newFavs = favorites.map((fav, i) => ({ id: `fav-${nowTime}-${i}`, type: 'button', word: fav.word || fav.label, icon: fav.icon, bgColor: '#FFF3E0' })); 
             
@@ -935,8 +1027,48 @@ function App() {
             setRootItems(newRootItems); 
           }} progressData={progressData}/>}
       {isLocked && (
-        <div style={{ position: 'fixed', bottom: '0', left: '0', right: '0', padding: '12px 20px calc(12px + env(safe-area-inset-bottom, 0px)) 20px', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)', borderTopLeftRadius: '20px', borderTopRightRadius: '20px', boxShadow: '0 -2px 10px rgba(0,0,0,0.1)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100, cursor: 'pointer', textAlign: 'center' }} onClick={() => { const newCount = lockTapCount + 1; setLockTapCount(newCount); setShowUnlockHint(true); if (newCount >= 3) { setIsLocked(false); localStorage.setItem('kiwi-child-mode', 'unlocked'); setLockTapCount(0); setShowUnlockHint(false); } setTimeout(() => { setLockTapCount(0); setShowUnlockHint(false); }, 3000); }}>
-          <span style={{ fontSize: '12px', color: '#666', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}><span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>🔒 Child Mode Active</span>{showUnlockHint ? <span style={{ color: 'var(--primary-dark)', fontWeight: 600 }}>{3 - lockTapCount} more taps to unlock</span> : <span style={{ opacity: 0.8 }}>Tap 3x here to unlock</span>}</span>
+        <div style={{ position: 'fixed', bottom: '0', left: '0', right: '0', padding: '12px 20px calc(12px + env(safe-area-inset-bottom, 0px)) 20px', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)', borderTopLeftRadius: '20px', borderTopRightRadius: '20px', boxShadow: '0 -2px 10px rgba(0,0,0,0.1)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100, cursor: 'pointer', textAlign: 'center' }} 
+          onClick={async () => {
+            // Biometric Unlock Path
+            if (currentProfile?.accessProfile?.biometricLock && Capacitor.isNativePlatform()) {
+              try {
+                const result = await NativeBiometric.verifyIdentity({
+                  reason: "Unlock settings",
+                  title: "Kiwi Voice Security",
+                  subtitle: "Authenticating adult...",
+                  description: "Use FaceID or TouchID to unlock adult settings.",
+                });
+                
+                if (result) {
+                  setIsLocked(false);
+                  localStorage.setItem('kiwi-child-mode', 'unlocked');
+                  setLockTapCount(0);
+                  setShowUnlockHint(false);
+                  return;
+                }
+              } catch (e) {
+                console.warn('Biometric failed or cancelled, falling back to triple-tap');
+              }
+            }
+
+            // Triple-Tap Fallback
+            const newCount = lockTapCount + 1;
+            setLockTapCount(newCount);
+            setShowUnlockHint(true);
+            if (newCount >= 3) {
+              setIsLocked(false);
+              localStorage.setItem('kiwi-child-mode', 'unlocked');
+              setLockTapCount(0);
+              setShowUnlockHint(false);
+            }
+            setTimeout(() => { setLockTapCount(0); setShowUnlockHint(false); }, 3000);
+          }}>
+          <span style={{ fontSize: '12px', color: '#666', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>🔒 Child Mode Active</span>
+            {currentProfile?.accessProfile?.biometricLock && Capacitor.isNativePlatform() 
+              ? <span style={{ opacity: 0.8 }}>Tap to use FaceID / TouchID</span>
+              : (showUnlockHint ? <span style={{ color: 'var(--primary-dark)', fontWeight: 600 }}>{3 - lockTapCount} more taps to unlock</span> : <span style={{ opacity: 0.8 }}>Tap 3x here to unlock</span>)}
+          </span>
         </div>
       )}
       <EditModal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} onSave={handleSaveEdit} onDelete={() => { if (editingItemIndex !== null) { handleDelete(editingItemIndex); setEditModalOpen(false); } }} onOpenEmojiPicker={handlePickerOpen} item={editingItemIndex !== null ? (currentPath.length === 0 ? (rootItems[currentPageIndex]?.items || []) : currentPath.reduce((acc, i) => acc[i].contents, (rootItems[currentPageIndex]?.items || [])))[editingItemIndex] : null} triggerPaywall={triggerPaywall}/>
@@ -988,7 +1120,22 @@ function App() {
           }}>✕</button>
         </div>
       )}
+      {isEssentialSkillsMode && (
+        <EssentialSkillsMode
+          onExit={() => setIsEssentialSkillsMode(false)}
+          onLogEvent={(event) => console.log('Skills Event:', event)}
+        />
+      )}
       {showDashboard && <Suspense fallback={null}><Dashboard onClose={() => setShowDashboard(false)} progressData={progressData} currentPhase={currentPhase} currentLevel={currentLevel} rootItems={rootItems[currentPageIndex]?.items || []}/></Suspense>}
+      {activeVisualScene && (
+        <Suspense fallback={null}>
+          <VisualSceneView 
+            scene={activeVisualScene} 
+            onBack={() => setActiveVisualScene(null)} 
+            speak={speak}
+          />
+        </Suspense>
+      )}
       {showCalibration && <TouchCalibration onComplete={() => setShowCalibration(false)}/>}
       {showOnboarding && (
         <Onboarding onComplete={(recommendedPhase, favorites, canRead, learnerProfile) => {

@@ -22,7 +22,6 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
     const [peekItem, setPeekItem] = useState(null);
     const [customName, setCustomName] = useState('');
     const fileInputRef = useRef(null);
-    const customizingItemRef = useRef(null);
     const lastCustomizingItemIdRef = useRef(null);
     const peekTimerRef = useRef(null);
 
@@ -180,8 +179,14 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
                                     type="text" 
                                     value={customName} 
                                     onChange={(e) => setCustomName(e.target.value)} 
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            handleConfirmSelection();
+                                        }
+                                    }}
                                     style={{ border: 'none', textAlign: 'right', fontSize: '1.0625rem', outline: 'none', background: 'transparent', flex: 1, minHeight: '2.75rem' }}
                                     placeholder="Enter label"
+                                    aria-label="Edit icon label"
                                     autoFocus
                                 />
                             </div>
@@ -231,6 +236,31 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
                                 style={{ width: '100%', padding: '0.625rem 2.1875rem', borderRadius: '0.625rem', border: 'none', background: '#E3E3E8', fontSize: '1.0625rem', outline: 'none', minHeight: '2.75rem' }}
                             />
                             <span style={{ position: 'absolute', left: '0.625rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.4 }}>🔍</span>
+                            {searchQuery && (
+                                <button 
+                                    onClick={() => setSearchQuery('')}
+                                    aria-label="Clear search"
+                                    style={{
+                                        position: 'absolute',
+                                        right: '0.625rem',
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        background: '#8E8E93',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '50%',
+                                        width: '1.25rem',
+                                        height: '1.25rem',
+                                        fontSize: '0.75rem',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    ✕
+                                </button>
+                            )}
                         </div>
                         <button 
                             onClick={() => setShowLibraryFilters(!showLibraryFilters)}

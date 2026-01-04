@@ -32,8 +32,10 @@ const EssentialSkillsMode = ({ onExit, sensitivity = 0.4, onLogEvent }) => {
     const triggerReward = (msg) => {
         setStep('reward');
         const synth = window.speechSynthesis;
-        const u = new SpeechSynthesisUtterance(msg);
-        synth.speak(u);
+        if (synth) {
+            const u = new SpeechSynthesisUtterance(msg);
+            synth.speak(u);
+        }
 
         document.body.classList.add('success-flash');
 
@@ -50,16 +52,16 @@ const EssentialSkillsMode = ({ onExit, sensitivity = 0.4, onLogEvent }) => {
         }}>
             {/* Header / Controls */}
             <div style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <button onClick={onExit} style={{ background: '#8E8E93', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '10px' }}>
+                <button onClick={onExit} style={{ background: '#636E72', color: 'var(--primary-text)', border: 'none', padding: '10px 20px', borderRadius: '10px', fontWeight: 'bold' }}>
                     Exit Mode
                 </button>
 
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                    <span style={{ fontSize: '0.9rem', color: '#333' }}>Tolerance Training ({toleranceEnabled ? 'ON' : 'OFF'})</span>
+                    <span style={{ fontSize: '0.9rem', color: 'var(--text-primary)', fontWeight: 'bold' }}>Tolerance Training ({toleranceEnabled ? 'ON' : 'OFF'})</span>
                     <div
                         onClick={() => setToleranceEnabled(!toleranceEnabled)}
                         style={{
-                            width: '50px', height: '30px', background: toleranceEnabled ? '#34C759' : '#E5E5EA',
+                            width: '50px', height: '30px', background: toleranceEnabled ? 'var(--success)' : '#E5E5EA',
                             borderRadius: '15px', position: 'relative', cursor: 'pointer', transition: '0.3s'
                         }}
                     >
@@ -81,8 +83,8 @@ const EssentialSkillsMode = ({ onExit, sensitivity = 0.4, onLogEvent }) => {
                         className="pulse-animation"
                         style={{
                             width: '300px', height: '300px', borderRadius: '50%', border: 'none',
-                            background: 'linear-gradient(135deg, #007AFF, #5856D6)',
-                            color: 'white', fontSize: '3rem', fontWeight: 'bold',
+                            background: 'var(--btn-blue-bg)',
+                            color: 'var(--btn-blue-text)', fontSize: '3rem', fontWeight: 'bold',
                             boxShadow: '0 10px 30px rgba(0,122,255,0.4)',
                             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px'
                         }}
@@ -95,7 +97,7 @@ const EssentialSkillsMode = ({ onExit, sensitivity = 0.4, onLogEvent }) => {
                 {step === 'denial' && (
                     <div style={{ textAlign: 'center', animation: 'fadeIn 0.3s' }}>
                         <div style={{ fontSize: '8rem', marginBottom: '20px' }}>✋</div>
-                        <h2 style={{ fontSize: '2rem', color: '#333' }}>Not right now...</h2>
+                        <h2 style={{ fontSize: '2rem', color: 'var(--text-primary)' }}>Not right now...</h2>
 
                         <button
                             onClick={() => setStep('tolerance')}
@@ -103,7 +105,7 @@ const EssentialSkillsMode = ({ onExit, sensitivity = 0.4, onLogEvent }) => {
                                 marginTop: '40px',
                                 padding: '20px 60px',
                                 fontSize: '2rem',
-                                background: '#FF9500',
+                                background: 'var(--warning)',
                                 color: 'white',
                                 border: 'none',
                                 borderRadius: '20px',
@@ -121,7 +123,7 @@ const EssentialSkillsMode = ({ onExit, sensitivity = 0.4, onLogEvent }) => {
                             onClick={handleTolerance}
                             style={{
                                 width: '300px', height: '300px', borderRadius: '50%', border: 'none',
-                                background: '#34C759',
+                                background: 'var(--success)',
                                 color: 'white', fontSize: '3rem', fontWeight: 'bold',
                                 boxShadow: '0 10px 30px rgba(52,199,89,0.4)'
                             }}

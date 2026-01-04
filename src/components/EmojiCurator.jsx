@@ -5,6 +5,7 @@ import { CORE_VOCABULARY, TEMPLATES, CONTEXT_DEFINITIONS } from '../data/aacData
 import { AAC_LEXICON, getFitzgeraldColor } from '../data/aacLexicon';
 import { useProfile } from '../context/ProfileContext';
 import MemojiPicker from './MemojiPicker';
+import VisualSceneCreator from './VisualSceneCreator';
 
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import SplashScreen from './SplashScreen';
@@ -95,7 +96,7 @@ const EmojiCurator = () => {
   const [cancellingEmoji, setCancellingEmoji] = useState(null); // Tracks which emoji is showing cancel hint
   const blacklistedEmojis = useMemo(() => [], []);
   
-  const handlePointerDown = (e, emoji) => {
+  const handlePointerDown = (e) => {
     pointerStartPos.current = { x: e.clientX, y: e.clientY };
     setCancellingEmoji(null);
   };
@@ -125,7 +126,7 @@ const EmojiCurator = () => {
     if (!isLongPress.current && !pickerTarget) { 
       if (sequenceMode) {
         triggerHaptic('light');
-        setSequence(prev => [...prev, { ...item, id: new Date().getTime() }]); 
+        setSequence(prev => [...prev, { ...item, id: Date.now() }]); 
       } else {
         // Haptic Hierarchy (16.3)
         let hapticStyle = 'light';
@@ -264,7 +265,7 @@ const EmojiCurator = () => {
       setTimeout(() => alert("Board imported successfully! 🥝"), 100);
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, []);
+  }, [addPronunciation]);
 
 
       const filteredEmojis = useMemo(() => {
@@ -281,7 +282,7 @@ const EmojiCurator = () => {
         if (blacklistedEmojis.length > 0) list = list.filter(item => !blacklistedEmojis.includes(item.emoji));
         if (showCoreOnly) list = list.filter(item => item.name.toLowerCase().split(/[ -]/).some(w => CORE_VOCABULARY.includes(w)) || CORE_VOCABULARY.includes(item.name.toLowerCase()));
         return list;
-      }, [searchQuery, activeCategory, showCoreOnly, customItems, blacklistedEmojis]);
+      }, [searchQuery, activeCategory, showCoreOnly, customItems, blacklistedEmojis, activeContext]);
     const longPressTimer = useRef(null);
   const isLongPress = useRef(false);
   const pickerRef = useRef(null);
@@ -326,7 +327,14 @@ const EmojiCurator = () => {
       const image = await Camera.getPhoto({ quality: 90, allowEditing: true, resultType: CameraResultType.DataUrl, source });
       if (image?.dataUrl) {
         const name = prompt("Enter name:");
-        if (name) { const newItem = { id: `custom-${Date.now()}`, name, category: activeCategory, image: image.dataUrl, emoji: `custom-${Date.now()}` }; setCustomItems(prev => [newItem, ...prev]); toggleEmoji(activeCategory, newItem.emoji, newItem); setShowImageSearch(false); }
+        if (name) { 
+          setCustomItems(prev => {
+            const timestamp = Date.now();
+            const newItem = { id: `custom-${timestamp}`, name, category: activeCategory, image: image.dataUrl, emoji: `custom-${timestamp}` }; 
+            return [newItem, ...prev];
+          });
+          setShowImageSearch(false); 
+        }
       }
     } catch (err) { console.error(err); } 
   };
@@ -460,7 +468,7 @@ const EmojiCurator = () => {
                     onMouseDown={(e) => handleStart(e, item)} 
                     onMouseUp={handleCleanup} 
                     onMouseLeave={handleCleanup} 
-                    onPointerUp={(e) => {
+                    onPointerUp={() => {
                       if (cancellingEmoji === item.emoji) {
                         setCancellingEmoji(null);
                         return;
@@ -559,7 +567,16 @@ const EmojiCurator = () => {
               </div>
           </div>
       )}
-      {showVisualSceneCreator && ( <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', zIndex: 10006, display: 'flex', alignItems: 'center', justifyContent: 'center' }}> <div style={{ background: 'white', padding: '20px', borderRadius: '16px', width: '90%', maxWidth: '500px' }}> <h3>Visual Scene</h3> <input type="file" onChange={(e) => { const reader = new FileReader(); reader.onload = () => { }; reader.readAsDataURL(e.target.files[0]); }}/> <button onClick={() => setShowVisualSceneCreator(false)}>Cancel</button> </div> </div> )}
+      {showVisualSceneCreator && ( 
+        <VisualSceneCreator 
+          onClose={() => setShowVisualSceneCreator(false)}
+          onSave={(newScene) => {
+            setCustomItems(prev => [newScene, ...prev]);
+            toggleEmoji(activeCategory, newScene.id, newScene);
+            setShowVisualSceneCreator(false);
+          }}
+        />
+      )}
       {showPhraseCreator && ( 
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', zIndex: 10005, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}> 
           <div style={{ background: 'white', padding: '25px', borderRadius: '24px', width: '90%', maxWidth: '450px', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}> 
