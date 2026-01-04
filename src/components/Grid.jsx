@@ -61,27 +61,18 @@ const Grid = ({
     // Phase 3: 2x2 if <= 4 items, otherwise standard shrink
     const useLargeGrid = (currentPhase === 1 || currentPhase === 2) || (currentPhase === 3 && items.length <= 4);
 
-    // Determine if we should use categorized view
-    // 1. Must be enabled via settings
-    // 2. Must not have any items with fixed 'pos' (Motor Planning mode)
-    // 3. Not in Training Mode (which handles its own sorting/layout)
-    const hasFixedPositions = items.some(item => !!item.pos);
-    const useCategorizedView = isCategorizationEnabled && !hasFixedPositions && !isTrainingMode && !useLargeGrid;
-
-    const gridClass = `${useLargeGrid ? 'phase-large-grid' : ''} size-${gridSize}`;
-
     // Calculate grid dimensions based on targetSize (mm)
     const getGridDimensions = () => {
         if (useLargeGrid) return { rows: 2, cols: 2 };
-        
+
         // Calculate based on Access Profile physical target size
         const targetPx = getPxFromMm(accessProfile.targetSize);
         const spacingPx = getPxFromMm(accessProfile.spacing);
-        
+
         // Use container size if available, otherwise estimate
         const containerWidth = window.innerWidth - 40; // Approx padding
         const containerHeight = window.innerHeight - 200; // Approx headers/sentence strip
-        
+
         const calculatedCols = Math.max(2, Math.floor(containerWidth / (targetPx + spacingPx)));
         const calculatedRows = Math.max(2, Math.floor(containerHeight / (targetPx + spacingPx)));
 
@@ -98,6 +89,23 @@ const Grid = ({
 
         return { rows: calculatedRows, cols: calculatedCols };
     };
+
+    const gridDimensions = getGridDimensions();
+    const maxItemsOnScreen = gridDimensions.rows * gridDimensions.cols;
+    const allItemsFitOnScreen = items.length <= maxItemsOnScreen;
+
+    // Determine if we should use categorized view
+    // 1. Must be enabled via settings
+    // 2. Must not have any items with fixed 'pos' (Motor Planning mode)
+    // 3. Not in Training Mode (which handles its own sorting/layout)
+    // 4. At Level 3+, hide headers if all items fit on screen (reduce friction)
+    const hasFixedPositions = items.some(item => !!item.pos);
+    const useCategorizedView = isCategorizationEnabled && !hasFixedPositions && !isTrainingMode && !useLargeGrid;
+
+    // Auto-hide category headers at Level 3+ when all items fit on screen
+    const shouldShowCategoryHeaders = showCategoryHeaders && !(currentPhase >= 3 && allItemsFitOnScreen);
+
+    const gridClass = `${useLargeGrid ? 'phase-large-grid' : ''} size-${gridSize}`;
 
     const { cols } = getGridDimensions();
     const targetPx = getPxFromMm(accessProfile.targetSize);
@@ -262,21 +270,21 @@ const Grid = ({
                                                 animate={{ opacity: 1, y: 0 }}
                                                 exit={{ opacity: 0, scale: 0.95 }}
                                                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                                style={showCategoryHeaders ? { 
-                                                    marginBottom: '1.5rem', 
-                                                    background: meta.color, 
+                                                style={shouldShowCategoryHeaders ? {
+                                                    marginBottom: '1.5rem',
+                                                    background: meta.color,
                                                     borderRadius: '1.25rem',
                                                     padding: '0.75rem',
                                                     border: `1px solid rgba(0,0,0,0.05)`
                                                 } : { marginBottom: '1rem' }}
                                             >
-                                                {showCategoryHeaders && (
-                                                    <div 
+                                                {shouldShowCategoryHeaders && (
+                                                    <div
                                                         onClick={() => onToggleSection && onToggleSection(catId)}
-                                                        style={{ 
-                                                            display: 'flex', 
-                                                            alignItems: 'center', 
-                                                            gap: '0.5rem', 
+                                                        style={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '0.5rem',
                                                             marginBottom: isCollapsed ? 0 : '0.75rem',
                                                             cursor: 'pointer',
                                                             padding: '0.25rem 0.5rem'

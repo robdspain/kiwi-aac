@@ -769,6 +769,14 @@ The following features are currently integrated with RevenueCat using the `premi
 - [ ] **Visual Priority:** Core words always visible, not buried in emoji categories
 - [ ] **Color Coding:** Optional Fitzgerald Key coloring (nouns=yellow, verbs=green, etc.)
 
+**Friction Reduction - Smart Category Headers (IMPLEMENTED):**
+- [x] **Auto-Hide at Level 3+:** Category section headers automatically hide when all items fit on one screen
+- [x] **Color-Only Organization:** Background colors (Fitzgerald Key) provide visual organization without headers
+- [x] **Rationale:** Reduce nested folder friction - one of the main points is eliminating unnecessary complexity
+- [x] **Smart Detection:** Calculates if items fit based on grid dimensions (rows × cols)
+- [x] **Manual Override:** Users can still toggle headers in settings if needed
+- [x] **Benefit:** Faster access to vocabulary, less scrolling, simpler visual hierarchy
+
 #### 19.2. Template Library
 - [x] **Pre-Built Templates:** Multiple ready-made boards (First 50 Words, School Day, etc.).
 - [x] **Template Data Structure:** TEMPLATES object in aacData.js with curated word lists.
