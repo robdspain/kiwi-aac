@@ -290,7 +290,7 @@ button.primary, .primary-button {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  align-content: center;
+  align-content: flex-start;
   flex: 1;
   padding: 1.25rem;
   gap: 1rem;
