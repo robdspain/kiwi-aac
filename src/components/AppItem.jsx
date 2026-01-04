@@ -147,18 +147,27 @@ const AppItem = ({
       return;
     }
 
-    if (isEditMode) return; 
-    
+    if (isEditMode) return;
+
     // Determine haptic style based on word class (16.3 Hierarchy)
     const lexiconEntry = item.word ? AAC_LEXICON[item.word.toLowerCase()] : null;
     const wc = item.wc || lexiconEntry?.type;
-    
+
     let hapticStyle = 'light';
     if (item.type === 'folder') hapticStyle = 'medium';
     else if (wc === 'verb') hapticStyle = 'medium';
     else if (item.name?.toLowerCase() === 'no' || item.name?.toLowerCase() === 'stop') hapticStyle = 'heavy';
 
     triggerHaptic(hapticStyle);
+
+    // Create a brief visual feedback showing the item is being added
+    if (e.currentTarget && item.type !== 'folder') {
+      e.currentTarget.style.animation = 'itemTap 0.3s ease-out';
+      setTimeout(() => {
+        if (e.currentTarget) e.currentTarget.style.animation = '';
+      }, 300);
+    }
+
     onClick({ ...item, customAudio: resolvedAudio, displayLabel }, index);
   };
 

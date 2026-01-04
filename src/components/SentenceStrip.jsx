@@ -14,15 +14,41 @@ const SentenceStrip = ({ stripItems = [], onClear, onPlay, onDeleteItem }) => {
                     ) : (
                         <AnimatePresence mode="popLayout">
                             {stripItems.map((item, index) => (
-                                <motion.div 
+                                <motion.div
                                     layout
-                                    initial={{ opacity: 0, scale: 0.5, x: 20 }}
-                                    animate={{ opacity: 1, scale: 1, x: 0 }}
-                                    exit={{ opacity: 0, scale: 0.5, y: -20 }}
-                                    key={`${item.id}-${index}`} 
+                                    layoutId={`item-${item.id}-${index}`}
+                                    initial={{
+                                        opacity: 0,
+                                        scale: 0.3,
+                                        y: -100,
+                                        rotate: -10
+                                    }}
+                                    animate={{
+                                        opacity: 1,
+                                        scale: 1,
+                                        y: 0,
+                                        rotate: 0,
+                                        transition: {
+                                            type: "spring",
+                                            stiffness: 300,
+                                            damping: 25,
+                                            mass: 0.8
+                                        }
+                                    }}
+                                    exit={{
+                                        opacity: 0,
+                                        scale: 0.5,
+                                        y: -20,
+                                        rotate: 5,
+                                        transition: {
+                                            duration: 0.2
+                                        }
+                                    }}
+                                    key={`${item.id}-${index}`}
                                     className="strip-item"
                                     onClick={() => onDeleteItem && onDeleteItem(index)}
                                     whileTap={{ scale: 0.9 }}
+                                    whileHover={{ scale: 1.05 }}
                                 >
                                     <div className="strip-icon-wrapper">
                                         {typeof item.icon === 'string' && (item.icon.startsWith('/') || item.icon.startsWith('data:') || item.icon.includes('.')) ? (
