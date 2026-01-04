@@ -18,11 +18,65 @@ Kiwi Voice is a specialized tool designed to curate and customize icon libraries
 
 Kiwi Voice is designed to disrupt the high-cost AAC market by offering professional-grade features with a modern, high-fidelity experience.
 
-1.  **Modern Memoji Aesthetic:** Replaces dated 2D clip-art with engaging, high-fidelity 3D characters.
-2.  **Integrated Skill Training:** Native, evidence-based FCR (Functional Communication Response) and Denial Tolerance modes that usually require separate clinical protocols in other apps.
-3.  **Built-in Routine Builder:** A dedicated Visual Schedule mode that transforms standard folders into sequential, step-by-step guides.
-4.  **Price Accessibility:** Professional AAC for $39/year (vs. $249+ one-time) with 100% free core communication.
-5.  **True Cross-Platform Parity:** A consistent, high-fidelity experience across Web, iOS, and Android.
+1.  **Context-First Vocabulary (Hallmark Feature):** Language happens in context, not categories. Instant access to situation-specific vocabulary (Lunchtime, Playground, Bedtime) instead of navigating word-type categories. One tap switches your entire vocabulary board to match where you are and what you're doing.
+2.  **Modern Memoji Aesthetic:** Replaces dated 2D clip-art with engaging, high-fidelity 3D characters.
+3.  **Integrated Skill Training:** Native, evidence-based FCR (Functional Communication Response) and Denial Tolerance modes that usually require separate clinical protocols in other apps.
+4.  **Built-in Routine Builder:** A dedicated Visual Schedule mode that transforms standard folders into sequential, step-by-step guides.
+5.  **Price Accessibility:** Professional AAC for $39/year (vs. $249+ one-time) with 100% free core communication.
+6.  **True Cross-Platform Parity:** A consistent, high-fidelity experience across Web, iOS, and Android.
+
+---
+
+### 3A. Context-First Vocabulary Architecture (Core Philosophy)
+
+**Paradigm Shift:** Traditional AAC apps organize vocabulary by grammatical categories (Nouns, Verbs, Adjectives). Kiwi Voice organizes by situational contexts (Lunchtime, Playground, Bedtime).
+
+#### Why Context-First?
+
+**Linguistic Reality:**
+- Language doesn't happen in abstract categories - it happens in real situations
+- A child at lunch needs "more," "milk," "done," and "yummy" - not a folder of all possible nouns
+- Adults naturally teach words in context: "Use your words at the table"
+- Communication partners are part of the context (Mom, Teacher, Therapist)
+
+**User Experience Benefits:**
+1. **Faster Access:** One tap switches entire board vs. navigating category folders
+2. **Reduced Cognitive Load:** Context pre-filters relevant vocabulary automatically
+3. **Natural Learning:** Mirrors how language is naturally acquired in situations
+4. **Adult Efficiency:** Caregivers can instantly match vocabulary to child's environment
+
+#### Implementation Requirements
+
+**Quick Context Switching (TOP PRIORITY):**
+- Context selector MUST be first thing visible when opening settings
+- Large, tap-friendly context buttons with icons
+- Currently active context clearly highlighted
+- Zero navigation depth - immediate access from any screen
+
+**Pre-Built Contexts (Phase 1):**
+- 🏠 **Home:** Morning routine, bedtime, family time
+- 🍽️ **Mealtime:** Food preferences, table manners, requests
+- 🎮 **Playtime:** Toys, games, turn-taking, sharing
+- 🏫 **School:** Classroom, friends, activities, supplies
+- 🌳 **Outside:** Park, playground, nature, weather
+- 🛁 **Bath/Bedtime:** Hygiene, sleep routine, comfort
+- 🚗 **Going Places:** Transportation, errands, waiting
+- 🏥 **Medical/Therapy:** Body parts, feelings, pain scale
+
+**Smart Context Features:**
+- Core words (I, want, more, stop) appear in ALL contexts
+- Context-specific fringe vocabulary auto-loads
+- Consistent motor planning: same icon stays in same position across contexts
+- Quick "Add to All Contexts" for frequently used custom words
+
+**Visual Design:**
+- Context name displayed prominently in header
+- Quick-switch bar accessible from main screen
+- Color-coded contexts for visual distinction
+- Emoji icons for instant recognition
+
+**Competitive Differentiation:**
+> "Other AAC apps make you hunt through noun folders, verb folders, adjective folders. Kiwi asks: Where are you? What are you doing? Then gives you exactly the words you need - in one tap."
 
 ---
 

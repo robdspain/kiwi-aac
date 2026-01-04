@@ -300,7 +300,56 @@ const Controls = ({
                     {/* Basic Tab */}
                     {activeTab === 'basic' && (
                         <div style={{ background: '#F2F2F7', margin: '0 -1.5rem', padding: '0 1.5rem 1.5rem', flex: 1 }}>
-                            
+
+                            {/* CONTEXT SWITCHER - Top Priority Feature */}
+                            <div className="ios-setting-group-header" style={{ marginTop: '0.5rem' }}>
+                                📍 Quick Context Switch
+                            </div>
+                            <div className="ios-setting-card">
+                                <div style={{ padding: '0.9375rem', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.625rem' }}>
+                                    {contexts.map(ctx => (
+                                        <button
+                                            key={ctx.id}
+                                            onClick={() => onSetContext(ctx.id)}
+                                            style={{
+                                                padding: '0.75rem',
+                                                borderRadius: '0.75rem',
+                                                border: currentContext === ctx.id ? '2px solid #007AFF' : '2px solid transparent',
+                                                background: currentContext === ctx.id ? 'rgba(0, 122, 255, 0.1)' : 'white',
+                                                fontSize: '0.875rem',
+                                                fontWeight: currentContext === ctx.id ? 700 : 600,
+                                                color: currentContext === ctx.id ? '#007AFF' : 'var(--text-primary)',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'center',
+                                                gap: '0.25rem',
+                                                minHeight: '4rem',
+                                                transition: 'all 0.2s ease',
+                                                boxShadow: currentContext === ctx.id ? '0 2px 8px rgba(0, 122, 255, 0.15)' : '0 1px 3px rgba(0,0,0,0.05)'
+                                            }}
+                                        >
+                                            <span style={{ fontSize: '1.5rem' }}>{ctx.icon}</span>
+                                            <span style={{ fontSize: '0.75rem' }}>{ctx.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                                <div className="ios-row" onClick={() => {
+                                    const label = prompt('Context name (e.g., "Playground"):');
+                                    if (!label) return;
+                                    const icon = prompt('Emoji icon:') || '📍';
+                                    onAddContext(label, icon);
+                                }} style={{ borderTop: '1px solid #F2F2F7' }}>
+                                    <span style={{ color: '#007AFF', fontWeight: 600 }}>+ Add New Context</span>
+                                    <span className="ios-chevron">›</span>
+                                </div>
+                                <div className="ios-row" style={{ minHeight: 'auto', padding: '0.75rem 0.9375rem', background: '#F2F2F7' }}>
+                                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.4 }}>
+                                        💡 Contexts give you the right words for where you are. Tap to instantly switch your vocabulary board.
+                                    </p>
+                                </div>
+                            </div>
+
                             <div className="ios-setting-group-header">Library Building</div>
                             <div className="ios-setting-card">
                                 <div className="ios-row" onClick={() => onOpenPicker((word, icon) => onAddItem(word, icon, 'button'))}>
