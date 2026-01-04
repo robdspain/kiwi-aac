@@ -45,6 +45,7 @@ import { ensureDefaultVoice } from './utils/voiceUtils';
 import { Capacitor } from '@capacitor/core';
 import { NativeBiometric } from 'capacitor-native-biometric';
 import cloudSyncService from './services/CloudSyncService';
+import relationalSyncService from './services/RelationalSyncService';
 
 const synth = window.speechSynthesis || null;
 
@@ -414,7 +415,6 @@ function App() {
       if (onboardingComplete) return;
 
       try {
-        const { relationalSyncService } = await import('./services/RelationalSyncService');
         const restored = await relationalSyncService.restoreFromCloud();
         
         if (restored) {
