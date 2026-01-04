@@ -30,13 +30,13 @@ const questions = [
         id: 4,
         question: "Can your child combine pictures to make a request?",
         emoji: "🔗",
-        hint: 'For example: &quot;I want&quot; + &quot;cookie&quot;',
+        hint: 'For example: "I want" + "cookie"',
         yesNext: 5,
         noResult: 4
     },
     {
         id: 5,
-        question: 'Can your child respond when asked &quot;What do you want?&quot;',
+        question: 'Can your child respond when asked "What do you want?"',
         emoji: "💬",
         hint: "They answer the question instead of just reaching for items",
         yesNext: 6,
@@ -46,7 +46,7 @@ const questions = [
         id: 6,
         question: "Does your child make comments about things they see or hear?",
         emoji: "👀",
-        hint: '&quot;I see a dog&quot;, &quot;I hear music&quot;',
+        hint: '"I see a dog", "I hear music"',
         yesNext: null, // End - recommend phase 0 (normal mode)
         noResult: 5
     }
