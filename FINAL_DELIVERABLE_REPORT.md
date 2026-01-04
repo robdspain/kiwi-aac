@@ -27,6 +27,16 @@
     *   **Fix:** Added descriptive `aria-label` props to these elements.
     *   **Files Changed:** `src/components/PickerModal.jsx`, `src/components/Controls.jsx`.
 
+*   **Issue:** `src/components/VisualSceneCreator.jsx` lint errors.
+    *   **Root Cause:** Unused imports and variables.
+    *   **Fix:** Removed unused code.
+    *   **Files Changed:** `src/components/VisualSceneCreator.jsx`.
+
+*   **Issue:** React Hook Warnings in `App.jsx` and `EmojiCurator.jsx`.
+    *   **Root Cause:** Missing dependencies in `useEffect` and `useMemo`.
+    *   **Fix:** Added dependencies (`isScanning`, `handleItemClick`, `activeContext`, `addPronunciation`) and wrapped `handleItemClick` in `useCallback`.
+    *   **Files Changed:** `src/App.jsx`, `src/components/EmojiCurator.jsx`.
+
 ---
 
 ## ✅ Must-Pass Verification Steps
@@ -50,6 +60,23 @@
 4.  **Visual Schedule:** Create folder → Edit → Set View Mode to "Schedule" → Open folder → Verify "Next/Prev" navigation works.
 5.  **Export:** Select icons → Click "Save/Export" → Confirm `iconsData.json` downloads.
 6.  **PWA:** Open in Chrome/Safari → Verify "Install" prompt or "+" icon is available/functional.
+
+---
+
+## 🚀 Deployment Instructions (Netlify)
+
+Since I cannot interactively select the Netlify site, please run the following commands to deploy:
+
+1.  **Link your site (if not already linked):**
+    ```bash
+    netlify link
+    ```
+    *Select your existing site (e.g., `kiwi-voice` or similar) or create a new one.*
+
+2.  **Deploy to Production:**
+    ```bash
+    netlify deploy --prod --dir=dist
+    ```
 
 ---
 
