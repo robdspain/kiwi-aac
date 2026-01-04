@@ -3,6 +3,7 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import Assessment from './Assessment';
 import TouchCalibration from './TouchCalibration';
 import FavoritesPicker from './FavoritesPicker';
+import ImageCropModal from './ImageCropModal';
 
 const Onboarding = ({ onComplete }) => {
     const [step, setStep] = useState(0);
@@ -14,17 +15,20 @@ const Onboarding = ({ onComplete }) => {
     const [canRead, setCanRead] = useState(null);
     const [learnerName, setLearnerName] = useState('');
     const [learnerPhoto, setLearnerPhoto] = useState(null);
+    const [cropSource, setCropSource] = useState(null);
+    const [showCropper, setShowCropper] = useState(false);
 
     const takePhoto = async () => {
         try {
             const image = await Camera.getPhoto({
                 quality: 90,
-                allowEditing: true,
+                allowEditing: false,
                 resultType: CameraResultType.DataUrl,
                 source: CameraSource.Prompt
             });
             if (image && image.dataUrl) {
-                setLearnerPhoto(image.dataUrl);
+                setCropSource(image.dataUrl);
+                setShowCropper(true);
             }
         } catch (error) {
             console.error('Camera error:', error);
@@ -303,6 +307,19 @@ const Onboarding = ({ onComplete }) => {
                     {step === steps.length - 1 ? 'Get Started →' : 'Next →'}
                 </button>
             </div>
+            {showCropper && (
+                <ImageCropModal
+                    isOpen={showCropper}
+                    imageSrc={cropSource}
+                    onCancel={() => { setShowCropper(false); setCropSource(null); }}
+                    onSave={(dataUrl) => {
+                        setLearnerPhoto(dataUrl);
+                        setShowCropper(false);
+                        setCropSource(null);
+                    }}
+                    title="Crop Profile Photo"
+                />
+            )}
         </div>
     );
 };

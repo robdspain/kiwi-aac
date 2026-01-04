@@ -46,8 +46,10 @@ const FavoritesPickerModal = ({ onClose, onAddFavorites, existingFavorites = [] 
                 maxWidth: '27.5rem',
                 maxHeight: '90vh',
                 overflowY: 'auto',
-                boxShadow: '0 1.25rem 3.125rem rgba(0,0,0,0.3)'
+                boxShadow: '0 1.25rem 3.125rem rgba(0,0,0,0.3)',
+                position: 'relative'
             }}>
+                <button className="ios-close-button" onClick={onClose} aria-label="Close">✕</button>
                 <div style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '1rem' }}>
                     ⭐
                 </div>

@@ -515,7 +515,7 @@ const EmojiCurator = () => {
                                             ))}
                                           </div>
                                         ) : item.image ? (
-                                          <img src={item.image} alt={item.name} style={{ width: '3rem', height: '3rem', objectFit: 'cover' }} />
+                                          <img src={item.image} alt={item.name} style={{ width: '3rem', height: '3rem', objectFit: item.image.includes('/images/memojis/') ? 'contain' : 'cover' }} />
                                         ) : (
                                           <span style={{ fontSize: '2.5rem' }}>{disp}</span>
                                         )}

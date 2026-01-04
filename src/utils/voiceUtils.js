@@ -82,13 +82,50 @@ export async function ensureDefaultVoice(currentVoiceURI, preferredLocale = "en-
 }
 
 /**
- * Checks if a voice is likely "high quality" based on naming conventions.
+ * Checks if a voice is likely "high quality" (natural-sounding) based on naming conventions.
+ * High-quality voices typically sound like a real adult or child speaking.
  */
 export function isHighQualityVoice(voice) {
     if (!voice) return false;
     const name = (voice.name || "").toLowerCase();
-    return name.includes("enhanced") || 
-           name.includes("premium") || 
-           name.includes("neural") || 
-           name.includes("siri");
+
+    // Apple Enhanced/Premium voices (iOS)
+    if (name.includes("enhanced")) return true;
+    if (name.includes("premium")) return true;
+
+    // Neural/AI voices (high quality)
+    if (name.includes("neural")) return true;
+    if (name.includes("wavenet")) return true;
+
+    // Apple Siri voices
+    if (name.includes("siri")) return true;
+
+    // Specific high-quality voice names
+    // iOS Enhanced voices often have names like "Samantha", "Alex", "Fred", etc.
+    const highQualityNames = [
+        "samantha", "alex", "victoria", "karen", "daniel",
+        "fred", "nicky", "susan", "vicki", "allison"
+    ];
+
+    if (highQualityNames.some(n => name.includes(n))) {
+        // But exclude if it's explicitly marked as low quality
+        if (name.includes("compact") || name.includes("novelty")) return false;
+        return true;
+    }
+
+    // Exclude robotic/novelty voices
+    if (name.includes("albert") || name.includes("bad news") ||
+        name.includes("bahh") || name.includes("bells") ||
+        name.includes("boing") || name.includes("bubbles") ||
+        name.includes("cellos") || name.includes("good news") ||
+        name.includes("jester") || name.includes("organ") ||
+        name.includes("trinoids") || name.includes("whisper") ||
+        name.includes("zarvox") || name.includes("deranged") ||
+        name.includes("junior") || name.includes("kathy") ||
+        name.includes("pipe") || name.includes("ralph") ||
+        name.includes("tom") || name.includes("hysterical")) {
+        return false;
+    }
+
+    return false;
 }

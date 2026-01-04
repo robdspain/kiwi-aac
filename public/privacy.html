@@ -7,98 +7,116 @@
     <title>Privacy Policy - Kiwi Voice</title>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
             max-width: 800px;
             margin: 0 auto;
             padding: 40px 20px;
             line-height: 1.6;
-            color: #333;
+            color: #2D3436;
+            background-color: #FDF8F3;
         }
 
         h1 {
-            color: #007AFF;
+            color: #1A535C;
+            border-bottom: 2px solid #4ECDC4;
+            padding-bottom: 10px;
         }
 
         h2 {
-            color: #34C759;
+            color: #1A535C;
             margin-top: 30px;
         }
 
         .updated {
-            color: #666;
+            color: #636E72;
             font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .highlight-box {
+            background: #FFFFFF;
+            border: 1px solid #E5E5EA;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
         }
     </style>
 </head>
 
 <body>
     <h1>Privacy Policy</h1>
-    <p class="updated">Last Updated: December 22, 2024</p>
+    <p class="updated">Last Updated: January 3, 2026</p>
 
-    <h2>Introduction</h2>
-    <p>Behavior School LLC ("we", "our", or "us") operates Kiwi Voice and is committed to protecting the privacy of our
-        users, especially children. This
-        Privacy Policy explains how we handle information when you use our app.</p>
+    <div class="highlight-box">
+        <strong>Privacy Commitment:</strong> Kiwi Voice is built by Behavior School LLC with a "Privacy by Design" 
+        philosophy. We prioritize local-first storage and anonymous synchronization to protect the communication 
+        privacy of children and families.
+    </div>
 
-    <h2>Information We Collect</h2>
-    <p><strong>We do not collect personal information.</strong> Kiwi Voice is designed with privacy-first principles:</p>
+    <h2>1. Information We Collect</h2>
+    <p>We collect minimal information required to provide communication services and synchronize your data across devices.</p>
+    
+    <h3>A. Anonymous Identifiers</h3>
+    <p>We generate a persistent, anonymous Device ID (using your hardware's unique identifier) to allow for <strong>Anonymous Cloud Restore</strong>. This allows you to recover your boards and media after an app reinstall without needing to create an account or provide an email address.</p>
+
+    <h3>B. Usage Data & Analytics</h3>
+    <p>We collect anonymous usage data to help parents and therapists track clinical progress. This includes:</p>
     <ul>
-        <li>All data is stored locally on your device</li>
-        <li>No accounts or sign-ups required</li>
-        <li>No data is transmitted to external servers</li>
-        <li>No analytics or tracking</li>
+        <li>Button interaction counts (which words are used most).</li>
+        <li>Session duration and frequency.</li>
+        <li>Clinical milestones (FCR attempts, mastery levels).</li>
+    </ul>
+    <p><em>Note: This data is stored locally by default and only uploaded if Cloud Sync is enabled.</em></p>
+
+    <h3>C. Personal Media</h3>
+    <p>Photos you take and voice prompts you record are stored in your device's <strong>Secure IndexedDB</strong>. If you enable Cloud Sync, these files are encrypted and stored in our secure database (Neon) to allow for cross-device access.</p>
+
+    <h2>2. Artificial Intelligence (AI Vision)</h2>
+    <p>Kiwi Voice includes a "Just-In-Time" (JIT) Visual Scene feature using on-device AI.</p>
+    <ul>
+        <li><strong>Local Processing:</strong> All object detection (identifying chairs, cups, etc. in photos) happens 100% on your device using TensorFlow.js.</li>
+        <li><strong>No Image Uploads for AI:</strong> We <u>never</u> transmit your photos to a server for AI analysis. The images stay on your device unless you manually enable Cloud Sync for backup purposes.</li>
     </ul>
 
-    <h2>Local Data Storage</h2>
-    <p>The app stores the following data locally on your device:</p>
+    <h2>3. Biometric Security</h2>
+    <p>You may choose to enable FaceID or TouchID to protect "Adult Settings."</p>
     <ul>
-        <li>Custom communication boards and icons</li>
-        <li>Voice recordings (if you record custom audio)</li>
-        <li>Usage progress and settings</li>
-        <li>Learner profile information</li>
-    </ul>
-    <p>This data never leaves your device unless you explicitly export it using the backup feature.</p>
-
-    <h2>Microphone Access</h2>
-    <p>Kiwi Voice may request microphone access to allow you to record custom voice prompts. Audio recordings are stored
-        locally and are never transmitted externally.</p>
-
-    <h2>Third-Party Services</h2>
-    <p>The app uses the following third-party integrations:</p>
-    <ul>
-        <li><strong>OpenMoji:</strong> Symbol images are fetched from OpenMoji's open-source library (CC BY-SA 4.0)</li>
-        <li><strong>RevenueCat:</strong> For in-app purchase management (no personal data shared)</li>
+        <li>We use native system APIs to perform this check.</li>
+        <li><strong>We never see or store your biometric data.</strong> Your device's operating system handles the authentication and only provides the app with a "Success" or "Failure" result.</li>
     </ul>
 
-    <h2>Children's Privacy (COPPA Compliance)</h2>
-    <p>Kiwi Voice is designed for use by children under parental/guardian supervision. We do not knowingly collect any
-        personal information from children. All app data remains on the device and under the control of the
-        parent/guardian.</p>
-
-    <h2>Data Security</h2>
-    <p>Your data is protected by your device's built-in security features. We recommend:</p>
+    <h2>4. Third-Party Services</h2>
+    <p>We use a limited number of trusted partners to manage the app's infrastructure:</p>
     <ul>
-        <li>Using device passcode/Face ID/Touch ID</li>
-        <li>Regularly backing up your data using the in-app export feature</li>
-        <li>Using the Lock Mode feature when the app is in use by a child</li>
+        <li><strong>RevenueCat & Stripe:</strong> To manage subscriptions and process payments safely. They handle transaction data according to their own strict privacy standards.</li>
+        <li><strong>Neon:</strong> Provides our high-security relational database for Cloud Sync.</li>
+        <li><strong>ARASAAC:</strong> We fetch standard symbols from the ARASAAC library.</li>
     </ul>
 
-    <h2>Your Rights</h2>
-    <p>You have full control over your data:</p>
+    <h2>5. Children's Privacy (COPPA & GDPR-K)</h2>
+    <p>As an AAC tool, Kiwi Voice is designed for children. We strictly adhere to COPPA and GDPR-K regulations:</p>
     <ul>
-        <li><strong>Access:</strong> View all your data within the app</li>
-        <li><strong>Export:</strong> Download your data using the Backup feature</li>
-        <li><strong>Delete:</strong> Use the Reset function to delete all app data</li>
+        <li>We do not require or ask for a child's name, age, or contact information.</li>
+        <li>We do not show third-party advertisements.</li>
+        <li>Parents/Guardians have absolute control over data deletion and synchronization.</li>
     </ul>
 
-    <h2>Changes to This Policy</h2>
-    <p>We may update this Privacy Policy from time to time. We will notify you of any changes by updating the "Last
-        Updated" date.</p>
+    <h2>6. Data Security & Deletion</h2>
+    <p>Your data is encrypted during transmission and at rest when using Cloud Sync. You may delete your data at any time by using the <strong>"Reset All Data"</strong> function in the Adult Settings. This will wipe all local data and unlink your Device ID from our cloud database.</p>
 
-    <h2>Contact Us</h2>
-    <p>If you have questions about this Privacy Policy, please contact us at:</p>
-    <p><strong>Behavior School LLC</strong></p>
-    <p>Email: support@behaviorschool.com</p>
+    <h2>7. Contact Us</h2>
+    <p>For any privacy-related inquiries, please contact:</p>
+    <p><strong>Behavior School LLC</strong><br>
+    Email: support@behaviorschool.com</p>
 
 </body>
 

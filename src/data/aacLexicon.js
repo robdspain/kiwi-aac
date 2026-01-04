@@ -1,70 +1,75 @@
-// AAC Lexicon - Automated POS Mapping for Fitzgerald Key
+// AAC Lexicon - Automated POS Mapping for Fitzgerald Key with Emojis
 // Noun: Yellow, Verb: Green, Adjective: Blue, Social: Pink, Misc: Orange
 
 export const AAC_LEXICON = {
     // --- NOUNS (Yellow) ---
-    "apple": { type: "noun" }, "banana": { type: "noun" }, "orange": { type: "noun" }, "cookie": { type: "noun" }, "milk": { type: "noun" }, "water": { type: "noun" },
-    "mom": { type: "noun" }, "dad": { type: "noun" }, "teacher": { type: "noun" }, "friend": { type: "noun" }, "baby": { type: "noun" }, "dog": { type: "noun" }, "cat": { type: "noun" },
-    "home": { type: "noun" }, "school": { type: "noun" }, "park": { type: "noun" }, "bathroom": { type: "noun" }, "bed": { type: "noun" }, "car": { type: "noun" }, "bus": { type: "noun" },
-    "toy": { type: "noun" }, "book": { type: "noun" }, "ball": { type: "noun" }, "pencil": { type: "noun" }, "paper": { type: "noun" }, "phone": { type: "noun" }, "ipad": { type: "noun" },
+    "apple": { type: "noun", emoji: "🍎" }, "banana": { type: "noun", emoji: "🍌" }, "orange": { type: "noun", emoji: "🍊" }, "cookie": { type: "noun", emoji: "🍪" }, "milk": { type: "noun", emoji: "🥛" }, "water": { type: "noun", emoji: "💧" },
+    "mom": { type: "noun", emoji: "👩" }, "dad": { type: "noun", emoji: "👨" }, "teacher": { type: "noun", emoji: "👩‍🏫" }, "friend": { type: "noun", emoji: "🧑" }, "baby": { type: "noun", emoji: "👶" }, "dog": { type: "noun", emoji: "🐶" }, "cat": { type: "noun", emoji: "🐱" },
+    "home": { type: "noun", emoji: "🏠" }, "school": { type: "noun", emoji: "🏫" }, "park": { type: "noun", emoji: "🌳" }, "bathroom": { type: "noun", emoji: "🚽" }, "bed": { type: "noun", emoji: "🛏️" }, "car": { type: "noun", emoji: "🚗" }, "bus": { type: "noun", emoji: "🚌" },
+    "toy": { type: "noun", emoji: "🧸" }, "book": { type: "noun", emoji: "📚" }, "ball": { type: "noun", emoji: "⚽" }, "pencil": { type: "noun", emoji: "✏️" }, "paper": { type: "noun", emoji: "📄" }, "phone": { type: "noun", emoji: "📱" }, "ipad": { type: "noun", emoji: "📱" },
 
     // --- VERBS (Green) ---
-    "want": { type: "verb", inflections: ["wanting", "wanted", "wants"] },
-    "go": { type: "verb", inflections: ["going", "went", "goes"] },
-    "stop": { type: "verb", inflections: ["stopping", "stopped", "stops"] },
-    "eat": { type: "verb", inflections: ["eating", "ate", "eats"] },
-    "drink": { type: "verb", inflections: ["drinking", "drank", "drinks"] },
-    "play": { type: "verb", inflections: ["playing", "played", "plays"] },
-    "sleep": { type: "verb", inflections: ["sleeping", "slept", "sleeps"] },
-    "help": { type: "verb", inflections: ["helping", "helped", "helps"] },
-    "see": { type: "verb", inflections: ["seeing", "saw", "sees"] },
-    "look": { type: "verb", inflections: ["looking", "looked", "looks"] },
-    "like": { type: "verb", inflections: ["liking", "liked", "likes"] },
-    "have": { type: "verb", inflections: ["having", "had", "has"] },
-    "get": { type: "verb", inflections: ["getting", "got", "gets"] },
-    "put": { type: "verb", inflections: ["putting", "put", "puts"] },
-    "read": { type: "verb", inflections: ["reading", "read", "reads"] },
-    "write": { type: "verb", inflections: ["writing", "wrote", "writes"] },
-    "run": { type: "verb", inflections: ["running", "ran", "runs"] },
-    "jump": { type: "verb", inflections: ["jumping", "jumped", "jumps"] },
-    "swim": { type: "verb", inflections: ["swimming", "swam", "swims"] },
-    "walk": { type: "verb", inflections: ["walking", "walked", "walks"] },
-    "wash": { type: "verb", inflections: ["washing", "washed", "washes"] },
-    "clean": { type: "verb", inflections: ["cleaning", "cleaned", "cleans"] },
-    "open": { type: "verb", inflections: ["opening", "opened", "opens"] },
-    "close": { type: "verb", inflections: ["closing", "closed", "closes"] },
-    "make": { type: "verb", inflections: ["making", "made", "makes"] },
-    "listen": { type: "verb", inflections: ["listening", "listened", "listens"] },
-    "hear": { type: "verb", inflections: ["hearing", "heard", "hears"] },
-    "talk": { type: "verb", inflections: ["talking", "talked", "talks"] },
+    "i want": { type: "verb", emoji: "🙋", inflections: ["wanting", "wanted", "wants"] },
+    "i see": { type: "verb", emoji: "👀", inflections: ["seeing", "saw", "sees"] },
+    "i feel": { type: "verb", emoji: "😊", inflections: ["feeling", "felt", "feels"] },
+    "i have": { type: "verb", emoji: "🤲", inflections: ["having", "had", "has"] },
+    "i like": { type: "verb", emoji: "❤️", inflections: ["liking", "liked", "likes"] },
+    "want": { type: "verb", emoji: "🙋", inflections: ["wanting", "wanted", "wants"] },
+    "go": { type: "verb", emoji: "🚶", inflections: ["going", "went", "goes"] },
+    "stop": { type: "verb", emoji: "🛑", inflections: ["stopping", "stopped", "stops"] },
+    "eat": { type: "verb", emoji: "😋", inflections: ["eating", "ate", "eats"] },
+    "drink": { type: "verb", emoji: "🥤", inflections: ["drinking", "drank", "drinks"] },
+    "play": { type: "verb", emoji: "🏃", inflections: ["playing", "played", "plays"] },
+    "sleep": { type: "verb", emoji: "😴", inflections: ["sleeping", "slept", "sleeps"] },
+    "help": { type: "verb", emoji: "🙋", inflections: ["helping", "helped", "helps"] },
+    "see": { type: "verb", emoji: "👀", inflections: ["seeing", "saw", "sees"] },
+    "look": { type: "verb", emoji: "👀", inflections: ["looking", "looked", "looks"] },
+    "like": { type: "verb", emoji: "❤️", inflections: ["liking", "liked", "likes"] },
+    "have": { type: "verb", emoji: "🤲", inflections: ["having", "had", "has"] },
+    "get": { type: "verb", emoji: "🤲", inflections: ["getting", "got", "gets"] },
+    "put": { type: "verb", emoji: "📥", inflections: ["putting", "put", "puts"] },
+    "read": { type: "verb", emoji: "📖", inflections: ["reading", "read", "reads"] },
+    "write": { type: "verb", emoji: "✏️", inflections: ["writing", "wrote", "writes"] },
+    "run": { type: "verb", emoji: "🏃", inflections: ["running", "ran", "runs"] },
+    "jump": { type: "verb", emoji: "🦘", inflections: ["jumping", "jumped", "jumps"] },
+    "swim": { type: "verb", emoji: "🏊", inflections: ["swimming", "swam", "swims"] },
+    "walk": { type: "verb", emoji: "🚶", inflections: ["walking", "walked", "walks"] },
+    "wash": { type: "verb", emoji: "🧼", inflections: ["washing", "washed", "washes"] },
+    "clean": { type: "verb", emoji: "🧹", inflections: ["cleaning", "cleaned", "cleans"] },
+    "open": { type: "verb", emoji: "🔓", inflections: ["opening", "opened", "opens"] },
+    "close": { type: "verb", emoji: "🔒", inflections: ["closing", "closed", "closes"] },
+    "make": { type: "verb", emoji: "🛠️", inflections: ["making", "made", "makes"] },
+    "listen": { type: "verb", emoji: "👂", inflections: ["listening", "listened", "listens"] },
+    "hear": { type: "verb", emoji: "👂", inflections: ["hearing", "heard", "hears"] },
+    "talk": { type: "verb", emoji: "🗣️", inflections: ["talking", "talked", "talks"] },
 
     // --- ADJECTIVES (Blue) ---
-    "happy": { type: "adj" }, "sad": { type: "adj" }, "angry": { type: "adj" }, "mad": { type: "adj" }, "scared": { type: "adj" }, "tired": { type: "adj" }, "sick": { type: "adj" },
-    "big": { type: "adj" }, "little": { type: "adj" }, "hot": { type: "adj" }, "cold": { type: "adj" }, "fast": { type: "adj" }, "slow": { type: "adj" }, "loud": { type: "adj" }, "quiet": { type: "adj" },
-    "good": { type: "adj" }, "bad": { type: "adj" }, "red": { type: "adj" }, "blue": { type: "adj" }, "green": { type: "adj" }, "yellow": { type: "adj" }, "pink": { type: "adj" }, "purple": { type: "adj" },
+    "happy": { type: "adj", emoji: "😄" }, "sad": { type: "adj", emoji: "😢" }, "angry": { type: "adj", emoji: "😠" }, "mad": { type: "adj", emoji: "😠" }, "scared": { type: "adj", emoji: "😨" }, "tired": { type: "adj", emoji: "😴" }, "sick": { type: "adj", emoji: "🤒" },
+    "big": { type: "adj", emoji: "🐘" }, "little": { type: "adj", emoji: "🐜" }, "hot": { type: "adj", emoji: "🔥" }, "cold": { type: "adj", emoji: "❄️" }, "fast": { type: "adj", emoji: "⚡" }, "slow": { type: "adj", emoji: "🐢" }, "loud": { type: "adj", emoji: "📢" }, "quiet": { type: "adj", emoji: "🤫" },
+    "good": { type: "adj", emoji: "👍" }, "bad": { type: "adj", emoji: "👎" }, "red": { type: "adj", emoji: "🔴" }, "blue": { type: "adj", emoji: "🔵" }, "green": { type: "adj", emoji: "🟢" }, "yellow": { type: "adj", emoji: "🟡" }, "pink": { type: "adj", emoji: "💗" }, "purple": { type: "adj", emoji: "🟣" },
 
     // --- SOCIAL/PRONOUNS (Pink) ---
-    "i": { type: "pronoun" }, "me": { type: "pronoun" }, "my": { type: "pronoun" }, "you": { type: "pronoun" }, "your": { type: "pronoun" }, "he": { type: "pronoun" }, "she": { type: "pronoun" },
-    "we": { type: "pronoun" }, "they": { type: "pronoun" }, "hello": { type: "social" }, "hi": { type: "social" }, "goodbye": { type: "social" }, "bye": { type: "social" },
-    "please": { type: "social" }, "thanks": { type: "social" }, "yes": { type: "social" }, "no": { type: "social" }, "sorry": { type: "social" },
+    "i": { type: "pronoun", emoji: "👤" }, "me": { type: "pronoun", emoji: "👤" }, "my": { type: "pronoun", emoji: "👤" }, "you": { type: "pronoun", emoji: "👤" }, "your": { type: "pronoun", emoji: "👤" }, "he": { type: "pronoun", emoji: "👦" }, "she": { type: "pronoun", emoji: "👧" },
+    "we": { type: "pronoun", emoji: "👥" }, "they": { type: "pronoun", emoji: "👥" }, "hello": { type: "social", emoji: "👋" }, "hi": { type: "social", emoji: "👋" }, "goodbye": { type: "social", emoji: "👋" }, "bye": { type: "social", emoji: "👋" },
+    "please": { type: "social", emoji: "🙏" }, "thanks": { type: "social", emoji: "😊" }, "thank you": { type: "social", emoji: "😊" }, "yes": { type: "social", emoji: "✅" }, "no": { type: "social", emoji: "❌" }, "sorry": { type: "social", emoji: "😔" },
 
     // --- MISC/PREPOSITIONS (Orange) ---
-    "in": { type: "misc" }, "on": { type: "misc" }, "up": { type: "misc" }, "down": { type: "misc" }, "out": { type: "misc" }, "off": { type: "misc" }, "with": { type: "misc" },
-    "more": { type: "misc" }, "all done": { type: "misc" }, "finished": { type: "misc" }, "now": { type: "misc" }, "later": { type: "misc" },
+    "in": { type: "misc", emoji: "📥" }, "on": { type: "misc", emoji: "🔛" }, "up": { type: "misc", emoji: "⬆️" }, "down": { type: "misc", emoji: "⬇️" }, "out": { type: "misc", emoji: "📤" }, "off": { type: "misc", emoji: "📴" }, "with": { type: "misc", emoji: "➕" },
+    "more": { type: "misc", emoji: "➕" }, "all done": { type: "misc", emoji: "🏁" }, "finished": { type: "misc", emoji: "🏁" }, "now": { type: "misc", emoji: "⏰" }, "later": { type: "misc", emoji: "⏳" },
 
     // --- QUESTIONS (Purple) ---
-    "what": { type: "question" }, "where": { type: "question" }, "who": { type: "question" }, "when": { type: "question" }, "why": { type: "question" }, "how": { type: "question" }
+    "what": { type: "question", emoji: "❓" }, "where": { type: "question", emoji: "📍" }, "who": { type: "question", emoji: "👤" }, "when": { type: "question", emoji: "⏰" }, "why": { type: "question", emoji: "❓" }, "how": { type: "question", emoji: "⚙️" }
 };
 
 export const getFitzgeraldColor = (pos) => {
     switch (pos) {
         case 'noun': return '#FFEB3B';
-        case 'verb': return '#2E7D32';
-        case 'adj': return '#1565C0';
-        case 'social': return '#C2185B';
-        case 'pronoun': return '#C2185B';
-        case 'misc': return '#E65100';
-        case 'question': return '#6A1B9A';
+        case 'verb': return '#1B5E20';
+        case 'adj': return '#0D47A1';
+        case 'social': return '#880E4F';
+        case 'pronoun': return '#880E4F';
+        case 'misc': return '#BF360C';
+        case 'question': return '#4A148C';
         default: return '#ffffff';
     }
 };

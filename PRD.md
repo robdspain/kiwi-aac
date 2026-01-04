@@ -62,6 +62,8 @@ Kiwi Voice is designed to disrupt the high-cost AAC market by offering professio
 - 🛁 **Bath/Bedtime:** Hygiene, sleep routine, comfort
 - 🚗 **Going Places:** Transportation, errands, waiting
 - 🏥 **Medical/Therapy:** Body parts, feelings, pain scale
+- ✅ **Starter Icons:** Each default context ships with 7 context-specific icons intended as quick-edit placeholders for adults.
+- ✅ **App Defaults (v1):** Home, School, Grandparents, Store, Outside are pre-seeded with 7 editable icons each.
 
 **Smart Context Features:**
 - Core words (I, want, more, stop) appear in ALL contexts
@@ -489,6 +491,8 @@ The following features are currently integrated with RevenueCat using the `premi
 - **Logo:** `public/images/logo.png` (PNG format required for high fidelity).
 - **Corner Radii:** Standardized at `radius-md` (1.25rem) for cards and `radius-xl` (2.5rem) for avatars.
 - **Haptic Tone:** Clean, crisp haptics (Light/Medium) to match the visual spring animations.
+- **Icon Layout:** Icons always render above their labels (image top, word bottom) in all grid modes.
+- **Dialog Close:** Every dialog includes a standard iOS close box in the upper-right corner.
 
 ---
 
@@ -554,6 +558,21 @@ The following features are currently integrated with RevenueCat using the `premi
 - [x] **Quality Badges:** Clearly distinguish between Siri/Neural/Premium vs. basic system voices.
 - [x] **Setup Instructions:** Provide in-app guidance to download high-quality voices if needed.
 - [x] **Enhanced Voice Detection:** Automatically detect and prioritize Enhanced/Premium voices in the list.
+- [x] **Smart Voice Filtering (IMPLEMENTED):** Default view shows only natural-sounding, high-quality voices
+  - Filters out robotic/novelty voices (Albert, Bad News, Bahh, Bells, Boing, Bubbles, Cellos, etc.)
+  - Shows only Enhanced, Premium, Neural, Siri, and other natural-sounding voices
+  - "Show All" / "Quality Only" toggle for advanced users who need access to all voices
+  - Clear visual indicators: ✨ for high-quality voices, 🤖 for robotic voices (when showing all)
+  - Empty state message when no high-quality voices are available with download instructions
+- [x] **Zen Voice Setup Guide (REDESIGNED):**
+  - Clean, minimal notification card with microphone icon 🎙️
+  - "Upgrade Voice Quality" → "Get natural-sounding voices"
+  - Simple 3-step instructions (numbered 1-2-3) instead of verbose text
+  - Single action button: "Refresh Voice List" with loading state
+  - Removed yellow warning colors → neutral gray gradient
+  - Removed redundant tips and pro tip sections
+  - Standard iOS "Done" button instead of circular X
+  - Calm, focused design that doesn't overwhelm users
 
 #### 15.6. Voice Presets
 - [x] **Young Child Preset:** Higher pitch (1.2x), slower rate (0.8x) for child-like voice.
@@ -569,6 +588,13 @@ The following features are currently integrated with RevenueCat using the `premi
 - [x] **Individual Removal:** Tap icons in message bar to remove them selectively.
 - [x] **Use Mode vs Edit Mode:** Dedicated communication mode separate from library editing.
 - [x] **Auto-Speak Option:** Toggle to speak words immediately on tap vs. accumulating first.
+- [x] **Repetition Delay (Anti-Spam Protection):**
+    - Default: 5 seconds between same word repetitions
+    - Prevents children from rapid-fire tapping the same button
+    - Adjustable from 0-15 seconds in Adult Settings
+    - Per-word cooldown tracking (each word has independent timer)
+    - Visual feedback when button is in cooldown period
+    - Rationale: Encourages intentional communication vs. stimming/button-mashing
 - [x] **Smart Speak Button Feedback:**
     - Visual indicator (glow/highlight) when sentence meets minimum length criteria
     - Button is always active - user can speak partial sentences at any time
@@ -597,9 +623,32 @@ The following features are currently integrated with RevenueCat using the `premi
         - Adjectives (Blue #2196F3) -> Darkened (#0D47A1).
 
 #### 16.2. Typography & Layout Scaling
-- [x] **Dynamic Type Implementation:** 
+- [x] **Dynamic Type Implementation:**
     - Convert all hardcoded `px` font sizes to `rem`.
     - Use `clamp()` for responsive header text to prevent clipping on small devices.
+
+#### 16.2a. iOS Modal/Sheet Close Button Standards (UPDATED)
+- [x] **Adult Settings Sheet:** "Done" button (top-right, iOS blue #007AFF)
+- [ ] **Systematic Update Needed:** Apply standard iOS close patterns across all modals
+  - **Standard Pattern:** Text-based "Done" or "Cancel" buttons instead of circular X buttons
+  - **Positioning:** Top-right corner for primary action ("Done"), top-left for secondary ("Cancel")
+  - **Color:** iOS blue (#007AFF) for affirmative actions
+  - **Typography:** SF Pro, 600 weight, ~17pt (1.0625rem)
+  - **Touch Target:** Minimum 44x44pt per Apple HIG
+  - **Rationale:** Circular X buttons are not standard iOS design (more Android Material Design)
+
+**Apple HIG Reference:**
+- Sheets should use "Done" button in navigation bar
+- Full-screen modals can use "Cancel" (left) and "Done" (right)
+- Avoid custom close button designs that don't match platform conventions
+- Maintain consistent dismiss patterns throughout the app
+
+**Components to Update:**
+- Dashboard.jsx ❌ (uses circular X)
+- EditModal.jsx ❌ (uses circular X)
+- PickerModal.jsx ❌ (uses circular X)
+- MemojiPicker.jsx ❌ (uses circular X)
+- All other modal components ❌
 - [x] **SF Pro Rounded Integration:** Ensure `font-family` strictly defaults to system rounded variant for better readability.
 
 #### 16.3. Motor & Hit-Area Standards
@@ -923,7 +972,7 @@ The following features are currently integrated with RevenueCat using the `premi
 **Implementation Requirements:**
 - [x] **Camera Integration:** Capacitor Camera API for taking photos directly
 - [x] **Photo Library Access:** Select from device photo library
-- [x] **Photo Editor:** Basic crop, rotate, brightness/contrast adjustments
+- [x] **Photo Editor:** Manual square crop on import for icon/profile photos
 - [x] **Auto-Optimization:** Resize to optimal dimensions, compress for performance
 - [ ] **Photo Categories:** Automatically suggest categories (People, Places, Food, Objects)
 - [ ] **Label Suggestions:** OCR or manual labeling for each photo
@@ -931,7 +980,7 @@ The following features are currently integrated with RevenueCat using the `premi
 
 **Free Tier Limits:**
 - Up to 20 custom photos (sufficient for core family/environment)
-- Basic photo editing (crop, rotate)
+- Basic photo editing (crop)
 - Local storage only
 
 **Premium Tier (Kiwi Pro):**
@@ -1534,3 +1583,27 @@ Instead of a single UI for everyone, Kiwi Voice uses **Access Profiles** to driv
 - [x] **Physical Calibration Tool:** Update `TouchCalibration.jsx` to measure accuracy at specific `mm` sizes.
 - [x] **Dynamic Grid Scaling:** Grid cells must calculate size based on the Access Profile's `targetSize` while maintaining a stable layout.
 - [x] **Hit Area Enforcement:** Ensure all buttons have a minimum hit area of 44x44pt or the user's custom target size.
+
+#### 28.5. Touch Calibration Interface (IMPLEMENTED)
+
+**Visual Grid Size Selector:**
+- [x] **5 Grid Layout Options:** Users can choose from 2×2, 3×3, 4×4, 5×5, or 6×6 grid layouts
+- [x] **Animal-Themed Icons:** Each grid size represented by an animal emoji (🐘 elephant for largest, 🐜 ant for smallest)
+- [x] **Visual Feedback:** Selected size shows dark teal background (#1A535C) with white text
+- [x] **Instant Application:** Grid size and target size settings apply immediately upon selection
+- [x] **Integrated with Onboarding:** Touch calibration shown during first-time setup flow
+- [x] **Settings Access:** "Redo Touch Calibration" button in Adult Settings → Extra → Accessibility section
+- [x] **Unified Experience:** Same calibration interface used in both onboarding and settings
+
+**Grid Size to Target Size Mapping:**
+- 2×2 (🐘 Super Big): 22mm touch targets
+- 3×3 (🦒 Big): 18mm touch targets
+- 4×4 (🐕 Standard): 15mm touch targets
+- 5×5 (🐈 Medium): 12mm touch targets
+- 6×6 (🐜 Dense): 10mm touch targets
+
+**User Experience:**
+- Clear explanatory text: "Larger grids have bigger buttons but fewer words visible"
+- Skip option for users who want to configure later
+- Visual selection state with shadow effects and color changes
+- Responsive layout adapts to different screen sizes

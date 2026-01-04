@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import VoiceRecorder from './VoiceRecorder';
 import MemojiPicker from './MemojiPicker';
+import ImageCropModal from './ImageCropModal';
 import { saveMedia, getMedia, deleteMedia } from '../utils/db';
 
 const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item }) => {
@@ -14,6 +15,8 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item 
     const [processing, setProcessing] = useState(false);
     const [showMemojiPicker, setShowMemojiPicker] = useState(false);
     const [characterConfig, setCharacterConfig] = useState(null);
+    const [cropSource, setCropSource] = useState(null);
+    const [showCropper, setShowCropper] = useState(false);
     const fileInputRef = useRef(null);
     const cameraInputRef = useRef(null);
     const lastItemIdRef = useRef(null);
@@ -52,38 +55,15 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            processImage(file);
-        }
-    };
-
-    const processImage = (source) => {
-        if (source instanceof Blob) {
             setProcessing(true);
             const reader = new FileReader();
             reader.onload = (event) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const maxSize = 512; // Increased for better quality
-                    let width = img.width, height = img.height;
-                    if (width > height) { if (width > maxSize) { height *= maxSize / width; width = maxSize; } }
-                    else { if (height > maxSize) { width *= maxSize / height; height = maxSize; } }
-                    canvas.width = width; canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    setIcon(canvas.toDataURL('image/jpeg', 0.7)); // Balanced compression
-                    setIsImage(true);
-                    setProcessing(false);
-                };
-                img.onerror = () => setProcessing(false);
-                img.src = event.target.result;
+                setProcessing(false);
+                setCropSource(event.target.result);
+                setShowCropper(true);
             };
             reader.onerror = () => setProcessing(false);
-            reader.readAsDataURL(source);
-        } else {
-            // If it's already a data URL or path
-            setIcon(source);
-            setIsImage(true);
+            reader.readAsDataURL(file);
         }
     };
 
@@ -91,28 +71,13 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item 
         try {
             const image = await Camera.getPhoto({
                 quality: 90,
-                allowEditing: true,
+                allowEditing: false,
                 resultType: CameraResultType.DataUrl,
                 source: source
             });
             if (image && image.dataUrl) {
-                setProcessing(true);
-                // Process the image to ensure it's resized correctly for performance
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const maxSize = 512;
-                    let width = img.width, height = img.height;
-                    if (width > height) { if (width > maxSize) { height *= maxSize / width; width = maxSize; } }
-                    else { if (height > maxSize) { width *= maxSize / height; height = maxSize; } }
-                    canvas.width = width; canvas.height = height;
-                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-                    setIcon(canvas.toDataURL('image/jpeg', 0.7));
-                    setIsImage(true);
-                    setProcessing(false);
-                };
-                img.onerror = () => setProcessing(false);
-                img.src = image.dataUrl;
+                setCropSource(image.dataUrl);
+                setShowCropper(true);
             }
         } catch (error) {
             console.error('Camera error:', error);
@@ -125,6 +90,7 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item 
     return (
         <div className="ios-bottom-sheet-overlay" onClick={onClose}>
             <div className="ios-bottom-sheet" onClick={e => e.stopPropagation()}>
+                <button className="ios-close-button" onClick={onClose} aria-label="Close">✕</button>
                 <div className="ios-sheet-header">
                     <button className="ios-cancel-button" onClick={onClose}>Cancel</button>
                     <h2 className="ios-sheet-title">{item?.type === 'folder' ? 'Edit Folder' : 'Edit Button'}</h2>
@@ -271,6 +237,20 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item 
                             setShowMemojiPicker(false); 
                         }} 
                         onClose={() => setShowMemojiPicker(false)}
+                    />
+                )}
+                {showCropper && (
+                    <ImageCropModal
+                        isOpen={showCropper}
+                        imageSrc={cropSource}
+                        onCancel={() => { setShowCropper(false); setCropSource(null); }}
+                        onSave={(dataUrl) => {
+                            setIcon(dataUrl);
+                            setIsImage(true);
+                            setShowCropper(false);
+                            setCropSource(null);
+                        }}
+                        title="Crop Icon"
                     />
                 )}
             </div>

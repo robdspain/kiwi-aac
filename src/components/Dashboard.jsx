@@ -61,6 +61,7 @@ Communication is growing! 🥝
     return (
         <div className="dashboard-modal">
             <div className="dashboard-content">
+                <button className="ios-close-button" onClick={onClose} aria-label="Close">✕</button>
                 <div className="dashboard-header">
                     <h1>📊 Dashboard</h1>
                     <div className="dashboard-actions">
@@ -511,4 +512,3 @@ Communication is growing! 🥝
 };
 
 export default Dashboard;
-

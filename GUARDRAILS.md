@@ -14,5 +14,6 @@
 
 ### 3. Change Rules
 - **No new dependencies:** Approval required before adding to `package.json`.
-- **Invariants:** No changes allowed that violate rules in `AAC_INVARIANTS.md`.
+- **Invariants:** No changes allowed that violate rules in `AAC_INVARIANTS.md` or `design_audit.md`.
+- **Branding:** NEVER replace the official logo (`public/images/logo.png`) with emojis or other icons on the splash screen or landing page.
 - **Acceptance:** Any behavior change must be reflected by an update to `ACCEPTANCE.md`.

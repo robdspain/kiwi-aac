@@ -46,6 +46,7 @@ import { Capacitor } from '@capacitor/core';
 import { NativeBiometric } from 'capacitor-native-biometric';
 import cloudSyncService from './services/CloudSyncService';
 import relationalSyncService from './services/RelationalSyncService';
+import { saveMedia, deleteMedia } from './utils/db';
 
 const synth = window.speechSynthesis || null;
 
@@ -111,42 +112,54 @@ const attributesFolder = {
 };
 
 const homeDefaultData = [
-  ...CORE_WORDS_DATA,
-  { id: 'starter-want', type: 'button', word: "I want", icon: "🙋", category: 'starter', isPhrase: true, phraseIcons: ["🙋", "➕"] },
-  { id: 'starter-see', type: 'button', word: "I see", icon: "👀", category: 'starter', isPhrase: true, phraseIcons: ["👀", "✨"] },
-  { id: 'starter-feel', type: 'button', word: "I feel", icon: "😊", category: 'starter', isPhrase: true, phraseIcons: ["😊", "🧠"] },
-  { id: 'starter-have', type: 'button', word: "I have", icon: "🤲", category: 'starter', isPhrase: true, phraseIcons: ["🤲", "📦"] },
-  { id: 'starter-like', type: 'button', word: "I like", icon: "❤️", category: 'starter', isPhrase: true, phraseIcons: ["❤️", "👍"] },
-  { id: 'nicety-please', type: 'button', word: "Please", icon: "🙏", category: 'nicety' },
-  { id: 'nicety-thanks', type: 'button', word: "Thank you", icon: "😊", category: 'nicety' },
-  { id: 'toy-generic', type: 'button', word: "Toy", icon: "🧸" },
   { id: 'snack-generic', type: 'button', word: "Snack", icon: "🥨" },
+  { id: 'toy-generic', type: 'button', word: "Toy", icon: "🧸" },
   { id: 'play-generic', type: 'button', word: "Play", icon: "🏃" },
+  { id: 'bathroom', type: 'button', word: "Bathroom", icon: "🚽" },
+  { id: 'drink', type: 'button', word: "Drink", icon: "🧃" },
   { id: 'mom', type: 'button', word: "Mom", icon: "/images/memojis/1.png" },
-  { id: 'dad', type: 'button', word: "Dad", icon: "/images/memojis/2.png" },
-  { id: 'more', type: 'button', word: "More", icon: "➕" },
-  { id: 'food-folder', type: 'folder', word: "Foods", icon: "🍎", contents: [ { id: 'banana', type: 'button', word: "Banana", icon: "🍌" }, { id: 'apple', type: 'button', word: "Apple", icon: "🍎" }, { id: 'cracker', type: 'button', word: "Cracker", icon: "🍘" }, { id: 'water', type: 'button', word: "Water", icon: "💧" }, { id: 'broccoli', type: 'button', word: "Broccoli", icon: "🥦" }, { id: 'strawberry', type: 'button', word: "Strawberry", icon: "🍓" }, { id: 'pizza', type: 'button', word: "Pizza", icon: "🍕" }, { id: 'chicken', type: 'button', word: "Chicken", icon: "🍗" }, { id: 'juice', type: 'button', word: "Juice", icon: "🧃" }, { id: 'milk', type: 'button', word: "Milk", icon: "🥛" }, { id: 'cookie', type: 'button', word: "Cookie", icon: "🍪" }, { id: 'yogurt', type: 'button', word: "Yogurt", icon: "🍦" }, { id: 'carrot', type: 'button', word: "Carrot", icon: "🥕" }, { id: 'grape', type: 'button', word: "Grape", icon: "🍇" }, { id: 'real-apple', type: 'button', word: "Healthy Snack", icon: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=200&h=200&fit=crop", bgColor: "#E3F2FD" }, { id: 'custom-photo', type: 'button', word: "My Snack", icon: "📷", bgColor: "#E3F2FD" } ] },
-  { id: 'toys-folder', type: 'folder', word: "Toys", icon: "⚽", contents: [ { id: 'ball', type: 'button', word: "Ball", icon: "⚽" }, { id: 'bubbles', type: 'button', word: "Bubbles", icon: "🫧" }, { id: 'blocks', type: 'button', word: "Blocks", icon: "🧱" }, { id: 'car', type: 'button', word: "Car", icon: "🚗" }, { id: 'mouse', type: 'button', word: "Mouse", icon: "🐭" } ] },
-  { id: 'tv-folder', type: 'folder', word: "TV", icon: "📺", contents: [ { id: 'elmo', type: 'button', word: "Elmo", icon: "🔴" }, { id: 'bluey', type: 'button', word: "Bluey", icon: "🐶" }, { id: 'music', type: 'button', word: "Music", icon: "🎵" }, { id: 'book', type: 'button', word: "Book", icon: "📚" } ] },
-  { id: 'feelings-folder', type: 'folder', word: "Feelings", icon: "😄", contents: [ { id: 'happy', type: 'button', word: "Happy", icon: "😄" }, { id: 'sad', type: 'button', word: "Sad", icon: "😢" }, { id: 'mad', type: 'button', word: "Mad", icon: "😠" } ] },
-  { 
-    id: 'phrases-folder', 
-    type: 'folder', 
-    word: "My Phrases", 
-    icon: "🗣️", 
-    contents: [ 
-      { id: 'phrase-love', type: 'button', word: "I love you", icon: "❤️", bgColor: '#FDF2F8' }, 
-      { id: 'phrase-help', type: 'button', word: "Can you help me?", icon: "🤝", bgColor: '#FDF2F8' }, 
-      { id: 'phrase-break', type: 'button', word: "I need a break", icon: "🧘", bgColor: '#FDF2F8' } 
-    ] 
-  },
-  attributesFolder
+  { id: 'dad', type: 'button', word: "Dad", icon: "/images/memojis/2.png" }
 ];
 
-const schoolDefaultData = [ { id: 'starter-want', type: 'button', word: "I want", icon: "🙋", category: 'starter' }, { id: 'starter-see', type: 'button', word: "I see", icon: "👀", category: 'starter' }, { id: 'teacher', type: 'button', word: "Teacher", icon: "👩‍🏫" }, { id: 'help', type: 'button', word: "Help", icon: "🙋‍" }, { id: 'bathroom', type: 'button', word: "Bathroom", icon: "🚽" }, { id: 'more', type: 'button', word: "More", icon: "➕" }, { id: 'school-folder', type: 'folder', word: "School", icon: "🏫", contents: [ { id: 'pencil', type: 'button', word: "Pencil", icon: "✏️" }, { id: 'paper', type: 'button', word: "Paper", icon: "📄" }, { id: 'computer', type: 'button', word: "Computer", icon: "💻" }, { id: 'backpack', type: 'button', word: "Backpack", icon: "🎒" } ] }, { id: 'friends-folder', type: 'folder', word: "Friends", icon: "👫", contents: [ { id: 'friend1', type: 'button', word: "Friend", icon: "🧑" }, { id: 'play', type: 'button', word: "Play", icon: "⚽" }, { id: 'share', type: 'button', word: "Share", icon: "🤝" } ] } ];
-const grandparentsDefaultData = [ { id: 'starter-want', type: 'button', word: "I want", icon: "🙋", category: 'starter' }, { id: 'grandma', type: 'button', word: "Grandma", icon: "👵" }, { id: 'grandpa', type: 'button', word: "Grandpa", icon: "👴" }, { id: 'hug', type: 'button', word: "Hug", icon: "🫲" }, { id: 'cookie', type: 'button', word: "Cookie", icon: "🍪" }, { id: 'more', type: 'button', word: "More", icon: "➕" }, { id: 'treats-folder', type: 'folder', word: "Treats", icon: "🍬", contents: [ { id: 'candy', type: 'button', word: "Candy", icon: "🍬" }, { id: 'ice-cream', type: 'button', word: "Ice Cream", icon: "🍦" }, { id: 'juice', type: 'button', word: "Juice", icon: "🧃" } ] } ];
-const storeDefaultData = [ { id: 'starter-want', type: 'button', word: "I want", icon: "🙋", category: 'starter' }, { id: 'help', type: 'button', word: "Help", icon: "🙋‍" }, { id: 'cart', type: 'button', word: "Cart", icon: "🛒" }, { id: 'bathroom', type: 'button', word: "Bathroom", icon: "🚽" }, { id: 'more', type: 'button', word: "More", icon: "➕" }, { id: 'shopping-folder', type: 'folder', word: "Shopping", icon: "🛒", contents: [ { id: 'snack', type: 'button', word: "Snack", icon: "🍿" }, { id: 'drink', type: 'button', word: "Drink", icon: "🧃" }, { id: 'toy', type: 'button', word: "Toy", icon: "🧸" } ] } ];
-const outsideDefaultData = [ { id: 'starter-want', type: 'button', word: "I want", icon: "🙋", category: 'starter' }, { id: 'play', type: 'button', word: "Play", icon: "⚽" }, { id: 'swing', type: 'button', word: "Swing", icon: "🧘" }, { id: 'slide', type: 'button', word: "Slide", icon: "🚻" }, { id: 'more', type: 'button', word: "More", icon: "➕" }, { id: 'nature-folder', type: 'folder', word: "Nature", icon: "🌳", contents: [ { id: 'tree', type: 'button', word: "Tree", icon: "🌳" }, { id: 'flower', type: 'button', word: "Flower", icon: "🌸" }, { id: 'bird', type: 'button', word: "Bird", icon: "🐦" }, { id: 'bug', type: 'button', word: "Bug", icon: "🐛" } ] }, { id: 'playground-folder', type: 'folder', word: "Playground", icon: "🎢", contents: [ { id: 'sandbox', type: 'button', word: "Sandbox", icon: "🏖️" }, { id: 'climb', type: 'button', word: "Climb", icon: "🧗" }, { id: 'run', type: 'button', word: "Run", icon: "🏃" } ] } ];
+const schoolDefaultData = [
+  { id: 'teacher', type: 'button', word: "Teacher", icon: "👩‍🏫" },
+  { id: 'friend', type: 'button', word: "Friend", icon: "🧑" },
+  { id: 'pencil', type: 'button', word: "Pencil", icon: "✏️" },
+  { id: 'desk', type: 'button', word: "Desk", icon: "🪑" },
+  { id: 'lunch', type: 'button', word: "Lunch", icon: "🍎" },
+  { id: 'bathroom', type: 'button', word: "Bathroom", icon: "🚽" },
+  { id: 'bus', type: 'button', word: "Bus", icon: "🚌" }
+];
+
+const grandparentsDefaultData = [
+  { id: 'grandma', type: 'button', word: "Grandma", icon: "👵" },
+  { id: 'grandpa', type: 'button', word: "Grandpa", icon: "👴" },
+  { id: 'hug', type: 'button', word: "Hug", icon: "🤗" },
+  { id: 'cookie', type: 'button', word: "Cookie", icon: "🍪" },
+  { id: 'story', type: 'button', word: "Story", icon: "📖" },
+  { id: 'tv', type: 'button', word: "TV", icon: "📺" },
+  { id: 'phone', type: 'button', word: "Phone", icon: "📞" }
+];
+
+const storeDefaultData = [
+  { id: 'cart', type: 'button', word: "Cart", icon: "🛒" },
+  { id: 'cashier', type: 'button', word: "Cashier", icon: "🧑‍💼" },
+  { id: 'pay', type: 'button', word: "Pay", icon: "💳" },
+  { id: 'price', type: 'button', word: "Price", icon: "🏷️" },
+  { id: 'snack', type: 'button', word: "Snack", icon: "🍿" },
+  { id: 'drink', type: 'button', word: "Drink", icon: "🧃" },
+  { id: 'bathroom', type: 'button', word: "Bathroom", icon: "🚽" }
+];
+
+const outsideDefaultData = [
+  { id: 'park', type: 'button', word: "Park", icon: "🌳" },
+  { id: 'ball', type: 'button', word: "Ball", icon: "⚽" },
+  { id: 'walk', type: 'button', word: "Walk", icon: "🚶" },
+  { id: 'run', type: 'button', word: "Run", icon: "🏃" },
+  { id: 'bike', type: 'button', word: "Bike", icon: "🚲" },
+  { id: 'sun', type: 'button', word: "Sun", icon: "☀️" },
+  { id: 'water', type: 'button', word: "Water", icon: "💧" }
+];
 
 const getDefaultDataForContext = (contextId) => {
   switch (contextId) {
@@ -283,7 +296,7 @@ function App() {
 
   const [speechDelay, setSpeechDelay] = useState(() => {
     const saved = localStorage.getItem('kiwi-speech-delay');
-    return saved ? parseInt(saved, 10) : 0;
+    return saved ? parseInt(saved, 10) : 5;
   });
   const [inflectionData, setInflectionData] = useState(null);
 
@@ -476,6 +489,37 @@ function App() {
   useEffect(() => { localStorage.setItem('kiwi-proficiency-level', proficiencyLevel); }, [proficiencyLevel]);
   useEffect(() => { localStorage.setItem('kiwi-show-category-headers', showCategoryHeaders.toString()); }, [showCategoryHeaders]);
   useEffect(() => { localStorage.setItem('kiwi-collapsed-sections', JSON.stringify(collapsedSections)); }, [collapsedSections]);
+
+  // Color Theme Application
+  useEffect(() => {
+    localStorage.setItem('kiwi-color-theme', colorTheme);
+    
+    // Apply theme colors to CSS variables
+    const themes = {
+      default: { primary: '#1A535C', bg: '#FDF8F3' },
+      ocean: { primary: '#0EA5E9', bg: '#E8F4FC' },
+      sunset: { primary: '#F97316', bg: '#FFF7ED' },
+      forest: { primary: '#22C55E', bg: '#F0FDF4' },
+      berry: { primary: '#A855F7', bg: '#FAF5FF' },
+      candy: { primary: '#EC4899', bg: '#FDF2F8' },
+    };
+    
+    const theme = themes[colorTheme] || themes.default;
+    const root = document.documentElement;
+    
+    root.style.setProperty('--primary', theme.primary);
+    root.style.setProperty('--bg-color', theme.bg);
+    root.style.setProperty('--btn-primary-bg', theme.primary);
+    
+    // Update background gradient based on theme
+    const darkerBg = theme.bg.replace(/\d+/g, (match) => Math.max(0, parseInt(match) - 10).toString());
+    root.style.setProperty('--bg-gradient', `linear-gradient(180deg, ${theme.bg} 0%, ${darkerBg} 100%)`);
+    
+    // Update shadow colors to match theme
+    const primaryWithAlpha = theme.primary + '1A'; // Add alpha for shadow
+    root.style.setProperty('--shadow-color', primaryWithAlpha);
+    
+  }, [colorTheme]);
 
   // Auto-scanning Logic
   useEffect(() => {
@@ -885,6 +929,228 @@ function App() {
     setEditingItemIndex(newList.length - 1); setEditModalOpen(true);
   };
 
+  const isPersonItem = (item) => {
+    if (!item || item.type !== 'button') return false;
+    if (item.isCustomPerson || item.characterConfig?.type === 'multiavatar') return true;
+    if (typeof item.icon === 'string' && item.icon.includes('/images/memojis/')) return true;
+    return false;
+  };
+
+  const countCustomPeopleInItems = (items) => {
+    return (items || []).reduce((count, item) => {
+      if (item.type === 'folder') {
+        return count + countCustomPeopleInItems(item.contents || []);
+      }
+      return count + (item.isCustomPerson || item.characterConfig?.type === 'multiavatar' ? 1 : 0);
+    }, 0);
+  };
+
+  const getPersonInsertIndex = (items) => {
+    let lastPersonIndex = -1;
+    items.forEach((item, index) => {
+      if (isPersonItem(item)) lastPersonIndex = index;
+    });
+    if (lastPersonIndex >= 0) return lastPersonIndex + 1;
+    let fallbackIndex = 0;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].category === 'starter' || items[i].category === 'core') fallbackIndex = i + 1;
+      else break;
+    }
+    return fallbackIndex;
+  };
+
+  const findPersonInItems = (items, personId) => {
+    for (const item of items || []) {
+      if (!item) continue;
+      if (item.id === personId) return item;
+      if (item.type === 'folder') {
+        const found = findPersonInItems(item.contents || [], personId);
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+
+  const findPersonInPages = (pages, personId) => {
+    for (const page of pages || []) {
+      const found = findPersonInItems(page?.items || [], personId);
+      if (found) return found;
+    }
+    return null;
+  };
+
+  const updatePersonInItems = (items, personId, updater) => {
+    let didUpdate = false;
+    const nextItems = (items || []).map(item => {
+      if (!item) return item;
+      if (item.id === personId) {
+        didUpdate = true;
+        return updater(item);
+      }
+      if (item.type === 'folder') {
+        const [updatedContents, updated] = updatePersonInItems(item.contents || [], personId, updater);
+        if (updated) {
+          didUpdate = true;
+          return { ...item, contents: updatedContents };
+        }
+      }
+      return item;
+    });
+    return [nextItems, didUpdate];
+  };
+
+  const updatePersonAcrossPages = (pages, personId, updater) => {
+    let didUpdate = false;
+    const nextPages = (pages || []).map(page => {
+      const [updatedItems, updated] = updatePersonInItems(page?.items || [], personId, updater);
+      if (updated) {
+        didUpdate = true;
+        return { ...page, items: updatedItems };
+      }
+      return page;
+    });
+    return [nextPages, didUpdate];
+  };
+
+  const removePersonFromItems = (items, personId) => {
+    let removedItem = null;
+    let didRemove = false;
+    const nextItems = [];
+    for (const item of items || []) {
+      if (!item) continue;
+      if (item.id === personId) {
+        removedItem = item;
+        didRemove = true;
+        continue;
+      }
+      if (item.type === 'folder') {
+        const [updatedContents, removed, removedFromChild] = removePersonFromItems(item.contents || [], personId);
+        if (removed) {
+          didRemove = true;
+          if (removedFromChild) removedItem = removedFromChild;
+          nextItems.push({ ...item, contents: updatedContents });
+          continue;
+        }
+      }
+      nextItems.push(item);
+    }
+    return [nextItems, didRemove, removedItem];
+  };
+
+  const removePersonAcrossPages = (pages, personId) => {
+    let removedPerson = null;
+    let didRemove = false;
+    const nextPages = (pages || []).map(page => {
+      const [updatedItems, removed, removedItem] = removePersonFromItems(page?.items || [], personId);
+      if (removed) {
+        didRemove = true;
+        if (!removedPerson && removedItem) removedPerson = removedItem;
+        return { ...page, items: updatedItems };
+      }
+      return page;
+    });
+    return [nextPages, didRemove, removedPerson];
+  };
+
+  const handleAddPerson = async ({ name, icon, config }) => {
+    const currentPageItems = rootItems[currentPageIndex]?.items || [];
+    const totalCustomPeople = rootItems.reduce((sum, page) => sum + countCustomPeopleInItems(page.items || []), 0);
+    try {
+      const { checkUnlimitedPeople } = await import('./utils/paywall');
+      const hasAccess = await checkUnlimitedPeople(totalCustomPeople);
+      if (!hasAccess) return;
+    } catch (error) {
+      console.error('Failed to check people limit:', error);
+    }
+
+    const trimmedName = (name || '').trim() || 'Friend';
+    let finalIcon = icon;
+
+    if (typeof icon === 'string' && icon.startsWith('data:')) {
+      const mediaId = `avatar-${Date.now()}`;
+      try {
+        await saveMedia(mediaId, icon);
+        finalIcon = `db:${mediaId}`;
+      } catch (error) {
+        console.warn('Failed to store avatar media');
+      }
+    }
+
+    const newPerson = {
+      id: `person-${Date.now()}`,
+      type: 'button',
+      word: trimmedName,
+      icon: finalIcon,
+      category: 'pronoun',
+      wc: 'pronoun',
+      isCustomPerson: true,
+      characterConfig: config || null
+    };
+
+    const newList = [...currentPageItems];
+    const insertIndex = getPersonInsertIndex(newList);
+    newList.splice(insertIndex, 0, newPerson);
+
+    const newRootItems = [...rootItems];
+    newRootItems[currentPageIndex] = { ...newRootItems[currentPageIndex], items: newList };
+    setRootItems(newRootItems);
+  };
+
+  const handleUpdatePerson = async (personId, { name, icon, config }) => {
+    const person = findPersonInPages(rootItems, personId);
+    if (!person) return;
+
+    const trimmedName = (name || '').trim() || person.word || 'Friend';
+    const previousIcon = person.icon;
+    let finalIcon = icon || person.icon;
+
+    if (typeof finalIcon === 'string' && finalIcon.startsWith('data:')) {
+      const mediaId = `avatar-${Date.now()}`;
+      try {
+        await saveMedia(mediaId, finalIcon);
+        finalIcon = `db:${mediaId}`;
+      } catch (error) {
+        console.warn('Failed to store avatar media');
+      }
+    }
+
+    if (typeof previousIcon === 'string' && previousIcon.startsWith('db:') && previousIcon !== finalIcon) {
+      const mediaId = previousIcon.split(':')[1];
+      try {
+        await deleteMedia(mediaId);
+      } catch (error) {
+        console.warn('Failed to delete avatar media');
+      }
+    }
+
+    const updatedPerson = {
+      ...person,
+      word: trimmedName,
+      icon: finalIcon,
+      isCustomPerson: person.isCustomPerson || config?.type === 'multiavatar',
+      characterConfig: config || person.characterConfig || null
+    };
+
+    const [nextPages, didUpdate] = updatePersonAcrossPages(rootItems, personId, () => updatedPerson);
+    if (didUpdate) setRootItems(nextPages);
+  };
+
+  const handleRemovePerson = async (personId) => {
+    const [nextPages, didRemove, removedPerson] = removePersonAcrossPages(rootItems, personId);
+    if (!didRemove || !removedPerson) return;
+
+    setRootItems(nextPages);
+
+    if (typeof removedPerson.icon === 'string' && removedPerson.icon.startsWith('db:')) {
+      const mediaId = removedPerson.icon.split(':')[1];
+      try {
+        await deleteMedia(mediaId);
+      } catch (error) {
+        console.warn('Failed to delete avatar media');
+      }
+    }
+  };
+
   const handleToggleTraining = (index) => { if (trainingSelection.includes(index)) setTrainingSelection(trainingSelection.filter(i => i !== index)); else setTrainingSelection([...trainingSelection, index]); };
   const handleShuffle = () => {
     const currentPageItems = rootItems[currentPageIndex]?.items || [];
@@ -894,7 +1160,18 @@ function App() {
     setShuffledItems(selected);
   };
   const handleStopTraining = () => { setIsTrainingMode(false); setShuffledItems(null); setTrainingSelection([]); setIsEditMode(false); };
-  const handlePickerOpen = (setWord, setIcon) => { setPickerCallback(() => (w, i, isImage) => { setWord(w); setIcon(i, isImage); setPickerOpen(false); }); setPickerOpen(true); };
+  const handlePickerOpen = (setWord, setIcon) => {
+    setPickerCallback(() => (w, i, isImage) => {
+      if (typeof setIcon === 'function') {
+        setWord(w);
+        setIcon(i, isImage);
+      } else if (typeof setWord === 'function') {
+        setWord(w, i, isImage);
+      }
+      setPickerOpen(false);
+    });
+    setPickerOpen(true);
+  };
 
 
   const handleDragEnd = (event) => {
@@ -1034,7 +1311,7 @@ function App() {
         </div>
       </DndContext>
       {!isLocked && !isEditMode && !isTrainingMode && <button id="settings-button" onClick={() => setIsEditMode(true)} aria-label="Open Settings">⚙️</button>}
-      {!isLocked && <Controls isEditMode={isEditMode} isTrainingMode={isTrainingMode} currentPhase={currentPhase} currentLevel={currentLevel} showStrip={showStrip} currentContext={currentContext} contexts={contexts} onSetContext={handleSetContext} onToggleMenu={() => setIsEditMode(!isEditMode)} onAddItem={handleAddItem} onAddContext={handleAddContext} onRenameContext={handleRenameContext} onDeleteContext={handleDeleteContext} onSetLevel={handleSetLevel} onStartTraining={() => { setIsTrainingMode(true); setTrainingSelection([]); }} onStartEssentialSkills={() => setIsEssentialSkillsMode(true)} onReset={() => { if (confirm("Reset everything?")) { localStorage.clear(); location.reload(); } }} onShuffle={handleShuffle} onStopTraining={handleStopTraining} onOpenPicker={handlePickerOpen} onToggleDashboard={() => setShowDashboard(true)} onRedoCalibration={() => setShowCalibration(true)} onToggleLock={() => setIsLocked(true)} voiceSettings={voiceSettings} onUpdateVoiceSettings={setVoiceSettings} gridSize={gridSize} onUpdateGridSize={setGridSize} phase1TargetId={phase1TargetId} onSetPhase1Target={setPhase1TargetId} rootItems={currentPageItems} colorTheme={colorTheme} onSetColorTheme={setColorTheme} triggerPaywall={triggerPaywall} bellSound={bellSound} onUpdateBellSound={setBellSound} speechDelay={speechDelay} onUpdateSpeechDelay={setSpeechDelay} autoSpeak={autoSpeak} onUpdateAutoSpeak={setAutoSpeak} isScanning={isScanning} onToggleScanning={() => setIsScanning(!isScanning)} scanSpeed={scanSpeed} onUpdateScanSpeed={setScanSpeed} isLayoutLocked={isLayoutLocked} onToggleLayoutLock={() => setIsLayoutLocked(!isLayoutLocked)} isColorCodingEnabled={isColorCodingEnabled} onToggleColorCoding={() => setIsColorCodingEnabled(!isColorCodingEnabled)} showCategoryHeaders={showCategoryHeaders} onToggleCategoryHeaders={() => setShowCategoryHeaders(!showCategoryHeaders)} proficiencyLevel={proficiencyLevel} onUpdateProficiencyLevel={setProficiencyLevel} onAddPage={handleAddNewPage} onDeletePage={handleDeletePage} currentPageIndex={currentPageIndex}           onAddFavorites={(favorites) => {
+      {!isLocked && <Controls isEditMode={isEditMode} isTrainingMode={isTrainingMode} currentPhase={currentPhase} currentLevel={currentLevel} showStrip={showStrip} currentContext={currentContext} contexts={contexts} onSetContext={handleSetContext} onToggleMenu={() => setIsEditMode(!isEditMode)} onAddItem={handleAddItem} onAddContext={handleAddContext} onRenameContext={handleRenameContext} onDeleteContext={handleDeleteContext} onSetLevel={handleSetLevel} onStartTraining={() => { setIsTrainingMode(true); setTrainingSelection([]); }} onStartEssentialSkills={() => setIsEssentialSkillsMode(true)} onReset={() => { if (confirm("Reset everything?")) { localStorage.clear(); location.reload(); } }} onShuffle={handleShuffle} onStopTraining={handleStopTraining} onOpenPicker={handlePickerOpen} onToggleDashboard={() => setShowDashboard(true)} onRedoCalibration={() => setShowCalibration(true)} onToggleLock={() => setIsLocked(true)} voiceSettings={voiceSettings} onUpdateVoiceSettings={setVoiceSettings} gridSize={gridSize} onUpdateGridSize={setGridSize} phase1TargetId={phase1TargetId} onSetPhase1Target={setPhase1TargetId} rootItems={currentPageItems} allRootItems={rootItems} colorTheme={colorTheme} onSetColorTheme={setColorTheme} triggerPaywall={triggerPaywall} bellSound={bellSound} onUpdateBellSound={setBellSound} speechDelay={speechDelay} onUpdateSpeechDelay={setSpeechDelay} autoSpeak={autoSpeak} onUpdateAutoSpeak={setAutoSpeak} isScanning={isScanning} onToggleScanning={() => setIsScanning(!isScanning)} scanSpeed={scanSpeed} onUpdateScanSpeed={setScanSpeed} isLayoutLocked={isLayoutLocked} onToggleLayoutLock={() => setIsLayoutLocked(!isLayoutLocked)} isColorCodingEnabled={isColorCodingEnabled} onToggleColorCoding={() => setIsColorCodingEnabled(!isColorCodingEnabled)} showCategoryHeaders={showCategoryHeaders} onToggleCategoryHeaders={() => setShowCategoryHeaders(!showCategoryHeaders)} proficiencyLevel={proficiencyLevel} onUpdateProficiencyLevel={setProficiencyLevel} onAddPage={handleAddNewPage} onDeletePage={handleDeletePage} currentPageIndex={currentPageIndex}           onAddFavorites={(favorites) => {
             const nowTime = new Date().getTime();
             const newFavs = favorites.map((fav, i) => ({ id: `fav-${nowTime}-${i}`, type: 'button', word: fav.word || fav.label, icon: fav.icon, bgColor: '#FFF3E0' })); 
             
@@ -1046,7 +1323,7 @@ function App() {
             
             newRootItems[currentPageIndex] = { ...newRootItems[currentPageIndex], items: list };
             setRootItems(newRootItems); 
-          }} progressData={progressData}/>}
+          }} onAddPerson={handleAddPerson} onUpdatePerson={handleUpdatePerson} onRemovePerson={handleRemovePerson} progressData={progressData}/>}
       {isLocked && (
         <div style={{ position: 'fixed', bottom: '0', left: '0', right: '0', padding: '12px 20px calc(12px + env(safe-area-inset-bottom, 0px)) 20px', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)', borderTopLeftRadius: '20px', borderTopRightRadius: '20px', boxShadow: '0 -2px 10px rgba(0,0,0,0.1)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100, cursor: 'pointer', textAlign: 'center' }} 
           onClick={async () => {

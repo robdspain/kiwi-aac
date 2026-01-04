@@ -44,8 +44,10 @@ const LevelIntro = ({ level, onComplete, onChangeLevel }) => {
                     boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '20px'
+                    gap: '20px',
+                    position: 'relative'
                 }}>
+                <button className="ios-close-button" onClick={onComplete} aria-label="Close">✕</button>
 
                 {/* Header with Stage Badge */}
                 <div style={{ textAlign: 'center' }}>

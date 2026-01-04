@@ -19,6 +19,7 @@ The following APIs are fragile and must always be wrapped in `try/catch` with a 
 
 ### 4. Camera/Mic Permissions
 - **Capacitor:** Always check `Camera.checkPermissions()` before invoking the picker.
+- **PWA Elements:** The web/PWA platform requires `@ionic/pwa-elements` initialized in `main.jsx` to show the camera/photo picker UI. Without this, `Camera.getPhoto` will fail silently or log a "modal not found" error.
 - **Privacy:** Provide a clear "Missing Permissions" explanation if the user previously denied access.
 
 ### 5. Storage Quotas

@@ -176,11 +176,12 @@ const BackupRestore = ({ isOpen, onClose }) => {
         }}>
             <div style={{
                 background: 'white', borderRadius: '20px', padding: '25px',
-                width: '90%', maxWidth: '400px', maxHeight: '90vh', overflowY: 'auto'
+                width: '90%', maxWidth: '400px', maxHeight: '90vh', overflowY: 'auto',
+                position: 'relative'
             }}>
+                <button className="ios-close-button" onClick={onClose} aria-label="Close">✕</button>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                     <h2 style={{ margin: 0 }}>💾 Backup & Sync</h2>
-                    <button onClick={onClose} style={{ background: 'rgba(0,0,0,0.1)', width: '40px', height: '40px', borderRadius: '50%', border: 'none', cursor: 'pointer' }}>✕</button>
                 </div>
 
                 <div style={{ display: 'flex', background: '#F2F2F7', borderRadius: '10px', padding: '4px', marginBottom: '20px' }}>

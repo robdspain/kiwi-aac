@@ -6,6 +6,10 @@ import App from './App.jsx'
 import EmojiCurator from './components/EmojiCurator.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 import { ProfileProvider } from './context/ProfileContext.jsx'
+import { defineCustomElements } from '@ionic/pwa-elements/loader';
+
+// Initialize PWA Elements for Camera/Photos support on web
+defineCustomElements(window);
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

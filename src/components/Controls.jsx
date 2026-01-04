@@ -2,12 +2,15 @@ import { useState, useEffect } from 'react';
 import GuidedAccessModal from './GuidedAccessModal';
 import FavoritesPickerModal from './FavoritesPickerModal';
 import PronunciationEditor from './PronunciationEditor';
+import MemojiPicker from './MemojiPicker';
+import VoiceSetupModal from './VoiceSetupModal';
 import { STAGES, LEVEL_ORDER, getLevel, getStage } from '../data/levelDefinitions';
 import { BELL_SOUNDS, playBellSound } from '../utils/sounds';
 import { useProfile } from '../context/ProfileContext';
 import { isHighQualityVoice, getVoicesReady, pickBestVoice } from '../utils/voiceUtils';
 import { NativeBiometric } from 'capacitor-native-biometric';
 import { Capacitor } from '@capacitor/core';
+import { getMedia } from '../utils/db';
 
 import BackupRestore from './BackupRestore';
 
@@ -65,11 +68,15 @@ const Controls = ({
     onDeletePage,
     currentPageIndex,
     onAddFavorites,
-    progressData = {}
+    onAddPerson,
+    onUpdatePerson,
+    onRemovePerson,
+    progressData = {},
+    allRootItems
 }) => {
 
     const COLOR_THEMES = [
-        { id: 'default', label: 'Kiwi', icon: <img src="/images/logo.png" alt="" style={{ width: '20px', height: '20px', borderRadius: '4px' }} />, primary: '#1A535C', bg: '#FDF8F3', premium: false },
+        { id: 'default', label: 'Kiwi', icon: '🥝', primary: '#1A535C', bg: '#FDF8F3', premium: false },
         { id: 'ocean', label: 'Ocean', icon: '🌊', primary: '#0EA5E9', bg: '#E8F4FC', premium: true },
         { id: 'sunset', label: 'Sunset', icon: '🌅', primary: '#F97316', bg: '#FFF7ED', premium: true },
         { id: 'forest', label: 'Forest', icon: '🌲', primary: '#22C55E', bg: '#F0FDF4', premium: true },
@@ -81,16 +88,20 @@ const Controls = ({
     const [showFavoritesPicker, setShowFavoritesPicker] = useState(false);
     const [showPronunciationEditor, setShowPronunciationEditor] = useState(false);
     const [showBackupRestore, setShowBackupRestore] = useState(false);
+    const [showMemojiPicker, setShowMemojiPicker] = useState(false);
+    const [memojiTarget, setMemojiTarget] = useState(null);
     const [availableVoices, setAvailableVoices] = useState([]);
     const [isRestoring, setIsRestoring] = useState(false);
     const [activeTab, setActiveTab] = useState('basic');
+    const [resolvedPeopleIcons, setResolvedPeopleIcons] = useState({});
+    const [showAllVoices, setShowAllVoices] = useState(false);
 
     const tabs = [
-        { id: 'basic', label: '⚡ Basic' },
-        { id: 'character', label: '✨ Avatar' },
-        { id: 'access', label: '♿ Access' },
-        { id: 'advanced', label: '⚙️ Extra' },
-        { id: 'data', label: '📊 Data' }
+        { id: 'basic', label: 'Basic', icon: '⚡' },
+        { id: 'character', label: 'Avatar', icon: '✨' },
+        { id: 'access', label: 'Access', icon: '♿' },
+        { id: 'advanced', label: 'Extra', icon: '⚙️' },
+        { id: 'data', label: 'Data', icon: '📊' }
     ];
     const activeTabIndex = tabs.findIndex(t => t.id === activeTab);
 
@@ -102,6 +113,35 @@ const Controls = ({
         visualContrast: 'standard',
         fieldSize: 'unlimited'
     };
+    const isPersonItem = (item) => {
+        if (!item || item.type !== 'button') return false;
+        if (item.isCustomPerson || item.characterConfig?.type === 'multiavatar') return true;
+        if (typeof item.icon === 'string' && item.icon.includes('/images/memojis/')) return true;
+        return false;
+    };
+
+    const collectPeopleItems = (items, collector) => {
+        (items || []).forEach(item => {
+            if (!item) return;
+            if (item.type === 'folder') {
+                collectPeopleItems(item.contents || [], collector);
+                return;
+            }
+            if (isPersonItem(item)) collector.push(item);
+        });
+    };
+
+    const peopleItems = (() => {
+        const list = [];
+        const hasPages = Array.isArray(allRootItems) && allRootItems.some(page => Array.isArray(page?.items));
+        if (hasPages) {
+            allRootItems.forEach(page => collectPeopleItems(page.items || [], list));
+        } else {
+            collectPeopleItems(rootItems || [], list);
+        }
+        return list;
+    })();
+    const customPeopleCount = peopleItems.filter(item => item.isCustomPerson || item.characterConfig?.type === 'multiavatar').length;
 
     const testVoice = () => {
         const text = "Hello, I am ready to talk.";
@@ -132,6 +172,7 @@ const Controls = ({
     const [selectedLang, setSelectedLang] = useState('en');
     const [isRefreshingVoices, setIsRefreshingVoices] = useState(false);
     const [isBiometryAvailable, setIsBiometryAvailable] = useState(false);
+    const [showVoiceSetup, setShowVoiceSetup] = useState(false);
 
     useEffect(() => {
         const checkBiometry = async () => {
@@ -177,6 +218,33 @@ const Controls = ({
         window.speechSynthesis.onvoiceschanged = loadVoices;
     }, []);
 
+    useEffect(() => {
+        let didCancel = false;
+
+        const resolvePeopleIcons = async () => {
+            const updates = {};
+            for (const person of peopleItems) {
+                if (resolvedPeopleIcons[person.id]) continue;
+                const icon = person.image || person.icon;
+                if (typeof icon === 'string' && icon.startsWith('db:')) {
+                    const mediaId = icon.split(':')[1];
+                    try {
+                        const media = await getMedia(mediaId);
+                        if (media) updates[person.id] = media;
+                    } catch (error) {
+                        console.warn('Failed to load person avatar');
+                    }
+                }
+            }
+            if (!didCancel && Object.keys(updates).length > 0) {
+                setResolvedPeopleIcons(prev => ({ ...prev, ...updates }));
+            }
+        };
+
+        resolvePeopleIcons();
+        return () => { didCancel = true; };
+    }, [peopleItems, resolvedPeopleIcons]);
+
     const VOICE_PRESETS = [
         { id: 'child', label: '👧 Child', pitch: 1.2, rate: 0.8 },
         { id: 'adult', label: '👩 Adult', pitch: 1.0, rate: 1.0 },
@@ -192,10 +260,20 @@ const Controls = ({
     };
 
     const filteredVoices = availableVoices
-        .filter(v => v.lang.startsWith(selectedLang))
+        .filter(v => {
+            // Filter by selected language
+            if (!v.lang.startsWith(selectedLang)) return false;
+
+            // If "Show All Voices" is off, only show high-quality voices
+            if (!showAllVoices) {
+                return isHighQualityVoice(v);
+            }
+
+            return true;
+        })
         .sort((a, b) => {
-            const aHigh = a.name.includes('Enhanced') || a.name.includes('Premium') || a.name.includes('Siri');
-            const bHigh = b.name.includes('Enhanced') || b.name.includes('Premium') || b.name.includes('Siri');
+            const aHigh = isHighQualityVoice(a);
+            const bHigh = isHighQualityVoice(b);
             if (aHigh && !bHigh) return -1;
             if (!aHigh && bHigh) return 1;
             return a.name.localeCompare(b.name);
@@ -244,6 +322,30 @@ const Controls = ({
         console.log('Controls - isEditMode:', isEditMode, 'isTrainingMode:', isTrainingMode);
     }, [isEditMode, isTrainingMode]);
 
+    const handleAddPerson = async () => {
+        try {
+            const { checkUnlimitedPeople } = await import('../utils/paywall');
+            const hasAccess = await checkUnlimitedPeople(customPeopleCount);
+            if (!hasAccess) return;
+        } catch (error) {
+            console.error('Failed to check people limit:', error);
+        }
+        setMemojiTarget({ mode: 'add' });
+        setShowMemojiPicker(true);
+    };
+
+    const handleEditPerson = (person) => {
+        if (!person) return;
+        setMemojiTarget({ mode: 'edit', person });
+        setShowMemojiPicker(true);
+    };
+
+    const getPersonPreview = (person) => {
+        if (!person) return null;
+        if (resolvedPeopleIcons[person.id]) return resolvedPeopleIcons[person.id];
+        return person.image || person.icon;
+    };
+
     return (
         <div id="controls" className={isEditMode || isTrainingMode ? '' : 'collapsed'} onClick={(e) => {
             if (e.target.id === 'controls') onToggleMenu();
@@ -255,7 +357,22 @@ const Controls = ({
                         <img src="/images/logo.png" alt="Logo" style={{ width: '24px', height: '24px', borderRadius: '6px' }} />
                         <span>Adult Settings</span>
                     </div>
-                    <button id="close-settings" onClick={onToggleMenu} aria-label="Close Settings">✕</button>
+                    <button
+                        onClick={onToggleMenu}
+                        aria-label="Close Settings"
+                        style={{
+                            background: 'transparent',
+                            border: 'none',
+                            color: '#007AFF',
+                            fontSize: '1.0625rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            padding: '0.5rem 0.75rem',
+                            minHeight: '2.75rem'
+                        }}
+                    >
+                        Done
+                    </button>
                 </div>
 
                 {/* Edit Panel */}
@@ -278,7 +395,7 @@ const Controls = ({
                     </div>
 
                     {/* Segmented Tab Control */}
-                    <div className="ios-segmented-control">
+                    <div className="ios-segmented-control settings-tabs">
                         <div 
                             className="selection-pill" 
                             style={{ 
@@ -292,7 +409,8 @@ const Controls = ({
                                 onClick={() => setActiveTab(tab.id)}
                                 className={activeTab === tab.id ? 'active' : ''}
                             >
-                                {tab.label}
+                                <span className="seg-icon">{tab.icon}</span>
+                                <span className="seg-label">{tab.label}</span>
                             </button>
                         ))}
                     </div>
@@ -542,6 +660,99 @@ const Controls = ({
                         </div>
                     )}
 
+                    {activeTab === 'character' && (
+                        <div style={{ background: '#F2F2F7', margin: '0 -1.5rem', padding: '0 1.5rem 1.5rem', flex: 1 }}>
+                            <div className="ios-setting-group-header" style={{ marginTop: '0.5rem' }}>Circle of Support</div>
+                            <div className="ios-setting-card" style={{ padding: '0.9375rem' }}>
+                                {peopleItems.length === 0 ? (
+                                    <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', margin: 0 }}>
+                                        Add family, friends, or helpers so your child can talk about the people around them.
+                                    </p>
+                                ) : (
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
+                                        {peopleItems.map(person => {
+                                            const previewIcon = getPersonPreview(person);
+                                            const isImage = typeof previewIcon === 'string' && (
+                                                previewIcon.startsWith('data:') || previewIcon.startsWith('/') || previewIcon.includes('.')
+                                            );
+                                            const isMemojiPreview = typeof previewIcon === 'string' && previewIcon.includes('/images/memojis/');
+                                            const isCustom = person.isCustomPerson || person.characterConfig?.type === 'multiavatar';
+                                            return (
+                                                <div
+                                                    key={person.id}
+                                                    onClick={() => handleEditPerson(person)}
+                                                    style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.375rem', cursor: 'pointer' }}
+                                                >
+                                                    <div style={{ position: 'relative' }}>
+                                                        {isCustom && onRemovePerson && (
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    if (confirm(`Remove ${person.word || 'this person'}?`)) {
+                                                                        onRemovePerson(person.id);
+                                                                    }
+                                                                }}
+                                                                aria-label={`Remove ${person.word || 'person'}`}
+                                                                style={{
+                                                                    position: 'absolute',
+                                                                    top: '-0.4rem',
+                                                                    right: '-0.4rem',
+                                                                    width: '1.5rem',
+                                                                    height: '1.5rem',
+                                                                    borderRadius: '50%',
+                                                                    border: 'none',
+                                                                    background: '#FF3B30',
+                                                                    color: 'white',
+                                                                    fontWeight: 700,
+                                                                    cursor: 'pointer',
+                                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                                                                }}
+                                                            >
+                                                                ×
+                                                            </button>
+                                                        )}
+                                                        <div style={{
+                                                            width: '4rem',
+                                                            height: '4rem',
+                                                            borderRadius: '50%',
+                                                            background: 'white',
+                                                            border: '1px solid #E5E5EA',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            overflow: 'hidden',
+                                                            boxShadow: '0 2px 6px rgba(0,0,0,0.08)'
+                                                        }}>
+                                                            {isImage ? (
+                                                                <img src={previewIcon} alt={person.word} style={{ width: '100%', height: '100%', objectFit: isMemojiPreview ? 'contain' : 'cover' }} />
+                                                            ) : (
+                                                                <span style={{ fontSize: '1.5rem' }}>{previewIcon || '👤'}</span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    <span style={{ fontSize: '0.75rem', fontWeight: 600, textAlign: 'center', maxWidth: '4.5rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                        {person.word || 'Person'}
+                                                    </span>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </div>
+                            <div className="ios-setting-card">
+                                <div className="ios-row" onClick={handleAddPerson}>
+                                    <span style={{ color: '#007AFF', fontWeight: 600 }}>+ Create Avatar</span>
+                                    <span className="ios-chevron">›</span>
+                                </div>
+                                <div className="ios-row" style={{ minHeight: 'auto', padding: '0.75rem 0.9375rem', background: '#F2F2F7' }}>
+                                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.4 }}>
+                                        Create a friendly avatar for family, teachers, or friends and we&apos;ll add it to the board.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Access Tab (NEW) */}
                     {activeTab === 'access' && (
                         <div style={{ background: '#F2F2F7', margin: '0 -1.5rem', padding: '0 1.5rem 1.5rem', flex: 1 }}>
@@ -710,83 +921,6 @@ const Controls = ({
                             
                             <div className="ios-setting-group-header">Accessibility</div>
                             <div className="ios-setting-card">
-                                <div className="ios-row" onClick={onToggleScanning}>
-                                    <span>♿ Auto-Scanning (Switch Access)</span>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                        <span style={{ fontSize: '0.875rem', fontWeight: 600, color: isScanning ? '#007AFF' : '#8E8E93' }}>
-                                            {isScanning ? 'On' : 'Off'}
-                                        </span>
-                                        <div style={{ 
-                                            width: '51px', 
-                                            height: '31px', 
-                                            background: isScanning ? '#007AFF' : '#E5E5EA', 
-                                            borderRadius: '15.5px', 
-                                            position: 'relative',
-                                            transition: 'background 0.2s'
-                                        }}>
-                                            <div style={{ 
-                                                width: '27px', 
-                                                height: '27px', 
-                                                background: 'white', 
-                                                borderRadius: '50%', 
-                                                position: 'absolute', 
-                                                top: '2px', 
-                                                left: isScanning ? '22px' : '2px',
-                                                transition: 'left 0.2s',
-                                                boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
-                                            }} />
-                                        </div>
-                                    </div>
-                                </div>
-                                {isScanning && (
-                                    <div className="ios-row" style={{ padding: '0.9375rem' }}>
-                                        <div style={{ width: '100%' }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                                                <span style={{ fontSize: '0.875rem' }}>⏱️ Scan Speed</span>
-                                                <span style={{ fontSize: '0.875rem', fontWeight: 700 }}>{(scanSpeed / 1000).toFixed(1)}s</span>
-                                            </div>
-                                            <input
-                                                type="range" min="500" max="5000" step="100"
-                                                value={scanSpeed}
-                                                onChange={(e) => onUpdateScanSpeed(parseInt(e.target.value, 10))}
-                                                style={{ width: '100%', height: '2.75rem' }}
-                                            />
-                                        </div>
-                                    </div>
-                                )}
-                                <div className="ios-row" onClick={onToggleLayoutLock}>
-                                    <span>🔒 Lock Board Layout</span>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                        <span style={{ fontSize: '0.875rem', fontWeight: 600, color: isLayoutLocked ? '#AF52DE' : '#8E8E93' }}>
-                                            {isLayoutLocked ? 'Locked' : 'Unlocked'}
-                                        </span>
-                                        <div style={{ 
-                                            width: '51px', 
-                                            height: '31px', 
-                                            background: isLayoutLocked ? '#AF52DE' : '#E5E5EA', 
-                                            borderRadius: '15.5px', 
-                                            position: 'relative',
-                                            transition: 'background 0.2s'
-                                        }}>
-                                            <div style={{ 
-                                                width: '27px', 
-                                                height: '27px', 
-                                                background: 'white', 
-                                                borderRadius: '50%', 
-                                                position: 'absolute', 
-                                                top: '2px', 
-                                                left: isLayoutLocked ? '22px' : '2px',
-                                                transition: 'left 0.2s',
-                                                boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
-                                            }} />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="ios-row" style={{ minHeight: 'auto', padding: '0.5rem 0.9375rem', background: '#F2F2F7' }}>
-                                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
-                                        Prevents icons from being moved or deleted, ensuring consistent motor planning.
-                                    </p>
-                                </div>
                                 <div className="ios-row" onClick={onToggleColorCoding}>
                                     <span>🎨 Color Coding (Fitzgerald Key)</span>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -998,51 +1132,92 @@ const Controls = ({
                                         ))}
                                     </select>
                                 </div>
-                                <div className="ios-row">
-                                    <span>🗣️ Voice</span>
+                                <div className="ios-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '0.75rem', padding: '0.9375rem' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+                                        <span style={{ fontWeight: 600 }}>🗣️ Voice</span>
+                                        <button
+                                            onClick={() => setShowAllVoices(!showAllVoices)}
+                                            style={{
+                                                background: 'transparent',
+                                                border: '1px solid #007AFF',
+                                                borderRadius: '0.5rem',
+                                                padding: '0.25rem 0.5rem',
+                                                fontSize: '0.75rem',
+                                                color: '#007AFF',
+                                                fontWeight: 600,
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            {showAllVoices ? 'Quality Only' : 'Show All'}
+                                        </button>
+                                    </div>
                                     <select
                                         value={voiceSettings.voiceURI || ''}
                                         onChange={(e) => onUpdateVoiceSettings({ ...voiceSettings, voiceURI: e.target.value })}
-                                        style={{ border: 'none', background: 'transparent', fontSize: '0.875rem', fontWeight: 600, color: '#007AFF', textAlign: 'right', maxWidth: '11.25rem' }}
+                                        style={{
+                                            width: '100%',
+                                            padding: '0.75rem',
+                                            border: '1px solid #E5E5EA',
+                                            background: 'white',
+                                            borderRadius: '0.5rem',
+                                            fontSize: '0.875rem',
+                                            fontWeight: 600,
+                                            color: '#2D3436'
+                                        }}
                                     >
-                                        <option value="">Default Natural</option>
-                                        {Array.from(new Set(filteredVoices.map(v => v.lang))).sort().map(lang => (
-                                            <optgroup key={lang} label={lang}>
-                                                {filteredVoices.filter(v => v.lang === lang).map(v => (
-                                                    <option key={v.voiceURI} value={v.voiceURI}>
-                                                        {isHighQualityVoice(v) ? '✨ ' : ''}
-                                                        {v.name.replace(/System |Apple |Microsoft |\(Enhanced\)|Premium /g, '').trim()}
-                                                    </option>
-                                                ))}
-                                            </optgroup>
+                                        <option value="">System Default</option>
+                                        {filteredVoices.map(v => (
+                                            <option key={v.voiceURI} value={v.voiceURI}>
+                                                {isHighQualityVoice(v) ? '✨ ' : '🤖 '}
+                                                {v.name.replace(/System |Apple |Microsoft |\(Enhanced\)|Premium |Google /g, '').trim()}
+                                            </option>
                                         ))}
                                     </select>
+                                    {!showAllVoices && filteredVoices.length === 0 && (
+                                        <p style={{ fontSize: '0.75rem', color: '#FF3B30', margin: 0 }}>
+                                            No high-quality voices found. Download Enhanced voices from iOS Settings.
+                                        </p>
+                                    )}
+                                    {showAllVoices && (
+                                        <p style={{ fontSize: '0.75rem', color: '#8E8E93', margin: 0 }}>
+                                            ⚠️ Showing all voices. Voices without ✨ may sound robotic.
+                                        </p>
+                                    )}
                                 </div>
                                 
-                                {/* High Quality Guidance Card */}
+                                {/* Clean Voice Quality Notification */}
                                 {!isHighQualityVoice(availableVoices.find(v => v.voiceURI === voiceSettings.voiceURI)) && (
-                                    <div style={{ margin: '10px 15px', padding: '15px', background: '#FFF9E6', borderRadius: '12px', border: '1px solid #FFE4B5' }}>
-                                        <div style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#856404', marginBottom: '8px' }}>🤖 Robotic Voice detected?</div>
-                                        <p style={{ fontSize: '0.75rem', color: '#856404', margin: '0 0 12px 0', lineHeight: '1.4' }}>
-                                            {isIOS 
-                                                ? 'Get high-quality "Enhanced" voices in: iOS Settings → Accessibility → Spoken Content → Voices.' 
-                                                : 'Install higher-quality voice data in: System Settings → Text-to-speech → Install voice data.'}
-                                        </p>
-                                        <button 
-                                            onClick={refreshVoices}
-                                            disabled={isRefreshingVoices}
-                                            style={{ width: '100%', padding: '8px', borderRadius: '8px', border: 'none', background: 'white', color: '#856404', fontSize: '0.75rem', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', cursor: 'pointer' }}
-                                        >
-                                            {isRefreshingVoices ? 'Searching...' : '🔄 I downloaded a new voice, refresh list'}
-                                        </button>
-                                    </div>
-                                )}
-
-                                {isIOS && (
-                                    <div className="ios-row" style={{ minHeight: 'auto', padding: '0.5rem 0.9375rem' }}>
-                                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
-                                            💡 Tip: Download &quot;Enhanced&quot; voices in iOS Settings → Accessibility → Spoken Content → Voices for better quality.
-                                        </p>
+                                    <div
+                                        onClick={() => setShowVoiceSetup(true)}
+                                        style={{
+                                            margin: '0.625rem 0.9375rem',
+                                            padding: '1rem 1.25rem',
+                                            background: 'linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%)',
+                                            borderRadius: '1rem',
+                                            border: '1px solid #DEE2E6',
+                                            cursor: 'pointer',
+                                            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            gap: '0.5rem',
+                                            boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+                                        }}
+                                        onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.98)'}
+                                        onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                                        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                                    >
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                            <span style={{ fontSize: '1.5rem' }}>🎙️</span>
+                                            <div style={{ flex: 1 }}>
+                                                <div style={{ fontSize: '0.9375rem', fontWeight: 600, color: '#2D3436', marginBottom: '0.125rem' }}>
+                                                    Upgrade Voice Quality
+                                                </div>
+                                                <div style={{ fontSize: '0.8125rem', color: '#6C757D', lineHeight: '1.3' }}>
+                                                    Get natural-sounding voices
+                                                </div>
+                                            </div>
+                                            <span style={{ color: '#007AFF', fontSize: '1.25rem' }}>›</span>
+                                        </div>
                                     </div>
                                 )}
                                 <div className="ios-row" onClick={testVoice}>
@@ -1275,6 +1450,44 @@ const Controls = ({
             {showPronunciationEditor && (
                 <PronunciationEditor
                     onClose={() => setShowPronunciationEditor(false)}
+                />
+            )}
+
+            {showVoiceSetup && (
+                <VoiceSetupModal
+                    isOpen={showVoiceSetup}
+                    onClose={() => setShowVoiceSetup(false)}
+                    onRefresh={refreshVoices}
+                    isRefreshing={isRefreshingVoices}
+                    isIOS={isIOS}
+                />
+            )}
+
+            {showMemojiPicker && (
+                <MemojiPicker
+                    onSelect={(icon, config) => {
+                        if (memojiTarget?.mode === 'edit' && onUpdatePerson && memojiTarget.person) {
+                            onUpdatePerson(memojiTarget.person.id, {
+                                name: config?.name || memojiTarget.person.word,
+                                icon,
+                                config
+                            });
+                        } else if (onAddPerson) {
+                            onAddPerson({
+                                name: config?.name,
+                                icon,
+                                config
+                            });
+                        }
+                        setShowMemojiPicker(false);
+                        setMemojiTarget(null);
+                    }}
+                    onClose={() => {
+                        setShowMemojiPicker(false);
+                        setMemojiTarget(null);
+                    }}
+                    initialName={memojiTarget?.person?.word || ''}
+                    initialSeed={memojiTarget?.person?.characterConfig?.seed || null}
                 />
             )}
 

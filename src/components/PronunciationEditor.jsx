@@ -38,7 +38,7 @@ const PronunciationEditor = ({ onClose }) => {
             <div className="ios-modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '400px', width: '90%' }}>
                 <div className="ios-modal-header">
                     <h3>Pronunciation Editor</h3>
-                    <button className="ios-close-btn" onClick={onClose} style={{ minWidth: '2.75rem', minHeight: '2.75rem' }}>✕</button>
+                    <button className="ios-close-button" onClick={onClose} aria-label="Close">✕</button>
                 </div>
                 
                 <div style={{ padding: '1.25rem' }}>

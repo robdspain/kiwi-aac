@@ -56,3 +56,9 @@
 - **Quota:** If IndexedDB quota is exceeded, the app must show a "Storage Full" warning instead of crashing.
 - **Autoplay:** Speech will not trigger on page load without user gesture.
 
+### 6. Feature: Brand Identity
+**Acceptance Check:**
+1. Open the app and verify the splash screen displays the official logo (not an emoji).
+2. Visit the landing page (`/landing.html`) and verify the logo appears in the header and footer.
+3. Add the app to the home screen (PWA) and verify the home screen icon matches the official logo.
+

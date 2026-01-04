@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { EMOJI_DATA } from '../utils/emojiData';
 import { getOpenMojiUrl } from '../utils/imageUtils';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import ImageCropModal from './ImageCropModal';
 
 const iconsData = {
     'TV': [{ w: 'Elmo', i: '🔴' }, { w: 'Bluey', i: '🐶' }, { w: 'Music', i: '🎵' }, { w: 'Book', i: '📚' }],
@@ -23,9 +24,23 @@ const ImageWithFallback = ({ src, alt, fallback, style }) => {
     );
 };
 
+const dedupeIcons = (icons) => {
+    const seen = new Set();
+    const results = [];
+    icons.forEach(item => {
+        const wordVal = (item.word || item.name || item.w || '').toLowerCase();
+        const iconVal = item.icon || item.emoji || item.i || '';
+        const key = `${wordVal}::${iconVal}`;
+        if (seen.has(key)) return;
+        seen.add(key);
+        results.push(item);
+    });
+    return results;
+};
+
 const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall }) => {
     const [activeTab, setActiveTab] = useState('emoji');
-    const [activeCategory, setActiveCategory] = useState('Smileys & Emotion');
+    const [activeCategory, setActiveCategory] = useState(Object.keys(iconsData)[0] || 'My Icons');
     const [searchQuery, setSearchQuery] = useState('');
     const [symbols, setSymbols] = useState([]);
     const [arasaacSymbols, setArasaacSymbols] = useState([]);
@@ -35,6 +50,9 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
     const [customizingItem, setCustomizingItem] = useState(null);
     const [peekItem, setPeekItem] = useState(null);
     const [customName, setCustomName] = useState('');
+    const [cropSource, setCropSource] = useState(null);
+    const [cropName, setCropName] = useState('');
+    const [showCropper, setShowCropper] = useState(false);
     const fileInputRef = useRef(null);
     const lastCustomizingItemIdRef = useRef(null);
     const peekTimerRef = useRef(null);
@@ -117,8 +135,9 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
         if (file) {
             const reader = new FileReader();
             reader.onload = (event) => {
-                handleItemSelect(file.name.split('.')[0], event.target.result, true);
-                setSearchQuery('');
+                setCropSource(event.target.result);
+                setCropName(file.name.split('.')[0]);
+                setShowCropper(true);
             };
             reader.readAsDataURL(file);
         }
@@ -182,12 +201,27 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
         }
     }, [searchQuery, selectedLibraries, activeTab]);
 
+    useEffect(() => {
+        if (activeTab === 'emoji' || activeTab === 'openmoji') {
+            const emojiCategories = ['My Icons', ...Object.keys(iconsData)];
+            if (!emojiCategories.includes(activeCategory)) {
+                setActiveCategory(emojiCategories[0] || 'My Icons');
+            }
+        } else if (activeTab === 'symbol') {
+            const symbolCategories = Object.keys(EMOJI_DATA);
+            if (symbolCategories.length > 0 && !symbolCategories.includes(activeCategory)) {
+                setActiveCategory(symbolCategories[0]);
+            }
+        }
+    }, [activeTab, activeCategory]);
+
     if (!isOpen) return null;
 
     if (customizingItem) {
         return (
             <div className="ios-bottom-sheet-overlay" onClick={() => setCustomizingItem(null)}>
                 <div className="ios-bottom-sheet" onClick={e => e.stopPropagation()} style={{ height: 'auto', minHeight: '400px' }}>
+                    <button className="ios-close-button" onClick={() => setCustomizingItem(null)} aria-label="Close">✕</button>
                     <div className="ios-sheet-header">
                         <button className="ios-cancel-button" onClick={() => setCustomizingItem(null)}>Back</button>
                         <h2 className="ios-sheet-title">Customize Icon</h2>
@@ -198,7 +232,7 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
                             {customizingItem.isImage ? <img src={customizingItem.icon} alt="Selected" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span>{customizingItem.icon}</span>}
                         </div>
                         <div className="ios-setting-card" style={{ width: '100%', maxWidth: '18.75rem' }}>
-                            <div className="ios-row">
+                            <div className="ios-row ios-row-input">
                                 <span style={{ fontWeight: 600 }}>Label</span>
                                 <input 
                                     type="text" 
@@ -209,6 +243,7 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
                                             handleConfirmSelection();
                                         }
                                     }}
+                                    className="ios-row-input-field"
                                     style={{ border: 'none', textAlign: 'right', fontSize: '1.0625rem', outline: 'none', background: 'transparent', flex: 1, minHeight: '2.75rem' }}
                                     placeholder="Enter label"
                                     aria-label="Edit icon label"
@@ -233,6 +268,7 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
     return (
         <div className="ios-bottom-sheet-overlay" onClick={onClose}>
             <div className="ios-bottom-sheet" onClick={e => e.stopPropagation()}>
+                <button className="ios-close-button" onClick={onClose} aria-label="Close">✕</button>
                 <div className="ios-sheet-header" style={{ borderBottom: 'none', padding: '16px 20px 8px' }}>
                     <button className="ios-cancel-button" onClick={onClose} style={{ flexShrink: 0 }}>Cancel</button>
                     <div className="ios-segmented-control" style={{ marginBottom: 0, flex: 1, margin: '0 12px' }}>
@@ -363,7 +399,7 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
                 <div className="ios-sheet-content" style={{ paddingTop: 0 }}>
                     {activeTab === 'emoji' || activeTab === 'openmoji' ? (
                         <>
-                            {!searchQuery && (
+                            {!searchQuery.trim() && (
                                 <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.9375rem', paddingRight: '1.25rem' }}>
                                     <button 
                                         onClick={() => {
@@ -394,15 +430,21 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
                                     const libraryIcons = Object.values(iconsData).flat();
                                     
                                     let displayIcons = [];
-                                    if (searchQuery) {
-                                        displayIcons = [...userIconsList.filter(item => item.w.toLowerCase().includes(searchQuery.toLowerCase())), ...libraryIcons.filter(item => item.w.toLowerCase().includes(searchQuery.toLowerCase()))];
+                                    const normalizedQuery = searchQuery.trim().toLowerCase();
+                                    if (normalizedQuery) {
+                                        const userMatches = userIconsList.filter(item => item.w.toLowerCase().includes(normalizedQuery));
+                                        const libraryMatches = libraryIcons.filter(item => item.w.toLowerCase().includes(normalizedQuery));
                                         
                                         // Also search emoji data
                                         const allEmojis = Object.values(EMOJI_DATA).flat();
-                                        const emojiResults = allEmojis.filter(item => item.name?.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 30);
-                                        displayIcons = [...displayIcons, ...emojiResults.map(e => ({ w: e.name, i: e.emoji }))];
+                                        const emojiResults = allEmojis.filter(item => item.name?.toLowerCase().includes(normalizedQuery)).slice(0, 30);
+                                        displayIcons = dedupeIcons([
+                                            ...userMatches,
+                                            ...libraryMatches,
+                                            ...emojiResults.map(e => ({ w: e.name, i: e.emoji }))
+                                        ]);
                                     } else {
-                                        displayIcons = (activeCategory === 'My Icons' ? userIconsList : iconsData[activeCategory] || []);
+                                        displayIcons = (activeCategory === 'My Icons' ? dedupeIcons(userIconsList) : iconsData[activeCategory] || []);
                                     }
 
                                     if (displayIcons.length === 0) return <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '2.5rem', color: '#666', fontSize: '0.875rem' }}>No icons found</div>;
@@ -443,7 +485,7 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
                         </>
                     ) : activeTab === 'symbol' ? (
                         <>
-                            {!searchQuery && (
+                            {!searchQuery.trim() && (
                                 <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.9375rem', paddingRight: '1.25rem' }}>
                                     {Object.keys(EMOJI_DATA).map(cat => ( 
                                         <button key={cat} onClick={() => setActiveCategory(cat)} style={{ background: activeCategory === cat ? '#5856D6' : '#F2F2F7', color: activeCategory === cat ? '#fff' : '#333', padding: '0.5rem 1rem', borderRadius: '1.25rem', border: 'none', fontWeight: '500', fontSize: '0.8125rem', whiteSpace: 'nowrap', cursor: 'pointer', minHeight: '2.75rem' }}>{cat}</button> 
@@ -600,6 +642,25 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
                         <span style={{ fontSize: '1.5rem', fontWeight: 800 }}>{peekItem.word}</span>
                     </div>
                 </div>
+            )}
+            {showCropper && (
+                <ImageCropModal
+                    isOpen={showCropper}
+                    imageSrc={cropSource}
+                    onCancel={() => {
+                        setShowCropper(false);
+                        setCropSource(null);
+                        setCropName('');
+                    }}
+                    onSave={(dataUrl) => {
+                        handleItemSelect(cropName || 'Photo', dataUrl, true);
+                        setSearchQuery('');
+                        setShowCropper(false);
+                        setCropSource(null);
+                        setCropName('');
+                    }}
+                    title="Crop Photo"
+                />
             )}
         </div>
     );

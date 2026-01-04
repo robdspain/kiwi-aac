@@ -174,8 +174,10 @@ const AdvancementModal = ({ currentPhase, onAdvance, onWait }) => {
                 borderRadius: '1.5rem',
                 textAlign: 'center',
                 overflowY: 'auto',
-                background: 'var(--card-bg)'
+                background: 'var(--card-bg)',
+                position: 'relative'
             }}>
+                <button className="ios-close-button" onClick={onWait} aria-label="Close">✕</button>
                 <div style={{ fontSize: '3rem', marginBottom: '0.75rem' }}>🚀</div>
                 <h1 style={{ margin: '0 0 0.75rem 0', fontSize: '2rem', color: 'var(--text-primary)' }}>Great Progress!</h1>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>

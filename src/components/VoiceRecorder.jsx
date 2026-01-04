@@ -7,12 +7,20 @@ const VoiceRecorder = ({ currentAudio, onSave, onRemove }) => {
     const mediaRecorderRef = useRef(null);
     const chunksRef = useRef([]);
     const timerRef = useRef(null);
+    const audioRef = useRef(null);
 
     useEffect(() => {
         if (currentAudio !== audioUrl) {
             setTimeout(() => setAudioUrl(currentAudio || null), 0);
         }
     }, [currentAudio, audioUrl]);
+
+    useEffect(() => {
+        if (audioRef.current) {
+            audioRef.current.src = audioUrl || '';
+            if (audioUrl) audioRef.current.load();
+        }
+    }, [audioUrl]);
 
     const getSupportedMimeType = () => {
         const types = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus', 'audio/wav'];
@@ -24,13 +32,16 @@ const VoiceRecorder = ({ currentAudio, onSave, onRemove }) => {
         try {
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { alert('Not supported'); return; }
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const mimeType = getSupportedMimeType();
-            try { mediaRecorderRef.current = new MediaRecorder(stream, mimeType ? { mimeType } : {}); }
+            const requestedMimeType = getSupportedMimeType();
+            try { mediaRecorderRef.current = new MediaRecorder(stream, requestedMimeType ? { mimeType: requestedMimeType } : {}); }
             catch { mediaRecorderRef.current = new MediaRecorder(stream); }
             chunksRef.current = [];
             mediaRecorderRef.current.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
             mediaRecorderRef.current.onstop = () => {
-                const blob = new Blob(chunksRef.current, { type: mediaRecorderRef.current.mimeType || 'audio/webm' });
+                const chunkType = chunksRef.current[0]?.type;
+                const recorderType = mediaRecorderRef.current?.mimeType;
+                const blobType = chunkType || recorderType || requestedMimeType || 'audio/mp4';
+                const blob = new Blob(chunksRef.current, { type: blobType });
                 const reader = new FileReader();
                 reader.onloadend = () => { setAudioUrl(reader.result); onSave(reader.result); };
                 reader.readAsDataURL(blob);
@@ -42,12 +53,26 @@ const VoiceRecorder = ({ currentAudio, onSave, onRemove }) => {
     };
 
     const stopRecording = () => { if (mediaRecorderRef.current && isRecording) { mediaRecorderRef.current.stop(); setIsRecording(false); clearInterval(timerRef.current); } };
-    const playAudio = () => { if (audioUrl) new Audio(audioUrl).play(); };
+    const playAudio = async () => {
+        if (!audioUrl) return;
+        try {
+            if (audioRef.current) {
+                audioRef.current.currentTime = 0;
+                await audioRef.current.play();
+                return;
+            }
+            await new Audio(audioUrl).play();
+        } catch (error) {
+            console.error('Audio playback failed:', error);
+            alert('Audio playback failed. Please try again.');
+        }
+    };
     const handleRemove = () => { setAudioUrl(null); onRemove(); };
     const formatTime = (s) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
 
     return (
         <div style={{ background: '#f8f8f8', padding: '0.75rem', borderRadius: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <audio ref={audioRef} preload="auto" style={{ display: 'none' }} />
             <div role="status" aria-live="polite" style={{ position: 'absolute', width: '1px', height: '1px', padding: '0', margin: '-1px', overflow: 'hidden', clip: 'rect(0, 0, 0, 0)', whiteSpace: 'nowrap', border: '0' }}>
                 {isRecording ? 'Recording started' : audioUrl && !isRecording ? 'Recording stopped' : ''}
             </div>

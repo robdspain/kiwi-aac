@@ -198,6 +198,12 @@ const AppItem = ({
   // Fitzgerald Key Logic
   const lexiconEntry = item.word ? AAC_LEXICON[item.word.toLowerCase()] : null;
   const effectiveWc = item.wc || lexiconEntry?.type;
+  const isMemojiIcon = (icon) => typeof icon === 'string' && icon.includes('/images/memojis/');
+  const getIconImageStyle = (icon) => ({
+    width: '100%',
+    height: '100%',
+    objectFit: isMemojiIcon(icon) ? 'contain' : 'cover'
+  });
   
   // Map pronoun to social for coloring if needed, or keep separate if we want specific colors
   const mappedWc = effectiveWc === 'pronoun' ? 'social' : effectiveWc; 
@@ -272,9 +278,9 @@ const AppItem = ({
             {item.contents.slice(0, 4).map((subItem, i) => (
               <span key={i} className="mini-icon">
                 {subItem.image ? (
-                  <img src={subItem.image} alt={subItem.word} className="sub-icon-img" />
+                  <img src={subItem.image} alt={subItem.word} className="sub-icon-img" style={getIconImageStyle(subItem.image)} />
                 ) : typeof subItem.icon === 'string' && (subItem.icon.startsWith('/') || subItem.icon.startsWith('data:') || subItem.icon.includes('.')) ? (
-                  <img src={subItem.icon} alt={subItem.word} className="sub-icon-img" />
+                  <img src={subItem.icon} alt={subItem.word} className="sub-icon-img" style={getIconImageStyle(subItem.icon)} />
                 ) : (
                   subItem.icon
                 )}
@@ -295,7 +301,7 @@ const AppItem = ({
           </div>
         ) : (
           typeof resolvedIcon === 'string' && (resolvedIcon.startsWith('/') || resolvedIcon.startsWith('data:') || resolvedIcon.includes('.')) ? (
-            <img src={resolvedIcon} alt={displayLabel} />
+            <img src={resolvedIcon} alt={displayLabel} style={getIconImageStyle(resolvedIcon)} />
           ) : (
             resolvedIcon
           )

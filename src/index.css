@@ -300,9 +300,9 @@ button.primary, .primary-button {
 
 .picker-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 12px;
-  padding: 4px;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 16px;
+  padding: 12px 4px 8px;
 }
 
 .picker-btn {
@@ -312,11 +312,11 @@ button.primary, .primary-button {
   justify-content: center;
   background: white;
   border: 1px solid var(--gray-border);
-  border-radius: 12px;
-  padding: 12px 8px;
+  border-radius: 16px;
+  padding: 14px 10px;
   cursor: pointer;
   transition: all 0.2s;
-  min-height: 100px;
+  min-height: 124px;
   position: relative;
   overflow: hidden;
 }
@@ -327,16 +327,16 @@ button.primary, .primary-button {
 }
 
 .picker-btn img {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   object-fit: contain;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .picker-btn .emoji-span {
-  font-size: 2.5rem;
+  font-size: 3rem;
   line-height: 1;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .picker-btn span:last-child {
@@ -392,7 +392,8 @@ button.primary, .primary-button {
 }
 
 .phase-large-grid .app-item {
-  flex-direction: row !important;
+  flex-direction: column !important;
+  align-items: center !important;
   background: white !important;
   border-radius: 2rem !important;
   box-shadow: 0 1.25rem 3.75rem rgba(0,0,0,0.12) !important;
@@ -425,8 +426,9 @@ button.primary, .primary-button {
 .phase-large-grid .app-label {
   font-weight: 800 !important;
   color: #000 !important;
-  text-align: left !important;
-  flex: 1 !important;
+  text-align: center !important;
+  flex: 0 !important;
+  width: 100% !important;
   white-space: normal !important;
   margin: 0 !important;
 }
@@ -632,6 +634,26 @@ button.primary, .primary-button {
   justify-content: center;
 }
 
+.ios-segmented-control.settings-tabs button {
+  padding: 0.5rem 0.25rem;
+  gap: 0.25rem;
+}
+
+.ios-segmented-control.settings-tabs .seg-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.ios-segmented-control.settings-tabs .seg-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.1;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .ios-segmented-control button:active {
   opacity: 0.7;
 }
@@ -663,6 +685,25 @@ button.primary, .primary-button {
   background: white;
   transition: background 0.2s;
   cursor: pointer;
+}
+
+.ios-row.ios-row-input {
+  justify-content: flex-start;
+  gap: 0.75rem;
+  cursor: default;
+}
+
+.ios-row.ios-row-input span {
+  flex: 0 0 auto;
+  min-width: 3.5rem;
+  white-space: nowrap;
+}
+
+.ios-row-input-field {
+  flex: 1;
+  min-width: 0;
+  padding-left: 0.5rem;
+  box-sizing: border-box;
 }
 
 .ios-row:last-child {
@@ -722,6 +763,7 @@ button.primary, .primary-button {
   width: 100%;
   max-width: 600px;
   max-height: 90vh;
+  position: relative;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   display: flex;
@@ -909,6 +951,7 @@ button.primary, .primary-button {
   padding: 40px;
   border-radius: var(--radius-xl);
   box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  position: relative;
 }
 
 .dashboard-stat-grid {
@@ -989,6 +1032,7 @@ button.primary, .primary-button {
   max-width: 400px;
   overflow: hidden;
   box-shadow: 0 1.25rem 3.75rem rgba(0,0,0,0.2);
+  position: relative;
 }
 
 .ios-modal-header {
@@ -1018,6 +1062,35 @@ button.primary, .primary-button {
   font-size: 0.75rem;
   font-weight: bold;
   color: var(--text-muted);
+}
+
+.ios-close-button {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: rgba(255, 255, 255, 0.9);
+  color: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.ios-close-button:active {
+  transform: scale(0.94);
+}
+
+.ios-sheet-header .ios-done-button {
+  margin-right: 2.75rem;
 }
 
 .ios-input-group {

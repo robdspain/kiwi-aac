@@ -2,6 +2,7 @@ const GuidedAccessModal = ({ onClose }) => {
     return (
         <div className="ios-bottom-sheet-overlay" onClick={onClose}>
             <div className="ios-bottom-sheet" onClick={e => e.stopPropagation()}>
+                <button className="ios-close-button" onClick={onClose} aria-label="Close">✕</button>
                 <div className="ios-sheet-header">
                     <div style={{ width: '3.125rem' }}></div>
                     <h2 className="ios-sheet-title">Guided Access</h2>

@@ -43,6 +43,7 @@ const A2HSModal = () => {
             textAlign: 'center',
             animation: 'slideUp 0.5s cubic-bezier(0.32, 0.72, 0, 1)'
         }}>
+            <button className="ios-close-button" onClick={handleClose} aria-label="Close">✕</button>
             <div style={{ fontSize: '2.5rem', marginBottom: '0.9375rem' }}>📱</div>
             <h2 style={{ margin: '0 0 0.75rem 0', fontSize: '1.2rem', color: 'var(--text-primary)' }}>Install Kiwi Voice</h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.5', margin: '0 0 1.25rem 0' }}>

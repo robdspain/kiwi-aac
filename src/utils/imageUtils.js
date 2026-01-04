@@ -14,6 +14,9 @@ export const getOpenMojiUrl = (emoji) => {
     const codes = [];
     for (let i = 0; i < emoji.length; i++) {
         const code = emoji.charCodeAt(i);
+        // Skip variation selector FE0F (Variation Selector-16)
+        if (code === 0xFE0F) continue;
+
         if (code >= 0xD800 && code <= 0xDBFF) {
             const nextCode = emoji.charCodeAt(i + 1);
             if (nextCode >= 0xDC00 && nextCode <= 0xDFFF) {

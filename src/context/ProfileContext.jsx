@@ -24,10 +24,13 @@ export const ProfileProvider = ({ children }) => {
     const [profiles, setProfiles] = useState(() => {
         const saved = localStorage.getItem('kiwi-profiles');
         const data = saved ? JSON.parse(saved) : [DEFAULT_PROFILE];
-        // Migration for existing profiles
+        // Migration for existing profiles - Force 'touch' as scan/eye are future features
         return data.map(p => ({
             ...p,
-            accessProfile: p.accessProfile || DEFAULT_ACCESS_PROFILE
+            accessProfile: {
+                ...(p.accessProfile || DEFAULT_ACCESS_PROFILE),
+                selectionType: 'touch' 
+            }
         }));
     });
 
