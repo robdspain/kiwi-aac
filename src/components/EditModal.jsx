@@ -24,7 +24,7 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
     useEffect(() => {
         if (isOpen && item && item.id !== lastItemIdRef.current) {
             lastItemIdRef.current = item.id;
-            
+
             const loadData = async () => {
                 let resolvedIcon = item.icon;
                 let resolvedAudio = item.customAudio;
@@ -39,11 +39,11 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                     resolvedAudio = await getMedia(mediaId);
                 }
 
-                setWord(item.word); 
-                setIcon(resolvedIcon); 
-                setBgColor(item.bgColor || ''); 
-                setViewMode(item.viewMode || 'grid'); 
-                setCustomAudio(resolvedAudio); 
+                setWord(item.word);
+                setIcon(resolvedIcon);
+                setBgColor(item.bgColor || '');
+                setViewMode(item.viewMode || 'grid');
+                setCustomAudio(resolvedAudio);
                 setCharacterConfig(item.characterConfig || null);
                 setIsImage(typeof resolvedIcon === 'string' && (resolvedIcon.startsWith('/') || resolvedIcon.startsWith('data:') || resolvedIcon.includes('.')));
             };
@@ -112,11 +112,11 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                 <div className="ios-sheet-header">
                     <button className="ios-cancel-button" onClick={onClose}>Cancel</button>
                     <h2 className="ios-sheet-title">{item?.type === 'folder' ? 'Edit Folder' : 'Edit Button'}</h2>
-                    <button 
-                        className="ios-done-button" 
+                    <button
+                        className="ios-done-button"
                         disabled={processing}
                         style={{ opacity: processing ? 0.5 : 1 }}
-                        onClick={async () => { 
+                        onClick={async () => {
                             let finalIcon = icon;
                             let finalAudio = customAudio;
 
@@ -159,23 +159,23 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                                 finalAudio = `db:${audioId}`;
                             }
 
-                            onSave(word, finalIcon, bgColor, viewMode, finalAudio, characterConfig); 
-                            onClose(); 
+                            onSave(word, finalIcon, bgColor, viewMode, finalAudio, characterConfig);
+                            onClose();
                         }}
                     >
                         {processing ? '...' : 'Done'}
                     </button>
                 </div>
-                
+
                 <div className="ios-sheet-content" style={{ background: '#F2F2F7' }}>
                     <div className="ios-setting-group-header">Content</div>
                     <div className="ios-setting-card">
                         <div className="ios-row">
                             <span style={{ fontWeight: 600 }}>Label</span>
-                            <input 
-                                type="text" 
-                                value={word} 
-                                onChange={(e) => setWord(e.target.value)} 
+                            <input
+                                type="text"
+                                value={word}
+                                onChange={(e) => setWord(e.target.value)}
                                 style={{ border: 'none', textAlign: 'right', fontSize: '1.0625rem', outline: 'none', background: 'transparent', flex: 1, minHeight: '2.75rem' }}
                                 placeholder="Enter label"
                             />
@@ -184,12 +184,12 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                             <div className="ios-row" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.75rem', padding: '1rem' }}>
                                 <span style={{ fontWeight: 600, fontSize: '0.8125rem', textTransform: 'uppercase', color: '#6e6e73' }}>View Mode</span>
                                 <div className="ios-segmented-control" style={{ marginBottom: 0 }}>
-                                    <div 
-                                        className="selection-pill" 
-                                        style={{ 
+                                    <div
+                                        className="selection-pill"
+                                        style={{
                                             width: 'calc(50% - 4px)',
-                                            transform: viewMode === 'grid' ? 'translateX(0)' : 'translateX(100%)' 
-                                        }} 
+                                            transform: viewMode === 'grid' ? 'translateX(0)' : 'translateX(100%)'
+                                        }}
                                     />
                                     <button onClick={() => setViewMode('grid')} style={{ minHeight: '2.75rem' }}>Grid</button>
                                     <button onClick={() => setViewMode('schedule')} style={{ minHeight: '2.75rem' }}>Schedule</button>
@@ -204,16 +204,16 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                             <div style={{ width: '6.25rem', height: '6.25rem', borderRadius: '22%', background: bgColor || 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3.5rem', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
                                 {isImage ? <img src={icon} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} /> : icon}
                             </div>
-                            
+
                             <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                                 {['', '#FF3B30', '#FF9500', '#FFCC00', '#34C759', '#007AFF', '#5556D6', '#AF52DE'].map(color => (
-                                    <button 
-                                        key={color} 
-                                        onClick={() => setBgColor(color)} 
-                                        style={{ 
-                                            width: '2.75rem', height: '2.75rem', borderRadius: '50%', 
-                                            background: color || 'white', 
-                                            border: bgColor === color ? '3px solid #007AFF' : '1px solid #ddd', 
+                                    <button
+                                        key={color}
+                                        onClick={() => setBgColor(color)}
+                                        style={{
+                                            width: '2.75rem', height: '2.75rem', borderRadius: '50%',
+                                            background: color || 'white',
+                                            border: bgColor === color ? '3px solid #007AFF' : '1px solid #ddd',
                                             cursor: 'pointer',
                                             boxShadow: bgColor === color ? '0 0 0 2px white' : 'none'
                                         }}
@@ -229,12 +229,8 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                             <span>Select Character</span>
                             <span className="ios-chevron">›</span>
                         </div>
-                        <div className="ios-row" onClick={() => takePhoto(CameraSource.Camera)} style={{ minHeight: '3rem' }}>
-                            <span>📷 Take Photo</span>
-                            <span className="ios-chevron">›</span>
-                        </div>
-                        <div className="ios-row" onClick={() => takePhoto(CameraSource.Photos)} style={{ minHeight: '3rem' }}>
-                            <span>🖼️ Choose from Gallery</span>
+                        <div className="ios-row" onClick={() => takePhoto(CameraSource.Prompt)} style={{ minHeight: '3rem' }}>
+                            <span>📷 Add Photo or Image</span>
                             <span className="ios-chevron">›</span>
                         </div>
                     </div>
@@ -242,33 +238,33 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                     <div className="ios-setting-group-header">Media</div>
                     <div className="ios-setting-card">
                         <div style={{ padding: '0.3125rem' }}>
-                            {item?.type !== 'folder' && <VoiceRecorder currentAudio={customAudio} onSave={(audio) => setCustomAudio(audio)} onRemove={() => setCustomAudio(null)}/>}
+                            {item?.type !== 'folder' && <VoiceRecorder currentAudio={customAudio} onSave={(audio) => setCustomAudio(audio)} onRemove={() => setCustomAudio(null)} />}
                         </div>
                     </div>
 
                     <div style={{ marginTop: '1.25rem' }}>
-                        <button 
-                            onClick={() => { if (window.confirm("Delete this item?")) { onDelete(); onClose(); } }} 
-                            className="ios-row" 
+                        <button
+                            onClick={() => { if (window.confirm("Delete this item?")) { onDelete(); onClose(); } }}
+                            className="ios-row"
                             style={{ width: '100%', border: 'none', borderRadius: '0.75rem', justifyContent: 'center', minHeight: '3rem' }}
                         >
                             <span style={{ color: '#FF3B30', fontWeight: 600 }}>Delete Item</span>
                         </button>
                     </div>
 
-                    <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" style={{ display: 'none' }}/>
-                    <input type="file" ref={cameraInputRef} onChange={handleFileChange} accept="image/*" capture="environment" style={{ display: 'none' }}/>
+                    <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" style={{ display: 'none' }} />
+                    <input type="file" ref={cameraInputRef} onChange={handleFileChange} accept="image/*" capture="environment" style={{ display: 'none' }} />
                 </div>
 
                 {showMemojiPicker && (
-                    <MemojiPicker 
-                        onSelect={(newIcon, config) => { 
-                            setIcon(newIcon); 
-                            setCharacterConfig(config); 
-                            if (config.name) setWord(config.name); 
-                            setIsImage(true); 
-                            setShowMemojiPicker(false); 
-                        }} 
+                    <MemojiPicker
+                        onSelect={(newIcon, config) => {
+                            setIcon(newIcon);
+                            setCharacterConfig(config);
+                            if (config.name) setWord(config.name);
+                            setIsImage(true);
+                            setShowMemojiPicker(false);
+                        }}
                         onClose={() => setShowMemojiPicker(false)}
                     />
                 )}
