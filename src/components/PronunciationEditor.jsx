@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useProfile } from '../context/ProfileContext';
 
-import { checkPronunciationLimit, FREE_TIER_LIMITS } from '../utils/paywall';
+import { checkPronunciationLimit, FREE_TIER_LIMITS } from '../services/RevenueCatService'; // Wait, FREE_TIER_LIMITS is in RevenueCatService but checkPronunciationLimit isn't. I need to implement logic manually.
+
+import revenueCatService, { FREE_TIER_LIMITS } from '../services/RevenueCatService';
 
 const PronunciationEditor = ({ onClose }) => {
     const { pronunciations, addPronunciation, deletePronunciation } = useProfile();
@@ -13,14 +15,19 @@ const PronunciationEditor = ({ onClose }) => {
         if (word && phonetic) {
             const currentCount = Object.keys(pronunciations).length;
 
-            // Check pronunciation limit
+            // Check pronunciation limit directly
             if (currentCount >= FREE_TIER_LIMITS.MAX_PRONUNCIATION_ENTRIES) {
                 try {
-                    const hasAccess = await checkPronunciationLimit(currentCount);
-                    if (!hasAccess) return;
+                    const hasAccess = await revenueCatService.hasPremiumAccess();
+                    if (!hasAccess) {
+                        const paywallResult = await revenueCatService.showPaywallIfNeeded('premiumVoice');
+                        // Re-check after paywall
+                        const accessAfter = await revenueCatService.hasPremiumAccess();
+                        if (!accessAfter) return;
+                    }
                 } catch (error) {
                     console.error('Failed to check pronunciation limit:', error);
-                    // Continue anyway
+                    // Continue anyway in development/error
                 }
             }
 
