@@ -7,6 +7,47 @@ import { useProfile } from '../context/ProfileContext';
 import MemojiPicker from './MemojiPicker';
 import VisualSceneCreator from './VisualSceneCreator';
 
+import {
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonButtons,
+  IonButton,
+  IonIcon,
+  IonSearchbar,
+  IonSegment,
+  IonSegmentButton,
+  IonLabel,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonModal,
+  IonList,
+  IonItem,
+  IonNote,
+  IonSplitPane,
+  IonMenu,
+  IonToggle,
+  IonInput,
+  IonListHeader
+} from '@ionic/react';
+import {
+  menuOutline,
+  optionsOutline,
+  shareOutline,
+  saveOutline,
+  bulbOutline,
+  cameraOutline,
+  sparklesOutline,
+  analyticsOutline,
+  closeOutline,
+  checkmarkOutline,
+  libraryOutline,
+  bookOutline
+} from 'ionicons/icons';
+
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import SplashScreen from './SplashScreen';
 import LZString from 'lz-string';
@@ -21,19 +62,19 @@ const CATEGORY_OVERRIDES = { 'Harp': 'Objects', 'Shovel': 'Objects', 'Face With 
 const applyModifier = (baseEmoji, modifier) => {
   const zwjIndex = baseEmoji.indexOf('\u200D');
   if (zwjIndex !== -1) {
-      const part1 = baseEmoji.substring(0, zwjIndex);
-      const part2 = baseEmoji.substring(zwjIndex);
-      let cleanPart1 = part1; if (cleanPart1.endsWith('\uFE0F')) cleanPart1 = cleanPart1.substring(0, cleanPart1.length - 1);
-      return cleanPart1 + modifier + part2;
+    const part1 = baseEmoji.substring(0, zwjIndex);
+    const part2 = baseEmoji.substring(zwjIndex);
+    let cleanPart1 = part1; if (cleanPart1.endsWith('\uFE0F')) cleanPart1 = cleanPart1.substring(0, cleanPart1.length - 1);
+    return cleanPart1 + modifier + part2;
   } else {
-      let cleanBase = baseEmoji; if (cleanBase.endsWith('\uFE0F')) cleanBase = cleanBase.substring(0, cleanBase.length - 1);
-      return cleanBase + modifier;
+    let cleanBase = baseEmoji; if (cleanBase.endsWith('\uFE0F')) cleanBase = cleanBase.substring(0, cleanBase.length - 1);
+    return cleanBase + modifier;
   }
 };
 
 const { categories, groupedEmojiData, allEmojisFlat } = (() => {
   if (!EMOJI_DATA) return { categories: [], groupedEmojiData: {}, allEmojisFlat: [] };
-  const TONE_CATEGORIES = [ "Tone: Pale", "Tone: Cream White", "Tone: Brown", "Tone: Dark Brown", "Tone: Black" ];
+  const TONE_CATEGORIES = ["Tone: Pale", "Tone: Cream White", "Tone: Brown", "Tone: Dark Brown", "Tone: Black"];
   const baseCategoriesList = Object.keys(EMOJI_DATA).filter(c => !TONE_CATEGORIES.includes(c));
   const globalEmojiMap = new Map();
   Object.keys(EMOJI_DATA).forEach(cat => { (EMOJI_DATA[cat] || []).forEach(item => { globalEmojiMap.set(item.emoji, item); }); });
@@ -42,17 +83,17 @@ const { categories, groupedEmojiData, allEmojisFlat } = (() => {
     (EMOJI_DATA[cat] || []).forEach(item => {
       let effectiveCategory = cat;
       if (cat === "New Emojis") {
-          if (CATEGORY_OVERRIDES[item.name]) effectiveCategory = CATEGORY_OVERRIDES[item.name];
-          else if (item.name === "New Emojis Person" || item.emoji === "🧑‍🦯" || item.emoji === "👨‍🦯" || item.emoji === "👩‍🦯") effectiveCategory = 'People & Fantasy';
+        if (CATEGORY_OVERRIDES[item.name]) effectiveCategory = CATEGORY_OVERRIDES[item.name];
+        else if (item.name === "New Emojis Person" || item.emoji === "🧑‍🦯" || item.emoji === "👨‍🦯" || item.emoji === "👩‍🦯") effectiveCategory = 'People & Fantasy';
       }
       const newItem = { ...item, category: effectiveCategory, variations: [] };
       flatList.push(newItem); baseMap.set(item.name.toLowerCase(), newItem);
       Object.keys(MODIFIERS).forEach(toneName => {
-          const generatedEmoji = applyModifier(item.emoji, MODIFIERS[toneName]);
-          if (globalEmojiMap.has(generatedEmoji)) {
-              const foundItem = globalEmojiMap.get(generatedEmoji);
-              if (!newItem.variations.find(v => v.emoji === foundItem.emoji)) { newItem.variations.push({ ...foundItem, tone: toneName }); identifiedVariations.add(foundItem.emoji); }
-          }
+        const generatedEmoji = applyModifier(item.emoji, MODIFIERS[toneName]);
+        if (globalEmojiMap.has(generatedEmoji)) {
+          const foundItem = globalEmojiMap.get(generatedEmoji);
+          if (!newItem.variations.find(v => v.emoji === foundItem.emoji)) { newItem.variations.push({ ...foundItem, tone: toneName }); identifiedVariations.add(foundItem.emoji); }
+        }
       });
     });
   });
@@ -69,16 +110,16 @@ const { categories, groupedEmojiData, allEmojisFlat } = (() => {
     });
   });
   flatList.forEach(item => {
-      if (item.variations.length > 0) {
-          const brownVar = item.variations.find(v => v.tone === 'Brown');
-          if (brownVar) { item.emoji = brownVar.emoji; item.variations = item.variations.filter(v => v.tone !== 'Brown'); }
-      }
+    if (item.variations.length > 0) {
+      const brownVar = item.variations.find(v => v.tone === 'Brown');
+      if (brownVar) { item.emoji = brownVar.emoji; item.variations = item.variations.filter(v => v.tone !== 'Brown'); }
+    }
   });
   const groupedData = {};
   const allTargetCategories = new Set([...baseCategoriesList, ...Object.values(CATEGORY_OVERRIDES)]);
   allTargetCategories.forEach(cat => {
-      const filtered = flatList.filter(i => i.category === cat && !identifiedVariations.has(i.emoji));
-      if (filtered.length > 0) groupedData[cat] = filtered;
+    const filtered = flatList.filter(i => i.category === cat && !identifiedVariations.has(i.emoji));
+    if (filtered.length > 0) groupedData[cat] = filtered;
   });
   return { categories: ['Characters', 'My People', ...Object.keys(groupedData)], groupedEmojiData: groupedData, allEmojisFlat: flatList };
 })();
@@ -95,7 +136,7 @@ const EmojiCurator = () => {
   const pointerStartPos = useRef(null);
   const [cancellingEmoji, setCancellingEmoji] = useState(null); // Tracks which emoji is showing cancel hint
   const blacklistedEmojis = useMemo(() => [], []);
-  
+
   const handlePointerDown = (e) => {
     pointerStartPos.current = { x: e.clientX, y: e.clientY };
     setCancellingEmoji(null);
@@ -122,23 +163,23 @@ const EmojiCurator = () => {
       }
       return;
     }
-    
-    if (!isLongPress.current && !pickerTarget) { 
+
+    if (!isLongPress.current && !pickerTarget) {
       if (sequenceMode) {
         triggerHaptic('light');
-        setSequence(prev => [...prev, { ...item, id: Date.now() }]); 
+        setSequence(prev => [...prev, { ...item, id: Date.now() }]);
       } else {
         // Haptic Hierarchy (16.3)
         let hapticStyle = 'light';
         if (item.isPhrase) hapticStyle = 'medium';
         else if (item.name?.toLowerCase() === 'no' || item.name?.toLowerCase() === 'stop') hapticStyle = 'heavy';
-        
+
         triggerHaptic(hapticStyle);
-        toggleEmoji(category, item.emoji, item); 
+        toggleEmoji(category, item.emoji, item);
       }
-    } 
+    }
   };
-    const [customItems, setCustomItems] = useState([
+  const [customItems, setCustomItems] = useState([
     { id: 'memoji-mom', name: 'Mom', category: 'My People', image: '/images/memojis/15.png', emoji: 'memoji-mom' },
     { id: 'memoji-dad', name: 'Dad', category: 'My People', image: '/images/memojis/12.png', emoji: 'memoji-dad' },
     { id: 'memoji-ms-rachel', name: 'Ms Rachel', category: 'My People', image: '/images/memojis/10.png', emoji: 'memoji-ms-rachel' },
@@ -179,11 +220,11 @@ const EmojiCurator = () => {
 
   const openEditModal = (item, disp) => {
     const existing = emojiMetadata[disp] || {};
-    setTempMeta({ 
-        label: existing.label || item.name, 
-        wordClass: existing.wordClass || 'noun', 
-        backgroundColor: existing.backgroundColor || '#ffffff', 
-        skill: existing.skill || 'none' 
+    setTempMeta({
+      label: existing.label || item.name,
+      wordClass: existing.wordClass || 'noun',
+      backgroundColor: existing.backgroundColor || '#ffffff',
+      skill: existing.skill || 'none'
     });
     setEditingItem({ ...item, emoji: disp });
   };
@@ -192,11 +233,11 @@ const EmojiCurator = () => {
   const [showSidebar, setShowSidebar] = useState(!isMobile);
 
   useEffect(() => {
-      const handleResize = () => { const mobile = window.innerWidth < 850; setIsMobile(mobile); if (!mobile) setShowSidebar(true); else if (mobile && !showSidebar) setShowSidebar(false); }; 
-      window.addEventListener('resize', handleResize); return () => window.removeEventListener('resize', handleResize);
+    const handleResize = () => { const mobile = window.innerWidth < 850; setIsMobile(mobile); if (!mobile) setShowSidebar(true); else if (mobile && !showSidebar) setShowSidebar(false); };
+    window.addEventListener('resize', handleResize); return () => window.removeEventListener('resize', handleResize);
   }, [showSidebar]);
 
-  useEffect(() => { 
+  useEffect(() => {
     if (visibleCount !== 100) setTimeout(() => setVisibleCount(100), 0);
     if (gridRef.current && gridRef.current.scrollTop !== 0) setTimeout(() => { if (gridRef.current) gridRef.current.scrollTop = 0; }, 0);
   }, [activeCategory, searchQuery, visibleCount]);
@@ -220,10 +261,10 @@ const EmojiCurator = () => {
     initial['My People'] = ['memoji-mom', 'memoji-dad', 'memoji-ms-rachel'];
     initial['Characters'] = ['🔴', '🎵', '🕷️'];
     Object.keys(CURRENT_ICONS).forEach(cat => {
-        (CURRENT_ICONS[cat] || []).forEach(emoji => {
-            const base = allEmojisFlat.find(e => e.emoji === emoji) || allEmojisFlat.find(e => e.variations.some(v => v.emoji === emoji));
-            if (base) { if (!initial[base.category]) initial[base.category] = []; if (!initial[base.category].includes(emoji)) initial[base.category].push(emoji); }
-        });
+      (CURRENT_ICONS[cat] || []).forEach(emoji => {
+        const base = allEmojisFlat.find(e => e.emoji === emoji) || allEmojisFlat.find(e => e.variations.some(v => v.emoji === emoji));
+        if (base) { if (!initial[base.category]) initial[base.category] = []; if (!initial[base.category].includes(emoji)) initial[base.category].push(emoji); }
+      });
     });
     return initial;
   });
@@ -250,15 +291,15 @@ const EmojiCurator = () => {
     if (boardData) {
       // Import pronunciations if present
       try {
-          const decompressed = LZString.decompressFromEncodedURIComponent(boardData);
-          if (decompressed) {
-              const parsed = JSON.parse(decompressed);
-              if (parsed.pronunciations) {
-                  Object.entries(parsed.pronunciations).forEach(([w, p]) => {
-                      addPronunciation(w, p);
-                  });
-              }
+        const decompressed = LZString.decompressFromEncodedURIComponent(boardData);
+        if (decompressed) {
+          const parsed = JSON.parse(decompressed);
+          if (parsed.pronunciations) {
+            Object.entries(parsed.pronunciations).forEach(([w, p]) => {
+              addPronunciation(w, p);
+            });
           }
+        }
       } catch (e) { console.error(e); }
 
       // Decompression check already done in initializers, just notify and clean up
@@ -268,22 +309,22 @@ const EmojiCurator = () => {
   }, [addPronunciation]);
 
 
-      const filteredEmojis = useMemo(() => {
-        let list = groupedEmojiData[activeCategory] || [];
-        list = [...customItems.filter(i => i.category === activeCategory), ...list];
-        if (activeContext !== 'Default' && CONTEXT_DEFINITIONS[activeContext]) {
-            const contextWords = CONTEXT_DEFINITIONS[activeContext];
-            const contextItems = list.filter(item => contextWords.some(w => item.name.toLowerCase().includes(w.toLowerCase())));
-            list = [...contextItems, ...list.filter(item => !contextItems.includes(item))];
-        }
-        if (searchQuery) {
-          list = [...customItems, ...allEmojisFlat].filter(item => (item.name || '').toLowerCase().includes(searchQuery.toLowerCase()) || item.emoji.includes(searchQuery));
-        }
-        if (blacklistedEmojis.length > 0) list = list.filter(item => !blacklistedEmojis.includes(item.emoji));
-        if (showCoreOnly) list = list.filter(item => item.name.toLowerCase().split(/[ -]/).some(w => CORE_VOCABULARY.includes(w)) || CORE_VOCABULARY.includes(item.name.toLowerCase()));
-        return list;
-      }, [searchQuery, activeCategory, showCoreOnly, customItems, blacklistedEmojis, activeContext]);
-    const longPressTimer = useRef(null);
+  const filteredEmojis = useMemo(() => {
+    let list = groupedEmojiData[activeCategory] || [];
+    list = [...customItems.filter(i => i.category === activeCategory), ...list];
+    if (activeContext !== 'Default' && CONTEXT_DEFINITIONS[activeContext]) {
+      const contextWords = CONTEXT_DEFINITIONS[activeContext];
+      const contextItems = list.filter(item => contextWords.some(w => item.name.toLowerCase().includes(w.toLowerCase())));
+      list = [...contextItems, ...list.filter(item => !contextItems.includes(item))];
+    }
+    if (searchQuery) {
+      list = [...customItems, ...allEmojisFlat].filter(item => (item.name || '').toLowerCase().includes(searchQuery.toLowerCase()) || item.emoji.includes(searchQuery));
+    }
+    if (blacklistedEmojis.length > 0) list = list.filter(item => !blacklistedEmojis.includes(item.emoji));
+    if (showCoreOnly) list = list.filter(item => item.name.toLowerCase().split(/[ -]/).some(w => CORE_VOCABULARY.includes(w)) || CORE_VOCABULARY.includes(item.name.toLowerCase()));
+    return list;
+  }, [searchQuery, activeCategory, showCoreOnly, customItems, blacklistedEmojis, activeContext]);
+  const longPressTimer = useRef(null);
   const isLongPress = useRef(false);
   const pickerRef = useRef(null);
   const previousFocus = useRef(null);
@@ -291,7 +332,7 @@ const EmojiCurator = () => {
   useEffect(() => {
     if (pickerTarget) {
       previousFocus.current = document.activeElement; setTimeout(() => { pickerRef.current?.querySelector('button')?.focus(); }, 50);
-      const handleKeyDown = (e) => { if (e.key === 'Escape') setPickerTarget(null); if (e.key === 'Tab') { const buttons = pickerRef.current?.querySelectorAll('button'); if (!buttons?.length) return; if (e.shiftKey) { if (document.activeElement === buttons[0]) { e.preventDefault(); buttons[buttons.length-1].focus(); } } else { if (document.activeElement === buttons[buttons.length-1]) { e.preventDefault(); buttons[0].focus(); } } } };
+      const handleKeyDown = (e) => { if (e.key === 'Escape') setPickerTarget(null); if (e.key === 'Tab') { const buttons = pickerRef.current?.querySelectorAll('button'); if (!buttons?.length) return; if (e.shiftKey) { if (document.activeElement === buttons[0]) { e.preventDefault(); buttons[buttons.length - 1].focus(); } } else { if (document.activeElement === buttons[buttons.length - 1]) { e.preventDefault(); buttons[0].focus(); } } } };
       window.addEventListener('keydown', handleKeyDown); return () => { window.removeEventListener('keydown', handleKeyDown); };
     } else { if (previousFocus.current) { previousFocus.current.focus(); previousFocus.current = null; } }
   }, [pickerTarget]);
@@ -312,12 +353,12 @@ const EmojiCurator = () => {
   };
 
   const handleStart = (e, item) => {
-      isLongPress.current = false; if (!item.variations?.length) return;
-      longPressTimer.current = setTimeout(() => {
-          isLongPress.current = true; const rect = e.currentTarget.getBoundingClientRect();
-          setPickerTarget({ item, category: item.category || activeCategory, x: rect.left + rect.width / 2, y: rect.top });
-          speak(item.name); if (navigator.vibrate) navigator.vibrate(50);
-      }, 500);
+    isLongPress.current = false; if (!item.variations?.length) return;
+    longPressTimer.current = setTimeout(() => {
+      isLongPress.current = true; const rect = e.currentTarget.getBoundingClientRect();
+      setPickerTarget({ item, category: item.category || activeCategory, x: rect.left + rect.width / 2, y: rect.top });
+      speak(item.name); if (navigator.vibrate) navigator.vibrate(50);
+    }, 500);
   };
 
   const handleCleanup = () => { if (longPressTimer.current) { clearTimeout(longPressTimer.current); longPressTimer.current = null; } };
@@ -339,16 +380,16 @@ const EmojiCurator = () => {
       const image = await Camera.getPhoto({ quality: 90, allowEditing: true, resultType: CameraResultType.DataUrl, source });
       if (image?.dataUrl) {
         const name = prompt("Enter name:");
-        if (name) { 
+        if (name) {
           setCustomItems(prev => {
             const timestamp = Date.now();
-            const newItem = { id: `custom-${timestamp}`, name, category: activeCategory, image: image.dataUrl, emoji: `custom-${timestamp}` }; 
+            const newItem = { id: `custom-${timestamp}`, name, category: activeCategory, image: image.dataUrl, emoji: `custom-${timestamp}` };
             return [newItem, ...prev];
           });
-          setShowImageSearch(false); 
+          setShowImageSearch(false);
         }
       }
-    } catch (err) { console.error(err); } 
+    } catch (err) { console.error(err); }
   };
 
   const handleSaveMetadata = (char, label, wordClass, backgroundColor, skill) => { setEmojiMetadata(prev => ({ ...prev, [char]: { label, wordClass, backgroundColor, skill } })); setEditingItem(null); };
@@ -358,8 +399,8 @@ const EmojiCurator = () => {
 
   const exportSelected = () => {
     const output = {
-        pronunciations: pronunciations,
-        icons: {}
+      pronunciations: pronunciations,
+      icons: {}
     };
     Object.keys(selectedEmojis).forEach(cat => {
       if (selectedEmojis[cat]?.length) {
@@ -379,208 +420,493 @@ const EmojiCurator = () => {
   };
 
   return (
-    <div style={{ padding: '0', paddingTop: 'env(safe-area-inset-top)', width: '100vw', height: '100dvh', display: 'flex', flexDirection: 'column', background: '#f0f2f5', color: '#000', position: 'fixed', top: 0, left: 0, zIndex: 9999, userSelect: 'none', overflow: 'hidden' }}>
+    <IonPage style={{ userSelect: 'none' }}>
       {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
-      <div className="emoji-curator-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.9375rem' }}>
-          {isMobile && <button onClick={() => setShowSidebar(!showSidebar)} style={{ background: 'transparent', border: 'none', color: 'white', fontSize: '1.5rem', cursor: 'pointer', minHeight: '2.75rem', minWidth: '2.75rem' }}>☰</button>}
-          <span style={{ fontSize: isMobile ? '1.2rem' : '1.5rem' }}>🥝</span>{!isMobile && <h1 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 'bold' }}>LIBRARY BUILDER</h1>}
-        </div>
-        <div style={{ display: 'flex', gap: isMobile ? '0.75rem' : '1.25rem', alignItems: 'center' }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: isMobile ? '0.8rem' : '0.9rem', minHeight: '2.75rem' }}><input type="checkbox" checked={showCoreOnly} onChange={(e) => setShowCoreOnly(e.target.checked)}/>Core Only</label>
-          <div style={{ position: 'relative' }}>
-              <button onClick={() => setShowToolsMenu(!showToolsMenu)} style={{ padding: '0.75rem', background: '#333', color: 'white', border: 'none', borderRadius: '0.5rem', cursor: 'pointer', minHeight: '2.75rem' }}>Tools ▾</button>
-              {showToolsMenu && (
-                  <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: '10px', background: 'white', borderRadius: '12px', padding: '10px', boxShadow: '0 10px 30px rgba(0,0,0,0.2)', width: '200px', display: 'flex', flexDirection: 'column', gap: '5px', zIndex: 2000 }}>
-                      <button onClick={() => { setShowSmartImport(true); setShowToolsMenu(false); }}>📥 Bulk Import</button>
-                      <button onClick={() => { setShowPhraseCreator(true); setShowToolsMenu(false); }}>🗣️ GLP Phrase Creator</button>
-                      <button onClick={() => { setShowTemplates(true); setShowToolsMenu(false); }}>📋 Templates</button>
-                      <button onClick={() => { setShowImageSearch(true); setShowToolsMenu(false); }}>📷 Add Custom</button>
-                      <button onClick={() => { setSequenceMode(!sequenceMode); setShowToolsMenu(false); }}>{sequenceMode ? 'Finish Sequence' : '✨ Builder Mode'}</button>
-                      <button onClick={() => { setGuideMode(!guideMode); setShowToolsMenu(false); }}>{guideMode ? 'Stop Guide' : '🎯 Guide Mode'}</button>
-                  </div>
-              )}
-          </div>
-          <div style={{ background: '#333', padding: '0.5rem 0.9375rem', borderRadius: '0.5rem', fontSize: '0.9rem', color: 'white' }}><span style={{ color: '#4ECDC4', fontWeight: 'bold' }}>{totalSelected}</span> selected</div>
-            <button
-              onClick={generateShareUrl}
-              style={{
-                padding: isMobile ? '0.5rem 0.75rem' : '0.75rem 1.25rem',
-                background: '#333',
-                color: 'white',
-                border: 'none',
-                borderRadius: '0.5rem',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                fontSize: isMobile ? '0.8rem' : '0.9rem',
-                minHeight: '2.75rem'
-              }}
-            >
-              SHARE
-            </button>
-            <button
-              onClick={exportSelected}
-              style={{
-                padding: isMobile ? '0.5rem 0.9375rem' : '0.75rem 1.5625rem',
-                background: '#4ECDC4',
-                color: '#2D3436',
-                border: 'none',
-                borderRadius: '0.5rem',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                fontSize: isMobile ? '0.8rem' : '0.9rem',
-                minHeight: '2.75rem'
-              }}
-            >
-              {isMobile ? 'SAVE' : 'SAVE iconsData.json'}
-            </button>
-        </div>
-      </div>
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
-        <div style={{ width: '17.5rem', height: '100%', overflowY: 'auto', background: 'white', borderRight: '0.0625rem solid #ddd', padding: '1.25rem 0.75rem', display: 'flex', flexDirection: 'column', gap: '0.125rem', position: isMobile ? 'absolute' : 'relative', zIndex: 100, left: 0, top: 0, transform: showSidebar ? 'translateX(0)' : (isMobile ? 'translateX(-100%)' : 'translateX(0)'), transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)', boxShadow: isMobile && showSidebar ? '0.25rem 0 0.9375rem rgba(0,0,0,0.1)' : 'none' }}>
-          <div style={{ padding: '0 0.9375rem 0.9375rem 0.9375rem' }}>
-            <div style={{ fontSize: '0.7rem', color: '#999', fontWeight: 'bold', marginBottom: '0.75rem' }}>CATEGORIES</div>
-            <div style={{ position: 'relative' }}><input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} style={{ width: '100%', padding: '0.5rem 1.875rem', borderRadius: '0.375rem', border: '0.0625rem solid #ddd' }} /><span style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)' }}>🔍</span></div>
-          </div>
-          {!searchQuery && categories.map(cat => ( <button key={cat} onClick={() => { setActiveCategory(cat); if (isMobile) setShowSidebar(false); }} style={{ textAlign: 'left', padding: '0.75rem 0.9375rem', borderRadius: '0.375rem', border: 'none', background: activeCategory === cat ? '#f0f7ff' : 'transparent', color: activeCategory === cat ? '#007AFF' : '#555', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: '2.75rem' }}><span>{cat}</span>                {selectedEmojis[cat]?.length > 0 && (
-                  <span style={{ 
-                    background: '#4ECDC4',
-                    color: '#2D3436',
-                    width: '1.25rem',
-                    height: '1.25rem',
-                    borderRadius: '50%',
-                    fontSize: '0.7rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    {selectedEmojis[cat].length}
-                  </span>
-                )}</button> ))}
-        </div>
-        {isMobile && showSidebar && <div onClick={() => setShowSidebar(false)} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', zIndex: 90, backdropFilter: 'blur(2px)' }}/>} 
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#f8f9fa' }}>
-          <div style={{ padding: isMobile ? '0.9375rem' : '1.25rem 1.875rem', background: 'white', borderBottom: '0.0625rem solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: '4.375rem' }}>
-            <h2 style={{ margin: 0, fontSize: isMobile ? '1rem' : '1.1rem' }}>{searchQuery ? `Search results for &quot;${searchQuery}&quot;` : activeCategory}</h2>
-            {!searchQuery && <div style={{ display: 'flex', gap: '0.75rem' }}><button onClick={() => { const all = (groupedEmojiData[activeCategory] || []).map(i => i.emoji); setSelectedEmojis(prev => ({ ...prev, [activeCategory]: all })); }} style={{ padding: '0.375rem 0.75rem', background: '#f0f2f5', border: '0.0625rem solid #ddd', borderRadius: '0.375rem', fontSize: '0.8rem', cursor: 'pointer', minHeight: '2.75rem' }}>Select All</button></div>}
-          </div>
-          <div ref={gridRef} onScroll={handleScroll} style={{ flex: 1, overflowY: 'auto', padding: isMobile ? '0.9375rem' : '1.875rem' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(auto-fill, minmax(5.3125rem, 1fr))' : 'repeat(auto-fill, minmax(8.125rem, 1fr))', gap: isMobile ? '0.75rem' : '1.25rem' }}>
-              {(filteredEmojis || []).slice(0, visibleCount).map((item, idx) => {
-                const sel = getSelectedInGroup(activeCategory, item); const isChecked = !!sel; const disp = sel || item.emoji;
-                const meta = emojiMetadata[disp] || {};
-                const bgColor = meta.backgroundColor || 'white';
-                const textColor = meta.wordClass ? (meta.wordClass === 'noun' ? '#2D3436' : '#FFFFFF') : '#333';
-                const isTarg = guideMode && (CORE_VOCABULARY.includes(item.name.toLowerCase()));
-                return (
-                  <button 
-                    key={`${item.emoji}-${idx}`} 
-                    onPointerDown={(e) => handlePointerDown(e, item.emoji)}
-                    onPointerMove={(e) => handlePointerMove(e, item.emoji)}
-                    onMouseDown={(e) => handleStart(e, item)} 
-                    onMouseUp={handleCleanup} 
-                    onMouseLeave={handleCleanup} 
-                    onPointerUp={() => {
-                      if (cancellingEmoji === item.emoji) {
-                        setCancellingEmoji(null);
-                        return;
-                      }
-                      handleEmojiAction(activeCategory, item);
-                    }}
-                    style={{ 
-                      padding: '0.9375rem', 
-                      borderRadius: '0.75rem', 
-                      border: 'none', 
-                      background: bgColor, 
-                      boxShadow: isTarg ? '0 0 0.9375rem #FFD700' : '0 0.125rem 0.375rem rgba(0,0,0,0.05)', 
-                      cursor: 'pointer', 
-                      display: 'flex', 
-                      flexDirection: 'column', 
-                      alignItems: 'center', 
-                      gap: '0.75rem', 
-                      position: 'relative', 
-                      transition: 'transform 0.1s active' 
-                    }}
-                  >
-                    {cancellingEmoji === item.emoji && (
-                      <div style={{
-                        position: 'absolute',
-                        inset: 0,
-                        background: 'rgba(255, 59, 48, 0.8)',
-                        color: 'white',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '0.75rem',
-                        fontWeight: 'bold',
-                        zIndex: 10,
-                        borderRadius: 'inherit',
-                        backdropFilter: 'blur(4px)'
-                      }}>
-                        CANCEL
-                      </div>
-                    )}
-                                        {item.isPhrase ? (
-                                          <div style={{ display: 'flex', gap: '0.125rem', background: '#fff', padding: '0.3125rem', borderRadius: '0.5rem', border: '0.0625rem solid #eee' }}>
-                                            {(item.phraseIcons || [item.emoji]).map((ic, i) => (
-                                              <span key={i} style={{ fontSize: item.phraseIcons?.length > 1 ? '1.5rem' : '2.5rem' }}>{ic}</span>
-                                            ))}
-                                          </div>
-                                        ) : item.image ? (
-                                          <img src={item.image} alt={item.name} style={{ width: '3rem', height: '3rem', objectFit: item.image.includes('/images/memojis/') ? 'contain' : 'cover' }} />
-                                        ) : (
-                                          <span style={{ fontSize: '2.5rem' }}>{disp}</span>
-                                        )}
-                                        <span style={{ fontSize: '0.8rem', color: textColor, fontWeight: (meta.wordClass || item.isPhrase) ? 'bold' : 'normal' }}>{meta.label || item.name}</span>
-                                      
-                                        {isChecked && (
-                                          <div 
-                                            aria-hidden="true"
-                                            style={{
-                                              position: 'absolute',
-                                              top: '-10px',
-                                              right: '-10px',
-                                              background: '#4ECDC4',
-                                              color: '#2D3436',
-                                              width: '28px',
-                                              height: '28px',
-                                              borderRadius: '50%',
-                                              fontSize: '14px',
-                                              display: 'flex',
-                                              alignItems: 'center',
-                                              justifyContent: 'center',
-                                              boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-                                              border: '2px solid white'
-                                            }}
-                                          >
-                                            ✓
-                                          </div>
-                                        )}
-                    
-                    {isChecked && <div onClick={(e) => { e.stopPropagation(); openEditModal(item, disp); }} style={{ position: 'absolute', top: '5px', left: '5px', background: 'white', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>✏️</div>}
-                  </button>
-                );
-              })}
+
+      <IonHeader>
+        <IonToolbar>
+          <IonButtons slot="start">
+            {isMobile && (
+              <IonButton onClick={() => setShowSidebar(!showSidebar)}>
+                <IonIcon icon={menuOutline} />
+              </IonButton>
+            )}
+            <IonTitle>
+              <span style={{ fontSize: '1.2rem', marginRight: '8px' }}> Kiwi </span>
+              {!isMobile && "Library Builder"}
+            </IonTitle>
+          </IonButtons>
+
+          <IonButtons slot="end">
+            <div style={{ display: 'flex', alignItems: 'center', marginRight: '10px' }}>
+              <IonLabel style={{ fontSize: '0.8rem', marginRight: '5px' }}>Core Only</IonLabel>
+              <IonToggle
+                checked={showCoreOnly}
+                onIonChange={(e) => setShowCoreOnly(e.detail.checked)}
+              />
             </div>
+
+            <IonButton onClick={() => setShowToolsMenu(!showToolsMenu)}>
+              Tools <IonIcon icon={optionsOutline} slot="end" />
+            </IonButton>
+
+            {showToolsMenu && (
+              <IonModal
+                isOpen={showToolsMenu}
+                onDidDismiss={() => setShowToolsMenu(false)}
+                className="tools-popover"
+                style={{ '--width': '220px', '--height': 'auto', '--border-radius': '12px' }}
+                breakpoints={[0, 1]}
+                initialBreakpoint={1}
+              >
+                <IonContent className="ion-padding">
+                  <IonList lines="none">
+                    <IonItem button onClick={() => { setShowSmartImport(true); setShowToolsMenu(false); }}>
+                      <IonIcon icon={checkmarkOutline} slot="start" />
+                      <IonLabel>Bulk Import</IonLabel>
+                    </IonItem>
+                    <IonItem button onClick={() => { setShowPhraseCreator(true); setShowToolsMenu(false); }}>
+                      <IonIcon icon={sparklesOutline} slot="start" />
+                      <IonLabel>GLP Phrase Creator</IonLabel>
+                    </IonItem>
+                    <IonItem button onClick={() => { setShowTemplates(true); setShowToolsMenu(false); }}>
+                      <IonIcon icon={bookOutline} slot="start" />
+                      <IonLabel>Templates</IonLabel>
+                    </IonItem>
+                    <IonItem button onClick={() => { setShowImageSearch(true); setShowToolsMenu(false); }}>
+                      <IonIcon icon={cameraOutline} slot="start" />
+                      <IonLabel>Add Custom</IonLabel>
+                    </IonItem>
+                    <IonItem button onClick={() => { setSequenceMode(!sequenceMode); setShowToolsMenu(false); }}>
+                      <IonIcon icon={sparklesOutline} slot="start" />
+                      <IonLabel>{sequenceMode ? 'Finish Sequence' : 'Builder Mode'}</IonLabel>
+                    </IonItem>
+                    <IonItem button onClick={() => { setGuideMode(!guideMode); setShowToolsMenu(false); }}>
+                      <IonIcon icon={analyticsOutline} slot="start" />
+                      <IonLabel>{guideMode ? 'Stop Guide' : 'Guide Mode'}</IonLabel>
+                    </IonItem>
+                  </IonList>
+                </IonContent>
+              </IonModal>
+            )}
+
+            <div className="ion-hide-sm-down" style={{
+              background: 'var(--ion-color-light)',
+              padding: '4px 12px',
+              borderRadius: '20px',
+              fontSize: '0.85rem',
+              margin: '0 10px'
+            }}>
+              <IonText color="primary" style={{ fontWeight: 'bold' }}>{totalSelected}</IonText> selected
+            </div>
+
+            <IonButton onClick={generateShareUrl}>
+              <IonIcon icon={shareOutline} slot="icon-only" />
+            </IonButton>
+
+            <IonButton fill="solid" color="primary" onClick={exportSelected} style={{ fontWeight: 'bold' }}>
+              {isMobile ? 'SAVE' : 'EXPORT'}
+            </IonButton>
+          </IonButtons>
+        </IonToolbar>
+      </IonHeader>
+
+      <IonContent>
+        <IonSplitPane contentId="main" when="md">
+          <IonMenu contentId="main" type="overlay" side="start">
+            <IonHeader>
+              <IonToolbar>
+                <IonTitle>Categories</IonTitle>
+              </IonToolbar>
+              <IonToolbar>
+                <IonSearchbar
+                  value={searchQuery}
+                  onIonInput={(e) => setSearchQuery(e.detail.value)}
+                  placeholder="Search icons..."
+                />
+              </IonToolbar>
+            </IonHeader>
+            <IonContent>
+              <IonList>
+                {!searchQuery && categories.map(cat => (
+                  <IonItem
+                    key={cat}
+                    button
+                    onClick={() => { setActiveCategory(cat); if (isMobile) setShowSidebar(false); }}
+                    color={activeCategory === cat ? 'primary' : ''}
+                  >
+                    <IonLabel>{cat}</IonLabel>
+                    {selectedEmojis[cat]?.length > 0 && (
+                      <IonNote slot="end" color="primary" style={{ fontWeight: 'bold' }}>
+                        {selectedEmojis[cat].length}
+                      </IonNote>
+                    )}
+                  </IonItem>
+                ))}
+              </IonList>
+            </IonContent>
+          </IonMenu>
+
+          <div id="main" className="ion-page">
+            <IonHeader>
+              <IonToolbar>
+                <IonTitle size="small">
+                  {searchQuery ? `Results for "${searchQuery}"` : activeCategory}
+                </IonTitle>
+                {!searchQuery && (
+                  <IonButtons slot="end">
+                    <IonButton onClick={() => { const all = (groupedEmojiData[activeCategory] || []).map(i => i.emoji); setSelectedEmojis(prev => ({ ...prev, [activeCategory]: all })); }}>
+                      Select All
+                    </IonButton>
+                  </IonButtons>
+                )}
+              </IonToolbar>
+            </IonHeader>
+            <IonContent ref={gridRef} onIonScroll={handleScroll} scrollEvents={true}>
+
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(auto-fill, minmax(5.3125rem, 1fr))' : 'repeat(auto-fill, minmax(8.125rem, 1fr))', gap: isMobile ? '0.75rem' : '1.25rem' }}>
+                {(filteredEmojis || []).slice(0, visibleCount).map((item, idx) => {
+                  const sel = getSelectedInGroup(activeCategory, item); const isChecked = !!sel; const disp = sel || item.emoji;
+                  const meta = emojiMetadata[disp] || {};
+                  const bgColor = meta.backgroundColor || 'white';
+                  const textColor = meta.wordClass ? (meta.wordClass === 'noun' ? '#2D3436' : '#FFFFFF') : '#333';
+                  const isTarg = guideMode && (CORE_VOCABULARY.includes(item.name.toLowerCase()));
+                  return (
+                    <button
+                      key={`${item.emoji}-${idx}`}
+                      onPointerDown={(e) => handlePointerDown(e, item.emoji)}
+                      onPointerMove={(e) => handlePointerMove(e, item.emoji)}
+                      onMouseDown={(e) => handleStart(e, item)}
+                      onMouseUp={handleCleanup}
+                      onMouseLeave={handleCleanup}
+                      onPointerUp={() => {
+                        if (cancellingEmoji === item.emoji) {
+                          setCancellingEmoji(null);
+                          return;
+                        }
+                        handleEmojiAction(activeCategory, item);
+                      }}
+                      style={{
+                        padding: '0.9375rem',
+                        borderRadius: '0.75rem',
+                        border: 'none',
+                        background: bgColor,
+                        boxShadow: isTarg ? '0 0 0.9375rem #FFD700' : '0 0.125rem 0.375rem rgba(0,0,0,0.05)',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '0.75rem',
+                        position: 'relative',
+                        transition: 'transform 0.1s active'
+                      }}
+                    >
+                      {cancellingEmoji === item.emoji && (
+                        <div style={{
+                          position: 'absolute',
+                          inset: 0,
+                          background: 'rgba(255, 59, 48, 0.8)',
+                          color: 'white',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '0.75rem',
+                          fontWeight: 'bold',
+                          zIndex: 10,
+                          borderRadius: 'inherit',
+                          backdropFilter: 'blur(4px)'
+                        }}>
+                          CANCEL
+                        </div>
+                      )}
+                      {item.isPhrase ? (
+                        <div style={{ display: 'flex', gap: '0.125rem', background: '#fff', padding: '0.3125rem', borderRadius: '0.5rem', border: '0.0625rem solid #eee' }}>
+                          {(item.phraseIcons || [item.emoji]).map((ic, i) => (
+                            <span key={i} style={{ fontSize: (item.phraseIcons?.length || 1) > 1 ? '1.5rem' : '2.5rem' }}>{ic}</span>
+                          ))}
+                        </div>
+                      ) : item.image ? (
+                        <img src={item.image} alt={item.name} style={{ width: '3rem', height: '3rem', objectFit: item.image.includes('/images/memojis/') ? 'contain' : 'cover' }} />
+                      ) : (
+                        <span style={{ fontSize: '2.5rem' }}>{disp}</span>
+                      )}
+                      <span style={{ fontSize: '0.8rem', color: textColor, fontWeight: (meta.wordClass || item.isPhrase) ? 'bold' : 'normal' }}>{meta.label || item.name}</span>
+
+                      {isChecked && (
+                        <div
+                          aria-hidden="true"
+                          style={{
+                            position: 'absolute',
+                            top: '-10px',
+                            right: '-10px',
+                            background: '#4ECDC4',
+                            color: '#2D3436',
+                            width: '28px',
+                            height: '28px',
+                            borderRadius: '50%',
+                            fontSize: '14px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                            border: '2px solid white'
+                          }}
+                        >
+                          ✓
+                        </div>
+                      )}
+
+                      {isChecked && <div onClick={(e) => { e.stopPropagation(); openEditModal(item, disp); }} style={{ position: 'absolute', top: '5px', left: '5px', background: 'white', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>✏️</div>}
+                    </button>
+                  );
+                })}
+              </div>
+            </IonContent>
           </div>
-        </div>
-      </div>
+        </IonSplitPane>
+      </IonContent>
+
       {sequenceMode && (
-          <div style={{ position: 'fixed', bottom: 0, left: 0, width: '100%', background: 'white', borderTop: '1px solid #ddd', padding: '15px', zIndex: 5000, display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontWeight: 'bold' }}>Schedule Builder ({sequence.length} steps)</span><button onClick={() => setSequence([])}>Clear</button></div>
-              <div style={{ display: 'flex', gap: '10px', overflowX: 'auto' }}>{sequence.map((s, i) => <div key={i} style={{ minWidth: '60px', textAlign: 'center' }}><span>{s.emoji}</span><div style={{ fontSize: '0.6rem' }}>{s.name}</div></div>)}</div>
-          </div>
+        <div style={{ position: 'fixed', bottom: 0, left: 0, width: '100%', background: 'white', borderTop: '1px solid #ddd', padding: '15px', zIndex: 5000, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontWeight: 'bold' }}>Schedule Builder ({sequence.length} steps)</span><button onClick={() => setSequence([])}>Clear</button></div>
+          <div style={{ display: 'flex', gap: '10px', overflowX: 'auto' }}>{sequence.map((s, i) => <div key={i} style={{ minWidth: '60px', textAlign: 'center' }}><span>{s.emoji}</span><div style={{ fontSize: '0.6rem' }}>{s.name}</div></div>)}</div>
+        </div>
       )}
       {pickerTarget && (
-          <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 10000 }} onClick={() => setPickerTarget(null)}>
-              <div style={{ position: 'absolute', top: pickerTarget.y - 100, left: pickerTarget.x - 100, background: 'white', padding: '10px', borderRadius: '12px', boxShadow: '0 5px 20px rgba(0,0,0,0.2)', display: 'flex', gap: '10px' }} onClick={e => e.stopPropagation()}> 
-                  <button onClick={() => { toggleEmoji(pickerTarget.category, pickerTarget.item.emoji, pickerTarget.item); setPickerTarget(null); }}>{pickerTarget.item.emoji}</button>
-                  {pickerTarget.item.variations.map((v, i) => <button key={i} onClick={() => { toggleEmoji(pickerTarget.category, v.emoji, pickerTarget.item); setPickerTarget(null); }}>{v.emoji}</button>)}
-              </div>
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 10000 }} onClick={() => setPickerTarget(null)}>
+          <div style={{ position: 'absolute', top: pickerTarget.y - 100, left: pickerTarget.x - 100, background: 'white', padding: '10px', borderRadius: '12px', boxShadow: '0 5px 20px rgba(0,0,0,0.2)', display: 'flex', gap: '10px' }} onClick={e => e.stopPropagation()}>
+            <button onClick={() => { toggleEmoji(pickerTarget.category, pickerTarget.item.emoji, pickerTarget.item); setPickerTarget(null); }}>{pickerTarget.item.emoji}</button>
+            {pickerTarget.item.variations.map((v, i) => <button key={i} onClick={() => { toggleEmoji(pickerTarget.category, v.emoji, pickerTarget.item); setPickerTarget(null); }}>{v.emoji}</button>)}
           </div>
+        </div>
       )}
-      {showVisualSceneCreator && ( 
-        <VisualSceneCreator 
+
+      {/* Bulk Import Modal */}
+      <IonModal isOpen={showSmartImport} onDidDismiss={() => setShowSmartImport(false)}>
+        <IonHeader>
+          <IonToolbar>
+            <IonTitle>Bulk Import</IonTitle>
+            <IonButtons slot="end">
+              <IonButton onClick={() => setShowSmartImport(false)}>
+                <IonIcon icon={closeOutline} />
+              </IonButton>
+            </IonButtons>
+          </IonToolbar>
+        </IonHeader>
+        <IonContent className="ion-padding">
+          <IonText color="medium">
+            <p>Paste a comma-separated list of items to bulk select them.</p>
+          </IonText>
+          <div style={{ margin: '1rem 0' }}>
+            <textarea
+              value={bulkInput}
+              onChange={(e) => setBulkInput(e.target.value)}
+              placeholder="e.g. apple, banana, car, ball"
+              style={{
+                width: '100%',
+                height: '150px',
+                padding: '12px',
+                borderRadius: '8px',
+                border: '1px solid var(--ion-color-light-shade)',
+                fontSize: '1rem'
+              }}
+            />
+          </div>
+          <IonButton expand="block" onClick={handleBulkImport}>Import List</IonButton>
+        </IonContent>
+      </IonModal>
+
+      {/* GLP Phrase Creator Modal */}
+      <IonModal isOpen={showPhraseCreator} onDidDismiss={() => setShowPhraseCreator(false)}>
+        <IonHeader>
+          <IonToolbar>
+            <IonTitle>GLP Phrase Creator</IonTitle>
+            <IonButtons slot="end">
+              <IonButton onClick={() => { setShowPhraseCreator(false); setPhraseIcons([]); setPhraseName(''); }}>
+                <IonIcon icon={closeOutline} />
+              </IonButton>
+            </IonButtons>
+          </IonToolbar>
+        </IonHeader>
+        <IonContent className="ion-padding">
+          <IonList>
+            <IonItem>
+              <IonLabel position="stacked">Phrase Name</IonLabel>
+              <IonInput
+                value={phraseName}
+                onIonInput={(e) => setPhraseName(e.detail.value)}
+                placeholder="e.g. I want to play"
+              />
+            </IonItem>
+          </IonList>
+
+          <div style={{ margin: '1.5rem 0' }}>
+            <IonLabel style={{ fontWeight: 'bold' }}>Storyboard Icons (Max 3)</IonLabel>
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '10px',
+              minHeight: '80px',
+              background: 'var(--ion-color-light)',
+              borderRadius: '12px',
+              padding: '12px',
+              marginTop: '8px',
+              border: '2px dashed var(--ion-color-light-shade)',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}>
+              {phraseIcons.map((icon, i) => (
+                <div key={i} onClick={() => setPhraseIcons(prev => prev.filter((_, idx) => idx !== i))} style={{
+                  width: '60px',
+                  height: '60px',
+                  background: 'white',
+                  borderRadius: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '2rem',
+                  position: 'relative',
+                  boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+                  cursor: 'pointer'
+                }}>
+                  {icon}
+                  <div style={{
+                    position: 'absolute',
+                    top: '-5px',
+                    right: '-5px',
+                    background: 'var(--ion-color-danger)',
+                    color: 'white',
+                    width: '20px',
+                    height: '20px',
+                    fontSize: '12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: '50%',
+                    fontWeight: 'bold'
+                  }}>✕</div>
+                </div>
+              ))}
+              {phraseIcons.length === 0 && (
+                <div style={{ color: 'var(--ion-color-medium)', fontSize: '0.9rem' }}>
+                  Tap icons in the library grid to add...
+                </div>
+              )}
+            </div>
+          </div>
+
+          <IonButton expand="block" size="large" onClick={savePhrase} disabled={!phraseName || phraseIcons.length === 0}>
+            Save Phrase Group
+          </IonButton>
+        </IonContent>
+      </IonModal>
+
+      {/* Templates Modal */}
+      <IonModal isOpen={showTemplates} onDidDismiss={() => setShowTemplates(false)}>
+        <IonHeader>
+          <IonToolbar>
+            <IonTitle>Templates</IonTitle>
+            <IonButtons slot="end">
+              <IonButton onClick={() => setShowTemplates(false)}>
+                <IonIcon icon={closeOutline} />
+              </IonButton>
+            </IonButtons>
+          </IonToolbar>
+        </IonHeader>
+        <IonContent>
+          <IonList>
+            <IonListHeader>
+              <IonLabel>Quick Starts</IonLabel>
+            </IonListHeader>
+            {Object.keys(TEMPLATES).map(name => (
+              <IonItem button key={name} onClick={() => { applyTemplate(TEMPLATES[name]); setShowTemplates(false); }}>
+                <IonLabel>{name}</IonLabel>
+                <IonNote slot="end">Select items</IonNote>
+              </IonItem>
+            ))}
+          </IonList>
+        </IonContent>
+      </IonModal>
+
+      {/* Image Search Modal (Legacy Custom Item Logic) */}
+      <IonModal isOpen={showImageSearch} onDidDismiss={() => setShowImageSearch(false)}>
+        <IonHeader>
+          <IonToolbar>
+            <IonTitle>Add Custom</IonTitle>
+            <IonButtons slot="end">
+              <IonButton onClick={() => setShowImageSearch(false)}>
+                <IonIcon icon={closeOutline} />
+              </IonButton>
+            </IonButtons>
+          </IonToolbar>
+        </IonHeader>
+        <IonContent className="ion-padding">
+          <IonList>
+            <IonItem>
+              <IonLabel position="stacked">Item Label</IonLabel>
+              <IonInput
+                value={customLabel}
+                onIonInput={(e) => setCustomLabel(e.detail.value)}
+                placeholder="e.g. My Favorite Toy"
+              />
+            </IonItem>
+          </IonList>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginTop: '1.5rem' }}>
+            <IonButton fill="outline" onClick={() => handleGetPhoto(CameraSource.Camera)}>
+              <IonIcon icon={cameraOutline} slot="start" />
+              Camera
+            </IonButton>
+            <IonButton fill="outline" onClick={() => { setShowImageSearch(false); setShowMemojiPicker(true); }}>
+              <IonIcon icon={sparklesOutline} slot="start" />
+              Avatar
+            </IonButton>
+          </div>
+
+          <div style={{ marginTop: '20px', textAlign: 'center' }}>
+            {customImage && (
+              <div style={{ position: 'relative', display: 'inline-block' }}>
+                <img src={customImage} alt="Preview" style={{ maxWidth: '150px', borderRadius: '12px' }} />
+                <IonButton color="danger" size="small" style={{ position: 'absolute', top: 0, right: 0 }} onClick={() => setCustomImage(null)}>
+                  <IonIcon icon={closeOutline} />
+                </IonButton>
+              </div>
+            )}
+          </div>
+
+          <IonButton expand="block" style={{ marginTop: '2rem' }} onClick={createCustomItem} disabled={!customLabel || !customImage}>
+            Add to Library
+          </IonButton>
+        </IonContent>
+      </IonModal>
+
+      {showMemojiPicker && <MemojiPicker onSelect={(u) => { setCustomImage(u); setShowMemojiPicker(false); }} onClose={() => setShowMemojiPicker(false)} />}
+      {showShareModal && (
+        <IonModal isOpen={showShareModal} onDidDismiss={() => setShowShareModal(false)}>
+          <IonHeader>
+            <IonToolbar>
+              <IonTitle>Share Board</IonTitle>
+              <IonButtons slot="end">
+                <IonButton onClick={() => setShowShareModal(false)}>Close</IonButton>
+              </IonButtons>
+            </IonToolbar>
+          </IonHeader>
+          <IonContent className="ion-padding ion-text-center">
+            <IonText color="dark">
+              <h2>Scan to Download</h2>
+            </IonText>
+            <div style={{ padding: '2rem', background: 'white', display: 'inline-block', borderRadius: '1rem', marginTop: '1rem', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }}>
+              <QRCodeCanvas value={shareUrl} size={256} />
+            </div>
+            <p style={{ marginTop: '1.5rem', fontSize: '0.95rem', color: 'var(--ion-color-medium)' }}>
+              Scan this QR code from another device with Kiwi installed to import this board configuration.
+            </p>
+          </IonContent>
+        </IonModal>
+      )}
+
+      {showVisualSceneCreator && (
+        <VisualSceneCreator
           onClose={() => setShowVisualSceneCreator(false)}
           onSave={(newScene) => {
             setCustomItems(prev => [newScene, ...prev]);
@@ -589,78 +915,22 @@ const EmojiCurator = () => {
           }}
         />
       )}
-      {showPhraseCreator && ( 
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', zIndex: 10005, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}> 
-          <div style={{ background: 'white', padding: '25px', borderRadius: '24px', width: '90%', maxWidth: '450px', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}> 
-            <h3 style={{ marginTop: 0 }}>Create Phrase Script (GLP)</h3> 
-            <p style={{ fontSize: '0.8rem', color: '#666', marginBottom: '15px' }}>Build a storyboard visual for a full phrase or script.</p>
-            
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', fontSize: '0.8rem', color: '#666', marginBottom: '5px' }}>Phrase / Script Name</label>
-              <input id="ph-txt" placeholder="e.g., Let&apos;s go to the park" style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #ddd' }} /> 
-            </div>
-
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', fontSize: '0.8rem', color: '#666', marginBottom: '5px' }}>Storyboard Icons (Max 3)</label>
-              <div style={{ display: 'flex', gap: '10px', background: '#f8f9fa', padding: '15px', borderRadius: '12px', justifyContent: 'center', minHeight: '70px', alignItems: 'center' }}>
-                {phraseIcons.map((ic, i) => (
-                  <div key={i} onClick={() => setPhraseIcons(phraseIcons.filter((_, idx) => idx !== i))} style={{ fontSize: '2rem', cursor: 'pointer', background: 'white', padding: '5px', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>{ic}</div>
-                ))}
-                {phraseIcons.length < 3 && <div style={{ fontSize: '0.8rem', color: '#999' }}>Tap icons in the background grid to add...</div>}
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button style={{ flex: 1, padding: '12px', background: '#eee', border: 'none', borderRadius: '10px', fontWeight: 'bold' }} onClick={() => { setShowPhraseCreator(false); setPhraseIcons([]); }}>Cancel</button> 
-              <button style={{ flex: 1, padding: '12px', background: '#4ECDC4', color: '#2D3436', border: 'none', borderRadius: '10px', fontWeight: 'bold' }} onClick={() => { 
-                const t = document.getElementById('ph-txt').value; 
-                if (t && phraseIcons.length > 0) { 
-                  const newItem = { id: `ph-${new Date().getTime()}`, name: t, category: activeCategory, emoji: phraseIcons[0], phraseIcons: phraseIcons, isPhrase: true };
-                  setCustomItems(prev => [...prev, newItem]); 
-                  toggleEmoji(activeCategory, newItem.emoji, newItem);
-                  setShowPhraseCreator(false); 
-                  setPhraseIcons([]);
-                } else {
-                  alert("Please enter a name and select at least one icon.");
-                }
-              }}>Create Phrase</button> 
-            </div>
-          </div> 
-        </div> 
       )}
-      {showSmartImport && ( <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', zIndex: 10004, display: 'flex', alignItems: 'center', justifyContent: 'center' }}> <div style={{ background: 'white', padding: '20px', borderRadius: '16px', width: '90%', maxWidth: '400px' }}> <h3>Smart Import</h3> <p style={{ fontSize: '0.8rem', color: '#666', marginBottom: '15px' }}>Enter words separated by commas or new lines. We&apos;ll auto-tag them with Fitzgerald colors.</p> <textarea id="sm-imp" placeholder="apple, want, happy..." style={{ width: '100%', height: '120px', padding: '10px', borderRadius: '8px', border: '1px solid #ddd', marginBottom: '15px', fontFamily: 'inherit' }} /> <div style={{ display: 'flex', gap: '10px' }}> <button style={{ flex: 1, padding: '12px', background: '#eee', border: 'none', borderRadius: '8px', fontWeight: 'bold' }} onClick={() => setShowSmartImport(false)}>Cancel</button> <button style={{ flex: 1, padding: '12px', background: '#4ECDC4', color: '#2D3436', border: 'none', borderRadius: '8px', fontWeight: 'bold' }} onClick={() => { const t = document.getElementById('sm-imp').value; if (t) { const words = t.split(/[\n,]+/).map(s => s.trim()).filter(Boolean); words.forEach(w => { const m = allEmojisFlat.find(e => e.name.toLowerCase() === w.toLowerCase()) || allEmojisFlat.find(e => e.name.toLowerCase().includes(w.toLowerCase())); if (m) { const lexiconEntry = AAC_LEXICON[w.toLowerCase()] || AAC_LEXICON[m.name.toLowerCase()]; if (lexiconEntry) { setEmojiMetadata(prev => ({ ...prev, [m.emoji]: { label: m.name, wordClass: lexiconEntry.type, backgroundColor: getFitzgeraldColor(lexiconEntry.type), skill: 'none' } })); } toggleEmoji(m.category, m.emoji, m); } }); setShowSmartImport(false); triggerHaptic('success'); } }}>Import</button> </div> </div> </div> )}
-      {showMemojiPicker && <MemojiPicker onClose={() => setShowMemojiPicker(false)} onSelect={(u, c) => { const i = { id: `av-${new Date().getTime()}`, name: c.name, category: 'My People', image: u, emoji: `av-${new Date().getTime()}` }; setCustomItems(prev => [i, ...prev]); toggleEmoji('My People', i.emoji, i); setShowMemojiPicker(false); }} />} 
-      {showImageSearch && ( <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', zIndex: 10003, display: 'flex', alignItems: 'center', justifyContent: 'center' }}> <div style={{ background: 'white', padding: '20px', borderRadius: '16px' }}>                   <div style={{ marginBottom: '20px', padding: '15px', background: '#f9f9f9', borderRadius: '10px', textAlign: 'center' }}><p style={{ margin: '0 0 15px 0', fontWeight: 'bold' }}>Add from Device</p><div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}><button onClick={() => handleGetPhoto(CameraSource.Camera)} style={{ padding: '15px', background: '#007AFF', color: 'white', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.9rem' }}>📸 Take Photo</button><button onClick={() => handleGetPhoto(CameraSource.Photos)} style={{ padding: '15px', background: '#34C759', color: 'white', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.9rem' }}>🖼️ Library</button></div><div style={{ marginTop: '15px', display: 'flex', gap: '10px' }}><button onClick={() => { setShowImageSearch(false); setShowVisualSceneCreator(true); }} style={{ flex: 1, padding: '10px', background: '#5856D6', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem' }}>Create JIT Scene</button><button onClick={() => { setShowImageSearch(false); setShowMemojiPicker(true); }} style={{ flex: 1, padding: '10px', background: '#FF9500', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem' }}>Select Character</button></div></div>
-                  <div style={{ borderTop: '1px solid #ddd', paddingTop: '20px' }}><p style={{ margin: '0 0 15px 0', fontWeight: 'bold' }}>Previously Imported Photos</p><div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>{customItems.filter(i => i.image).map(item => ( <div key={item.id} onClick={() => { toggleEmoji(activeCategory, item.emoji, item); setShowImageSearch(false); }} style={{ cursor: 'pointer', textAlign: 'center' }}><img src={item.image} alt={item.name} style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', borderRadius: '8px' }} /><div style={{ fontSize: '0.6rem', marginTop: '4px', overflow: 'hidden', whiteSpace: 'nowrap' }}>{item.name}</div></div> ))}</div>{customItems.filter(i => i.image).length === 0 && <p style={{ fontSize: '0.8rem', color: '#999', textAlign: 'center' }}>No photos imported yet.</p>}</div>
-                  <button onClick={() => setShowImageSearch(false)} style={{ marginTop: '20px', padding: '10px', width: '100%', background: '#eee', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Cancel</button> </div> </div> )}
-      {showTemplates && ( <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', zIndex: 10001, display: 'flex', alignItems: 'center', justifyContent: 'center' }}> <div style={{ background: 'white', padding: '20px', borderRadius: '16px' }}> <h3>Templates</h3> {Object.keys(TEMPLATES).map(n => <button key={n} onClick={() => applyTemplate(n)}>{n}</button>)} <button onClick={() => setShowTemplates(false)}>Cancel</button> </div> </div> )}
-            {showShareModal && (
-              <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', zIndex: 10010, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
-                <div style={{ background: 'white', padding: '30px', borderRadius: '24px', width: '90%', maxWidth: '400px', textAlign: 'center', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
-                  <h3 style={{ marginTop: 0 }}>Share Board</h3>
-                  <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '20px' }}>Scan this QR code with another device to instantly import your board.</p>
-                  
-                  <div style={{ background: '#f8f9fa', padding: '20px', borderRadius: '16px', display: 'inline-block', marginBottom: '20px' }}>
-                    <QRCodeCanvas value={shareUrl} size={200} />
-                  </div>
-      
-                  <div style={{ marginBottom: '20px' }}>
-                    <input readOnly value={shareUrl} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.7rem', background: '#f9f9f9' }} />
-                    <button 
-                      onClick={() => { navigator.clipboard.writeText(shareUrl); alert("Link copied!"); }}
-                      style={{ marginTop: '10px', width: '100%', padding: '10px', background: '#007AFF', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}
-                    >
-                      Copy Link
-                    </button>
-                  </div>
-      
-                  <button onClick={() => setShowShareModal(false)} style={{ width: '100%', padding: '12px', background: '#eee', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>Close</button>
-                </div>
-              </div>
-            )}
-            {editingItem && ( <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', zIndex: 10002, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
-       <div style={{ background: 'white', padding: '25px', borderRadius: '20px', width: '90%', maxWidth: '400px', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}> <h3 style={{ marginTop: 0 }}>Edit {editingItem.emoji}</h3> <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}> <div> <label style={{ display: 'block', fontSize: '0.8rem', color: '#666', marginBottom: '5px' }}>Display Label</label> <input value={tempMeta.label} onChange={e => setTempMeta({...tempMeta, label: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }} /> </div> <div> <label style={{ display: 'block', fontSize: '0.8rem', color: '#666', marginBottom: '5px' }}>Word Class (Fitzgerald Key)</label> <select value={tempMeta.wordClass} onChange={e => { const wc = e.target.value; setTempMeta({...tempMeta, wordClass: wc, backgroundColor: getFitzgeraldColor(wc)}); }} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }}> <option value="noun">Noun (Yellow)</option> <option value="verb">Verb (Green)</option> <option value="adj">Adjective (Blue)</option> <option value="social">Social/Pronoun (Pink)</option> <option value="misc">Misc/Preposition (Orange)</option> <option value="none">None (White)</option> </select> </div> <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}> <button style={{ flex: 1, padding: '12px', background: '#eee', border: 'none', borderRadius: '8px', fontWeight: 'bold' }} onClick={() => setEditingItem(null)}>Cancel</button> <button style={{ flex: 1, padding: '12px', background: '#4ECDC4', color: '#2D3436', border: 'none', borderRadius: '8px', fontWeight: 'bold' }} onClick={() => { handleSaveMetadata(editingItem.emoji, tempMeta.label, tempMeta.wordClass, tempMeta.backgroundColor, tempMeta.skill); }}>Save</button> </div> </div> </div> </div> )}
-    </div>
+
+      {/* Global CSS for curator */}
+      <style>{`
+        .tools-popover {
+          --box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .emoji-item {
+          transition: transform 0.1s ease;
+        }
+        .emoji-item:active {
+          transform: scale(0.95);
+        }
+      `}</style>
+
+    </IonPage >
   );
 };
 

@@ -532,6 +532,7 @@ The following features are currently integrated with RevenueCat using the `premi
 | **Phase 28** | Advanced Motor Accessibility & Access Profiles | **PLANNED** |
 | **Phase 29** | Biometric Security (FaceID/TouchID) | **✅ COMPLETE** |
 | **Phase 30** | Physical Scaling for Motor Accessibility | **✅ COMPLETE** (Calibration UI pending) |
+| **Phase 31** | Ionic Framework Standardization | **PLANNED** |
 
 
 ---
@@ -2097,3 +2098,24 @@ function setIconPhysicalSize(mm) {
 ## End of PRD
 - Visual selection state with shadow effects and color changes
 - Responsive layout adapts to different screen sizes
+
+---
+
+### 20. Phase 31: Ionic Framework Standardization (New)
+
+> **Objective:** Standardize the application's UI using the Ionic Framework to ensure a high-quality, native-feeling, and accessible experience on iOS and Android.
+
+#### 20.1. Framework Adoption
+- [ ] **Ionic CLI:** Install and utilize the Ionic CLI (`@ionic/cli`) for generating components and managing the project.
+- [ ] **Component Library:** Systematically replace custom UI elements with standard [Ionic Components](https://ionicframework.com/docs/components) (e.g., `IonButton`, `IonModal`, `IonList`, `IonCard`).
+- [ ] **Design Consistency:** Leverage Ionic's utility classes and theming variables to enforce the brand guidelines (Section 9) consistently.
+
+#### 20.2. Component Audit & Migration
+- [ ] **Audit:** Conduct a comprehensive audit of existing components (`src/components`) to identify custom implementations that duplicate Ionic functionality.
+- [ ] **Migration Plan:** Prioritize the replacement of complex custom interactions (modals, sheets, lists) with their robust Ionic counterparts.
+- [ ] **Testing:** Verify that the standardized components maintain or improve upon the current accessibility and performance standards.
+
+#### 20.3. Benefits
+- **Native Look & Feel:** Automatic platform-specific styling (Material Design on Android, Cupertino on iOS).
+- **Reduced Maintenance:** Rely on maintained library code for complex UI behaviors (gestures, transitions).
+- **Accessibility:** Built-in accessibility features in Ionic components.

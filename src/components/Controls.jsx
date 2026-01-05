@@ -7,6 +7,50 @@ import { isHighQualityVoice, getVoicesReady, pickBestVoice } from '../utils/voic
 import { NativeBiometric } from 'capacitor-native-biometric';
 import { Capacitor } from '@capacitor/core';
 import { getMedia } from '../utils/db';
+import {
+    IonContent,
+    IonHeader,
+    IonToolbar,
+    IonButtons,
+    IonButton,
+    IonTitle,
+    IonSegment,
+    IonSegmentButton,
+    IonLabel,
+    IonList,
+    IonItem,
+    IonListHeader,
+    IonToggle,
+    IonIcon,
+    IonNote,
+    IonInput
+} from '@ionic/react';
+import {
+    colorPaletteOutline,
+    folderOutline,
+    accessibilityOutline,
+    gridOutline,
+    musicalNotesOutline,
+    globeOutline,
+    volumeHighOutline,
+    speedometerOutline,
+    trendingUpOutline,
+    statsChartOutline,
+    starOutline,
+    bulbOutline,
+    handRightOutline,
+    shieldCheckmarkOutline,
+    refreshOutline,
+    trashOutline,
+    saveOutline,
+    closeOutline,
+    personOutline,
+    chevronForwardOutline,
+    playOutline,
+    bookOutline,
+    listOutline,
+    colorWandOutline
+} from 'ionicons/icons';
 
 const HelperBackupRestore = lazy(() => import('./BackupRestore'));
 const FavoritesPickerModal = lazy(() => import('./FavoritesPickerModal'));
@@ -364,25 +408,21 @@ const Controls = ({
         }}>
             <div id="controls-content">
                 <div className="drag-handle"></div>
-                <div className="ios-sheet-header">
-                    <button
-                        className="ios-cancel-button"
-                        onClick={onToggleMenu}
-                        aria-label="Close Settings"
-                    >
-                        Close
-                    </button>
-                    <div className="ios-sheet-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <img src="/images/logo.png" alt="Logo" style={{ width: '24px', height: '24px', borderRadius: '6px' }} />
-                        <span>Adult Settings</span>
-                    </div>
-                    <button
-                        className="ios-done-button"
-                        onClick={onToggleMenu}
-                        aria-label="Save Settings"
-                    >
-                        Save
-                    </button>
+                <div className="ios-sheet-header" style={{ padding: 0, borderBottom: 'none' }}>
+                    <IonToolbar>
+                        <IonButtons slot="start">
+                            <IonButton onClick={onToggleMenu}>Close</IonButton>
+                        </IonButtons>
+                        <IonTitle>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                                <img src="/images/logo.png" alt="Logo" style={{ width: '24px', height: '24px', borderRadius: '6px' }} />
+                                <span>Adult Settings</span>
+                            </div>
+                        </IonTitle>
+                        <IonButtons slot="end">
+                            <IonButton onClick={onToggleMenu} strong={true}>Save</IonButton>
+                        </IonButtons>
+                    </IonToolbar>
                 </div>
 
                 {/* Edit Panel */}
@@ -404,24 +444,16 @@ const Controls = ({
                         )}
                     </div>
 
-                    {/* Segmented Tab Control */}
-                    <div className="ios-segmented-control settings-tabs">
-                        <div
-                            className="selection-pill"
-                            style={{
-                                width: `calc(${100 / tabs.length}% - 0.25rem)`,
-                                transform: `translateX(${activeTabIndex * 100}%)`
-                            }}
-                        />
-                        {tabs.map(tab => (
-                            <button
-                                key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
-                                className={activeTab === tab.id ? 'active' : ''}
-                            >
-                                <span className="seg-label" style={{ fontSize: '1.1rem', fontWeight: 800 }}>{tab.label}</span>
-                            </button>
-                        ))}
+
+                    {/* Ionic Segmented Tab Control */}
+                    <div style={{ padding: '0 1rem 1rem 1rem' }}>
+                        <IonSegment value={activeTab} onIonChange={e => setActiveTab(e.detail.value)}>
+                            {tabs.map(tab => (
+                                <IonSegmentButton key={tab.id} value={tab.id}>
+                                    <IonLabel>{tab.label}</IonLabel>
+                                </IonSegmentButton>
+                            ))}
+                        </IonSegment>
                     </div>
 
                     {/* Basic Tab */}
@@ -429,10 +461,11 @@ const Controls = ({
                         <div style={{ background: '#F2F2F7', margin: '0 -1.5rem', padding: '0 1.5rem 1.5rem', flex: 1 }}>
 
                             {/* CONTEXT SWITCHER - Top Priority Feature */}
-                            <div className="ios-setting-group-header" style={{ marginTop: '0.5rem' }}>
-                                📍 Quick Context Switch
-                            </div>
-                            <div className="ios-setting-card">
+                            {/* CONTEXT SWITCHER - Top Priority Feature */}
+                            <IonListHeader>
+                                <IonLabel>📍 Quick Context Switch</IonLabel>
+                            </IonListHeader>
+                            <IonCard className="ion-no-margin" style={{ marginBottom: '1.5rem' }}>
                                 <div style={{ padding: '0.9375rem', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.625rem' }}>
                                     {contexts.map(ctx => (
                                         <button
@@ -441,11 +474,11 @@ const Controls = ({
                                             style={{
                                                 padding: '0.75rem',
                                                 borderRadius: '0.75rem',
-                                                border: currentContext === ctx.id ? '2px solid #007AFF' : '2px solid transparent',
-                                                background: currentContext === ctx.id ? 'rgba(0, 122, 255, 0.1)' : 'white',
+                                                border: currentContext === ctx.id ? '2px solid var(--ion-color-primary, #007AFF)' : '2px solid transparent',
+                                                background: currentContext === ctx.id ? 'rgba(var(--ion-color-primary-rgb, 0, 122, 255), 0.1)' : 'white',
                                                 fontSize: '0.875rem',
                                                 fontWeight: currentContext === ctx.id ? 700 : 600,
-                                                color: currentContext === ctx.id ? '#007AFF' : 'var(--text-primary)',
+                                                color: currentContext === ctx.id ? 'var(--ion-color-primary, #007AFF)' : 'var(--text-primary)',
                                                 cursor: 'pointer',
                                                 display: 'flex',
                                                 flexDirection: 'column',
@@ -453,7 +486,7 @@ const Controls = ({
                                                 gap: '0.25rem',
                                                 minHeight: '4rem',
                                                 transition: 'all 0.2s ease',
-                                                boxShadow: currentContext === ctx.id ? '0 2px 8px rgba(0, 122, 255, 0.15)' : '0 1px 3px rgba(0,0,0,0.05)'
+                                                boxShadow: currentContext === ctx.id ? '0 2px 8px rgba(var(--ion-color-primary-rgb, 0, 122, 255), 0.15)' : '0 1px 3px rgba(0,0,0,0.05)'
                                             }}
                                         >
                                             <span style={{ fontSize: '1.5rem' }}>{ctx.icon}</span>
@@ -461,56 +494,69 @@ const Controls = ({
                                         </button>
                                     ))}
                                 </div>
-                                <div className="ios-row" onClick={() => {
+                                <IonItem button detail={true} onClick={() => {
                                     const label = prompt('Context name (e.g., "Playground"):');
                                     if (!label) return;
                                     const icon = prompt('Emoji icon:') || '📍';
                                     onAddContext(label, icon);
-                                }} style={{ borderTop: '1px solid #F2F2F7' }}>
-                                    <span style={{ color: '#007AFF', fontWeight: 600 }}>+ Add New Context</span>
-                                    <span className="ios-chevron">›</span>
-                                </div>
-                                <div className="ios-row" style={{ minHeight: 'auto', padding: '0.75rem 0.9375rem', background: '#F2F2F7' }}>
-                                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.4 }}>
-                                        💡 Contexts give you the right words for where you are. Tap to instantly switch your vocabulary board.
-                                    </p>
-                                </div>
-                            </div>
+                                }}>
+                                    <IonLabel color="primary"><b>+ Add New Context</b></IonLabel>
+                                </IonItem>
+                                <IonItem lines="none" color="light">
+                                    <IonLabel className="ion-text-wrap">
+                                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                                            💡 Contexts give you the right words for where you are. Tap to instantly switch your vocabulary board.
+                                        </p>
+                                    </IonLabel>
+                                </IonItem>
+                            </IonCard>
 
-                            <div className="ios-setting-group-header">Library Building</div>
-                            <div className="ios-setting-card">
-                                <div className="ios-row" onClick={() => onOpenPicker((word, icon) => onAddItem(word, icon, 'button'))}>
-                                    <span>+ Add Icon</span>
-                                    <span className="ios-chevron">›</span>
-                                </div>
-                                <div className="ios-row" onClick={() => onAddItem('', '', 'folder')}>
-                                    <span>+ Add Folder</span>
-                                    <span className="ios-chevron">›</span>
-                                </div>
-                            </div>
 
-                            <div className="ios-setting-group-header">Board Pages</div>
-                            <div className="ios-setting-card">
-                                <div className="ios-row" onClick={onAddPage}>
-                                    <span style={{ color: '#007AFF', fontWeight: 600 }}>+ Add New Page</span>
-                                    <span className="ios-chevron">›</span>
-                                </div>
-                                <div className="ios-row" style={{ minHeight: 'auto', padding: '0.5rem 0.9375rem', background: '#F2F2F7' }}>
-                                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
-                                        Current Page: {currentPageIndex + 1}
-                                    </p>
-                                </div>
+                            <IonListHeader>
+                                <IonLabel>Library Building</IonLabel>
+                            </IonListHeader>
+                            <IonList inset={true}>
+                                <IonItem button onClick={() => onOpenPicker((word, icon) => onAddItem(word, icon, 'button'))}>
+                                    <IonLabel>+ Add Icon</IonLabel>
+                                    <IonNote slot="end" className="ios-chevron">›</IonNote>
+                                </IonItem>
+                                <IonItem button onClick={() => onAddItem('', '', 'folder')}>
+                                    <IonLabel>+ Add Folder</IonLabel>
+                                    <IonNote slot="end" className="ios-chevron">›</IonNote>
+                                </IonItem>
+                            </IonList>
+
+
+                            <IonListHeader>
+                                <IonLabel>Board Pages</IonLabel>
+                            </IonListHeader>
+                            <IonList inset={true}>
+                                <IonItem button onClick={onAddPage}>
+                                    <IonLabel color="primary"><b>+ Add New Page</b></IonLabel>
+                                    <IonNote slot="end" className="ios-chevron">›</IonNote>
+                                </IonItem>
+                                <IonItem>
+                                    <IonLabel>
+                                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
+                                            Current Page: {currentPageIndex + 1}
+                                        </p>
+                                    </IonLabel>
+                                </IonItem>
                                 {onDeletePage && (
-                                    <div className="ios-row" onClick={() => onDeletePage(currentPageIndex)} style={{ opacity: currentPageIndex === 0 ? 0.5 : 1 }}>
-                                        <span style={{ color: '#FF3B30', fontWeight: 600 }}>Delete Current Page</span>
-                                        <span className="ios-chevron">🗑️</span>
-                                    </div>
+                                    <IonItem button onClick={() => onDeletePage(currentPageIndex)} disabled={currentPageIndex === 0}>
+                                        <IonLabel color="danger"><b>Delete Current Page</b></IonLabel>
+                                        <IonIcon slot="end" icon="trash-outline" /> {/* Assuming trash icon or similar, keeping text for now if icon import missing */}
+                                        <IonNote slot="end">🗑️</IonNote>
+                                    </IonItem>
                                 )}
-                            </div>
+                            </IonList>
 
-                            <div className="ios-setting-group-header">Communication Level</div>
-                            <div className="ios-setting-card" style={{ padding: '0.9375rem' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', marginBottom: '0.9375rem' }}>
+
+                            <IonListHeader>
+                                <IonLabel>Communication Level</IonLabel>
+                            </IonListHeader>
+                            <IonCard className="ion-no-margin">
+                                <div style={{ padding: '0.9375rem', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', marginBottom: '0.9375rem' }}>
                                     {Object.entries(STAGES).map(([stageNum, stage]) => {
                                         const stageInt = parseInt(stageNum);
                                         const isActive = Math.floor(currentLevel) === stageInt;
@@ -530,7 +576,7 @@ const Controls = ({
                                                     justifyContent: 'center',
                                                     gap: '0.125rem',
                                                     background: isActive ? stage.color : '#E5E5EA',
-                                                    color: isActive ? 'var(--primary-text)' : 'black',
+                                                    color: isActive ? 'var(--ion-color-primary-contrast, black)' : 'black',
                                                     borderRadius: '0.75rem',
                                                     border: 'none',
                                                     cursor: 'pointer'
@@ -548,7 +594,8 @@ const Controls = ({
                                         background: getStage(currentLevel).color + '15',
                                         padding: '0.75rem',
                                         borderRadius: '0.75rem',
-                                        border: `0.0625rem solid ${getStage(currentLevel).color}40`
+                                        border: `0.0625rem solid ${getStage(currentLevel).color}40`,
+                                        margin: '0 0.9375rem 0.9375rem'
                                     }}>
                                         <div style={{ fontSize: '0.6875rem', fontWeight: 700, color: getStage(currentLevel).color, marginBottom: '0.5rem', textTransform: 'uppercase' }}>
                                             {getStage(currentLevel).icon} {getStage(currentLevel).name}
@@ -566,7 +613,7 @@ const Controls = ({
                                                             padding: '0 0.75rem',
                                                             fontSize: '0.6875rem',
                                                             background: isSelected ? getStage(currentLevel).color : 'white',
-                                                            color: isSelected ? 'var(--primary-text)' : '#333',
+                                                            color: isSelected ? 'var(--ion-color-primary-contrast, #333)' : '#333',
                                                             borderRadius: '0.5rem',
                                                             border: isSelected ? 'none' : '0.0625rem solid #ddd',
                                                             cursor: 'pointer',
@@ -580,51 +627,51 @@ const Controls = ({
                                         </div>
                                     </div>
                                 )}
+                            </IonCard>
 
-                                {/* Quick swap for Level 1 */}
-                                {currentPhase === 1 && (
-                                    <div style={{ marginTop: '0.9375rem', padding: '0.75rem', background: 'linear-gradient(135deg, #FFF5E1, #FFE4B5)', borderRadius: '0.75rem', border: '0.0625rem solid #FFA500' }}>
-                                        <div style={{ fontSize: '0.6875rem', fontWeight: 700, color: '#D2691E', marginBottom: '0.5rem', textTransform: 'uppercase' }}>
-                                            🎯 Choose Target Icon
-                                        </div>
-                                        <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.3125rem' }}>
-                                            {rootItems.filter(i => {
-                                                const allowedIds = ['snack-generic', 'play-generic', 'toy-generic', 'mom', 'dad'];
-                                                return i.type === 'button' && allowedIds.includes(i.id);
-                                            }).map(item => {
-                                                const allowedIds = ['snack-generic', 'play-generic', 'toy-generic', 'mom', 'dad'];
-                                                const firstAllowedItem = rootItems.find(i => i.type === 'button' && allowedIds.includes(i.id));
-                                                const isSelected = phase1TargetId === item.id || (!phase1TargetId && firstAllowedItem?.id === item.id);
-                                                return (
-                                                    <button
-                                                        key={item.id}
-                                                        onClick={() => onSetPhase1Target(item.id)}
-                                                        style={{
-                                                            minWidth: '3.125rem',
-                                                            height: '3.125rem',
-                                                            padding: '0.25rem',
-                                                            borderRadius: '0.75rem',
-                                                            background: isSelected ? 'var(--primary)' : 'white',
-                                                            border: isSelected ? '0.125rem solid #007AFF' : '0.0625rem solid #DDD',
-                                                            fontSize: '1.2rem',
-                                                            cursor: 'pointer',
-                                                            display: 'flex',
-                                                            flexDirection: 'column',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            transition: 'all 0.2s',
-                                                            boxShadow: isSelected ? '0 0.125rem 0.375rem rgba(0,122,255,0.3)' : 'none'
-                                                        }}
-                                                    >
-                                                        <span>{typeof item.icon === 'string' && (item.icon.startsWith('/') || item.icon.startsWith('data:') || item.icon.includes('.')) ? '🖼️' : item.icon}</span>
-                                                        <span style={{ fontSize: '0.5rem', fontWeight: '700', color: isSelected ? 'var(--primary-text)' : '#666', overflow: 'hidden', width: '100%', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.word}</span>
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
+                            {/* Quick swap for Level 1 */}
+                            {currentPhase === 1 && (
+                                <div style={{ marginTop: '0.9375rem', padding: '0.75rem', background: 'linear-gradient(135deg, #FFF5E1, #FFE4B5)', borderRadius: '0.75rem', border: '0.0625rem solid #FFA500' }}>
+                                    <div style={{ fontSize: '0.6875rem', fontWeight: 700, color: '#D2691E', marginBottom: '0.5rem', textTransform: 'uppercase' }}>
+                                        🎯 Choose Target Icon
                                     </div>
-                                )}
-                            </div>
+                                    <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.3125rem' }}>
+                                        {rootItems.filter(i => {
+                                            const allowedIds = ['snack-generic', 'play-generic', 'toy-generic', 'mom', 'dad'];
+                                            return i.type === 'button' && allowedIds.includes(i.id);
+                                        }).map(item => {
+                                            const allowedIds = ['snack-generic', 'play-generic', 'toy-generic', 'mom', 'dad'];
+                                            const firstAllowedItem = rootItems.find(i => i.type === 'button' && allowedIds.includes(i.id));
+                                            const isSelected = phase1TargetId === item.id || (!phase1TargetId && firstAllowedItem?.id === item.id);
+                                            return (
+                                                <button
+                                                    key={item.id}
+                                                    onClick={() => onSetPhase1Target(item.id)}
+                                                    style={{
+                                                        minWidth: '3.125rem',
+                                                        height: '3.125rem',
+                                                        padding: '0.25rem',
+                                                        borderRadius: '0.75rem',
+                                                        background: isSelected ? 'var(--primary)' : 'white',
+                                                        border: isSelected ? '0.125rem solid #007AFF' : '0.0625rem solid #DDD',
+                                                        fontSize: '1.2rem',
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        transition: 'all 0.2s',
+                                                        boxShadow: isSelected ? '0 0.125rem 0.375rem rgba(0,122,255,0.3)' : 'none'
+                                                    }}
+                                                >
+                                                    <span>{typeof item.icon === 'string' && (item.icon.startsWith('/') || item.icon.startsWith('data:') || item.icon.includes('.')) ? '🖼️' : item.icon}</span>
+                                                    <span style={{ fontSize: '0.5rem', fontWeight: '700', color: isSelected ? 'var(--primary-text)' : '#666', overflow: 'hidden', width: '100%', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.word}</span>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="ios-setting-group-header">Locations</div>
                             <div className="ios-setting-card">
@@ -671,575 +718,508 @@ const Controls = ({
 
                     {activeTab === 'character' && (
                         <div style={{ background: '#F2F2F7', margin: '0 -1.5rem', padding: '0 1.5rem 1.5rem', flex: 1 }}>
-                            <div className="ios-setting-group-header" style={{ marginTop: '0.5rem' }}>Circle of Support</div>
-                            <div className="ios-setting-card" style={{ padding: '0.9375rem' }}>
-                                {peopleItems.length === 0 ? (
-                                    <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', margin: 0 }}>
-                                        Add family, friends, or helpers so your child can talk about the people around them.
-                                    </p>
-                                ) : (
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
-                                        {peopleItems.map(person => {
-                                            const previewIcon = getPersonPreview(person);
-                                            const isImage = typeof previewIcon === 'string' && (
-                                                previewIcon.startsWith('data:') || previewIcon.startsWith('/') || previewIcon.includes('.')
-                                            );
-                                            const isMemojiPreview = typeof previewIcon === 'string' && previewIcon.includes('/images/memojis/');
-                                            const isCustom = person.isCustomPerson || person.characterConfig?.type === 'multiavatar';
-                                            return (
-                                                <div
-                                                    key={person.id}
-                                                    onClick={() => handleEditPerson(person)}
-                                                    style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.375rem', cursor: 'pointer' }}
-                                                >
-                                                    <div style={{ position: 'relative' }}>
-                                                        {isCustom && onRemovePerson && (
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    if (confirm(`Remove ${person.word || 'this person'}?`)) {
-                                                                        onRemovePerson(person.id);
-                                                                    }
-                                                                }}
-                                                                aria-label={`Remove ${person.word || 'person'}`}
-                                                                style={{
-                                                                    position: 'absolute',
-                                                                    top: '-0.4rem',
-                                                                    right: '-0.4rem',
-                                                                    width: '1.5rem',
-                                                                    height: '1.5rem',
-                                                                    borderRadius: '50%',
-                                                                    border: 'none',
-                                                                    background: '#FF3B30',
-                                                                    color: 'white',
-                                                                    fontWeight: 700,
-                                                                    cursor: 'pointer',
-                                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                                                                }}
+                            <IonListHeader>
+                                <IonLabel>Circle of Support</IonLabel>
+                            </IonListHeader>
+                            <IonCard className="ion-no-margin">
+                                <div style={{ padding: '0.9375rem' }}>
+                                    {peopleItems.length === 0 ? (
+                                        <IonLabel color="medium" className="ion-text-wrap">
+                                            <p style={{ margin: 0 }}>
+                                                Add family, friends, or helpers so your child can talk about the people around them.
+                                            </p>
+                                        </IonLabel>
+                                    ) : (
+                                        <IonGrid className="ion-no-padding">
+                                            <IonRow style={{ gap: '0.75rem 0', justifyContent: 'flex-start' }}>
+                                                {peopleItems.map(person => {
+                                                    const previewIcon = getPersonPreview(person);
+                                                    const isImage = typeof previewIcon === 'string' && (
+                                                        previewIcon.startsWith('data:') || previewIcon.startsWith('/') || previewIcon.includes('.')
+                                                    );
+                                                    const isMemojiPreview = typeof previewIcon === 'string' && previewIcon.includes('/images/memojis/');
+                                                    const isCustom = person.isCustomPerson || person.characterConfig?.type === 'multiavatar';
+                                                    return (
+                                                        <IonCol size="4" key={person.id} className="ion-text-center">
+                                                            <div
+                                                                onClick={() => handleEditPerson(person)}
+                                                                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.375rem', cursor: 'pointer' }}
                                                             >
-                                                                ×
-                                                            </button>
-                                                        )}
-                                                        <div style={{
-                                                            width: '4rem',
-                                                            height: '4rem',
-                                                            borderRadius: '50%',
-                                                            background: 'white',
-                                                            border: '1px solid #E5E5EA',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            overflow: 'hidden',
-                                                            boxShadow: '0 2px 6px rgba(0,0,0,0.08)'
-                                                        }}>
-                                                            {isImage ? (
-                                                                <img src={previewIcon} alt={person.word} style={{ width: '100%', height: '100%', objectFit: isMemojiPreview ? 'contain' : 'cover' }} />
-                                                            ) : (
-                                                                <span style={{ fontSize: '1.5rem' }}>{previewIcon || '👤'}</span>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                    <span style={{ fontSize: '0.75rem', fontWeight: 600, textAlign: 'center', maxWidth: '4.5rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                                        {person.word || 'Person'}
-                                                    </span>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                )}
-                            </div>
-                            <div className="ios-setting-card">
-                                <div className="ios-row" onClick={handleAddPerson}>
-                                    <span style={{ color: '#007AFF', fontWeight: 600 }}>+ Create Avatar</span>
-                                    <span className="ios-chevron">›</span>
+                                                                <div style={{ position: 'relative' }}>
+                                                                    {isCustom && onRemovePerson && (
+                                                                        <button
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                if (confirm(`Remove ${person.word || 'this person'}?`)) {
+                                                                                    onRemovePerson(person.id);
+                                                                                }
+                                                                            }}
+                                                                            aria-label={`Remove ${person.word || 'person'}`}
+                                                                            style={{
+                                                                                position: 'absolute',
+                                                                                top: '-0.4rem',
+                                                                                right: '-0.4rem',
+                                                                                width: '1.5rem',
+                                                                                height: '1.5rem',
+                                                                                borderRadius: '50%',
+                                                                                border: 'none',
+                                                                                background: '#FF3B30',
+                                                                                color: 'white',
+                                                                                fontWeight: 700,
+                                                                                cursor: 'pointer',
+                                                                                boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                                                                                zIndex: 2
+                                                                            }}
+                                                                        >
+                                                                            ×
+                                                                        </button>
+                                                                    )}
+                                                                    <div style={{
+                                                                        width: '4rem',
+                                                                        height: '4rem',
+                                                                        borderRadius: '50%',
+                                                                        background: 'white',
+                                                                        border: '1px solid #E5E5EA',
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        justifyContent: 'center',
+                                                                        overflow: 'hidden',
+                                                                        boxShadow: '0 2px 6px rgba(0,0,0,0.08)'
+                                                                    }}>
+                                                                        {isImage ? (
+                                                                            <img src={previewIcon} alt={person.word} style={{ width: '100%', height: '100%', objectFit: isMemojiPreview ? 'contain' : 'cover' }} />
+                                                                        ) : (
+                                                                            <span style={{ fontSize: '1.5rem' }}>{previewIcon || '👤'}</span>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                                <IonLabel style={{ fontSize: '0.75rem', fontWeight: 600, maxWidth: '100%' }} className="ion-text-nowrap ion-text-overflow">
+                                                                    {person.word || 'Person'}
+                                                                </IonLabel>
+                                                            </div>
+                                                        </IonCol>
+                                                    );
+                                                })}
+                                            </IonRow>
+                                        </IonGrid>
+                                    )}
                                 </div>
-                                <div className="ios-row" style={{ minHeight: 'auto', padding: '0.75rem 0.9375rem', background: '#F2F2F7' }}>
-                                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.4 }}>
-                                        Create a friendly avatar for family, teachers, or friends and we&apos;ll add it to the board.
-                                    </p>
-                                </div>
-                            </div>
+                            </IonCard>
+
+                            <IonList inset={true}>
+                                <IonItem button detail={true} onClick={handleAddPerson}>
+                                    <IonLabel color="primary"><b>+ Create Avatar</b></IonLabel>
+                                </IonItem>
+                                <IonItem lines="none" color="light">
+                                    <IonLabel className="ion-text-wrap">
+                                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                                            Create a friendly avatar for family, teachers, or friends and we&apos;ll add it to the board.
+                                        </p>
+                                    </IonLabel>
+                                </IonItem>
+                            </IonList>
                         </div>
                     )}
 
                     {/* Access Tab (NEW) */}
                     {activeTab === 'access' && (
                         <div style={{ background: '#F2F2F7', margin: '0 -1.5rem', padding: '0 1.5rem 1.5rem', flex: 1 }}>
-                            <div className="ios-setting-group-header">Security</div>
-                            <div className="ios-setting-card">
+                            <IonListHeader>
+                                <IonLabel>Security</IonLabel>
+                            </IonListHeader>
+                            <IonList inset={true}>
                                 {isBiometryAvailable && (
                                     <>
-                                        <div className="ios-row" onClick={() => updateAccessProfile({ biometricLock: !accessProfile.biometricLock })}>
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                                        <IonItem>
+                                            <IonLabel className="ion-text-wrap">
                                                 <span>🛡️ Use {biometricType}</span>
                                                 {accessProfile.biometricLock && (
-                                                    <span style={{ fontSize: '0.75rem', color: '#34C759', fontWeight: 600 }}>
+                                                    <p style={{ color: '#34C759', fontWeight: 600 }}>
                                                         ✓ Active - Session unlocked for 5 min
-                                                    </span>
+                                                    </p>
                                                 )}
-                                            </div>
-                                            <div style={{
-                                                width: '51px',
-                                                height: '31px',
-                                                background: accessProfile.biometricLock ? '#34C759' : '#E5E5EA',
-                                                borderRadius: '15.5px',
-                                                position: 'relative',
-                                                transition: 'background 0.2s'
-                                            }}>
-                                                <div style={{
-                                                    width: '27px',
-                                                    height: '27px',
-                                                    background: 'white',
-                                                    borderRadius: '50%',
-                                                    position: 'absolute',
-                                                    top: '2px',
-                                                    left: accessProfile.biometricLock ? '22px' : '2px',
-                                                    transition: 'left 0.2s',
-                                                    boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
-                                                }} />
-                                            </div>
-                                        </div>
+                                            </IonLabel>
+                                            <IonToggle
+                                                slot="end"
+                                                checked={accessProfile.biometricLock}
+                                                onIonChange={() => updateAccessProfile({ biometricLock: !accessProfile.biometricLock })}
+                                            />
+                                        </IonItem>
 
                                         {accessProfile.biometricLock && (
-                                            <div className="ios-row" onClick={() => updateAccessProfile({ biometricLock: false })}>
-                                                <span style={{ color: '#FF3B30', fontWeight: 600 }}>🔓 Disable Protection</span>
-                                                <span className="ios-chevron">›</span>
-                                            </div>
+                                            <IonItem button detail={true} onClick={() => updateAccessProfile({ biometricLock: false })}>
+                                                <IonLabel color="danger"><b>🔓 Disable Protection</b></IonLabel>
+                                            </IonItem>
                                         )}
                                     </>
                                 )}
-                                <div className="ios-row" style={{ minHeight: 'auto', padding: '0.75rem 0.9375rem', background: '#F2F2F7' }}>
-                                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.4 }}>
-                                        {isBiometryAvailable
-                                            ? accessProfile.biometricLock
-                                                ? `Unlock with ${biometricType} or triple-tap the bottom bar. Session stays unlocked for 5 minutes after authentication.`
-                                                : `Protect adult settings with ${biometricType}. Triple-tap fallback is always available.`
-                                            : 'Triple-tap the bottom bar to unlock adult settings.'}
-                                    </p>
-                                </div>
-                            </div>
+                                <IonItem lines="none" color="light">
+                                    <IonLabel className="ion-text-wrap">
+                                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                                            {isBiometryAvailable
+                                                ? accessProfile.biometricLock
+                                                    ? `Unlock with ${biometricType} or triple-tap the bottom bar. Session stays unlocked for 5 minutes after authentication.`
+                                                    : `Protect adult settings with ${biometricType}. Triple-tap fallback is always available.`
+                                                : 'Triple-tap the bottom bar to unlock adult settings.'}
+                                        </p>
+                                    </IonLabel>
+                                </IonItem>
+                            </IonList>
 
-                            <div className="ios-setting-group-header">Physical Target Size</div>
-                            <div className="ios-setting-card">
-                                <div className="ios-row" style={{ padding: '0.9375rem' }}>
-                                    <div style={{ width: '100%' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                                            <span style={{ fontSize: '0.875rem' }}>🎯 Hit Area Diameter</span>
-                                            <span style={{ fontSize: '0.875rem', fontWeight: 700 }}>{accessProfile.targetSize}mm</span>
-                                        </div>
-                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.375rem' }}>
-                                            {[10, 12, 15, 18, 22].map(size => (
-                                                <button
-                                                    key={size}
-                                                    onClick={() => updateAccessProfile({ targetSize: size })}
-                                                    style={{
-                                                        height: '2.75rem',
-                                                        background: accessProfile.targetSize === size ? 'var(--primary)' : 'white',
-                                                        color: accessProfile.targetSize === size ? 'white' : 'black',
-                                                        borderRadius: '0.5rem',
-                                                        border: '1px solid #ddd',
-                                                        fontWeight: 600,
-                                                        fontSize: '0.75rem'
-                                                    }}
-                                                >
-                                                    {size}mm
-                                                </button>
-                                            ))}
-                                        </div>
-                                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.75rem', marginInline: '0.25rem' }}>
+                            <IonListHeader>
+                                <IonLabel>Physical Target Size</IonLabel>
+                            </IonListHeader>
+                            <IonCard className="ion-no-margin">
+                                <div style={{ padding: '0.9375rem' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                                        <IonLabel style={{ fontSize: '0.875rem' }}>🎯 Hit Area Diameter</IonLabel>
+                                        <IonLabel style={{ fontSize: '0.875rem', fontWeight: 700 }}>{accessProfile.targetSize}mm</IonLabel>
+                                    </div>
+                                    <IonSegment
+                                        value={accessProfile.targetSize.toString()}
+                                        onIonChange={(e) => updateAccessProfile({ targetSize: parseInt(e.detail.value, 10) })}
+                                        style={{ marginBottom: '0.5rem' }}
+                                    >
+                                        {[10, 12, 15, 18, 22].map(size => (
+                                            <IonSegmentButton key={size} value={size.toString()}>
+                                                <IonLabel style={{ fontSize: '0.75rem' }}>{size}mm</IonLabel>
+                                            </IonSegmentButton>
+                                        ))}
+                                    </IonSegment>
+                                    <IonLabel color="medium" className="ion-text-wrap">
+                                        <p style={{ fontSize: '0.75rem', marginInline: '0.25rem' }}>
                                             {accessProfile.targetSize <= 10 ? 'Standard baseline (44pt/48dp).' :
                                                 accessProfile.targetSize <= 15 ? 'Best for moderate motor challenges.' : 'Optimized for significant motor needs.'}
                                         </p>
-                                    </div>
+                                    </IonLabel>
                                 </div>
-                            </div>
+                            </IonCard>
 
-                            <div className="ios-setting-group-header">Hit-Area Spacing</div>
-                            <div className="ios-setting-card">
-                                <div className="ios-row" style={{ padding: '0.9375rem' }}>
-                                    <div style={{ width: '100%' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                                            <span style={{ fontSize: '0.875rem' }}>↔️ Gap between buttons</span>
-                                            <span style={{ fontSize: '0.875rem', fontWeight: 700 }}>{accessProfile.spacing}mm</span>
-                                        </div>
-                                        <input
-                                            type="range" min="0" max="10" step="0.5"
-                                            value={accessProfile.spacing}
-                                            onChange={(e) => updateAccessProfile({ spacing: parseFloat(e.target.value) })}
-                                            style={{ width: '100%', height: '2.75rem' }}
-                                        />
+                            <IonListHeader>
+                                <IonLabel>Hit-Area Spacing</IonLabel>
+                            </IonListHeader>
+                            <IonCard className="ion-no-margin">
+                                <div style={{ padding: '0.9375rem' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <IonLabel style={{ fontSize: '0.875rem' }}>↔️ Gap between buttons</IonLabel>
+                                        <IonLabel style={{ fontSize: '0.875rem', fontWeight: 700 }}>{accessProfile.spacing}mm</IonLabel>
                                     </div>
+                                    <IonRange
+                                        min={0}
+                                        max={10}
+                                        step={0.5}
+                                        value={accessProfile.spacing}
+                                        onIonChange={(e) => updateAccessProfile({ spacing: e.detail.value })}
+                                        className="ion-no-padding"
+                                    />
                                 </div>
-                            </div>
+                            </IonCard>
 
-                            <div className="ios-setting-group-header">Visual Needs</div>
-                            <div className="ios-setting-card">
-                                <div className="ios-row" style={{ padding: '0.9375rem', flexDirection: 'column', alignItems: 'flex-start', gap: '0.5rem' }}>
-                                    <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>🌐 App Language (Mirroring)</span>
-                                    <div className="ios-segmented-control" style={{ marginBottom: 0, width: '100%' }}>
-                                        <div
-                                            className="selection-pill"
-                                            style={{
-                                                width: 'calc(50% - 4px)',
-                                                transform: accessProfile.language === 'en' ? 'translateX(0)' : 'translateX(100%)'
+                            <IonListHeader>
+                                <IonLabel>Visual Needs</IonLabel>
+                            </IonListHeader>
+                            <IonCard className="ion-no-margin">
+                                <div style={{ padding: '0.9375rem' }}>
+                                    <IonLabel style={{ fontSize: '0.875rem', fontWeight: 600, display: 'block', marginBottom: '0.5rem' }}>🌐 App Language (Mirroring)</IonLabel>
+                                    <IonSegment
+                                        value={accessProfile.language}
+                                        onIonChange={(e) => updateAccessProfile({ language: e.detail.value })}
+                                        style={{ marginBottom: '0.5rem' }}
+                                    >
+                                        <IonSegmentButton value="en">
+                                            <IonLabel>🇺🇸 English</IonLabel>
+                                        </IonSegmentButton>
+                                        <IonSegmentButton value="es">
+                                            <IonLabel>🇪🇸 Español</IonLabel>
+                                        </IonSegmentButton>
+                                    </IonSegment>
+                                    <IonLabel color="medium" className="ion-text-wrap">
+                                        <p style={{ fontSize: '0.75rem', marginInline: '0.25rem', marginBottom: '1rem' }}>
+                                            Switching language will translate the board labels while keeping icons in the same position.
+                                        </p>
+                                    </IonLabel>
+
+                                    <div style={{ width: '100%', height: '1px', background: '#E5E5EA', marginBottom: '1rem' }} />
+
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <IonLabel style={{ fontSize: '0.875rem' }}>👁️ High Contrast Symbols</IonLabel>
+                                        <IonToggle
+                                            checked={accessProfile.visualContrast === 'high'}
+                                            onIonChange={(e) => {
+                                                const newContrast = e.detail.checked ? 'high' : 'standard';
+                                                updateAccessProfile({ visualContrast: newContrast });
+                                                if (newContrast === 'high') document.body.classList.add('high-contrast');
+                                                else document.body.classList.remove('high-contrast');
                                             }}
                                         />
-                                        <button onClick={() => updateAccessProfile({ language: 'en' })}>🇺🇸 English</button>
-                                        <button onClick={() => updateAccessProfile({ language: 'es' })}>🇪🇸 Español</button>
-                                    </div>
-                                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginInline: '0.25rem' }}>
-                                        Switching language will translate the board labels while keeping icons in the same position.
-                                    </p>
-                                </div>
-                                <div className="ios-row" onClick={() => {
-                                    const newContrast = accessProfile.visualContrast === 'high' ? 'standard' : 'high';
-                                    updateAccessProfile({ visualContrast: newContrast });
-                                    if (newContrast === 'high') document.body.classList.add('high-contrast');
-                                    else document.body.classList.remove('high-contrast');
-                                }}>
-                                    <span>👁️ High Contrast Symbols</span>
-                                    <div style={{
-                                        width: '51px',
-                                        height: '31px',
-                                        background: accessProfile.visualContrast === 'high' ? '#34C759' : '#E5E5EA',
-                                        borderRadius: '15.5px',
-                                        position: 'relative'
-                                    }}>
-                                        <div style={{
-                                            width: '27px',
-                                            height: '27px',
-                                            background: 'white',
-                                            borderRadius: '50%',
-                                            position: 'absolute',
-                                            top: '2px',
-                                            left: accessProfile.visualContrast === 'high' ? '22px' : '2px',
-                                            transition: 'left 0.2s'
-                                        }} />
                                     </div>
                                 </div>
-                                <div className="ios-row" style={{ padding: '0.9375rem', flexDirection: 'column', alignItems: 'flex-start', gap: '0.5rem' }}>
-                                    <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>🔲 Field Size Limit</span>
-                                    <div className="ios-segmented-control" style={{ marginBottom: 0, width: '100%' }}>
-                                        <div
-                                            className="selection-pill"
-                                            style={{
-                                                width: 'calc(25% - 4px)',
-                                                transform: accessProfile.fieldSize === '4' ? 'translateX(0)' :
-                                                    accessProfile.fieldSize === '8' ? 'translateX(100%)' :
-                                                        accessProfile.fieldSize === '12' ? 'translateX(200%)' : 'translateX(300%)'
-                                            }}
-                                        />
-                                        <button onClick={() => updateAccessProfile({ fieldSize: '4' })}>4</button>
-                                        <button onClick={() => updateAccessProfile({ fieldSize: '8' })}>8</button>
-                                        <button onClick={() => updateAccessProfile({ fieldSize: '12' })}>12</button>
-                                        <button onClick={() => updateAccessProfile({ fieldSize: 'unlimited' })}>All</button>
-                                    </div>
-                                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginInline: '0.25rem' }}>
-                                        Limits the number of icons shown at once to reduce visual clutter.
-                                    </p>
+                            </IonCard>
+
+                            <IonListHeader>
+                                <IonLabel>Field Size Limit</IonLabel>
+                            </IonListHeader>
+                            <IonCard className="ion-no-margin">
+                                <div style={{ padding: '0.9375rem' }}>
+                                    <IonLabel style={{ fontSize: '0.875rem', fontWeight: 600, display: 'block', marginBottom: '0.5rem' }}>🔲 Icons per page</IonLabel>
+                                    <IonSegment
+                                        value={accessProfile.fieldSize}
+                                        onIonChange={(e) => updateAccessProfile({ fieldSize: e.detail.value })}
+                                        style={{ marginBottom: '0.5rem' }}
+                                    >
+                                        <IonSegmentButton value="4"><IonLabel>4</IonLabel></IonSegmentButton>
+                                        <IonSegmentButton value="8"><IonLabel>8</IonLabel></IonSegmentButton>
+                                        <IonSegmentButton value="12"><IonLabel>12</IonLabel></IonSegmentButton>
+                                        <IonSegmentButton value="unlimited"><IonLabel>All</IonLabel></IonSegmentButton>
+                                    </IonSegment>
+                                    <IonLabel color="medium" className="ion-text-wrap">
+                                        <p style={{ fontSize: '0.75rem', marginInline: '0.25rem' }}>
+                                            Limits the number of icons shown at once to reduce visual clutter.
+                                        </p>
+                                    </IonLabel>
                                 </div>
-                            </div>
+                            </IonCard>
                         </div>
                     )}
 
                     {/* Extra Settings Tab */}
                     {activeTab === 'advanced' && (
-                        <div style={{ background: '#F2F2F7', margin: '0 -1.5rem', padding: '1.5rem 1.5rem 1.5rem', flex: 1 }}>
+                        <div style={{ background: '#F2F2F7', margin: '0 -1.5rem', padding: '0 1.5rem 1.5rem', flex: 1 }}>
 
-                            <div className="ios-setting-group-header">Accessibility</div>
-                            <div className="ios-setting-card">
-                                <div className="ios-row" onClick={onToggleColorCoding}>
-                                    <span>🎨 Color Coding (Fitzgerald Key)</span>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                        <span style={{ fontSize: '0.875rem', fontWeight: 600, color: isColorCodingEnabled ? '#34C759' : '#8E8E93' }}>
-                                            {isColorCodingEnabled ? 'On' : 'Off'}
-                                        </span>
-                                        <div style={{
-                                            width: '51px',
-                                            height: '31px',
-                                            background: isColorCodingEnabled ? '#34C759' : '#E5E5EA',
-                                            borderRadius: '15.5px',
-                                            position: 'relative',
-                                            transition: 'background 0.2s'
-                                        }}>
-                                            <div style={{
-                                                width: '27px',
-                                                height: '27px',
-                                                background: 'white',
-                                                borderRadius: '50%',
-                                                position: 'absolute',
-                                                top: '2px',
-                                                left: isColorCodingEnabled ? '22px' : '2px',
-                                                transition: 'left 0.2s',
-                                                boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
-                                            }} />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="ios-row" onClick={onToggleCategoryHeaders}>
-                                    <span>📂 Show Category Headers</span>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                        <span style={{ fontSize: '0.875rem', fontWeight: 600, color: showCategoryHeaders ? '#34C759' : '#8E8E93' }}>
-                                            {showCategoryHeaders ? 'On' : 'Off'}
-                                        </span>
-                                        <div style={{
-                                            width: '51px',
-                                            height: '31px',
-                                            background: showCategoryHeaders ? '#34C759' : '#E5E5EA',
-                                            borderRadius: '15.5px',
-                                            position: 'relative',
-                                            transition: 'background 0.2s'
-                                        }}>
-                                            <div style={{
-                                                width: '27px',
-                                                height: '27px',
-                                                background: 'white',
-                                                borderRadius: '50%',
-                                                position: 'absolute',
-                                                top: '2px',
-                                                left: showCategoryHeaders ? '22px' : '2px',
-                                                transition: 'left 0.2s',
-                                                boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
-                                            }} />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="ios-row" style={{ minHeight: 'auto', padding: '0.5rem 0.9375rem', background: '#F2F2F7' }}>
+                            {/* Accessibility Settings */}
+                            <IonListHeader style={{ marginTop: '1rem' }}>Accessibility</IonListHeader>
+                            <IonList inset={true}>
+                                <IonItem>
+                                    <IonIcon icon={colorPaletteOutline} slot="start" color="primary" />
+                                    <IonLabel>Color Coding (Fitzgerald Key)</IonLabel>
+                                    <IonToggle
+                                        checked={isColorCodingEnabled}
+                                        onIonChange={onToggleColorCoding}
+                                    />
+                                </IonItem>
+                                <IonItem onClick={onToggleCategoryHeaders} button={true} detail={false}>
+                                    <IonIcon icon={folderOutline} slot="start" color="primary" />
+                                    <IonLabel>Show Category Headers</IonLabel>
+                                    <IonToggle
+                                        checked={showCategoryHeaders}
+                                        onIonChange={(e) => {
+                                            e.stopPropagation();
+                                            onToggleCategoryHeaders();
+                                        }}
+                                    />
+                                </IonItem>
+                                <div style={{ padding: '0.5rem 1rem', background: 'transparent' }}>
                                     <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
                                         Organizes your board into labeled sections like &apos;Actions&apos; or &apos;Describe&apos;.
                                     </p>
                                 </div>
-                                <div className="ios-row" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.75rem', padding: '1rem' }}>
-                                    <span style={{ fontWeight: 600, fontSize: '0.875rem' }}>🎯 Vocabulary Level</span>
-                                    <div className="ios-segmented-control" style={{ marginBottom: 0 }}>
-                                        <div
-                                            className="selection-pill"
-                                            style={{
-                                                width: 'calc(33.33% - 4px)',
-                                                transform: proficiencyLevel === 'beginner' ? 'translateX(0)' :
-                                                    proficiencyLevel === 'intermediate' ? 'translateX(100%)' : 'translateX(200%)'
-                                            }}
-                                        />
-                                        <button onClick={() => onUpdateProficiencyLevel('beginner')} style={{ minHeight: '2.75rem' }}>Beginner</button>
-                                        <button onClick={() => onUpdateProficiencyLevel('intermediate')} style={{ minHeight: '2.75rem' }}>Intermediate</button>
-                                        <button onClick={() => onUpdateProficiencyLevel('advanced')} style={{ minHeight: '2.75rem' }}>Advanced</button>
+                                <IonItem lines="none" style={{ '--padding-start': '0' }}>
+                                    <div style={{ width: '100%', padding: '0.5rem 1rem' }}>
+                                        <div style={{ fontWeight: 600, fontSize: '0.875rem', marginBottom: '0.75rem' }}>🎯 Vocabulary Level</div>
+                                        <IonSegment
+                                            value={proficiencyLevel}
+                                            onIonChange={(e) => onUpdateProficiencyLevel(e.detail.value)}
+                                            mode="ios"
+                                        >
+                                            <IonSegmentButton value="beginner">
+                                                <IonLabel>Beginner</IonLabel>
+                                            </IonSegmentButton>
+                                            <IonSegmentButton value="intermediate">
+                                                <IonLabel>Intermediate</IonLabel>
+                                            </IonSegmentButton>
+                                            <IonSegmentButton value="advanced">
+                                                <IonLabel>Advanced</IonLabel>
+                                            </IonSegmentButton>
+                                        </IonSegment>
+                                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.75rem', marginBottom: 0 }}>
+                                            {proficiencyLevel === 'beginner' ? 'Shows core words + 10 fringe icons. Others are grayed out.' :
+                                                proficiencyLevel === 'intermediate' ? 'Shows core words + 40 fringe icons.' : 'Shows all vocabulary icons.'}
+                                        </p>
                                     </div>
-                                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
-                                        {proficiencyLevel === 'beginner' ? 'Shows core words + 10 fringe icons. Others are grayed out.' :
-                                            proficiencyLevel === 'intermediate' ? 'Shows core words + 40 fringe icons.' : 'Shows all vocabulary icons.'}
-                                    </p>
-                                </div>
-                                <div className="ios-row" onClick={onRedoCalibration}>
-                                    <span>👆 Redo Touch Calibration</span>
-                                    <span className="ios-chevron">›</span>
-                                </div>
-                            </div>
+                                </IonItem>
+                                <IonItem onClick={onRedoCalibration} button={true}>
+                                    <IonIcon icon={handRightOutline} slot="start" color="primary" />
+                                    <IonLabel>Redo Touch Calibration</IonLabel>
+                                    <IonIcon icon={chevronForwardOutline} slot="end" color="medium" size="small" />
+                                </IonItem>
+                            </IonList>
 
                             {/* Switch Access Settings */}
-                            <div className="ios-setting-group-header">Switch Access</div>
-                            <div className="ios-setting-card">
-                                <div className="ios-row" onClick={() => updateAccessProfile({ switchAccessEnabled: !accessProfile.switchAccessEnabled })}>
-                                    <span>♿ Enable Switch Access</span>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                        <span style={{ fontSize: '0.875rem', fontWeight: 600, color: accessProfile.switchAccessEnabled ? '#34C759' : '#8E8E93' }}>
-                                            {accessProfile.switchAccessEnabled ? 'On' : 'Off'}
-                                        </span>
-                                        <div style={{
-                                            width: '51px',
-                                            height: '31px',
-                                            background: accessProfile.switchAccessEnabled ? '#34C759' : '#E5E5EA',
-                                            borderRadius: '15.5px',
-                                            position: 'relative',
-                                            transition: 'background 0.2s'
-                                        }}>
-                                            <div style={{
-                                                width: '27px',
-                                                height: '27px',
-                                                background: 'white',
-                                                borderRadius: '50%',
-                                                position: 'absolute',
-                                                top: '2px',
-                                                left: accessProfile.switchAccessEnabled ? '22px' : '2px',
-                                                transition: 'left 0.2s',
-                                                boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
-                                            }} />
-                                        </div>
-                                    </div>
-                                </div>
+                            <IonListHeader>Switch Access</IonListHeader>
+                            <IonList inset={true}>
+                                <IonItem onClick={() => updateAccessProfile({ switchAccessEnabled: !accessProfile.switchAccessEnabled })} button={true} detail={false}>
+                                    <IonIcon icon={accessibilityOutline} slot="start" color="primary" />
+                                    <IonLabel>Enable Switch Access</IonLabel>
+                                    <IonToggle
+                                        checked={accessProfile.switchAccessEnabled}
+                                        onIonChange={(e) => {
+                                            e.stopPropagation();
+                                            updateAccessProfile({ switchAccessEnabled: e.detail.checked });
+                                        }}
+                                    />
+                                </IonItem>
 
                                 {accessProfile.switchAccessEnabled && (
                                     <>
-                                        <div className="ios-row" style={{ padding: '0.9375rem' }}>
-                                            <div style={{ width: '100%' }}>
+                                        <IonItem lines="none">
+                                            <div style={{ width: '100%', padding: '0.5rem 0' }}>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                                                    <span style={{ fontSize: '0.875rem' }}>⏱️ Scan Speed</span>
-                                                    <span style={{ fontSize: '0.875rem', fontWeight: 700 }}>{(accessProfile.scanSpeed / 1000).toFixed(1)}s</span>
+                                                    <IonLabel style={{ fontSize: '0.875rem' }}>⏱️ Scan Speed</IonLabel>
+                                                    <IonNote slot="end" style={{ fontSize: '0.875rem', fontWeight: 700 }}>{(accessProfile.scanSpeed / 1000).toFixed(1)}s</IonNote>
                                                 </div>
-                                                <input
-                                                    type="range"
-                                                    min="1000"
-                                                    max="3000"
-                                                    step="100"
+                                                <IonRange
+                                                    min={1000}
+                                                    max={3000}
+                                                    step={100}
                                                     value={accessProfile.scanSpeed || 1500}
-                                                    onChange={(e) => updateAccessProfile({ scanSpeed: parseInt(e.target.value, 10) })}
-                                                    style={{ width: '100%', height: '2.75rem' }}
+                                                    onIonChange={(e) => updateAccessProfile({ scanSpeed: parseInt(e.detail.value, 10) })}
                                                 />
-                                                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem', marginInline: '0.25rem' }}>
+                                                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
                                                     {accessProfile.scanSpeed <= 1200 ? 'Fast - For experienced users' :
                                                         accessProfile.scanSpeed <= 2000 ? 'Medium - Good balance' : 'Slow - More time to select'}
                                                 </p>
                                             </div>
-                                        </div>
+                                        </IonItem>
 
-                                        <div className="ios-row" onClick={() => updateAccessProfile({ audioFeedback: !accessProfile.audioFeedback })}>
-                                            <span>🔊 Audio Feedback</span>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                                <span style={{ fontSize: '0.875rem', fontWeight: 600, color: accessProfile.audioFeedback ? '#34C759' : '#8E8E93' }}>
-                                                    {accessProfile.audioFeedback ? 'On' : 'Off'}
-                                                </span>
-                                                <div style={{
-                                                    width: '51px',
-                                                    height: '31px',
-                                                    background: accessProfile.audioFeedback ? '#34C759' : '#E5E5EA',
-                                                    borderRadius: '15.5px',
-                                                    position: 'relative',
-                                                    transition: 'background 0.2s'
-                                                }}>
-                                                    <div style={{
-                                                        width: '27px',
-                                                        height: '27px',
-                                                        background: 'white',
-                                                        borderRadius: '50%',
-                                                        position: 'absolute',
-                                                        top: '2px',
-                                                        left: accessProfile.audioFeedback ? '22px' : '2px',
-                                                        transition: 'left 0.2s',
-                                                        boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
-                                                    }} />
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <IonItem onClick={() => updateAccessProfile({ audioFeedback: !accessProfile.audioFeedback })} button={true} detail={false}>
+                                            <IonIcon icon={musicalNotesOutline} slot="start" color="primary" />
+                                            <IonLabel>Audio Feedback</IonLabel>
+                                            <IonToggle
+                                                checked={accessProfile.audioFeedback}
+                                                onIonChange={(e) => {
+                                                    e.stopPropagation();
+                                                    updateAccessProfile({ audioFeedback: e.detail.checked });
+                                                }}
+                                            />
+                                        </IonItem>
                                     </>
                                 )}
-
-                                <div className="ios-row" style={{ minHeight: 'auto', padding: '0.5rem 0.9375rem', background: '#F2F2F7' }}>
-                                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
-                                        {accessProfile.switchAccessEnabled
-                                            ? 'Icons highlight sequentially. Press Spacebar to select. Press S to start/pause, Esc to pause.'
-                                            : 'Sequential scanning for motor-impaired users. Works with external switches.'}
-                                    </p>
-                                </div>
+                            </IonList>
+                            <div style={{ padding: '0.5rem 1.5rem', background: 'transparent' }}>
+                                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
+                                    {accessProfile.switchAccessEnabled
+                                        ? 'Icons highlight sequentially. Press Spacebar to select. Press S to start/pause, Esc to pause.'
+                                        : 'Sequential scanning for motor-impaired users. Works with external switches.'}
+                                </p>
                             </div>
 
-                            <div className="ios-setting-card">
-                                <div className="ios-row" style={{ minHeight: 'auto', padding: '0.9375rem' }}>
-                                    <div style={{ width: '100%' }}>
-                                        <div className="ios-setting-group-header" style={{ margin: '0 0 0.75rem 0' }}>Grid Layout</div>
-                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.375rem' }}>
-                                            {[
-                                                { id: 'super-big', label: '🐘', title: '2x2' },
-                                                { id: 'big', label: '🦒', title: '3x3' },
-                                                { id: 'standard', label: '🐕', title: '4x4' },
-                                                { id: 'medium', label: '🐈', title: '5x5' },
-                                                { id: 'dense', label: '🐜', title: '6x6' },
-                                            ].map(size => (
-                                                <button
-                                                    key={size.id}
-                                                    onClick={() => onUpdateGridSize(size.id)}
-                                                    title={size.title}
-                                                    style={{
-                                                        height: '3rem',
-                                                        display: 'flex',
-                                                        flexDirection: 'column',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        background: gridSize === size.id ? 'var(--btn-selected-bg)' : 'var(--gray-light)',
-                                                        color: gridSize === size.id ? 'var(--btn-selected-text)' : 'var(--text-primary)',
-                                                        borderRadius: '0.75rem',
-                                                        border: gridSize === size.id ? 'none' : '1px solid var(--gray-border)',
-                                                        fontWeight: 600,
-                                                        fontSize: '1.25rem'
-                                                    }}
-                                                >
-                                                    <span>{size.label}</span>
-                                                    <span style={{ fontSize: '0.5rem', marginTop: '2px', color: gridSize === size.id ? 'var(--btn-selected-text)' : 'var(--text-muted)' }}>{size.title}</span>
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="ios-setting-group-header">Speech & Sound</div>
-                            <div className="ios-setting-card">
-                                <div className="ios-row" style={{ padding: '0.9375rem', flexDirection: 'column', alignItems: 'flex-start', gap: '0.75rem' }}>
-                                    <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>🎭 Voice Presets</span>
-                                    <div style={{ display: 'flex', gap: '0.5rem', width: '100%' }}>
-                                        {VOICE_PRESETS.map(preset => (
+                            <IonListHeader>Grid Layout</IonListHeader>
+                            <IonCard className="ion-no-margin" style={{ margin: '0 1rem' }}>
+                                <div style={{ padding: '0.9375rem' }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.375rem' }}>
+                                        {[
+                                            { id: 'super-big', label: '🐘', title: '2x2' },
+                                            { id: 'big', label: '🦒', title: '3x3' },
+                                            { id: 'standard', label: '🐕', title: '4x4' },
+                                            { id: 'medium', label: '🐈', title: '5x5' },
+                                            { id: 'dense', label: '🐜', title: '6x6' },
+                                        ].map(size => (
                                             <button
-                                                key={preset.id}
-                                                onClick={() => applyPreset(preset)}
+                                                key={size.id}
+                                                onClick={() => onUpdateGridSize(size.id)}
+                                                title={size.title}
                                                 style={{
-                                                    flex: 1,
-                                                    padding: '0.5rem',
-                                                    fontSize: '0.75rem',
-                                                    background: (voiceSettings.pitch === preset.pitch && voiceSettings.rate === preset.rate) ? 'var(--btn-selected-bg)' : '#E5E5EA',
-                                                    color: (voiceSettings.pitch === preset.pitch && voiceSettings.rate === preset.rate) ? 'var(--btn-selected-text)' : 'black',
-                                                    borderRadius: '0.5rem',
-                                                    border: 'none',
+                                                    height: '3rem',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    background: gridSize === size.id ? 'var(--btn-selected-bg)' : 'var(--gray-light)',
+                                                    color: gridSize === size.id ? 'var(--btn-selected-text)' : 'var(--text-primary)',
+                                                    borderRadius: '0.75rem',
+                                                    border: gridSize === size.id ? 'none' : '1px solid var(--gray-border)',
                                                     fontWeight: 600,
-                                                    cursor: 'pointer'
+                                                    fontSize: '1.25rem'
                                                 }}
                                             >
-                                                {preset.label}
+                                                <span>{size.label}</span>
+                                                <span style={{ fontSize: '0.5rem', marginTop: '2px', color: gridSize === size.id ? 'var(--btn-selected-text)' : 'var(--text-muted)' }}>{size.title}</span>
                                             </button>
                                         ))}
                                     </div>
                                 </div>
-                                <div className="ios-row" style={{ padding: '0.9375rem' }}>
-                                    <div style={{ width: '100%' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                                            <span style={{ fontSize: '0.875rem' }}>🗣️ Speed (Rate)</span>
-                                            <span style={{ fontSize: '0.875rem', fontWeight: 700 }}>{voiceSettings.rate}x</span>
+                            </IonCard>
+
+                            <IonListHeader>Speech & Sound</IonListHeader>
+                            <IonList inset={true}>
+                                <IonItem lines="none">
+                                    <div style={{ width: '100%', padding: '0.5rem 0' }}>
+                                        <div style={{ fontWeight: 600, fontSize: '0.875rem', marginBottom: '0.75rem' }}>🎭 Voice Presets</div>
+                                        <div style={{ display: 'flex', gap: '0.5rem', width: '100%' }}>
+                                            {VOICE_PRESETS.map(preset => (
+                                                <button
+                                                    key={preset.id}
+                                                    onClick={() => applyPreset(preset)}
+                                                    style={{
+                                                        flex: 1,
+                                                        padding: '0.5rem',
+                                                        fontSize: '0.75rem',
+                                                        background: (voiceSettings.pitch === preset.pitch && voiceSettings.rate === preset.rate) ? 'var(--btn-selected-bg)' : '#E5E5EA',
+                                                        color: (voiceSettings.pitch === preset.pitch && voiceSettings.rate === preset.rate) ? 'var(--btn-selected-text)' : 'black',
+                                                        borderRadius: '0.5rem',
+                                                        border: 'none',
+                                                        fontWeight: 600,
+                                                        cursor: 'pointer'
+                                                    }}
+                                                >
+                                                    {preset.label}
+                                                </button>
+                                            ))}
                                         </div>
-                                        <input
-                                            type="range" min="0.1" max="2.0" step="0.1"
+                                    </div>
+                                </IonItem>
+
+                                <IonItem lines="none">
+                                    <div style={{ width: '100%', padding: '0.5rem 0' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                                            <IonLabel style={{ fontSize: '0.875rem' }}>🗣️ Speed (Rate)</IonLabel>
+                                            <IonNote slot="end" style={{ fontSize: '0.875rem', fontWeight: 700 }}>{voiceSettings.rate}x</IonNote>
+                                        </div>
+                                        <IonRange
+                                            min={0.1}
+                                            max={2.0}
+                                            step={0.1}
                                             value={voiceSettings.rate}
-                                            onChange={(e) => onUpdateVoiceSettings({ ...voiceSettings, rate: parseFloat(e.target.value) })}
-                                            style={{ width: '100%', height: '2.75rem' }}
+                                            onIonChange={(e) => onUpdateVoiceSettings({ ...voiceSettings, rate: parseFloat(e.detail.value) })}
                                         />
                                     </div>
-                                </div>
-                                <div className="ios-row" style={{ padding: '0.9375rem' }}>
-                                    <div style={{ width: '100%' }}>
+                                </IonItem>
+
+                                <IonItem lines="none">
+                                    <div style={{ width: '100%', padding: '0.5rem 0' }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                                            <span style={{ fontSize: '0.875rem' }}>🎼 Pitch</span>
-                                            <span style={{ fontSize: '0.875rem', fontWeight: 700 }}>{voiceSettings.pitch || 1}x</span>
+                                            <IonLabel style={{ fontSize: '0.875rem' }}>🎼 Pitch</IonLabel>
+                                            <IonNote slot="end" style={{ fontSize: '0.875rem', fontWeight: 700 }}>{voiceSettings.pitch || 1}x</IonNote>
                                         </div>
-                                        <input
-                                            type="range" min="0.1" max="2.0" step="0.1"
+                                        <IonRange
+                                            min={0.1}
+                                            max={2.0}
+                                            step={0.1}
                                             value={voiceSettings.pitch || 1}
-                                            onChange={(e) => onUpdateVoiceSettings({ ...voiceSettings, pitch: parseFloat(e.target.value) })}
-                                            style={{ width: '100%', height: '2.75rem' }}
+                                            onIonChange={(e) => onUpdateVoiceSettings({ ...voiceSettings, pitch: parseFloat(e.detail.value) })}
                                         />
                                     </div>
-                                </div>
-                                <div className="ios-row" style={{ padding: '0.9375rem' }}>
-                                    <div style={{ width: '100%' }}>
+                                </IonItem>
+
+                                <IonItem lines="none">
+                                    <div style={{ width: '100%', padding: '0.5rem 0' }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                                            <span style={{ fontSize: '0.875rem' }}>🔊 Volume</span>
-                                            <span style={{ fontSize: '0.875rem', fontWeight: 700 }}>{Math.round((voiceSettings.volume || 1) * 100)}%</span>
+                                            <IonLabel style={{ fontSize: '0.875rem' }}>🔊 Volume</IonLabel>
+                                            <IonNote slot="end" style={{ fontSize: '0.875rem', fontWeight: 700 }}>{Math.round((voiceSettings.volume || 1) * 100)}%</IonNote>
                                         </div>
-                                        <input
-                                            type="range" min="0" max="1" step="0.1"
+                                        <IonRange
+                                            min={0}
+                                            max={1}
+                                            step={0.1}
                                             value={voiceSettings.volume || 1}
-                                            onChange={(e) => onUpdateVoiceSettings({ ...voiceSettings, volume: parseFloat(e.target.value) })}
-                                            style={{ width: '100%', height: '2.75rem' }}
+                                            onIonChange={(e) => onUpdateVoiceSettings({ ...voiceSettings, volume: parseFloat(e.detail.value) })}
                                         />
                                     </div>
-                                </div>
-                                <div className="ios-row">
-                                    <span>🌐 Language</span>
+                                </IonItem>
+
+                                <IonItem>
+                                    <IonIcon icon={globeOutline} slot="start" color="primary" />
+                                    <IonLabel>Language</IonLabel>
                                     <select
                                         value={selectedLang}
                                         onChange={(e) => setSelectedLang(e.target.value)}
@@ -1257,149 +1237,114 @@ const Controls = ({
                                             </option>
                                         ))}
                                     </select>
-                                </div>
-                                <div className="ios-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '0.75rem', padding: '0.9375rem' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-                                        <span style={{ fontWeight: 600 }}>🗣️ Voice</span>
-                                        <button
-                                            onClick={() => setShowAllVoices(!showAllVoices)}
+                                </IonItem>
+
+                                <IonItem lines="none">
+                                    <div style={{ width: '100%', padding: '0.5rem 0' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginBottom: '0.75rem' }}>
+                                            <IonLabel style={{ fontWeight: 600 }}>🗣️ Voice</IonLabel>
+                                            <IonButton
+                                                fill="outline"
+                                                size="small"
+                                                onClick={() => setShowAllVoices(!showAllVoices)}
+                                            >
+                                                {showAllVoices ? 'Quality Only' : 'Show All'}
+                                            </IonButton>
+                                        </div>
+                                        <select
+                                            value={voiceSettings.voiceURI || ''}
+                                            onChange={(e) => onUpdateVoiceSettings({ ...voiceSettings, voiceURI: e.target.value })}
                                             style={{
-                                                background: 'transparent',
-                                                border: '1px solid #007AFF',
+                                                width: '100%',
+                                                padding: '0.75rem',
+                                                border: '1px solid #E5E5EA',
+                                                background: 'white',
                                                 borderRadius: '0.5rem',
-                                                padding: '0.25rem 0.5rem',
-                                                fontSize: '0.75rem',
-                                                color: '#007AFF',
+                                                fontSize: '0.875rem',
                                                 fontWeight: 600,
-                                                cursor: 'pointer'
+                                                color: '#2D3436'
                                             }}
                                         >
-                                            {showAllVoices ? 'Quality Only' : 'Show All'}
-                                        </button>
+                                            <option value="">System Default</option>
+                                            {filteredVoices.map(v => (
+                                                <option key={v.voiceURI} value={v.voiceURI}>
+                                                    {v.name.replace(/System |Apple |Microsoft |\(Enhanced\)|Premium |Google /g, '').trim()}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {!showAllVoices && filteredVoices.length === 0 && (
+                                            <p style={{ fontSize: '0.75rem', color: '#FF3B30', margin: '0.5rem 0 0' }}>
+                                                No high-quality voices found. Download Enhanced voices from iOS Settings.
+                                            </p>
+                                        )}
+                                        {showAllVoices && (
+                                            <p style={{ fontSize: '0.75rem', color: '#8E8E93', margin: '0.5rem 0 0' }}>
+                                                ⚠️ Showing all voices. Standard voices may sound robotic.
+                                            </p>
+                                        )}
                                     </div>
-                                    <select
-                                        value={voiceSettings.voiceURI || ''}
-                                        onChange={(e) => onUpdateVoiceSettings({ ...voiceSettings, voiceURI: e.target.value })}
-                                        style={{
-                                            width: '100%',
-                                            padding: '0.75rem',
-                                            border: '1px solid #E5E5EA',
-                                            background: 'white',
-                                            borderRadius: '0.5rem',
-                                            fontSize: '0.875rem',
-                                            fontWeight: 600,
-                                            color: '#2D3436'
-                                        }}
-                                    >
-                                        <option value="">System Default</option>
-                                        {filteredVoices.map(v => (
-                                            <option key={v.voiceURI} value={v.voiceURI}>
-                                                {v.name.replace(/System |Apple |Microsoft |\(Enhanced\)|Premium |Google /g, '').trim()}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {!showAllVoices && filteredVoices.length === 0 && (
-                                        <p style={{ fontSize: '0.75rem', color: '#FF3B30', margin: 0 }}>
-                                            No high-quality voices found. Download Enhanced voices from iOS Settings.
-                                        </p>
-                                    )}
-                                    {showAllVoices && (
-                                        <p style={{ fontSize: '0.75rem', color: '#8E8E93', margin: 0 }}>
-                                            ⚠️ Showing all voices. Standard voices may sound robotic.
-                                        </p>
-                                    )}
-                                </div>
+                                </IonItem>
+                            </IonList>
 
-                                {/* Clean Voice Quality Notification */}
-                                {!isHighQualityVoice(availableVoices.find(v => v.voiceURI === voiceSettings.voiceURI)) && (
-                                    <div
-                                        onClick={() => setShowVoiceSetup(true)}
-                                        style={{
-                                            margin: '0.625rem 0.9375rem',
-                                            padding: '1rem 1.25rem',
-                                            background: 'linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%)',
-                                            borderRadius: '1rem',
-                                            border: '1px solid #DEE2E6',
-                                            cursor: 'pointer',
-                                            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            gap: '0.5rem',
-                                            boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
-                                        }}
-                                        onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.98)'}
-                                        onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                                        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                                    >
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                            <span style={{ fontSize: '1.5rem' }}>🎙️</span>
-                                            <div style={{ flex: 1 }}>
-                                                <div style={{ fontSize: '0.9375rem', fontWeight: 600, color: '#2D3436', marginBottom: '0.125rem' }}>
-                                                    Upgrade Voice Quality
-                                                </div>
-                                                <div style={{ fontSize: '0.8125rem', color: '#6C757D', lineHeight: '1.3' }}>
-                                                    Get natural-sounding voices
-                                                </div>
+                            {/* Clean Voice Quality Notification */}
+                            {!isHighQualityVoice(availableVoices.find(v => v.voiceURI === voiceSettings.voiceURI)) && (
+                                <IonCard onClick={() => setShowVoiceSetup(true)} button={true} className="ion-no-margin" style={{ margin: '0.625rem 1rem', background: 'linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%)' }}>
+                                    <IonItem lines="none" detail={true} style={{ '--background': 'transparent' }}>
+                                        <div slot="start" style={{ fontSize: '1.5rem' }}>🎙️</div>
+                                        <IonLabel>
+                                            <div style={{ fontSize: '0.9375rem', fontWeight: 600, color: '#2D3436', marginBottom: '0.125rem' }}>
+                                                Upgrade Voice Quality
                                             </div>
-                                            <span style={{ color: '#007AFF', fontSize: '1.25rem' }}>›</span>
-                                        </div>
-                                    </div>
-                                )}
-                                <div className="ios-row" onClick={testVoice}>
-                                    <span style={{ color: '#007AFF', fontWeight: 600 }}>▶️ Test Voice Preview</span>
-                                    <span className="ios-chevron">›</span>
-                                </div>
-                                <div className="ios-row" onClick={() => setShowPronunciationEditor(true)}>
-                                    <span style={{ color: '#5856D6', fontWeight: 600 }}>📖 Pronunciation Editor</span>
-                                    <span className="ios-chevron">›</span>
-                                </div>
-                                <div className="ios-row" onClick={() => onUpdateAutoSpeak(!autoSpeak)}>
-                                    <span>🗣️ Auto-Speak on Tap</span>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                        <span style={{ fontSize: '0.875rem', fontWeight: 600, color: autoSpeak ? '#34C759' : '#8E8E93' }}>
-                                            {autoSpeak ? 'On' : 'Off'}
-                                        </span>
-                                        <div style={{
-                                            width: '51px',
-                                            height: '31px',
-                                            background: autoSpeak ? '#34C759' : '#E5E5EA',
-                                            borderRadius: '15.5px',
-                                            position: 'relative',
-                                            transition: 'background 0.2s'
-                                        }}>
-                                            <div style={{
-                                                width: '27px',
-                                                height: '27px',
-                                                background: 'white',
-                                                borderRadius: '50%',
-                                                position: 'absolute',
-                                                top: '2px',
-                                                left: autoSpeak ? '22px' : '2px',
-                                                transition: 'left 0.2s',
-                                                boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
-                                            }} />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="ios-row" style={{ padding: '0.9375rem' }}>
-                                    <div style={{ width: '100%' }}>
+                                            <div style={{ fontSize: '0.8125rem', color: '#6C757D', lineHeight: '1.3' }}>
+                                                Get natural-sounding voices
+                                            </div>
+                                        </IonLabel>
+                                    </IonItem>
+                                </IonCard>
+                            )}
+
+                            <IonList inset={true}>
+                                <IonItem onClick={testVoice} button={true}>
+                                    <IonIcon icon={playOutline} slot="start" color="primary" />
+                                    <IonLabel color="primary" style={{ fontWeight: 600 }}>Test Voice Preview</IonLabel>
+                                    <IonIcon icon={chevronForwardOutline} slot="end" color="medium" size="small" />
+                                </IonItem>
+                                <IonItem onClick={() => setShowPronunciationEditor(true)} button={true}>
+                                    <IonIcon icon={bookOutline} slot="start" style={{ color: '#5856D6' }} />
+                                    <IonLabel style={{ color: '#5856D6', fontWeight: 600 }}>Pronunciation Editor</IonLabel>
+                                    <IonIcon icon={chevronForwardOutline} slot="end" color="medium" size="small" />
+                                </IonItem>
+                                <IonItem onClick={() => onUpdateAutoSpeak(!autoSpeak)} button={true} detail={false}>
+                                    <IonLabel>Auto-Speak on Tap</IonLabel>
+                                    <IonToggle
+                                        checked={autoSpeak}
+                                        onIonChange={(e) => {
+                                            e.stopPropagation();
+                                            onUpdateAutoSpeak(e.detail.checked);
+                                        }}
+                                    />
+                                </IonItem>
+                                <IonItem lines="none">
+                                    <div style={{ width: '100%', padding: '0.5rem 0' }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                                            <span style={{ fontSize: '0.875rem' }}>⏱️ Repetition Delay</span>
-                                            <span style={{ fontSize: '0.875rem', fontWeight: 700 }}>{speechDelay}s</span>
+                                            <IonLabel style={{ fontSize: '0.875rem' }}>⏱️ Repetition Delay</IonLabel>
+                                            <IonNote slot="end" style={{ fontSize: '0.875rem', fontWeight: 700 }}>{speechDelay}s</IonNote>
                                         </div>
-                                        <input
-                                            type="range" min="0" max="15" step="1"
+                                        <IonRange
+                                            min={0}
+                                            max={15}
+                                            step={1}
                                             value={speechDelay}
-                                            onChange={(e) => onUpdateSpeechDelay(parseInt(e.target.value, 10))}
-                                            style={{ width: '100%', height: '2.75rem' }}
+                                            onIonChange={(e) => onUpdateSpeechDelay(parseInt(e.detail.value, 10))}
                                         />
                                         <p style={{ fontSize: '0.6875rem', color: '#888', margin: '0.3125rem 0 0 0' }}>
                                             Time before the same word can be spoken again.
                                         </p>
                                     </div>
-                                </div>
-                                <div className="ios-row">
-                                    <span>🔔 Attention Bell</span>
+                                </IonItem>
+                                <IonItem>
+                                    <IonIcon icon={musicalNotesOutline} slot="start" color="primary" />
+                                    <IonLabel>Attention Bell</IonLabel>
                                     <select
                                         value={bellSound}
                                         onChange={(e) => {
@@ -1412,59 +1357,63 @@ const Controls = ({
                                             <option key={sound.id} value={sound.id}>{sound.name}</option>
                                         ))}
                                     </select>
-                                </div>
-                            </div>
+                                </IonItem>
+                            </IonList>
 
-                            <div className="ios-setting-group-header">Appearance</div>
-                            <div className="ios-setting-card" style={{ padding: '0.9375rem' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
-                                    {COLOR_THEMES.map(theme => (
-                                        <div
-                                            key={theme.id}
-                                            onClick={async () => {
-                                                if (theme.premium && colorTheme !== theme.id) {
-                                                    try {
-                                                        const { checkColorThemeAccess } = await import('../utils/paywall');
-                                                        const hasAccess = await checkColorThemeAccess();
-                                                        if (hasAccess) onSetColorTheme(theme.id);
-                                                    } catch (error) {
-                                                        console.error('Failed to check theme access:', error);
-                                                        onSetColorTheme(theme.id); // Continue anyway
-                                                    }
-                                                } else onSetColorTheme(theme.id);
-                                            }}
-                                            style={{
-                                                height: '3.75rem',
-                                                borderRadius: '0.75rem',
-                                                border: colorTheme === theme.id ? '0.125rem solid #007AFF' : '0.0625rem solid #ddd',
-                                                background: theme.bg,
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                position: 'relative',
-                                                cursor: 'pointer'
-                                            }}
-                                        >
-                                            <span style={{ fontSize: '1.25rem' }}>{theme.icon}</span>
-                                            <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>{theme.label}</span>
-                                            {theme.premium && <span style={{ position: 'absolute', top: 2, right: 2, fontSize: '0.75rem' }}>👑</span>}
-                                        </div>
-                                    ))}
+                            <IonListHeader>Appearance</IonListHeader>
+                            <IonCard className="ion-no-margin" style={{ margin: '0 1rem' }}>
+                                <div style={{ padding: '0.9375rem' }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
+                                        {COLOR_THEMES.map(theme => (
+                                            <div
+                                                key={theme.id}
+                                                onClick={async () => {
+                                                    if (theme.premium && colorTheme !== theme.id) {
+                                                        try {
+                                                            const { checkColorThemeAccess } = await import('../utils/paywall');
+                                                            const hasAccess = await checkColorThemeAccess();
+                                                            if (hasAccess) onSetColorTheme(theme.id);
+                                                        } catch (error) {
+                                                            console.error('Failed to check theme access:', error);
+                                                            onSetColorTheme(theme.id); // Continue anyway
+                                                        }
+                                                    } else onSetColorTheme(theme.id);
+                                                }}
+                                                style={{
+                                                    height: '3.75rem',
+                                                    borderRadius: '0.75rem',
+                                                    border: colorTheme === theme.id ? '0.125rem solid #007AFF' : '0.0625rem solid #ddd',
+                                                    background: theme.bg,
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    position: 'relative',
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                <span style={{ fontSize: '1.25rem' }}>{theme.icon}</span>
+                                                <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>{theme.label}</span>
+                                                {theme.premium && <span style={{ position: 'absolute', top: 2, right: 2, fontSize: '0.75rem' }}>👑</span>}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
+                            </IonCard>
 
-                            <div className="ios-setting-group-header">Advanced</div>
-                            <div className="ios-setting-card">
-                                <div className="ios-row" onClick={() => setShowBackupRestore(true)}>
-                                    <span>💾 Backup & Restore All Data</span>
-                                    <span className="ios-chevron">›</span>
-                                </div>
-                                <div className="ios-row" onClick={onReset}>
-                                    <span style={{ color: '#FF3B30', fontWeight: 600 }}>Reset All Data</span>
-                                    <span className="ios-chevron">›</span>
-                                </div>
-                            </div>
+                            <IonListHeader>Advanced</IonListHeader>
+                            <IonList inset={true}>
+                                <IonItem onClick={() => setShowBackupRestore(true)} button={true}>
+                                    <IonIcon icon={saveOutline} slot="start" color="primary" />
+                                    <IonLabel>Backup & Restore All Data</IonLabel>
+                                    <IonIcon icon={chevronForwardOutline} slot="end" color="medium" size="small" />
+                                </IonItem>
+                                <IonItem onClick={onReset} button={true}>
+                                    <IonIcon icon={trashOutline} slot="start" color="danger" />
+                                    <IonLabel color="danger" style={{ fontWeight: 600 }}>Reset All Data</IonLabel>
+                                    <IonIcon icon={chevronForwardOutline} slot="end" color="medium" size="small" />
+                                </IonItem>
+                            </IonList>
                         </div>
                     )}
 
@@ -1472,67 +1421,75 @@ const Controls = ({
                     {activeTab === 'data' && (
                         <div style={{ background: '#F2F2F7', margin: '0 -1.5rem', padding: '0 1.5rem 1.5rem', flex: 1 }}>
 
-                            <div className="ios-setting-group-header">Overview</div>
-                            <div className="ios-setting-card" style={{ padding: '0.9375rem' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
-                                    <div style={{ background: '#F2F2F7', padding: '0.75rem', borderRadius: '0.5rem', textAlign: 'center' }}>
-                                        <div style={{ fontSize: '1.25rem' }}>{STAGES[Math.floor(currentLevel)]?.icon || '📱'}</div>
-                                        <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.25rem', fontWeight: 700 }}>Level {Math.floor(currentLevel)}</div>
-                                    </div>
-                                    <div style={{ background: '#F2F2F7', padding: '0.75rem', borderRadius: '0.5rem', textAlign: 'center' }}>
-                                        <div style={{ fontSize: '1.125rem', fontWeight: 'bold', color: '#007AFF' }}>{rootItems.length}</div>
-                                        <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.25rem', fontWeight: 700 }}>Icons</div>
-                                    </div>
-                                    <div style={{ background: '#F2F2F7', padding: '0.75rem', borderRadius: '0.5rem', textAlign: 'center' }}>
-                                        <div style={{ fontSize: '1.125rem', fontWeight: 'bold', color: '#34C759' }}>
-                                            {Object.values(progressData || {}).reduce((acc, curr) => acc + (curr?.totalUses || 0), 0) || 0}
-                                        </div>
-                                        <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.25rem', fontWeight: 700 }}>Total Taps</div>
-                                    </div>
-                                </div>
-                            </div>
+                            <IonListHeader style={{ marginTop: '1rem' }}>Overview</IonListHeader>
+                            <IonCard className="ion-no-margin" style={{ margin: '0 1rem' }}>
+                                <IonGrid style={{ padding: '0.9375rem' }}>
+                                    <IonRow>
+                                        <IonCol style={{ background: '#F2F2F7', margin: '0 0.25rem', padding: '0.75rem', borderRadius: '0.75rem', textAlign: 'center' }}>
+                                            <div style={{ fontSize: '1.25rem' }}>{STAGES[Math.floor(currentLevel)]?.icon || '📱'}</div>
+                                            <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.25rem', fontWeight: 700 }}>Level {Math.floor(currentLevel)}</div>
+                                        </IonCol>
+                                        <IonCol style={{ background: '#F2F2F7', margin: '0 0.25rem', padding: '0.75rem', borderRadius: '0.75rem', textAlign: 'center' }}>
+                                            <div style={{ fontSize: '1.125rem', fontWeight: 'bold', color: '#007AFF' }}>{rootItems.length}</div>
+                                            <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.25rem', fontWeight: 700 }}>Icons</div>
+                                        </IonCol>
+                                        <IonCol style={{ background: '#F2F2F7', margin: '0 0.25rem', padding: '0.75rem', borderRadius: '0.75rem', textAlign: 'center' }}>
+                                            <div style={{ fontSize: '1.125rem', fontWeight: 'bold', color: '#34C759' }}>
+                                                {Object.values(progressData || {}).reduce((acc, curr) => acc + (curr?.totalUses || 0), 0) || 0}
+                                            </div>
+                                            <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.25rem', fontWeight: 700 }}>Total Taps</div>
+                                        </IonCol>
+                                    </IonRow>
+                                </IonGrid>
+                            </IonCard>
 
-                            <div className="ios-setting-group-header">Actions</div>
-                            <div className="ios-setting-card">
-                                <div className="ios-row" onClick={() => setShowFavoritesPicker(true)}>
-                                    <span style={{ color: '#FF9500', fontWeight: 600 }}>⭐ Add More Favorites</span>
-                                    <span className="ios-chevron">›</span>
-                                </div>
-                                <div className="ios-row" onClick={onToggleDashboard}>
-                                    <span style={{ color: '#007AFF', fontWeight: 600 }}>📊 View Progress Dashboard</span>
-                                    <span className="ios-chevron">›</span>
-                                </div>
-                                <div className="ios-row" onClick={onStartTraining}>
-                                    <span style={{ color: '#5856D6', fontWeight: 600 }}>🧠 Training Mode</span>
-                                    <span className="ios-chevron">›</span>
-                                </div>
-                                <div className="ios-row" onClick={onStartEssentialSkills}>
-                                    <span style={{ color: '#FF2D55', fontWeight: 600 }}>✋ Essential Skills (FCR)</span>
-                                    <span className="ios-chevron">›</span>
-                                </div>
-                            </div>
+                            <IonListHeader>Actions</IonListHeader>
+                            <IonList inset={true}>
+                                <IonItem onClick={() => setShowFavoritesPicker(true)} button={true}>
+                                    <IonIcon icon={starOutline} slot="start" style={{ color: '#FF9500' }} />
+                                    <IonLabel style={{ color: '#FF9500', fontWeight: 600 }}>Add More Favorites</IonLabel>
+                                    <IonIcon icon={chevronForwardOutline} slot="end" color="medium" size="small" />
+                                </IonItem>
+                                <IonItem onClick={onToggleDashboard} button={true}>
+                                    <IonIcon icon={statsChartOutline} slot="start" color="primary" />
+                                    <IonLabel style={{ color: '#007AFF', fontWeight: 600 }}>View Progress Dashboard</IonLabel>
+                                    <IonIcon icon={chevronForwardOutline} slot="end" color="medium" size="small" />
+                                </IonItem>
+                                <IonItem onClick={onStartTraining} button={true}>
+                                    <IonIcon icon={bulbOutline} slot="start" style={{ color: '#5856D6' }} />
+                                    <IonLabel style={{ color: '#5856D6', fontWeight: 600 }}>Training Mode</IonLabel>
+                                    <IonIcon icon={chevronForwardOutline} slot="end" color="medium" size="small" />
+                                </IonItem>
+                                <IonItem onClick={onStartEssentialSkills} button={true}>
+                                    <IonIcon icon={handRightOutline} slot="start" style={{ color: '#FF2D55' }} />
+                                    <IonLabel style={{ color: '#FF2D55', fontWeight: 600 }}>Essential Skills (FCR)</IonLabel>
+                                    <IonIcon icon={chevronForwardOutline} slot="end" color="medium" size="small" />
+                                </IonItem>
+                            </IonList>
 
-                            <div className="ios-setting-group-header">Billing & Info</div>
-                            <div className="ios-setting-card">
-                                <div className="ios-row" onClick={handleCustomerCenter}>
-                                    <span style={{ color: '#007AFF', fontWeight: 600 }}>⚙️ Manage Subscription</span>
-                                    <span className="ios-chevron">›</span>
-                                </div>
-                                <div className="ios-row" onClick={handleRestore}>
-                                    <span>{isRestoring ? 'Restoring...' : 'Restore Purchases'}</span>
-                                    <span className="ios-chevron">›</span>
-                                </div>
-                                <div className="ios-row" onClick={() => window.open('/privacy.html', '_blank')}>
-                                    <span>Privacy Policy</span>
-                                    <span className="ios-chevron">›</span>
-                                </div>
-                                <div className="ios-row" onClick={() => window.open('/terms.html', '_blank')}>
-                                    <span>Terms of Use</span>
-                                    <span className="ios-chevron">›</span>
-                                </div>
-                            </div>
+                            <IonListHeader>Billing & Info</IonListHeader>
+                            <IonList inset={true}>
+                                <IonItem onClick={handleCustomerCenter} button={true}>
+                                    <IonIcon icon={shieldCheckmarkOutline} slot="start" color="primary" />
+                                    <IonLabel style={{ color: '#007AFF', fontWeight: 600 }}>Manage Subscription</IonLabel>
+                                    <IonIcon icon={chevronForwardOutline} slot="end" color="medium" size="small" />
+                                </IonItem>
+                                <IonItem onClick={handleRestore} button={true}>
+                                    <IonIcon icon={refreshOutline} slot="start" color="primary" />
+                                    <IonLabel>{isRestoring ? 'Restoring...' : 'Restore Purchases'}</IonLabel>
+                                    <IonIcon icon={chevronForwardOutline} slot="end" color="medium" size="small" />
+                                </IonItem>
+                                <IonItem onClick={() => window.open('/privacy.html', '_blank')} button={true}>
+                                    <IonLabel>Privacy Policy</IonLabel>
+                                    <IonIcon icon={chevronForwardOutline} slot="end" color="medium" size="small" />
+                                </IonItem>
+                                <IonItem onClick={() => window.open('/terms.html', '_blank')} button={true}>
+                                    <IonLabel>Terms of Use</IonLabel>
+                                    <IonIcon icon={chevronForwardOutline} slot="end" color="medium" size="small" />
+                                </IonItem>
+                            </IonList>
 
-                            <p style={{ fontSize: '0.75rem', color: '#999', textAlign: 'center', marginTop: '0.75rem' }}>
+                            <p style={{ fontSize: '0.75rem', color: '#999', textAlign: 'center', marginTop: '1.5rem', marginBottom: '1.5rem' }}>
                                 © 2024 Behavior School LLC. All rights reserved.
                             </p>
                         </div>
@@ -1551,88 +1508,100 @@ const Controls = ({
 
             </div>
 
-            {showGuidedAccess && (
-                <GuidedAccessModal
-                    onClose={() => {
-                        setShowGuidedAccess(false);
-                        onToggleLock(); // Lock the app after they see the instructions
-                    }}
-                />
-            )}
-
-            {showFavoritesPicker && (
-                <Suspense fallback={null}>
-                    <FavoritesPickerModal
-                        onClose={() => setShowFavoritesPicker(false)}
-                        onAddFavorites={(favorites) => {
-                            if (onAddFavorites) {
-                                onAddFavorites(favorites);
-                            }
-                        }}
-                        existingFavorites={[]} // We'll pass this from App
-                    />
-                </Suspense>
-            )}
-
-            {showPronunciationEditor && (
-                <Suspense fallback={null}>
-                    <PronunciationEditor
-                        onClose={() => setShowPronunciationEditor(false)}
-                    />
-                </Suspense>
-            )}
-
-            {showVoiceSetup && (
-                <Suspense fallback={null}>
-                    <VoiceSetupModal
-                        isOpen={showVoiceSetup}
-                        onClose={() => setShowVoiceSetup(false)}
-                        onRefresh={refreshVoices}
-                        isRefreshing={isRefreshingVoices}
-                        isIOS={isIOS}
-                    />
-                </Suspense>
-            )}
-
-            {showMemojiPicker && (
-                <Suspense fallback={null}>
-                    <MemojiPicker
-                        onSelect={(icon, config) => {
-                            if (memojiTarget?.mode === 'edit' && onUpdatePerson && memojiTarget.person) {
-                                onUpdatePerson(memojiTarget.person.id, {
-                                    name: config?.name || memojiTarget.person.word,
-                                    icon,
-                                    config
-                                });
-                            } else if (onAddPerson) {
-                                onAddPerson({
-                                    name: config?.name,
-                                    icon,
-                                    config
-                                });
-                            }
-                            setShowMemojiPicker(false);
-                            setMemojiTarget(null);
-                        }}
+            {
+                showGuidedAccess && (
+                    <GuidedAccessModal
                         onClose={() => {
-                            setShowMemojiPicker(false);
-                            setMemojiTarget(null);
+                            setShowGuidedAccess(false);
+                            onToggleLock(); // Lock the app after they see the instructions
                         }}
-                        initialName={memojiTarget?.person?.word || ''}
-                        initialSeed={memojiTarget?.person?.characterConfig?.seed || null}
                     />
-                </Suspense>
-            )}
+                )
+            }
 
-            {showBackupRestore && (
-                <Suspense fallback={null}>
-                    <HelperBackupRestore
-                        isOpen={showBackupRestore}
-                        onClose={() => setShowBackupRestore(false)}
-                    />
-                </Suspense>
-            )}
-        </div>
+            {
+                showFavoritesPicker && (
+                    <Suspense fallback={null}>
+                        <FavoritesPickerModal
+                            onClose={() => setShowFavoritesPicker(false)}
+                            onAddFavorites={(favorites) => {
+                                if (onAddFavorites) {
+                                    onAddFavorites(favorites);
+                                }
+                            }}
+                            existingFavorites={[]} // We'll pass this from App
+                        />
+                    </Suspense>
+                )
+            }
+
+            {
+                showPronunciationEditor && (
+                    <Suspense fallback={null}>
+                        <PronunciationEditor
+                            onClose={() => setShowPronunciationEditor(false)}
+                        />
+                    </Suspense>
+                )
+            }
+
+            {
+                showVoiceSetup && (
+                    <Suspense fallback={null}>
+                        <VoiceSetupModal
+                            isOpen={showVoiceSetup}
+                            onClose={() => setShowVoiceSetup(false)}
+                            onRefresh={refreshVoices}
+                            isRefreshing={isRefreshingVoices}
+                            isIOS={isIOS}
+                        />
+                    </Suspense>
+                )
+            }
+
+            {
+                showMemojiPicker && (
+                    <Suspense fallback={null}>
+                        <MemojiPicker
+                            onSelect={(icon, config) => {
+                                if (memojiTarget?.mode === 'edit' && onUpdatePerson && memojiTarget.person) {
+                                    onUpdatePerson(memojiTarget.person.id, {
+                                        name: config?.name || memojiTarget.person.word,
+                                        icon,
+                                        config
+                                    });
+                                } else if (onAddPerson) {
+                                    onAddPerson({
+                                        name: config?.name,
+                                        icon,
+                                        config
+                                    });
+                                }
+                                setShowMemojiPicker(false);
+                                setMemojiTarget(null);
+                            }}
+                            onClose={() => {
+                                setShowMemojiPicker(false);
+                                setMemojiTarget(null);
+                            }}
+                            initialName={memojiTarget?.person?.word || ''}
+                            initialSeed={memojiTarget?.person?.characterConfig?.seed || null}
+                        />
+                    </Suspense>
+                )
+            }
+
+            {
+                showBackupRestore && (
+                    <Suspense fallback={null}>
+                        <HelperBackupRestore
+                            isOpen={showBackupRestore}
+                            onClose={() => setShowBackupRestore(false)}
+                        />
+                    </Suspense>
+                )
+            }
+        </div >
     );
 };
 

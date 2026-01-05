@@ -1285,117 +1285,83 @@ function App() {
   const totalCustomPhotos = rootItems.reduce((sum, page) => sum + countCustomPhotosInItems(page.items || []), 0);
 
   return (
+import MainCommunicationPage from './components/MainCommunicationPage';
+
+  return (
     <div id="main-area">
       {showLevelIntro && <Suspense fallback={null}><LevelIntro level={currentLevel} onComplete={() => { localStorage.setItem(`kiwi-intro-seen-level-${currentLevel}`, 'true'); setShowLevelIntro(false); if (currentStage <= 2 && !phase1TargetId) setShowPhase1Selector(true); }} onChangeLevel={() => { setShowLevelIntro(false); setIsEditMode(true); }} /></Suspense>}
-      {showStrip && (gridSize !== 'super-big' || localStorage.getItem('kiwi-force-strip') === 'true') && (
-        <SentenceStrip
-          stripItems={stripItems}
-          onClear={() => setStripItems([])}
-          onPlay={() => {
-            const sentence = stripItems.map(i => i.word).join(" ");
-            trackSentence(sentence);
-            speakSentence(stripItems);
-          }}
-          onDeleteItem={handleDeleteItemFromStrip}
-          isGoalComplete={(() => {
-            // Check if sentence meets level-specific goal criteria
-            const levelDef = getLevel(currentLevel);
-            if (!levelDef || stripItems.length === 0) return false;
 
-            // Level 4.1: Requires "I want" + item (2 words minimum)
-            if (currentLevel === 4.1) {
-              return stripItems.length >= 2 && stripItems[0]?.word === "I want";
-            }
+      <MainCommunicationPage
+        currentPath={currentPath}
+        currentContext={currentContext}
+        contexts={contexts}
+        currentPhase={currentPhase}
+        currentLevel={currentLevel}
+        showStrip={showStrip}
+        stripItems={stripItems}
+        onClearStrip={() => setStripItems([])}
+        onSpeakSentence={speakSentence}
+        onDeleteItemFromStrip={handleDeleteItemFromStrip}
+        itemsToShow={itemsToShow}
+        gridSize={gridSize}
+        isTrainingMode={isTrainingMode}
+        trainingSelection={trainingSelection}
+        isEditMode={isEditMode}
+        onItemClick={handleItemClick}
+        onBack={handleBack}
+        onDelete={handleDelete}
+        onEdit={handleEdit}
+        onAddItem={handleAddItem}
+        onToggleTraining={handleToggleTraining}
+        shuffledItems={shuffledItems}
+        scanIndex={scanIndex}
+        isLayoutLocked={isLayoutLocked}
+        isColorCodingEnabled={isColorCodingEnabled}
+        isCategorizationEnabled={isCategorizationEnabled}
+        collapsedSections={collapsedSections}
+        showCategoryHeaders={showCategoryHeaders}
+        rootItems={rootItems}
+        currentPageIndex={currentPageIndex}
+        onSetPage={setCurrentPageIndex}
+        onToggleSection={(sectionId) => {
+          setCollapsedSections(prev =>
+            prev.includes(sectionId) ? prev.filter(id => id !== sectionId) : [...prev, sectionId]
+          );
+        }}
+        onToggleMenu={() => setIsEditMode(!isEditMode)}
+        showSuccess={showSuccess}
+        callActive={callActive}
+        isCommunicating={isCommunicating}
+        timerRemaining={timerRemaining}
+        bellCooldown={bellCooldown}
+        onBellClick={() => {
+          if (!bellCooldown) {
+            playBellSound(bellSound);
+            setBellCooldown(true);
+            setTimerRemaining(5);
+            const interval = setInterval(() => {
+              setTimerRemaining(prev => {
+                if (prev <= 1) {
+                  clearInterval(interval);
+                  setCallActive(true);
+                  setBellCooldown(false);
+                  return 0;
+                }
+                return prev - 1;
+              });
+            }, 1000);
+          }
+        }}
+        onTalkClick={() => {
+          setCallActive(false);
+          setIsCommunicating(true);
+        }}
+        isLocked={isLocked}
+        sensors={sensors}
+        handleDragEnd={handleDragEnd}
+        currentPageItems={currentPageItems}
+      />
 
-            // Level 4.2: Requires attribute (3+ words)
-            if (currentLevel === 4.2) {
-              return stripItems.length >= 3;
-            }
-
-            // Level 4.3+: Requires 4+ words
-            if (currentLevel >= 4.3) {
-              return stripItems.length >= 4;
-            }
-
-            // For other levels, any items count as goal met
-            return stripItems.length > 0;
-          })()}
-        />
-      )}
-
-      {/* iOS Navigation Header */}
-      <header className="ios-nav-header" style={{ opacity: 0.3 }}>
-        <div className="ios-nav-top">
-          {currentPath.length > 0 && (
-            <button className="ios-back-button" onClick={handleBack}>
-              <span className="ios-chevron-left">‹</span>
-              {currentPath.length === 1 ? 'Home' : 'Back'}
-            </button>
-          )}
-          <div className="ios-nav-badges">
-            {currentContext !== 'home' && (
-              <span className="ios-context-badge">
-                {contexts.find(c => c.id === currentContext)?.icon} {contexts.find(c => c.id === currentContext)?.label}
-              </span>
-            )}
-            {currentPhase > 0 && <span className="ios-phase-badge">Level {currentPhase}</span>}
-          </div>
-        </div>
-        <h1 className="ios-large-title">
-          {currentPath.length === 0 ? "Home" : currentPath.reduce((acc, i, idx) => {
-            if (idx === 0) return rootItems[i].word;
-            let list = rootItems;
-            for (let j = 0; j < idx; j++) list = list[currentPath[j]].contents;
-            return list[i].word;
-          }, "")}
-        </h1>
-      </header>
-
-      {showSuccess && <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10rem', zIndex: 300, pointerEvents: 'none', animation: 'zoomIn 0.5s ease' }}>{currentPhase === 3 ? "🎯" : "🌟"}</div>}
-      {currentPhase === 2 && !callActive && !isCommunicating && (
-        <div className="call-overlay"><h2>{timerRemaining > 0 ? "Wait for partner..." : "I have something to say"}</h2><button className={`call-btn ${bellCooldown ? 'cooldown' : ''}`} disabled={bellCooldown} onClick={() => { if (!bellCooldown) { playBellSound(bellSound); setBellCooldown(true); setTimerRemaining(5); const interval = setInterval(() => { setTimerRemaining(prev => { if (prev <= 1) { clearInterval(interval); setCallActive(true); setBellCooldown(false); return 0; } return prev - 1; }); }, 1000); } }}>{timerRemaining > 0 ? <div className="timer-display"><div className="timer-circle" style={{ background: `conic-gradient(var(--primary) ${timerRemaining * 72}deg, #eee 0deg)` }}><span className="timer-text">{timerRemaining}</span></div></div> : '🔔'}</button></div>
-      )}
-      {callActive && <div className="call-overlay" style={{ background: 'rgba(255,255,255,0.95)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1000 }}><button onClick={() => { setCallActive(false); setIsCommunicating(true); }} style={{ background: '#FF3B30', color: 'white', border: 'none', borderRadius: '30px', padding: '40px 80px', fontSize: '2.5rem', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 10px 40px rgba(255, 59, 48, 0.4)', transition: 'transform 0.2s ease' }}>Let&apos;s talk!</button></div>}
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <div id="main-grid" role="main" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-          <Suspense fallback={<div style={{ flex: 1 }} />}>
-            <SwitchAccessMode onIconSelect={handleItemClick}>
-              <Grid
-                items={itemsToShow}
-                currentPhase={currentPhase}
-                gridSize={gridSize}
-                isTrainingMode={isTrainingMode}
-                trainingSelection={trainingSelection}
-                isEditMode={isEditMode}
-                onItemClick={handleItemClick}
-                onBack={handleBack}
-                onDelete={handleDelete}
-                onEdit={handleEdit}
-                onAddItem={handleAddItem}
-                onToggleTraining={handleToggleTraining}
-                hasBack={currentPath.length > 0}
-                trainingPanelVisible={!shuffledItems}
-                folder={currentPath.length > 0 ? currentPath.reduce((acc, i) => acc[i].contents, (rootItems[currentPageIndex]?.items || [])) : null}
-                scanIndex={scanIndex}
-                isLayoutLocked={isLayoutLocked}
-                isColorCodingEnabled={isColorCodingEnabled}
-                isCategorizationEnabled={isCategorizationEnabled}
-                collapsedSections={collapsedSections}
-                showCategoryHeaders={showCategoryHeaders}
-                pages={rootItems}
-                currentPageIndex={currentPageIndex}
-                onSetPage={setCurrentPageIndex}
-                onToggleSection={(sectionId) => {
-                  setCollapsedSections(prev =>
-                    prev.includes(sectionId) ? prev.filter(id => id !== sectionId) : [...prev, sectionId]
-                  );
-                }}
-              />
-            </SwitchAccessMode>
-          </Suspense>
-        </div>
-      </DndContext>
-      {!isLocked && !isEditMode && !isTrainingMode && <button id="settings-button" onClick={() => setIsEditMode(true)} aria-label="Open Settings">⚙️</button>}
       {!isLocked && <Controls isEditMode={isEditMode} isTrainingMode={isTrainingMode} currentPhase={currentPhase} currentLevel={currentLevel} showStrip={showStrip} currentContext={currentContext} contexts={contexts} onSetContext={handleSetContext} onToggleMenu={() => setIsEditMode(!isEditMode)} onAddItem={handleAddItem} onAddContext={handleAddContext} onRenameContext={handleRenameContext} onDeleteContext={handleDeleteContext} onSetLevel={handleSetLevel} onStartTraining={() => { setIsTrainingMode(true); setTrainingSelection([]); }} onStartEssentialSkills={() => setIsEssentialSkillsMode(true)} onReset={() => { if (confirm("Reset everything?")) { localStorage.clear(); location.reload(); } }} onShuffle={handleShuffle} onStopTraining={handleStopTraining} onOpenPicker={handlePickerOpen} onToggleDashboard={() => setShowDashboard(true)} onRedoCalibration={() => setShowCalibration(true)} onToggleLock={() => setIsLocked(true)} voiceSettings={voiceSettings} onUpdateVoiceSettings={setVoiceSettings} gridSize={gridSize} onUpdateGridSize={setGridSize} phase1TargetId={phase1TargetId} onSetPhase1Target={setPhase1TargetId} rootItems={currentPageItems} allRootItems={rootItems} colorTheme={colorTheme} onSetColorTheme={setColorTheme} triggerPaywall={triggerPaywall} bellSound={bellSound} onUpdateBellSound={setBellSound} speechDelay={speechDelay} onUpdateSpeechDelay={setSpeechDelay} autoSpeak={autoSpeak} onUpdateAutoSpeak={setAutoSpeak} isScanning={isScanning} onToggleScanning={() => setIsScanning(!isScanning)} scanSpeed={scanSpeed} onUpdateScanSpeed={setScanSpeed} isLayoutLocked={isLayoutLocked} onToggleLayoutLock={() => setIsLayoutLocked(!isLayoutLocked)} isColorCodingEnabled={isColorCodingEnabled} onToggleColorCoding={() => setIsColorCodingEnabled(!isColorCodingEnabled)} showCategoryHeaders={showCategoryHeaders} onToggleCategoryHeaders={() => setShowCategoryHeaders(!showCategoryHeaders)} proficiencyLevel={proficiencyLevel} onUpdateProficiencyLevel={setProficiencyLevel} onAddPage={handleAddNewPage} onDeletePage={handleDeletePage} currentPageIndex={currentPageIndex} onAddFavorites={(favorites) => {
         const nowTime = new Date().getTime();
         const newFavs = favorites.map((fav, i) => ({ id: `fav-${nowTime}-${i}`, type: 'button', word: fav.word || fav.label, icon: fav.icon, bgColor: '#FFF3E0' }));
@@ -1409,14 +1375,13 @@ function App() {
         newRootItems[currentPageIndex] = { ...newRootItems[currentPageIndex], items: list };
         setRootItems(newRootItems);
       }} onAddPerson={handleAddPerson} onUpdatePerson={handleUpdatePerson} onRemovePerson={handleRemovePerson} progressData={progressData} />}
+
       {isLocked && (
         <div style={{ position: 'fixed', bottom: '0', left: '0', right: '0', padding: '12px 20px calc(12px + env(safe-area-inset-bottom, 0px)) 20px', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)', borderTopLeftRadius: '20px', borderTopRightRadius: '20px', boxShadow: '0 -2px 10px rgba(0,0,0,0.1)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100, cursor: 'pointer', textAlign: 'center' }}
           onClick={async () => {
             // Biometric Unlock Path
             if (currentProfile?.accessProfile?.biometricLock && Capacitor.isNativePlatform()) {
-              // Check if session is still valid (5 minutes)
               if (isSessionValid(biometricUnlockTimestamp, 5 * 60 * 1000)) {
-                // Session valid - unlock immediately
                 setIsLocked(false);
                 localStorage.setItem('kiwi-child-mode', 'unlocked');
                 setLockTapCount(0);
@@ -1424,7 +1389,6 @@ function App() {
                 return;
               }
 
-              // Session expired - request biometric auth
               const result = await authenticateWithBiometric({
                 reason: 'Unlock settings',
                 title: 'Kiwi Voice Security'
@@ -1438,13 +1402,10 @@ function App() {
                 setBiometricUnlockTimestamp(Date.now());
                 return;
               } else {
-                // Biometric failed - show fallback hint
-                console.warn('Biometric failed or cancelled, falling back to triple-tap');
                 setShowUnlockHint(true);
               }
             }
 
-            // Triple-Tap Fallback (always available)
             const newCount = lockTapCount + 1;
             setLockTapCount(newCount);
             setShowUnlockHint(true);
@@ -1483,11 +1444,13 @@ function App() {
           </span>
         </div>
       )}
+
       {editModalOpen && <Suspense fallback={null}><EditModal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} onSave={handleSaveEdit} onDelete={() => { if (editingItemIndex !== null) { handleDelete(editingItemIndex); setEditModalOpen(false); } }} onOpenEmojiPicker={handlePickerOpen} item={editingItemIndex !== null ? (currentPath.length === 0 ? (rootItems[currentPageIndex]?.items || []) : currentPath.reduce((acc, i) => acc[i].contents, (rootItems[currentPageIndex]?.items || [])))[editingItemIndex] : null} customPhotoCount={totalCustomPhotos} triggerPaywall={triggerPaywall} /></Suspense>}
       {pickerOpen && <Suspense fallback={null}><PickerModal isOpen={pickerOpen} onClose={() => setPickerOpen(false)} userItems={rootItems[currentPageIndex]?.items || []} triggerPaywall={triggerPaywall} onSelect={(w, i, isImage) => { if (pickerCallback) pickerCallback(w, i, isImage); }} /></Suspense>}
       {showPhase1Selector && <Suspense fallback={null}><Phase1TargetSelector rootItems={rootItems[currentPageIndex]?.items || []} onSelect={(id) => { setPhase1TargetId(id); setShowPhase1Selector(false); }} /></Suspense>}
       {showAdvancementModal && <Suspense fallback={null}><AdvancementModal currentPhase={currentPhase} onAdvance={handleAdvance} onWait={handleWait} /></Suspense>}
       <Suspense fallback={null}><A2HSModal /></Suspense>
+
       {inflectionData && (
         <div className="inflection-bubble" style={{
           position: 'fixed',
@@ -1532,13 +1495,16 @@ function App() {
           }}>✕</button>
         </div>
       )}
+
       {isEssentialSkillsMode && (
         <EssentialSkillsMode
           onExit={() => setIsEssentialSkillsMode(false)}
           onLogEvent={(event) => console.log('Skills Event:', event)}
         />
       )}
+
       {showDashboard && <Suspense fallback={null}><Dashboard onClose={() => setShowDashboard(false)} progressData={progressData} currentPhase={currentPhase} currentLevel={currentLevel} rootItems={rootItems[currentPageIndex]?.items || []} /></Suspense>}
+
       {activeVisualScene && (
         <Suspense fallback={null}>
           <VisualSceneView
@@ -1548,7 +1514,9 @@ function App() {
           />
         </Suspense>
       )}
+
       {showCalibration && <TouchCalibration onComplete={() => setShowCalibration(false)} />}
+
       {showOnboarding && (
         <Onboarding onComplete={(recommendedPhase, favorites, canRead, learnerProfile) => {
           if (typeof recommendedPhase === 'number') handleSetPhase(recommendedPhase);
@@ -1575,6 +1543,8 @@ function App() {
         }} />
       )}
     </div>
+  );
+};
   );
 }
 

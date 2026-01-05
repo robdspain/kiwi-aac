@@ -1,9 +1,24 @@
 import { useState } from 'react';
 import { useProfile } from '../context/ProfileContext';
+import {
+    IonModal,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonButtons,
+    IonButton,
+    IonList,
+    IonItem,
+    IonLabel,
+    IonInput,
+    IonText,
+    IonIcon,
+    IonNote
+} from '@ionic/react';
+import { addOutline, trashOutline } from 'ionicons/icons';
 
-import { checkPronunciationLimit, FREE_TIER_LIMITS } from '../services/RevenueCatService'; // Wait, FREE_TIER_LIMITS is in RevenueCatService but checkPronunciationLimit isn't. I need to implement logic manually.
-
-import revenueCatService, { FREE_TIER_LIMITS } from '../services/RevenueCatService';
+import { revenueCatService, FREE_TIER_LIMITS } from '../services/RevenueCatService';
 
 const PronunciationEditor = ({ onClose }) => {
     const { pronunciations, addPronunciation, deletePronunciation } = useProfile();
@@ -11,23 +26,20 @@ const PronunciationEditor = ({ onClose }) => {
     const [phonetic, setPhonetic] = useState('');
 
     const handleAdd = async (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         if (word && phonetic) {
             const currentCount = Object.keys(pronunciations).length;
 
-            // Check pronunciation limit directly
             if (currentCount >= FREE_TIER_LIMITS.MAX_PRONUNCIATION_ENTRIES) {
                 try {
                     const hasAccess = await revenueCatService.hasPremiumAccess();
                     if (!hasAccess) {
                         const paywallResult = await revenueCatService.showPaywallIfNeeded('premiumVoice');
-                        // Re-check after paywall
                         const accessAfter = await revenueCatService.hasPremiumAccess();
                         if (!accessAfter) return;
                     }
                 } catch (error) {
                     console.error('Failed to check pronunciation limit:', error);
-                    // Continue anyway in development/error
                 }
             }
 
@@ -37,109 +49,106 @@ const PronunciationEditor = ({ onClose }) => {
         }
     };
 
+    const entriesCount = Object.keys(pronunciations).length;
+    const isOverLimit = entriesCount >= FREE_TIER_LIMITS.MAX_PRONUNCIATION_ENTRIES;
+
     return (
-        <div className="ios-modal-overlay" onClick={onClose}>
-            <div className="ios-modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '400px', width: '90%' }}>
-                <div className="ios-sheet-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '1rem', borderBottom: '1px solid #E5E5EA' }}>
-                    <button
-                        onClick={onClose}
-                        style={{
-                            color: '#007AFF',
-                            fontSize: '1rem',
-                            background: 'transparent',
-                            border: 'none',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        Cancel
-                    </button>
-                    <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Pronunciation</h3>
-                    <button
-                        onClick={onClose}
-                        style={{
-                            padding: '6px 16px',
-                            background: '#007AFF',
-                            color: 'white',
-                            borderRadius: '20px',
-                            fontWeight: '600',
-                            fontSize: '0.9rem',
-                            border: 'none',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        Done
-                    </button>
+        <IonModal isOpen={true} onDidDismiss={onClose}>
+            <IonHeader>
+                <IonToolbar>
+                    <IonButtons slot="start">
+                        <IonButton onClick={onClose}>Cancel</IonButton>
+                    </IonButtons>
+                    <IonTitle>Pronunciation</IonTitle>
+                    <IonButtons slot="end">
+                        <IonButton onClick={onClose} style={{ fontWeight: 'bold' }}>Done</IonButton>
+                    </IonButtons>
+                </IonToolbar>
+            </IonHeader>
+
+            <IonContent className="ion-padding">
+                <div style={{ marginBottom: '1.5rem' }}>
+                    <IonText color="medium">
+                        <p style={{ fontSize: '0.9rem', marginBottom: '1rem' }}>
+                            Type a word and how you want it to sound (phonetically).
+                            <br />Example: <b>Kiwi</b> → <b>Kee-wee</b>
+                        </p>
+                    </IonText>
+
+                    <IonNote color={isOverLimit ? 'danger' : 'primary'} style={{ fontWeight: '600' }}>
+                        {entriesCount}/{FREE_TIER_LIMITS.MAX_PRONUNCIATION_ENTRIES} free entries used
+                    </IonNote>
                 </div>
 
-                <div style={{ padding: '1.25rem' }}>
-                    <p style={{ fontSize: '0.75rem', color: '#666', marginBottom: '1rem' }}>
-                        Type a word and how you want it to sound (phonetically).
-                        <br />Example: <b>Kiwi</b> → <b>Kee-wee</b>
-                        <br />
-                        <span style={{ color: Object.keys(pronunciations).length >= FREE_TIER_LIMITS.MAX_PRONUNCIATION_ENTRIES ? '#FF3B30' : '#007AFF' }}>
-                            {Object.keys(pronunciations).length}/{FREE_TIER_LIMITS.MAX_PRONUNCIATION_ENTRIES} free entries used
-                        </span>
-                    </p>
-
-                    <form onSubmit={handleAdd} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        <div className="ios-input-group">
-                            <label>Original Word</label>
-                            <input
-                                type="text"
-                                value={word}
-                                onChange={e => setWord(e.target.value)}
-                                placeholder="e.g. Kiwi"
-                                className="ios-input"
-                            />
-                        </div>
-                        <div className="ios-input-group">
-                            <label>Phonetic Spelling</label>
-                            <input
-                                type="text"
-                                value={phonetic}
-                                onChange={e => setPhonetic(e.target.value)}
-                                placeholder="e.g. Kee-wee"
-                                className="ios-input"
-                            />
-                        </div>
-                        <button
-                            type="submit"
-                            className="apple-blue-button"
+                <div className="ios-setting-card" style={{ padding: '0.5rem' }}>
+                    <IonItem lines="none" style={{ borderRadius: '12px' }}>
+                        <IonLabel position="stacked">Original Word</IonLabel>
+                        <IonInput
+                            value={word}
+                            onIonChange={e => setWord(e.detail.value)}
+                            placeholder="e.g. Kiwi"
+                        />
+                    </IonItem>
+                    <IonItem lines="none" style={{ borderRadius: '12px', marginTop: '8px' }}>
+                        <IonLabel position="stacked">Phonetic Spelling</IonLabel>
+                        <IonInput
+                            value={phonetic}
+                            onIonChange={e => setPhonetic(e.detail.value)}
+                            placeholder="e.g. Kee-wee"
+                        />
+                    </IonItem>
+                    <div style={{ padding: '10px' }}>
+                        <IonButton
+                            expand="block"
+                            onClick={() => handleAdd()}
                             disabled={!word || !phonetic}
-                            style={{ marginTop: '0.75rem', minHeight: '2.75rem' }}
                         >
+                            <IonIcon icon={addOutline} slot="start" />
                             Add Override
-                        </button>
-                    </form>
-
-                    <div style={{ marginTop: '1.875rem' }}>
-                        <h4 style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', marginBottom: '0.75rem', textTransform: 'uppercase' }}>
-                            Existing Overrides
-                        </h4>
-                        <div className="ios-setting-card" style={{ maxHeight: '12.5rem', overflowY: 'auto' }}>
-                            {Object.keys(pronunciations).length === 0 ? (
-                                <div style={{ padding: '1rem', textAlign: 'center', color: '#999', fontSize: '0.875rem' }}>
-                                    No custom pronunciations yet.
-                                </div>
-                            ) : (
-                                Object.entries(pronunciations).map(([w, p]) => (
-                                    <div key={w} className="ios-row" style={{ padding: '0.75rem 1rem' }}>
-                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                            <span style={{ fontWeight: 600, fontSize: '0.9375rem' }}>{w}</span>
-                                            <span style={{ fontSize: '0.75rem', color: '#007AFF' }}>sounds like: {p}</span>
-                                        </div>
-                                        <button
-                                            onClick={() => deletePronunciation(w)}
-                                            style={{ border: 'none', background: '#FFE5E5', color: '#FF3B30', borderRadius: '50%', width: '2.75rem', height: '2.75rem', fontSize: '0.875rem', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-                                        >×</button>
-                                    </div>
-                                ))
-                            )}
-                        </div>
+                        </IonButton>
                     </div>
                 </div>
-            </div>
-        </div>
+
+                <div style={{ marginTop: '2rem' }}>
+                    <IonLabel style={{
+                        fontSize: '0.75rem',
+                        fontWeight: '600',
+                        color: 'var(--ion-color-medium)',
+                        textTransform: 'uppercase',
+                        paddingLeft: '1rem',
+                        display: 'block',
+                        marginBottom: '0.5rem'
+                    }}>
+                        Existing Overrides
+                    </IonLabel>
+
+                    <IonList className="ios-setting-card" style={{ borderRadius: '16px', overflow: 'hidden' }}>
+                        {Object.keys(pronunciations).length === 0 ? (
+                            <IonItem>
+                                <IonLabel color="medium" className="ion-text-center">No custom pronunciations yet.</IonLabel>
+                            </IonItem>
+                        ) : (
+                            Object.entries(pronunciations).map(([w, p]) => (
+                                <IonItem key={w}>
+                                    <IonLabel>
+                                        <h2 style={{ fontWeight: '600' }}>{w}</h2>
+                                        <p style={{ color: 'var(--ion-color-primary)' }}>sounds like: {p}</p>
+                                    </IonLabel>
+                                    <IonButton
+                                        slot="end"
+                                        fill="clear"
+                                        color="danger"
+                                        onClick={() => deletePronunciation(w)}
+                                    >
+                                        <IonIcon icon={trashOutline} />
+                                    </IonButton>
+                                </IonItem>
+                            ))
+                        )}
+                    </IonList>
+                </div>
+            </IonContent>
+        </IonModal>
     );
 };
 

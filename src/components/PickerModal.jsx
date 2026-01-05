@@ -1,4 +1,36 @@
 import { useState, useEffect, useRef } from 'react';
+import {
+    IonModal,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonButtons,
+    IonButton,
+    IonSearchbar,
+    IonSegment,
+    IonSegmentButton,
+    IonLabel,
+    IonIcon,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonList,
+    IonItem,
+    IonNote
+} from '@ionic/react';
+import {
+    closeOutline,
+    settingsOutline,
+    happyOutline,
+    brushOutline,
+    bookOutline,
+    cameraOutline,
+    starOutline,
+    chevronBackOutline,
+    checkmarkOutline,
+    chevronForwardOutline
+} from 'ionicons/icons';
 import { EMOJI_DATA } from '../utils/emojiData';
 import { getOpenMojiUrl } from '../utils/imageUtils';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -86,17 +118,12 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
         }
     };
 
-    // Get photos from global registry + current board
     const getGlobalPhotos = () => {
         const saved = localStorage.getItem('kiwi-user-photos');
         const globalList = saved ? JSON.parse(saved) : [];
-
-        // Also pull from current userItems just in case they aren't in registry yet
         const currentBoardPhotos = (userItems || [])
             .filter(item => item.type === 'button' && typeof item.icon === 'string' && (item.icon.startsWith('data:') || item.icon.startsWith('http')))
             .map(item => ({ w: item.word, i: item.icon }));
-
-        // Merge and unique by icon string
         const unique = new Map();
         [...globalList, ...currentBoardPhotos].forEach(p => unique.set(p.i, p));
         return Array.from(unique.values());
@@ -115,14 +142,12 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
     const countCustomPhotos = (photos) => photos.filter(photo => isDataUrlPhoto(photo.i)).length;
 
     const handleConfirmSelection = () => {
-        // Show options dialog instead of immediate save
         setShowSaveOptions(true);
     };
 
     const executeSave = async (alsoUse) => {
         if (!customizingItem) return;
 
-        // Save to global registry
         if (customizingItem.isImage) {
             const photos = getGlobalPhotos();
             const isNewPhoto = !photos.find(p => p.i === customizingItem.icon);
@@ -150,12 +175,7 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
             setCustomizingItem(null);
             setSearchQuery('');
         } else {
-            // Just library save. Stay in customization or go back to picker?
-            // Usually "Save to Library" implies we are done editing.
-            // Let's go back to the picker view so they can see it in "My Icons"
             setCustomizingItem(null);
-            // Optionally switch to "My Icons" tab?
-            // setActiveTab('emoji'); setActiveCategory('My Icons');
         }
         setShowSaveOptions(false);
     };
@@ -198,7 +218,7 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
 
     const searchARASAAC = async (query) => {
         if (!query || query.length < 2) { setArasaacSymbols([]); return; }
-        setArasaacSymbols([]); // Clear stale results
+        setArasaacSymbols([]);
         setIsLoading(true);
         try {
             const response = await fetch(`https://api.arasaac.org/api/pictograms/en/search/${query}`);
@@ -227,7 +247,6 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                 } else {
                     setSymbols([]);
                 }
-
                 if (selectedLibraries.includes('arasaac')) {
                     searchARASAAC(searchQuery);
                 } else {
@@ -255,443 +274,245 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
         }
     }, [activeTab, activeCategory]);
 
-    if (!isOpen) return null;
-
-    if (customizingItem) {
-        return (
-            <div className="ios-bottom-sheet-overlay" onClick={() => setCustomizingItem(null)}>
-                <div className="ios-bottom-sheet" onClick={e => e.stopPropagation()} style={{ height: 'auto', minHeight: '400px' }}>
-
-                    <div className="ios-sheet-header">
-                        <button className="ios-cancel-button" onClick={() => setCustomizingItem(null)}>Back</button>
-                        <h2 className="ios-sheet-title">Customize Icon</h2>
-                        <button className="ios-done-button" onClick={handleConfirmSelection}>Save</button>
-                    </div>
-                    <div className="ios-sheet-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.25rem', padding: '2.5rem 1.25rem' }}>
-                        <div style={{ width: '7.5rem', height: '7.5rem', background: 'white', borderRadius: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 24px rgba(0,0,0,0.1)', fontSize: '4rem', overflow: 'hidden' }}>
-                            {customizingItem.isImage ? <img src={customizingItem.icon} alt="Selected" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span>{customizingItem.icon}</span>}
-                        </div>
-                        <div className="ios-setting-card" style={{ width: '100%', maxWidth: '18.75rem' }}>
-                            <div className="ios-row ios-row-input">
-                                <span style={{ fontWeight: 600 }}>Label</span>
-                                <input
-                                    type="text"
-                                    value={customName}
-                                    onChange={(e) => setCustomName(e.target.value)}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            handleConfirmSelection();
-                                        }
-                                    }}
-                                    className="ios-row-input-field"
-                                    style={{ border: 'none', textAlign: 'right', fontSize: '1.0625rem', outline: 'none', background: 'transparent', flex: 1, minHeight: '2.75rem' }}
-                                    placeholder="Enter label"
-                                    aria-label="Edit icon label"
-                                    autoFocus
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
     const tabs = [
-        { id: 'emoji', label: '😀', name: 'Emoji' },
-        { id: 'openmoji', label: '🎨', name: 'OpenMoji' },
-        { id: 'symbol', label: '📚', name: 'Symbols' },
-        { id: 'photo', label: '📷', name: 'Photos' }
+        { id: 'emoji', icon: happyOutline, label: 'Emoji' },
+        { id: 'openmoji', icon: brushOutline, label: 'OpenMoji' },
+        { id: 'symbol', icon: bookOutline, label: 'Symbols' },
+        { id: 'photo', icon: cameraOutline, label: 'Photos' }
     ];
-    const activeTabIndex = tabs.findIndex(t => t.id === activeTab);
 
     return (
-        <div className="ios-bottom-sheet-overlay" onClick={onClose}>
-            <div className="ios-bottom-sheet" onClick={e => e.stopPropagation()}>
-
-                <div className="ios-sheet-header" style={{ borderBottom: 'none', padding: '16px 20px 8px' }}>
-                    <button className="ios-cancel-button" onClick={onClose} style={{ flexShrink: 0 }}>Cancel</button>
-                    <div className="ios-segmented-control" style={{ marginBottom: 0, flex: 1, margin: '0 12px' }}>
-                        <div
-                            className="selection-pill"
-                            style={{
-                                width: `calc(${100 / tabs.length}% - 4px)`,
-                                transform: `translateX(${activeTabIndex * 100}%)`
-                            }}
+        <IonModal isOpen={isOpen} onDidDismiss={onClose} breakpoints={[0, 0.5, 0.9]} initialBreakpoint={0.9}>
+            <IonHeader className="ion-no-border">
+                <IonToolbar style={{ '--padding-top': '0.5rem' }}>
+                    <IonButtons slot="start">
+                        {customizingItem ? (
+                            <IonButton onClick={() => setCustomizingItem(null)}>
+                                <IonIcon icon={chevronBackOutline} slot="start" />
+                                Back
+                            </IonButton>
+                        ) : (
+                            <IonButton onClick={onClose}>Cancel</IonButton>
+                        )}
+                    </IonButtons>
+                    <IonTitle>{customizingItem ? 'Customize Icon' : 'Select Icon'}</IonTitle>
+                    <IonButtons slot="end">
+                        {customizingItem ? (
+                            <IonButton onClick={handleConfirmSelection} style={{ fontWeight: 600 }}>Save</IonButton>
+                        ) : (
+                            <IonButton onClick={() => setShowLibraryFilters(!showLibraryFilters)} color={showLibraryFilters ? 'primary' : 'medium'}>
+                                <IonIcon icon={settingsOutline} slot="icon-only" />
+                            </IonButton>
+                        )}
+                    </IonButtons>
+                </IonToolbar>
+                {!customizingItem && (
+                    <IonToolbar>
+                        <IonSearchbar
+                            value={searchQuery}
+                            onIonInput={(e) => setSearchQuery(e.detail.value)}
+                            placeholder="Search icons..."
+                            style={{ '--border-radius': '0.75rem' }}
                         />
-                        {tabs.map(tab => (
-                            <button
-                                key={tab.id}
-                                onClick={() => {
-                                    triggerHaptic('light');
-                                    setActiveTab(tab.id);
-                                }}
-                                style={{
-                                    padding: '0.5rem 0',
-                                    minHeight: '3rem',
-                                    fontSize: '1.25rem',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: '2px'
-                                }}
-                                aria-label={tab.name}
-                            >
-                                <span>{tab.label}</span>
-                                <span style={{ fontSize: '0.5rem', fontWeight: 800, textTransform: 'uppercase', opacity: activeTab === tab.id ? 1 : 0.5 }}>{tab.name}</span>
-                            </button>
-                        ))}
-                    </div>
-                </div>
+                    </IonToolbar>
+                )}
+            </IonHeader>
 
-                <div style={{ padding: '0 1.25rem 0.9375rem' }}>
-                    <div style={{ position: 'relative', display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-                        <div style={{ position: 'relative', flex: 1 }}>
-                            <input
-                                type="text"
-                                placeholder="Search icons..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                style={{ width: '100%', padding: '0.75rem 2.5rem', borderRadius: '0.75rem', border: 'none', background: '#E3E3E8', fontSize: '1.0625rem', outline: 'none', minHeight: '3.5rem' }}
-                            />
-                            <span style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.4, fontSize: '1.2rem' }}>🔍</span>
-                            {searchQuery && (
-                                <button
-                                    onClick={() => setSearchQuery('')}
-                                    aria-label="Clear search"
-                                    style={{
-                                        position: 'absolute',
-                                        right: '0.75rem',
-                                        top: '50%',
-                                        transform: 'translateY(-50%)',
-                                        background: '#8E8E93',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '50%',
-                                        width: '1.5rem',
-                                        height: '1.5rem',
-                                        fontSize: '0.8rem',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        cursor: 'pointer'
-                                    }}
-                                >
-                                    ✕
-                                </button>
-                            )}
+            <IonContent style={{ '--background': '#F2F2F7' }}>
+                {customizingItem ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', padding: '2rem 1rem' }}>
+                        <div style={{ width: '8rem', height: '8rem', background: 'white', borderRadius: '1.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 24px rgba(0,0,0,0.1)', fontSize: '4.5rem', overflow: 'hidden' }}>
+                            {customizingItem.isImage ? <img src={customizingItem.icon} alt="Selected" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span>{customizingItem.icon}</span>}
                         </div>
-                        <button
-                            onClick={() => {
+                        <IonList inset={true} style={{ width: '100%' }}>
+                            <IonItem>
+                                <IonLabel position="fixed" style={{ fontWeight: 600 }}>Label</IonLabel>
+                                <IonInput
+                                    value={customName}
+                                    onIonInput={(e) => setCustomName(e.detail.value)}
+                                    placeholder="Enter label"
+                                    className="ion-text-right"
+                                    autofocus
+                                />
+                            </IonItem>
+                        </IonList>
+                    </div>
+                ) : (
+                    <>
+                        {showLibraryFilters && (
+                            <div style={{ margin: '0 1rem 1rem' }}>
+                                <IonList inset={true}>
+                                    <IonListHeader>Search Sources</IonListHeader>
+                                    {[
+                                        { id: 'emoji', label: 'System Emoji' },
+                                        { id: 'openmoji', label: 'OpenMoji' },
+                                        { id: 'arasaac', label: 'Symbols' }
+                                    ].map(lib => (
+                                        <IonItem key={lib.id} button onClick={() => {
+                                            if (selectedLibraries.includes(lib.id)) {
+                                                if (selectedLibraries.length > 1) setSelectedLibraries(selectedLibraries.filter(id => id !== lib.id));
+                                            } else {
+                                                setSelectedLibraries([...selectedLibraries, lib.id]);
+                                            }
+                                        }}>
+                                            <IonLabel>{lib.label}</IonLabel>
+                                            <IonIcon icon={checkmarkOutline} slot="end" style={{ opacity: selectedLibraries.includes(lib.id) ? 1 : 0 }} color="primary" />
+                                        </IonItem>
+                                    ))}
+                                </IonList>
+                            </div>
+                        )}
+
+                        <div style={{ padding: '0 1rem' }}>
+                            <IonSegment value={activeTab} onIonChange={(e) => {
                                 triggerHaptic('light');
-                                setShowLibraryFilters(!showLibraryFilters);
-                            }}
-                            style={{
-                                width: '3.5rem', height: '3.5rem', borderRadius: '0.75rem',
-                                border: 'none', background: showLibraryFilters ? 'var(--primary)' : '#E3E3E8',
-                                color: showLibraryFilters ? 'white' : 'black',
-                                fontSize: '1.5rem', cursor: 'pointer',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center'
-                            }}
-                            aria-label="Filter libraries"
-                        >
-                            ⚙️
-                        </button>
-                    </div>
+                                setActiveTab(e.detail.value);
+                            }} style={{ marginBottom: '1rem' }}>
+                                {tabs.map(tab => (
+                                    <IonSegmentButton key={tab.id} value={tab.id}>
+                                        <IonIcon icon={tab.icon} />
+                                        <IonLabel style={{ fontSize: '0.6rem' }}>{tab.label}</IonLabel>
+                                    </IonSegmentButton>
+                                ))}
+                            </IonSegment>
 
-                    {showLibraryFilters && (
-                        <div style={{
-                            marginTop: '0.75rem', padding: '0.75rem', background: '#F2F2F7',
-                            borderRadius: '0.75rem', display: 'flex', flexWrap: 'wrap', gap: '0.5rem'
-                        }}>
-                            <span style={{ width: '100%', fontSize: '0.75rem', fontWeight: 700, color: '#666', marginBottom: '0.25rem' }}>SEARCH SOURCES</span>
-                            {[{ id: 'emoji', label: '😀 System Emoji' }, { id: 'openmoji', label: '🎨 OpenMoji' }, { id: 'arasaac', label: '📚 Symbols' }].map(lib => (
-                                <button
-                                    key={lib.id}
-                                    onClick={() => {
-                                        if (selectedLibraries.includes(lib.id)) {
-                                            if (selectedLibraries.length > 1) setSelectedLibraries(selectedLibraries.filter(id => id !== lib.id));
-                                        } else {
-                                            setSelectedLibraries([...selectedLibraries, lib.id]);
-                                        }
-                                    }}
-                                    style={{
-                                        padding: '0.375rem 0.75rem', borderRadius: '1rem', border: 'none',
-                                        fontSize: '0.75rem', fontWeight: 600,
-                                        background: selectedLibraries.includes(lib.id) ? 'var(--primary)' : 'white',
-                                        color: selectedLibraries.includes(lib.id) ? 'white' : '#333',
-                                        boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-                                        cursor: 'pointer'
-                                    }}
-                                >
-                                    {selectedLibraries.includes(lib.id) ? '✓ ' : '+ '} {lib.label}
-                                </button>
-                            ))}
-
-                            <div style={{ width: '100%', height: '1px', background: '#ddd', margin: '0.5rem 0' }} />
-                            <span style={{ width: '100%', fontSize: '0.7rem', fontWeight: 700, color: '#999' }}>OFFLINE STORAGE</span>
-                            <p style={{ fontSize: '0.65rem', color: '#666', margin: '0.25rem 0' }}>
-                                Core symbols are automatically saved to your device for use without internet.
-                            </p>
-                        </div>
-                    )}
-                </div>
-
-                <div className="ios-sheet-content" style={{ paddingTop: 0 }}>
-                    {activeTab === 'emoji' || activeTab === 'openmoji' ? (
-                        <>
-                            {!searchQuery.trim() && (
-                                <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.9375rem', paddingRight: '1.25rem' }}>
-                                    <button
-                                        onClick={() => {
-                                            triggerHaptic('light');
-                                            setActiveCategory('My Icons');
-                                        }}
-                                        style={{ background: activeCategory === 'My Icons' ? '#34C759' : '#F2F2F7', color: activeCategory === 'My Icons' ? '#fff' : '#34C759', padding: '0.5rem 1rem', borderRadius: '1.25rem', border: 'none', fontWeight: '600', whiteSpace: 'nowrap', fontSize: '0.8125rem', minHeight: '2.75rem', flexShrink: 0 }}
-                                    >
-                                        ⭐ My Icons
-                                    </button>
-                                    {Object.keys(iconsData).map(cat => (
+                            {!searchQuery.trim() && (activeTab === 'emoji' || activeTab === 'openmoji' || activeTab === 'symbol') && (
+                                <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '1rem' }}>
+                                    {(activeTab === 'symbol' ? Object.keys(EMOJI_DATA) : ['My Icons', ...Object.keys(iconsData)]).map(cat => (
                                         <button
                                             key={cat}
                                             onClick={() => {
                                                 triggerHaptic('light');
                                                 setActiveCategory(cat);
                                             }}
-                                            style={{ background: activeCategory === cat ? '#007AFF' : '#F2F2F7', color: activeCategory === cat ? '#fff' : '#000', padding: '0.5rem 1rem', borderRadius: '1.25rem', border: 'none', fontWeight: '500', whiteSpace: 'nowrap', fontSize: '0.8125rem', minHeight: '2.75rem', flexShrink: 0 }}
+                                            style={{
+                                                background: activeCategory === cat ? 'var(--primary)' : '#fff',
+                                                color: activeCategory === cat ? '#fff' : '#000',
+                                                padding: '0.5rem 1rem',
+                                                borderRadius: '1.25rem',
+                                                border: 'none',
+                                                fontWeight: '600',
+                                                whiteSpace: 'nowrap',
+                                                fontSize: '0.8125rem',
+                                                minHeight: '2.75rem',
+                                                flexShrink: 0,
+                                                boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                                            }}
                                         >
-                                            {cat}
+                                            {cat === 'My Icons' ? '⭐ ' : ''}{cat}
                                         </button>
                                     ))}
                                 </div>
                             )}
+
                             <div className="picker-grid">
                                 {(() => {
-                                    const userIconsList = (userItems || []).filter(item => item.type === 'button').map(item => ({ w: item.word, i: item.icon, isUserIcon: true }));
-                                    const libraryIcons = Object.values(iconsData).flat();
-
-                                    let displayIcons = [];
-                                    const normalizedQuery = searchQuery.trim().toLowerCase();
-                                    if (normalizedQuery) {
-                                        const userMatches = userIconsList.filter(item => item.w.toLowerCase().includes(normalizedQuery));
-                                        const libraryMatches = libraryIcons.filter(item => item.w.toLowerCase().includes(normalizedQuery));
-
-                                        // Also search emoji data
-                                        const allEmojis = Object.values(EMOJI_DATA).flat();
-                                        const emojiResults = allEmojis.filter(item => item.name?.toLowerCase().includes(normalizedQuery)).slice(0, 30);
-                                        displayIcons = dedupeIcons([
-                                            ...userMatches,
-                                            ...libraryMatches,
-                                            ...emojiResults.map(e => ({ w: e.name, i: e.emoji }))
-                                        ]);
-                                    } else {
-                                        displayIcons = (activeCategory === 'My Icons' ? dedupeIcons(userIconsList) : iconsData[activeCategory] || []);
+                                    if (activeTab === 'photo') {
+                                        return (
+                                            <>
+                                                <div style={{ gridColumn: '1/-1', marginBottom: '1rem', width: '100%' }}>
+                                                    <IonButton expand="block" onClick={handleUploadClick} fill="solid" style={{ fontWeight: 600 }}>
+                                                        <IonIcon icon={cameraOutline} slot="start" />
+                                                        Upload from Device
+                                                    </IonButton>
+                                                </div>
+                                                {userPhotos.length === 0 ? (
+                                                    <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '2rem', opacity: 0.5 }}>No photos yet.</div>
+                                                ) : userPhotos.map((photo, index) => (
+                                                    <button key={index} className="picker-btn" onClick={() => handleItemSelect(photo.w, photo.i, true)} style={{ minHeight: '6rem' }}>
+                                                        <img src={photo.i} alt={photo.w} style={{ width: '100%', height: '4rem', objectFit: 'cover', borderRadius: '0.5rem' }} />
+                                                        <span style={{ fontSize: '0.75rem', marginTop: '0.25rem', opacity: 0.8, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '100%' }}>{photo.w}</span>
+                                                    </button>
+                                                ))}
+                                            </>
+                                        );
                                     }
 
-                                    if (displayIcons.length === 0) return <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '2.5rem', color: '#666', fontSize: '0.875rem' }}>No icons found</div>;
+                                    let results = [];
+                                    const normalizedQuery = searchQuery.trim().toLowerCase();
 
-                                    return displayIcons.map((item, index) => {
+                                    if (activeTab === 'emoji' || activeTab === 'openmoji') {
+                                        const userIconsList = (userItems || []).filter(item => item.type === 'button').map(item => ({ w: item.word, i: item.icon, isUserIcon: true }));
+                                        const libraryIcons = Object.values(iconsData).flat();
+                                        if (normalizedQuery) {
+                                            const userMatches = userIconsList.filter(item => item.w.toLowerCase().includes(normalizedQuery));
+                                            const libraryMatches = libraryIcons.filter(item => item.w.toLowerCase().includes(normalizedQuery));
+                                            const allEmojis = Object.values(EMOJI_DATA).flat();
+                                            const emojiResults = allEmojis.filter(item => item.name?.toLowerCase().includes(normalizedQuery)).slice(0, 30);
+                                            results = dedupeIcons([...userMatches, ...libraryMatches, ...emojiResults.map(e => ({ w: e.name, i: e.emoji }))]);
+                                        } else {
+                                            results = (activeCategory === 'My Icons' ? dedupeIcons(userIconsList) : iconsData[activeCategory] || []);
+                                        }
+                                    } else if (activeTab === 'symbol') {
+                                        if (normalizedQuery) {
+                                            if (selectedLibraries.includes('emoji') || selectedLibraries.includes('openmoji')) results.push(...symbols.map(s => ({ ...s, type: 'emoji' })));
+                                            if (selectedLibraries.includes('arasaac')) results.push(...arasaacSymbols.map(s => ({ ...s, type: 'arasaac', isArasaac: true })));
+                                        } else {
+                                            results = EMOJI_DATA[activeCategory] || [];
+                                        }
+                                    }
+
+                                    if (results.length === 0 && !isLoading) return <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '2.5rem', color: '#666' }}>No icons found</div>;
+
+                                    return results.map((item, index) => {
                                         const iconVal = item.icon || item.emoji || item.i;
                                         const wordVal = item.word || item.name || item.w;
                                         const isAlreadyImage = typeof iconVal === 'string' && (iconVal.startsWith('http') || iconVal.startsWith('data:'));
+                                        const isArasaac = item.isArasaac;
 
                                         let displayIcon = iconVal;
-                                        let isOutputImage = isAlreadyImage;
+                                        let isOutputImage = isAlreadyImage || isArasaac;
 
-                                        if (activeTab === 'openmoji' && !isAlreadyImage) {
+                                        if ((activeTab === 'openmoji' || (activeTab === 'symbol' && selectedLibraries.includes('openmoji'))) && !isAlreadyImage) {
                                             displayIcon = getOpenMojiUrl(iconVal);
                                             isOutputImage = true;
                                         }
 
                                         return (
-                                            <button key={`${wordVal}-${index}`} className="picker-btn" onClick={() => handleItemSelect(wordVal, displayIcon, isOutputImage)}>
-                                                {isOutputImage ? (
-                                                    <ImageWithFallback
-                                                        src={displayIcon}
-                                                        alt={wordVal}
-                                                        fallback={item.emoji || item.i}
-                                                        style={{ width: '48px', height: '48px', objectFit: 'contain', marginBottom: '8px' }}
-                                                    />
-                                                ) : (
-                                                    <span className="emoji-span">{displayIcon}</span>
-                                                )}
-                                                <span>{wordVal}</span>
-                                                {item.isUserIcon && <span style={{ position: 'absolute', top: '0.125rem', right: '0.125rem', fontSize: '0.5rem', background: '#34C759', color: 'white', borderRadius: '0.25rem', padding: '0.0625rem 0.1875rem' }}>MY</span>}
-                                                {activeTab === 'openmoji' && !isAlreadyImage && <span style={{ position: 'absolute', top: '0.125rem', left: '0.125rem', fontSize: '0.5rem', background: '#000', color: 'white', borderRadius: '0.25rem', padding: '0.0625rem 0.1875rem' }}>OMO</span>}
-                                            </button>
-                                        );
-                                    });
-                                })()}
-                            </div>
-                        </>
-                    ) : activeTab === 'symbol' ? (
-                        <>
-                            {!searchQuery.trim() && (
-                                <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.9375rem', paddingRight: '1.25rem' }}>
-                                    {Object.keys(EMOJI_DATA).map(cat => (
-                                        <button key={cat} onClick={() => setActiveCategory(cat)} style={{ background: activeCategory === cat ? '#5856D6' : '#F2F2F7', color: activeCategory === cat ? '#fff' : '#333', padding: '0.5rem 1rem', borderRadius: '1.25rem', border: 'none', fontWeight: '500', fontSize: '0.8125rem', whiteSpace: 'nowrap', cursor: 'pointer', minHeight: '2.75rem' }}>{cat}</button>
-                                    ))}
-                                </div>
-                            )}
-                            <div className="picker-grid">
-                                {isLoading && <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '1rem' }}>Searching symbols...</div>}
-                                {(() => {
-                                    if (searchQuery.length >= 2) {
-                                        const results = [];
-
-                                        if (selectedLibraries.includes('emoji') || selectedLibraries.includes('openmoji')) {
-                                            results.push(...symbols.map(s => ({ ...s, isArasaac: false, type: 'emoji' })));
-                                        }
-
-                                        if (selectedLibraries.includes('arasaac')) {
-                                            results.push(...arasaacSymbols.map(s => ({ ...s, isArasaac: true, type: 'arasaac' })));
-                                        }
-
-                                        if (results.length === 0 && !isLoading) return <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '2.5rem', color: '#666' }}>No results found</div>;
-
-                                        return results.map((item, index) => {
-                                            const iconVal = item.emoji || item.i;
-                                            const wordVal = item.name || item.w;
-                                            const isArasaac = item.isArasaac;
-
-                                            let displayIcon = iconVal;
-                                            let isImage = isArasaac;
-
-                                            // If it's an emoji and OpenMoji is selected (or we are in OpenMoji tab), use SVG
-                                            if (item.type === 'emoji' && (selectedLibraries.includes('openmoji') || activeTab === 'openmoji')) {
-                                                displayIcon = getOpenMojiUrl(iconVal);
-                                                isImage = true;
-                                            }
-
-                                            return (
-                                                <button
-                                                    key={`${wordVal}-${index}`}
-                                                    className="picker-btn"
-                                                    onClick={() => handleItemSelect(wordVal, displayIcon, isImage)}
-                                                    onPointerDown={() => handlePointerDown(wordVal, displayIcon, isImage)}
-                                                    onPointerUp={handlePointerUp}
-                                                    onPointerLeave={handlePointerUp}
-                                                    style={{ position: 'relative' }}
-                                                >
-                                                    {isImage ? (
-                                                        <ImageWithFallback
-                                                            src={displayIcon}
-                                                            alt={wordVal}
-                                                            fallback={iconVal}
-                                                            style={{ width: '48px', height: '48px', objectFit: 'contain', marginBottom: '8px' }}
-                                                        />
-                                                    ) : (
-                                                        <span className="emoji-span">{displayIcon}</span>
-                                                    )}
-                                                    <span>{wordVal}</span>
-                                                    {isArasaac && <span style={{ position: 'absolute', top: '0.125rem', right: '0.125rem', fontSize: '0.5rem', background: '#007AFF', color: 'white', borderRadius: '0.25rem', padding: '0.0625rem 0.1875rem' }}>SYM</span>}
-                                                    {item.type === 'emoji' && isImage && <span style={{ position: 'absolute', top: '0.125rem', left: '0.125rem', fontSize: '0.5rem', background: '#000', color: 'white', borderRadius: '0.25rem', padding: '0.0625rem 0.1875rem' }}>OMO</span>}
-                                                </button>
-                                            );
-                                        });
-                                    }
-
-                                    const displayEmojis = EMOJI_DATA[activeCategory] || [];
-                                    if (displayEmojis.length === 0) return <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '2.5rem', color: '#666', fontSize: '0.875rem' }}>Select a category</div>;
-                                    return displayEmojis.map((item, index) => {
-                                        const iconVal = item.emoji || item.i;
-                                        const wordVal = item.name || item.w;
-                                        const isImage = activeTab === 'openmoji';
-                                        const displayIcon = isImage ? getOpenMojiUrl(iconVal) : iconVal;
-
-                                        return (
                                             <button
                                                 key={`${wordVal}-${index}`}
                                                 className="picker-btn"
-                                                onClick={() => handleItemSelect(wordVal, displayIcon, isImage)}
-                                                onPointerDown={() => handlePointerDown(wordVal, displayIcon, isImage)}
+                                                onClick={() => handleItemSelect(wordVal, displayIcon, isOutputImage)}
+                                                onPointerDown={() => handlePointerDown(wordVal, displayIcon, isOutputImage)}
                                                 onPointerUp={handlePointerUp}
                                                 onPointerLeave={handlePointerUp}
                                             >
-                                                {isImage ? (
-                                                    <ImageWithFallback
-                                                        src={displayIcon}
-                                                        alt={wordVal}
-                                                        fallback={iconVal}
-                                                        style={{ width: '48px', height: '48px', objectFit: 'contain', marginBottom: '8px' }}
-                                                    />
-                                                ) : (
-                                                    <span className="emoji-span">{displayIcon}</span>
-                                                )}
+                                                {isOutputImage ? (
+                                                    <ImageWithFallback src={displayIcon} alt={wordVal} fallback={iconVal} style={{ width: '48px', height: '48px', objectFit: 'contain', marginBottom: '8px' }} />
+                                                ) : <span className="emoji-span">{displayIcon}</span>}
                                                 <span>{wordVal}</span>
+                                                {item.isUserIcon && <span style={{ position: 'absolute', top: '0.125rem', right: '0.125rem', fontSize: '0.5rem', background: '#34C759', color: 'white', borderRadius: '0.25rem', padding: '0.0625rem 0.1875rem' }}>MY</span>}
+                                                {isArasaac && <span style={{ position: 'absolute', top: '0.125rem', right: '0.125rem', fontSize: '0.5rem', background: '#007AFF', color: 'white', borderRadius: '0.25rem', padding: '0.0625rem 0.1875rem' }}>SYM</span>}
                                             </button>
                                         );
                                     });
                                 })()}
                             </div>
-                        </>
-                    ) : (
-                        <div className="picker-grid">
-                            <div style={{ gridColumn: '1/-1', marginBottom: '0.9375rem' }}>
-                                <button onClick={handleUploadClick} className="ios-row" style={{ width: '100%', borderRadius: '0.75rem', border: 'none', justifyContent: 'center', minHeight: '2.75rem' }}>
-                                    <span style={{ color: '#007AFF', fontWeight: 600 }}>📱 Upload from Device</span>
-                                </button>
-                                <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" style={{ display: 'none' }} />
-                            </div>
-                            {(() => {
-                                const filteredPhotos = searchQuery ? userPhotos.filter(p => p.w.toLowerCase().includes(searchQuery.toLowerCase())) : userPhotos;
-                                if (filteredPhotos.length === 0) return <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '2.5rem', opacity: 0.5, fontSize: '0.875rem' }}>No uploaded photos yet.</div>;
-                                return filteredPhotos.map((photo, index) => (
-                                    <button key={index} className="picker-btn" onClick={() => handleItemSelect(photo.w, photo.i, true)} style={{ minHeight: '5.625rem' }}>
-                                        <img src={photo.i} alt={photo.w} style={{ width: '100%', height: '3.75rem', objectFit: 'cover', borderRadius: '0.5rem' }} />
-                                        <span style={{ fontSize: '0.75rem', marginTop: '0.25rem', opacity: 0.8, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '100%' }}>{photo.w}</span>
-                                    </button>
-                                ));
-                            })()}
                         </div>
-                    )}
-                </div>
-            </div>
+                    </>
+                )}
 
+                <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" style={{ display: 'none' }} />
+            </IonContent>
+
+            {/* Peek Backdrop */}
             {peekItem && (
-                <div style={{
-                    position: 'fixed',
-                    inset: 0,
-                    zIndex: 5000,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: 'rgba(0,0,0,0.3)',
-                    backdropFilter: 'blur(10px)',
-                    pointerEvents: 'none',
-                    animation: 'fadeIn 0.2s ease-out'
-                }}>
-                    <div style={{
-                        background: 'white',
-                        padding: '2rem',
-                        borderRadius: '2rem',
-                        boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: '1rem',
-                        transform: 'scale(1.1)',
-                        animation: 'popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
-                    }}>
+                <div style={{ position: 'fixed', inset: 0, zIndex: 5000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(10px)', pointerEvents: 'none' }}>
+                    <div style={{ background: 'white', padding: '2rem', borderRadius: '2rem', boxShadow: '0 20px 60px rgba(0,0,0,0.3)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
                         <div style={{ width: '12rem', height: '12rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            {peekItem.isImage ? (
-                                <img src={peekItem.icon} alt={peekItem.word} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                            ) : (
-                                <span style={{ fontSize: '8rem' }}>{peekItem.icon}</span>
-                            )}
+                            {peekItem.isImage ? <img src={peekItem.icon} alt={peekItem.word} style={{ width: '100%', height: '100%', objectFit: 'contain' }} /> : <span style={{ fontSize: '8rem' }}>{peekItem.icon}</span>}
                         </div>
                         <span style={{ fontSize: '1.5rem', fontWeight: 800 }}>{peekItem.word}</span>
                     </div>
                 </div>
             )}
+
+            {/* Crop Modal */}
             {showCropper && (
                 <ImageCropModal
                     isOpen={showCropper}
                     imageSrc={cropSource}
-                    onCancel={() => {
-                        setShowCropper(false);
-                        setCropSource(null);
-                        setCropName('');
-                    }}
+                    onCancel={() => { setShowCropper(false); setCropSource(null); setCropName(''); }}
                     onSave={(dataUrl) => {
                         handleItemSelect(cropName || 'Photo', dataUrl, true);
                         setSearchQuery('');
@@ -703,59 +524,20 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                 />
             )}
 
+            {/* Save Options Action Sheet (Manual) */}
             {showSaveOptions && (
-                <div className="ios-bottom-sheet-overlay" style={{ zIndex: 6000 }} onClick={() => setShowSaveOptions(false)}>
-                    <div className="ios-bottom-sheet" style={{ height: 'auto', maxHeight: '50vh', padding: '1.5rem', background: 'white' }} onClick={e => e.stopPropagation()}>
-                        <h3 style={{ textAlign: 'center', marginBottom: '1.5rem', fontSize: '1.1rem' }}>Save Icon</h3>
+                <div style={{ position: 'fixed', inset: 0, zIndex: 6000, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'flex-end' }} onClick={() => setShowSaveOptions(false)}>
+                    <div style={{ width: '100%', background: 'white', borderTopLeftRadius: '1.5rem', borderTopRightRadius: '1.5rem', padding: '1.5rem', animation: 'slideUp 0.3s ease-out' }} onClick={e => e.stopPropagation()}>
+                        <h3 style={{ textAlign: 'center', marginBottom: '1.5rem' }}>Save Icon</h3>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                            <button
-                                onClick={() => executeSave(true)}
-                                style={{
-                                    padding: '1rem',
-                                    background: '#007AFF',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '1rem',
-                                    fontSize: '1rem',
-                                    fontWeight: 600
-                                }}
-                            >
-                                Save to Library & Use
-                            </button>
-                            <button
-                                onClick={() => executeSave(false)}
-                                style={{
-                                    padding: '1rem',
-                                    background: '#F2F2F7',
-                                    color: '#007AFF',
-                                    border: 'none',
-                                    borderRadius: '1rem',
-                                    fontSize: '1rem',
-                                    fontWeight: 600
-                                }}
-                            >
-                                Save to Library Only
-                            </button>
-                            <button
-                                onClick={() => setShowSaveOptions(false)}
-                                style={{
-                                    padding: '1rem',
-                                    background: 'white',
-                                    color: '#FF3B30',
-                                    border: 'none',
-                                    borderRadius: '1rem',
-                                    fontSize: '1rem',
-                                    fontWeight: 600,
-                                    marginTop: '0.5rem'
-                                }}
-                            >
-                                Cancel
-                            </button>
+                            <IonButton expand="block" color="primary" onClick={() => executeSave(true)}>Save to Library & Use</IonButton>
+                            <IonButton expand="block" color="light" onClick={() => executeSave(false)}>Save to Library Only</IonButton>
+                            <IonButton expand="block" fill="clear" color="danger" onClick={() => setShowSaveOptions(false)}>Cancel</IonButton>
                         </div>
                     </div>
                 </div>
             )}
-        </div>
+        </IonModal>
     );
 };
 

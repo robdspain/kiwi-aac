@@ -1,5 +1,31 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import {
+    IonModal,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonButtons,
+    IonButton,
+    IonList,
+    IonItem,
+    IonLabel,
+    IonInput,
+    IonSegment,
+    IonSegmentButton,
+    IonIcon,
+    IonListHeader
+} from '@ionic/react';
+import {
+    closeOutline,
+    checkmarkOutline,
+    libraryOutline,
+    personOutline,
+    cameraOutline,
+    trashOutline,
+    chevronForwardOutline
+} from 'ionicons/icons';
 import VoiceRecorder from './VoiceRecorder';
 import MemojiPicker from './MemojiPicker';
 import ImageCropModal from './ImageCropModal';
@@ -105,190 +131,193 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
         }
     };
 
-    if (!isOpen) return null;
-
     return (
-        <div className="ios-bottom-sheet-overlay" onClick={onClose}>
-            <div className="ios-bottom-sheet" onClick={e => e.stopPropagation()}>
-                <div className="ios-sheet-header">
-                    <button className="ios-cancel-button" onClick={onClose}>Cancel</button>
-                    <h2 className="ios-sheet-title">{item?.type === 'folder' ? 'Edit Folder' : 'Edit Button'}</h2>
-                    <button
-                        className="ios-done-button"
-                        disabled={processing}
-                        style={{ opacity: processing ? 0.5 : 1 }}
-                        onClick={async () => {
-                            let finalIcon = icon;
-                            let finalAudio = customAudio;
+        <IonModal isOpen={isOpen} onDidDismiss={onClose} breakPoints={[0, 1]} initialBreakpoint={1}>
+            <IonHeader>
+                <IonToolbar>
+                    <IonButtons slot="start">
+                        <IonButton onClick={onClose} color="primary">Cancel</IonButton>
+                    </IonButtons>
+                    <IonTitle>{item?.type === 'folder' ? 'Edit Folder' : 'Edit Button'}</IonTitle>
+                    <IonButtons slot="end">
+                        <IonButton
+                            color="primary"
+                            style={{ fontWeight: 600 }}
+                            disabled={processing}
+                            onClick={async () => {
+                                let finalIcon = icon;
+                                let finalAudio = customAudio;
 
-                            const shouldTrackCustomPhoto = typeof icon === 'string' && icon.startsWith('data:') && !characterConfig;
+                                const shouldTrackCustomPhoto = typeof icon === 'string' && icon.startsWith('data:') && !characterConfig;
 
-                            if (shouldTrackCustomPhoto) {
-                                try {
-                                    const saved = localStorage.getItem('kiwi-user-photos');
-                                    const photos = saved ? JSON.parse(saved) : [];
-                                    if (!photos.find(p => p.i === icon)) {
-                                        photos.unshift({ w: word || 'Photo', i: icon });
-                                        localStorage.setItem('kiwi-user-photos', JSON.stringify(photos));
+                                if (shouldTrackCustomPhoto) {
+                                    try {
+                                        const saved = localStorage.getItem('kiwi-user-photos');
+                                        const photos = saved ? JSON.parse(saved) : [];
+                                        if (!photos.find(p => p.i === icon)) {
+                                            photos.unshift({ w: word || 'Photo', i: icon });
+                                            localStorage.setItem('kiwi-user-photos', JSON.stringify(photos));
+                                        }
+                                    } catch (error) {
+                                        console.warn('Failed to update custom photo registry:', error);
                                     }
-                                } catch (error) {
-                                    console.warn('Failed to update custom photo registry:', error);
                                 }
-                            }
 
-                            // Move heavy icon to IndexedDB if it's a new data URL
-                            if (typeof icon === 'string' && icon.startsWith('data:')) {
-                                // Cleanup old entry if it was from DB
-                                if (typeof item.icon === 'string' && item.icon.startsWith('db:')) {
-                                    const oldId = item.icon.split(':')[1];
-                                    await deleteMedia(oldId);
+                                if (typeof icon === 'string' && icon.startsWith('data:')) {
+                                    if (typeof item.icon === 'string' && item.icon.startsWith('db:')) {
+                                        const oldId = item.icon.split(':')[1];
+                                        await deleteMedia(oldId);
+                                    }
+                                    const mediaId = `img-${Date.now()}`;
+                                    await saveMedia(mediaId, icon);
+                                    finalIcon = `db:${mediaId}`;
                                 }
-                                const mediaId = `img-${Date.now()}`;
-                                await saveMedia(mediaId, icon);
-                                finalIcon = `db:${mediaId}`;
-                            }
 
-                            // Move heavy audio to IndexedDB if it's a new data URL
-                            if (typeof customAudio === 'string' && customAudio.startsWith('data:')) {
-                                // Cleanup old entry if it was from DB
-                                if (typeof item.customAudio === 'string' && item.customAudio.startsWith('db:')) {
-                                    const oldId = item.customAudio.split(':')[1];
-                                    await deleteMedia(oldId);
+                                if (typeof customAudio === 'string' && customAudio.startsWith('data:')) {
+                                    if (typeof item.customAudio === 'string' && item.customAudio.startsWith('db:')) {
+                                        const oldId = item.customAudio.split(':')[1];
+                                        await deleteMedia(oldId);
+                                    }
+                                    const audioId = `audio-${Date.now()}`;
+                                    await saveMedia(audioId, customAudio);
+                                    finalAudio = `db:${audioId}`;
                                 }
-                                const audioId = `audio-${Date.now()}`;
-                                await saveMedia(audioId, customAudio);
-                                finalAudio = `db:${audioId}`;
-                            }
 
-                            onSave(word, finalIcon, bgColor, viewMode, finalAudio, characterConfig, wc);
-                            onClose();
-                        }}
-                    >
-                        {processing ? '...' : 'Save'}
-                    </button>
-                </div>
-
-                <div className="ios-sheet-content" style={{ background: '#F2F2F7' }}>
-                    <div className="ios-setting-group-header">Content</div>
-                    <div className="ios-setting-card">
-                        <div className="ios-row">
-                            <span style={{ fontWeight: 600 }}>Label</span>
-                            <input
-                                type="text"
-                                value={word}
-                                onChange={(e) => setWord(e.target.value)}
-                                style={{ border: 'none', textAlign: 'right', fontSize: '1.0625rem', outline: 'none', background: 'transparent', flex: 1, minHeight: '2.75rem' }}
-                                placeholder="Enter label"
-                            />
-                        </div>
-                        {item?.type === 'folder' && (
-                            <div className="ios-row" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.75rem', padding: '1rem' }}>
-                                <span style={{ fontWeight: 600, fontSize: '0.8125rem', textTransform: 'uppercase', color: '#6e6e73' }}>View Mode</span>
-                                <div className="ios-segmented-control" style={{ marginBottom: 0 }}>
-                                    <div
-                                        className="selection-pill"
-                                        style={{
-                                            width: 'calc(50% - 4px)',
-                                            transform: viewMode === 'grid' ? 'translateX(0)' : 'translateX(100%)'
-                                        }}
-                                    />
-                                    <button onClick={() => setViewMode('grid')} style={{ minHeight: '2.75rem' }}>Grid</button>
-                                    <button onClick={() => setViewMode('schedule')} style={{ minHeight: '2.75rem' }}>Schedule</button>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="ios-setting-group-header">Appearance</div>
-                    <div className="ios-setting-card">
-                        <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-                            <div style={{ width: '6.25rem', height: '6.25rem', borderRadius: '22%', background: bgColor || 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3.5rem', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-                                {isImage ? <img src={icon} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} /> : icon}
-                            </div>
-
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', width: '100%' }}>
-                                {[
-                                    { id: 'noun', label: 'Noun', color: '#FFEB3B', text: '#2D3436' },
-                                    { id: 'verb', label: 'Verb', color: '#1B5E20', text: '#FFFFFF' },
-                                    { id: 'adj', label: 'Adjective', color: '#0D47A1', text: '#FFFFFF' },
-                                    { id: 'social', label: 'Social', color: '#880E4F', text: '#FFFFFF' },
-                                    { id: 'question', label: 'Question', color: '#4A148C', text: '#FFFFFF' },
-                                    { id: 'misc', label: 'Misc', color: '#BF360C', text: '#FFFFFF' }
-                                ].map(cat => (
-                                    <button
-                                        key={cat.id}
-                                        onClick={() => {
-                                            setWc(cat.id);
-                                            setBgColor(''); // Clear manual color so dynamic color takes over
-                                        }}
-                                        style={{
-                                            padding: '0.75rem 0.25rem',
-                                            borderRadius: '8px',
-                                            background: (wc === cat.id) ? cat.color : '#F2F2F7',
-                                            color: (wc === cat.id) ? cat.text : '#000',
-                                            border: (wc === cat.id) ? '2px solid #000' : '1px solid #E5E5EA',
-                                            cursor: 'pointer',
-                                            fontSize: '0.8rem',
-                                            fontWeight: 600,
-                                            boxShadow: (wc === cat.id) ? '0 2px 5px rgba(0,0,0,0.2)' : 'none',
-                                            transition: 'all 0.2s',
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            alignItems: 'center',
-                                            justifyContent: 'center'
-                                        }}
-                                    >
-                                        {cat.label}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                        <div className="ios-row" onClick={() => onOpenEmojiPicker(setWord, (ni, isImg) => { setIcon(ni); setIsImage(!!isImg); })} style={{ minHeight: '3rem' }}>
-                            <span>Choose from Library</span>
-                            <span className="ios-chevron">›</span>
-                        </div>
-                        <div className="ios-row" onClick={() => setShowMemojiPicker(true)} style={{ minHeight: '3rem' }}>
-                            <span>Select Character</span>
-                            <span className="ios-chevron">›</span>
-                        </div>
-                        <div className="ios-row" onClick={() => takePhoto(CameraSource.Prompt)} style={{ minHeight: '3rem' }}>
-                            <span>📷 Add Photo or Image</span>
-                            <span className="ios-chevron">›</span>
-                        </div>
-                    </div>
-
-                    <div className="ios-setting-group-header">Media</div>
-                    <div className="ios-setting-card">
-                        <div style={{ padding: '0.3125rem' }}>
-                            {item?.type !== 'folder' && <VoiceRecorder currentAudio={customAudio} onSave={(audio) => setCustomAudio(audio)} onRemove={() => setCustomAudio(null)} />}
-                        </div>
-                    </div>
-
-                    <div style={{ marginTop: '1.25rem' }}>
-                        <button
-                            onClick={() => { if (window.confirm("Delete this item?")) { onDelete(); onClose(); } }}
-                            className="ios-row"
-                            style={{ width: '100%', border: 'none', borderRadius: '0.75rem', justifyContent: 'center', minHeight: '3rem' }}
+                                onSave(word, finalIcon, bgColor, viewMode, finalAudio, characterConfig, wc);
+                                onClose();
+                            }}
                         >
-                            <span style={{ color: '#FF3B30', fontWeight: 600 }}>Delete Item</span>
-                        </button>
-                    </div>
+                            {processing ? '...' : 'Save'}
+                        </IonButton>
+                    </IonButtons>
+                </IonToolbar>
+            </IonHeader>
 
-                    <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" style={{ display: 'none' }} />
-                    <input type="file" ref={cameraInputRef} onChange={handleFileChange} accept="image/*" capture="environment" style={{ display: 'none' }} />
+            <IonContent className="ion-padding-bottom" style={{ '--background': '#F2F2F7' }}>
+                <IonListHeader style={{ marginTop: '1rem' }}>Content</IonListHeader>
+                <IonList inset={true}>
+                    <IonItem>
+                        <IonLabel position="fixed" style={{ fontWeight: 600 }}>Label</IonLabel>
+                        <IonInput
+                            value={word}
+                            onIonChange={(e) => setWord(e.detail.value)}
+                            placeholder="Enter label"
+                            className="ion-text-right"
+                        />
+                    </IonItem>
+                    {item?.type === 'folder' && (
+                        <IonItem lines="none" style={{ '--padding-top': '0.5rem', '--padding-bottom': '0.5rem' }}>
+                            <div style={{ width: '100%' }}>
+                                <IonLabel style={{ fontWeight: 600, fontSize: '0.8125rem', textTransform: 'uppercase', color: '#6e6e73', marginBottom: '0.5rem' }}>View Mode</IonLabel>
+                                <IonSegment value={viewMode} onIonChange={(e) => setViewMode(e.detail.value)}>
+                                    <IonSegmentButton value="grid">
+                                        <IonLabel>Grid</IonLabel>
+                                    </IonSegmentButton>
+                                    <IonSegmentButton value="schedule">
+                                        <IonLabel>Schedule</IonLabel>
+                                    </IonSegmentButton>
+                                </IonSegment>
+                            </div>
+                        </IonItem>
+                    )}
+                </IonList>
+
+                <IonListHeader>Appearance</IonListHeader>
+                <IonList inset={true}>
+                    <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', background: 'white' }}>
+                        <div style={{ width: '6.25rem', height: '6.25rem', borderRadius: '22%', background: bgColor || 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3.5rem', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                            {isImage ? <img src={icon} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} /> : icon}
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', width: '100%' }}>
+                            {[
+                                { id: 'noun', label: 'Noun', color: '#FFEB3B', text: '#2D3436' },
+                                { id: 'verb', label: 'Verb', color: '#1B5E20', text: '#FFFFFF' },
+                                { id: 'adj', label: 'Adjective', color: '#0D47A1', text: '#FFFFFF' },
+                                { id: 'social', label: 'Social', color: '#880E4F', text: '#FFFFFF' },
+                                { id: 'question', label: 'Question', color: '#4A148C', text: '#FFFFFF' },
+                                { id: 'misc', label: 'Misc', color: '#BF360C', text: '#FFFFFF' }
+                            ].map(cat => (
+                                <button
+                                    key={cat.id}
+                                    onClick={() => {
+                                        setWc(cat.id);
+                                        setBgColor('');
+                                    }}
+                                    style={{
+                                        padding: '0.75rem 0.25rem',
+                                        borderRadius: '8px',
+                                        background: (wc === cat.id) ? cat.color : '#F2F2F7',
+                                        color: (wc === cat.id) ? cat.text : '#000',
+                                        border: (wc === cat.id) ? '2px solid #000' : '1px solid #E5E5EA',
+                                        cursor: 'pointer',
+                                        fontSize: '0.8rem',
+                                        fontWeight: 600,
+                                        boxShadow: (wc === cat.id) ? '0 2px 5px rgba(0,0,0,0.2)' : 'none',
+                                        transition: 'all 0.2s',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}
+                                >
+                                    {cat.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    <IonItem onClick={() => onOpenEmojiPicker(setWord, (ni, isImg) => { setIcon(ni); setIsImage(!!isImg); })} button={true}>
+                        <IonIcon icon={libraryOutline} slot="start" color="primary" />
+                        <IonLabel>Choose from Library</IonLabel>
+                        <IonIcon icon={chevronForwardOutline} slot="end" color="medium" size="small" />
+                    </IonItem>
+                    <IonItem onClick={() => setShowMemojiPicker(true)} button={true}>
+                        <IonIcon icon={personOutline} slot="start" color="primary" />
+                        <IonLabel>Select Character</IonLabel>
+                        <IonIcon icon={chevronForwardOutline} slot="end" color="medium" size="small" />
+                    </IonItem>
+                    <IonItem onClick={() => takePhoto(CameraSource.Prompt)} button={true}>
+                        <IonIcon icon={cameraOutline} slot="start" color="primary" />
+                        <IonLabel>Add Photo or Image</IonLabel>
+                        <IonIcon icon={chevronForwardOutline} slot="end" color="medium" size="small" />
+                    </IonItem>
+                </IonList>
+
+                <IonListHeader>Media</IonListHeader>
+                <IonList inset={true}>
+                    <div style={{ padding: '0.5rem 1rem', background: 'white' }}>
+                        {item?.type !== 'folder' && <VoiceRecorder currentAudio={customAudio} onSave={(audio) => setCustomAudio(audio)} onRemove={() => setCustomAudio(null)} />}
+                    </div>
+                </IonList>
+
+                <div style={{ marginTop: '2rem', padding: '0 1rem' }}>
+                    <IonButton
+                        expand="block"
+                        color="danger"
+                        fill="clear"
+                        style={{ background: 'white', borderRadius: '0.75rem', fontWeight: 600 }}
+                        onClick={() => { if (window.confirm("Delete this item?")) { onDelete(); onClose(); } }}
+                    >
+                        Delete Item
+                    </IonButton>
                 </div>
+
+                <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" style={{ display: 'none' }} />
+                <input type="file" ref={cameraInputRef} onChange={handleFileChange} accept="image/*" capture="environment" style={{ display: 'none' }} />
 
                 {showMemojiPicker && (
-                    <MemojiPicker
-                        onSelect={(newIcon, config) => {
-                            setIcon(newIcon);
-                            setCharacterConfig(config);
-                            if (config.name) setWord(config.name);
-                            setIsImage(true);
-                            setShowMemojiPicker(false);
-                        }}
-                        onClose={() => setShowMemojiPicker(false)}
-                    />
+                    <Suspense fallback={null}>
+                        <MemojiPicker
+                            onSelect={(newIcon, config) => {
+                                setIcon(newIcon);
+                                setCharacterConfig(config);
+                                if (config.name) setWord(config.name);
+                                setIsImage(true);
+                                setShowMemojiPicker(false);
+                            }}
+                            onClose={() => setShowMemojiPicker(false)}
+                        />
+                    </Suspense>
                 )}
                 {showCropper && (
                     <ImageCropModal
@@ -304,8 +333,8 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                         title="Crop Icon"
                     />
                 )}
-            </div>
-        </div>
+            </IonContent>
+        </IonModal>
     );
 };
 

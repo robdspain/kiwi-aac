@@ -1,6 +1,22 @@
 import { useState } from 'react';
+import {
+    IonModal,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonButtons,
+    IonButton,
+    IonIcon,
+    IonList,
+    IonItem,
+    IonLabel,
+    IonNote
+} from '@ionic/react';
+import { closeOutline, bookOutline, rocketOutline, checkmarkCircleOutline } from 'ionicons/icons';
 
 const levelDetails = {
+    // ... same content as before ...
     1: {
         title: "Level 1: Physical Exchange",
         summary: "The learner picks up a picture of a desired item and hands the tablet to a communication partner.",
@@ -166,133 +182,142 @@ const AdvancementModal = ({ currentPhase, onAdvance, onWait }) => {
     if (!details) return null;
 
     return (
-        <div id="picker-modal" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.25rem' }}>
-            <div id="picker-content" style={{
-                height: 'auto',
-                maxHeight: '90vh',
-                margin: '1.25rem',
-                borderRadius: '1.5rem',
-                textAlign: 'center',
-                overflowY: 'auto',
-                background: 'var(--card-bg)',
-                position: 'relative'
-            }}>
-                <button className="ios-close-button" onClick={onWait} aria-label="Close">✕</button>
-                <div style={{ fontSize: '3rem', marginBottom: '0.75rem' }}>🚀</div>
-                <h1 style={{ margin: '0 0 0.75rem 0', fontSize: '2rem', color: 'var(--text-primary)' }}>Great Progress!</h1>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>
-                    Your child has successfully completed 3 trials a day for 3 days in a row. They may be ready for the next level!
-                </p>
+        <IonModal
+            isOpen={true}
+            onDidDismiss={onWait}
+            breakpoints={[0, 0.95]}
+            initialBreakpoint={0.95}
+        >
+            <IonHeader>
+                <IonToolbar>
+                    <IonTitle>Great Progress!</IonTitle>
+                    <IonButtons slot="end">
+                        <IonButton onClick={onWait}>
+                            <IonIcon icon={closeOutline} />
+                        </IonButton>
+                    </IonButtons>
+                </IonToolbar>
+            </IonHeader>
+            <IonContent className="ion-padding">
+                <div style={{ textAlign: 'center', margin: '1rem 0' }}>
+                    <div style={{ fontSize: '4rem', marginBottom: '0.5rem' }}>🚀</div>
+                    <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: '0 0 1rem 0' }}>Next Milestone Reached!</h2>
+                    <p style={{ color: 'var(--ion-color-medium)', fontSize: '1.1rem', lineHeight: '1.4' }}>
+                        Your child has successfully completed their recent trials. They may be ready for the next level!
+                    </p>
+                </div>
 
                 <div style={{
-                    background: 'var(--gray-light)',
+                    background: 'rgba(var(--ion-color-primary-rgb), 0.1)',
                     padding: '1.25rem',
                     borderRadius: '1rem',
                     margin: '1.25rem 0',
-                    textAlign: 'left',
-                    boxShadow: '0 4px 10px rgba(0,0,0,0.05)'
+                    border: '1px solid rgba(var(--ion-color-primary-rgb), 0.2)'
                 }}>
-                    <h3 style={{ margin: '0 0 0.3125rem 0', color: 'var(--primary-dark)' }}>Next: {details.nextGoal}</h3>
-                    <p style={{ margin: 0, fontSize: '1rem', color: 'var(--text-primary)' }}>{details.nextSummary}</p>
+                    <h3 style={{ margin: '0 0 0.5rem 0', color: 'var(--ion-color-primary)', fontWeight: 'bold' }}>
+                        Next Area: {details.nextGoal}
+                    </h3>
+                    <p style={{ margin: 0, fontSize: '1.05rem', color: 'var(--ion-color-dark)' }}>
+                        {details.nextSummary}
+                    </p>
                 </div>
+
+                <IonButton
+                    expand="block"
+                    size="large"
+                    onClick={onAdvance}
+                    style={{ marginBottom: '1rem', '--border-radius': '12px', fontWeight: 'bold' }}
+                >
+                    <IonIcon icon={rocketOutline} slot="start" />
+                    Advance to Level {currentPhase + 1}
+                </IonButton>
+
+                <IonButton
+                    expand="block"
+                    fill="clear"
+                    onClick={() => setShowFullInstructions(!showFullInstructions)}
+                    style={{ fontWeight: '600' }}
+                >
+                    <IonIcon icon={bookOutline} slot="start" />
+                    {showFullInstructions ? "Hide" : "Show"} Teaching Instructions
+                </IonButton>
 
                 {showFullInstructions && (
                     <div style={{
-                        background: 'var(--bg-color)',
+                        marginTop: '1.5rem',
                         padding: '1.25rem',
                         borderRadius: '1rem',
-                        marginBottom: '1.25rem',
-                        textAlign: 'left',
-                        fontSize: '0.9rem',
-                        border: '1px solid var(--gray-border)'
+                        background: 'var(--ion-color-light)',
+                        border: '1px solid var(--ion-color-light-shade)'
                     }}>
-                        <strong style={{ color: 'var(--primary-dark)', fontSize: '1rem' }}>
-                            📖 How to Teach {details.nextGoal}
-                        </strong>
+                        <h4 style={{ margin: '0 0 1rem 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <IonIcon icon={bookOutline} color="primary" />
+                            How to Teach {details.nextGoal}
+                        </h4>
 
-                        {/* Instructional illustration */}
                         {details.image && (
-                            <div style={{
-                                margin: '0.9375rem 0',
-                                textAlign: 'center'
-                            }}>
+                            <div style={{ margin: '1rem 0', textAlign: 'center' }}>
                                 <img
                                     src={details.image}
-                                    alt={`Teaching illustration for ${details.nextGoal}`}
+                                    alt={`Teaching illustration`}
                                     style={{
                                         maxWidth: '100%',
-                                        height: 'auto',
-                                        borderRadius: '0.75rem',
+                                        borderRadius: '12px',
                                         boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                                     }}
                                 />
                             </div>
                         )}
 
-                        <pre style={{
-                            margin: '0.9375rem 0',
+                        <div style={{
+                            fontSize: '0.95rem',
+                            lineHeight: '1.6',
+                            color: 'var(--ion-color-dark)',
                             whiteSpace: 'pre-wrap',
-                            fontFamily: 'inherit',
-                            fontSize: '0.85rem',
-                            lineHeight: 1.6,
-                            color: 'var(--text-primary)'
+                            marginBottom: '1.5rem'
                         }}>
                             {details.instruction}
-                        </pre>
+                        </div>
 
-                        {/* Visual teaching flow */}
-                        <div style={{
-                            display: 'flex',
-                            flexWrap: 'wrap',
-                            gap: '0.5rem',
-                            marginTop: '0.9375rem',
-                            justifyContent: 'center'
-                        }}>
-                            {details.teachingPoints.map((point, i) => (
-                                <div key={i} style={{
-                                    background: 'var(--card-bg)',
-                                    padding: '0.75rem 0.875rem',
-                                    borderRadius: '1.25rem',
-                                    fontSize: '0.8rem',
-                                    fontWeight: 600,
-                                    color: 'var(--primary-dark)',
-                                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '0.375rem',
-                                    border: '1px solid var(--gray-border)'
-                                }}>
-                                    <span style={{
-                                        background: 'var(--primary-dark)',
-                                        color: 'white',
-                                        width: '1.25rem',
-                                        height: '1.25rem',
-                                        borderRadius: '50%',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        fontSize: '0.7rem'
-                                    }}>{i + 1}</span>
-                                    {point}
-                                </div>
-                            ))}
+                        <div style={{ borderTop: '1px solid var(--ion-color-light-shade)', paddingTop: '1.5rem' }}>
+                            <h5 style={{ margin: '0 0 1rem 0', fontSize: '0.9rem', color: 'var(--ion-color-medium)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                Teaching Steps
+                            </h5>
+                            <IonList lines="none" style={{ background: 'transparent' }}>
+                                {details.teachingPoints.map((point, i) => (
+                                    <IonItem key={i} style={{ '--background': 'transparent', '--padding-start': '0' }}>
+                                        <div slot="start" style={{
+                                            background: 'var(--ion-color-primary)',
+                                            color: 'white',
+                                            width: '24px',
+                                            height: '24px',
+                                            borderRadius: '12px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontSize: '0.75rem',
+                                            fontWeight: 'bold'
+                                        }}>{i + 1}</div>
+                                        <IonLabel className="ion-text-wrap" style={{ fontSize: '0.95rem', fontWeight: '500' }}>
+                                            {point}
+                                        </IonLabel>
+                                    </IonItem>
+                                ))}
+                            </IonList>
                         </div>
                     </div>
                 )}
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                    <button className="primary-button" onClick={onAdvance} style={{ minHeight: '3.5rem' }}>
-                        Advance to Level {currentPhase + 1}
-                    </button>
-                    <button className="secondary-button" onClick={() => setShowFullInstructions(!showFullInstructions)} style={{ minHeight: '3.25rem', background: 'var(--gray-light)', border: 'none', borderRadius: '0.75rem', fontWeight: '600' }}>
-                        {showFullInstructions ? "Hide" : "📖 Show"} Teaching Instructions
-                    </button>
-                    <button style={{ color: 'var(--danger)', minHeight: '2.75rem', background: 'none', border: 'none', fontWeight: 'bold', cursor: 'pointer' }} onClick={onWait}>
+                <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+                    <IonButton fill="clear" color="danger" onClick={onWait} style={{ fontWeight: 'bold' }}>
                         Stay in Level {currentPhase} for now
-                    </button>
+                    </IonButton>
                 </div>
-            </div>
-        </div>
+
+                {/* Safe area padding */}
+                <div style={{ height: '2rem' }} />
+            </IonContent>
+        </IonModal>
     );
 };
 
