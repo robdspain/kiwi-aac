@@ -21,6 +21,7 @@ export default defineConfig({
           ],
           'revenuecat': ['@revenuecat/purchases-capacitor', '@revenuecat/purchases-capacitor-ui'],
           'ai-models': ['@tensorflow/tfjs', '@tensorflow-models/coco-ssd'],
+          'dicebear': ['@dicebear/core', '@dicebear/avataaars'],
           'ui-utils': ['framer-motion', 'qrcode.react'],
         }
       }

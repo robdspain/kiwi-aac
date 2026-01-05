@@ -2,14 +2,15 @@ import { useState, useEffect, Suspense, lazy, useRef, useCallback } from 'react'
 import Grid from './components/Grid';
 import SentenceStrip from './components/SentenceStrip';
 import Controls from './components/Controls';
-import PickerModal from './components/PickerModal';
-import AdvancementModal from './components/AdvancementModal';
 import SplashScreen from './components/SplashScreen';
 import LevelIntro from './components/LevelIntro';
-import Phase1TargetSelector from './components/Phase1TargetSelector';
-import A2HSModal from './components/A2HSModal';
-import EssentialSkillsMode from './components/EssentialSkillsMode';
-import SwitchAccessMode from './components/SwitchAccessMode';
+const SwitchAccessMode = lazy(() => import('./components/SwitchAccessMode'));
+
+const PickerModal = lazy(() => import('./components/PickerModal'));
+const AdvancementModal = lazy(() => import('./components/AdvancementModal'));
+const Phase1TargetSelector = lazy(() => import('./components/Phase1TargetSelector'));
+const A2HSModal = lazy(() => import('./components/A2HSModal'));
+const EssentialSkillsMode = lazy(() => import('./components/EssentialSkillsMode'));
 
 const Dashboard = lazy(() => import('./components/Dashboard'));
 const EditModal = lazy(() => import('./components/EditModal'));
@@ -1346,39 +1347,41 @@ function App() {
       {callActive && <div className="call-overlay" style={{ background: 'rgba(255,255,255,0.95)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1000 }}><button onClick={() => { setCallActive(false); setIsCommunicating(true); }} style={{ background: '#FF3B30', color: 'white', border: 'none', borderRadius: '30px', padding: '40px 80px', fontSize: '2.5rem', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 10px 40px rgba(255, 59, 48, 0.4)', transition: 'transform 0.2s ease' }}>Let&apos;s talk!</button></div>}
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <div id="main-grid" role="main" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-          <SwitchAccessMode onIconSelect={handleItemClick}>
-            <Grid
-              items={itemsToShow}
-              currentPhase={currentPhase}
-              gridSize={gridSize}
-              isTrainingMode={isTrainingMode}
-              trainingSelection={trainingSelection}
-              isEditMode={isEditMode}
-              onItemClick={handleItemClick}
-              onBack={handleBack}
-              onDelete={handleDelete}
-              onEdit={handleEdit}
-              onAddItem={handleAddItem}
-              onToggleTraining={handleToggleTraining}
-              hasBack={currentPath.length > 0}
-              trainingPanelVisible={!shuffledItems}
-              folder={currentPath.length > 0 ? currentPath.reduce((acc, i) => acc[i].contents, (rootItems[currentPageIndex]?.items || [])) : null}
-              scanIndex={scanIndex}
-              isLayoutLocked={isLayoutLocked}
-              isColorCodingEnabled={isColorCodingEnabled}
-              isCategorizationEnabled={isCategorizationEnabled}
-              collapsedSections={collapsedSections}
-              showCategoryHeaders={showCategoryHeaders}
-              pages={rootItems}
-              currentPageIndex={currentPageIndex}
-              onSetPage={setCurrentPageIndex}
-              onToggleSection={(sectionId) => {
-                setCollapsedSections(prev =>
-                  prev.includes(sectionId) ? prev.filter(id => id !== sectionId) : [...prev, sectionId]
-                );
-              }}
-            />
-          </SwitchAccessMode>
+          <Suspense fallback={<div style={{ flex: 1 }} />}>
+            <SwitchAccessMode onIconSelect={handleItemClick}>
+              <Grid
+                items={itemsToShow}
+                currentPhase={currentPhase}
+                gridSize={gridSize}
+                isTrainingMode={isTrainingMode}
+                trainingSelection={trainingSelection}
+                isEditMode={isEditMode}
+                onItemClick={handleItemClick}
+                onBack={handleBack}
+                onDelete={handleDelete}
+                onEdit={handleEdit}
+                onAddItem={handleAddItem}
+                onToggleTraining={handleToggleTraining}
+                hasBack={currentPath.length > 0}
+                trainingPanelVisible={!shuffledItems}
+                folder={currentPath.length > 0 ? currentPath.reduce((acc, i) => acc[i].contents, (rootItems[currentPageIndex]?.items || [])) : null}
+                scanIndex={scanIndex}
+                isLayoutLocked={isLayoutLocked}
+                isColorCodingEnabled={isColorCodingEnabled}
+                isCategorizationEnabled={isCategorizationEnabled}
+                collapsedSections={collapsedSections}
+                showCategoryHeaders={showCategoryHeaders}
+                pages={rootItems}
+                currentPageIndex={currentPageIndex}
+                onSetPage={setCurrentPageIndex}
+                onToggleSection={(sectionId) => {
+                  setCollapsedSections(prev =>
+                    prev.includes(sectionId) ? prev.filter(id => id !== sectionId) : [...prev, sectionId]
+                  );
+                }}
+              />
+            </SwitchAccessMode>
+          </Suspense>
         </div>
       </DndContext>
       {!isLocked && !isEditMode && !isTrainingMode && <button id="settings-button" onClick={() => setIsEditMode(true)} aria-label="Open Settings">⚙️</button>}
@@ -1469,11 +1472,11 @@ function App() {
           </span>
         </div>
       )}
-      <EditModal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} onSave={handleSaveEdit} onDelete={() => { if (editingItemIndex !== null) { handleDelete(editingItemIndex); setEditModalOpen(false); } }} onOpenEmojiPicker={handlePickerOpen} item={editingItemIndex !== null ? (currentPath.length === 0 ? (rootItems[currentPageIndex]?.items || []) : currentPath.reduce((acc, i) => acc[i].contents, (rootItems[currentPageIndex]?.items || [])))[editingItemIndex] : null} customPhotoCount={totalCustomPhotos} triggerPaywall={triggerPaywall} />
-      <PickerModal isOpen={pickerOpen} onClose={() => setPickerOpen(false)} userItems={rootItems[currentPageIndex]?.items || []} triggerPaywall={triggerPaywall} onSelect={(w, i, isImage) => { if (pickerCallback) pickerCallback(w, i, isImage); }} />
-      {showPhase1Selector && <Phase1TargetSelector rootItems={rootItems[currentPageIndex]?.items || []} onSelect={(id) => { setPhase1TargetId(id); setShowPhase1Selector(false); }} />}
-      {showAdvancementModal && <AdvancementModal currentPhase={currentPhase} onAdvance={handleAdvance} onWait={handleWait} />}
-      <A2HSModal />
+      {editModalOpen && <Suspense fallback={null}><EditModal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} onSave={handleSaveEdit} onDelete={() => { if (editingItemIndex !== null) { handleDelete(editingItemIndex); setEditModalOpen(false); } }} onOpenEmojiPicker={handlePickerOpen} item={editingItemIndex !== null ? (currentPath.length === 0 ? (rootItems[currentPageIndex]?.items || []) : currentPath.reduce((acc, i) => acc[i].contents, (rootItems[currentPageIndex]?.items || [])))[editingItemIndex] : null} customPhotoCount={totalCustomPhotos} triggerPaywall={triggerPaywall} /></Suspense>}
+      {pickerOpen && <Suspense fallback={null}><PickerModal isOpen={pickerOpen} onClose={() => setPickerOpen(false)} userItems={rootItems[currentPageIndex]?.items || []} triggerPaywall={triggerPaywall} onSelect={(w, i, isImage) => { if (pickerCallback) pickerCallback(w, i, isImage); }} /></Suspense>}
+      {showPhase1Selector && <Suspense fallback={null}><Phase1TargetSelector rootItems={rootItems[currentPageIndex]?.items || []} onSelect={(id) => { setPhase1TargetId(id); setShowPhase1Selector(false); }} /></Suspense>}
+      {showAdvancementModal && <Suspense fallback={null}><AdvancementModal currentPhase={currentPhase} onAdvance={handleAdvance} onWait={handleWait} /></Suspense>}
+      <Suspense fallback={null}><A2HSModal /></Suspense>
       {inflectionData && (
         <div className="inflection-bubble" style={{
           position: 'fixed',
