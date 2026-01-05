@@ -1446,10 +1446,7 @@ export const EMOJI_DATA = {
       "name": "Pregnant Woman",
       "emoji": "🤰"
     },
-    {
-      "name": "Pregnant Man",
-      "emoji": "🫃"
-    },
+
     {
       "name": "Pregnant Person",
       "emoji": "🫄"
