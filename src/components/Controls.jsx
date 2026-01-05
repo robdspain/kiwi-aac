@@ -106,9 +106,9 @@ const Controls = ({
     const activeTabIndex = tabs.findIndex(t => t.id === activeTab);
 
     const { currentProfile, updateAccessProfile, pronunciations } = useProfile();
-    const accessProfile = currentProfile?.accessProfile || { 
-        targetSize: 10, 
-        spacing: 1.5, 
+    const accessProfile = currentProfile?.accessProfile || {
+        targetSize: 10,
+        spacing: 1.5,
         selectionType: 'touch',
         visualContrast: 'standard',
         fieldSize: 'unlimited'
@@ -151,12 +151,12 @@ const Controls = ({
             return pronunciations[cleanWord] || w;
         });
         const processedText = processedWords.join(' ');
-        
+
         const u = new SpeechSynthesisUtterance(processedText);
         u.rate = voiceSettings.rate;
         u.pitch = voiceSettings.pitch || 1;
         u.volume = voiceSettings.volume || 1;
-        
+
         if (voiceSettings.voiceURI) {
             const voices = window.speechSynthesis.getVoices();
             const selectedVoice = voices.find(v => v.voiceURI === voiceSettings.voiceURI);
@@ -172,6 +172,7 @@ const Controls = ({
     const [selectedLang, setSelectedLang] = useState('en');
     const [isRefreshingVoices, setIsRefreshingVoices] = useState(false);
     const [isBiometryAvailable, setIsBiometryAvailable] = useState(false);
+    const [biometricType, setBiometricType] = useState('none');
     const [showVoiceSetup, setShowVoiceSetup] = useState(false);
 
     useEffect(() => {
@@ -180,6 +181,17 @@ const Controls = ({
                 try {
                     const result = await NativeBiometric.isAvailable();
                     setIsBiometryAvailable(result.isAvailable);
+
+                    // Detect biometric type
+                    if (result.isAvailable) {
+                        // BiometryType: 0=none, 1=touchId, 2=faceId, 3=fingerprint
+                        switch (result.biometryType) {
+                            case 1: setBiometricType('TouchID'); break;
+                            case 2: setBiometricType('FaceID'); break;
+                            case 3: setBiometricType('Fingerprint'); break;
+                            default: setBiometricType('Biometric'); break;
+                        }
+                    }
                 } catch (e) {
                     console.warn('Biometry check failed');
                 }
@@ -192,7 +204,7 @@ const Controls = ({
         setIsRefreshingVoices(true);
         const voices = await getVoicesReady(3000);
         setAvailableVoices(voices);
-        
+
         // Auto-pick best if current is generic/robotic
         const currentVoice = voices.find(v => v.voiceURI === voiceSettings.voiceURI);
         if (!isHighQualityVoice(currentVoice)) {
@@ -208,7 +220,7 @@ const Controls = ({
         const loadVoices = () => {
             const voices = window.speechSynthesis.getVoices();
             setAvailableVoices(voices);
-            
+
             // Default to first available language if 'en' not found
             if (voices.length > 0 && !voices.some(v => v.lang.startsWith('en'))) {
                 setSelectedLang(voices[0].lang.split('-')[0]);
@@ -377,7 +389,7 @@ const Controls = ({
 
                 {/* Edit Panel */}
                 <div id="edit-panel" style={{ display: (isEditMode && !isTrainingMode) ? 'flex' : 'none', flexDirection: 'column' }}>
-                    
+
                     {/* Action Section */}
                     <div style={{ marginBottom: '1.25rem' }}>
                         <button onClick={handleLock} className="apple-red-button">
@@ -396,12 +408,12 @@ const Controls = ({
 
                     {/* Segmented Tab Control */}
                     <div className="ios-segmented-control settings-tabs">
-                        <div 
-                            className="selection-pill" 
-                            style={{ 
+                        <div
+                            className="selection-pill"
+                            style={{
                                 width: `calc(${100 / tabs.length}% - 0.25rem)`,
-                                transform: `translateX(${activeTabIndex * 100}%)` 
-                            }} 
+                                transform: `translateX(${activeTabIndex * 100}%)`
+                            }}
                         />
                         {tabs.map(tab => (
                             <button
@@ -626,7 +638,7 @@ const Controls = ({
                                             <span style={{ fontWeight: currentContext === ctx.id ? 700 : 400 }}>{ctx.label}</span>
                                         </div>
                                         <div style={{ display: 'flex', gap: '0.75rem' }}>
-                                            <button 
+                                            <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     const newLabel = prompt("Rename location:", ctx.label);
@@ -636,7 +648,7 @@ const Controls = ({
                                                 aria-label="Rename Location"
                                             >✎</button>
                                             {contexts.length > 1 && (
-                                                <button 
+                                                <button
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         onDeleteContext(ctx.id);
@@ -759,34 +771,52 @@ const Controls = ({
                             <div className="ios-setting-group-header">Security</div>
                             <div className="ios-setting-card">
                                 {isBiometryAvailable && (
-                                    <div className="ios-row" onClick={() => updateAccessProfile({ biometricLock: !accessProfile.biometricLock })}>
-                                        <span>🛡️ Use FaceID / TouchID</span>
-                                        <div style={{ 
-                                            width: '51px', 
-                                            height: '31px', 
-                                            background: accessProfile.biometricLock ? '#34C759' : '#E5E5EA', 
-                                            borderRadius: '15.5px', 
-                                            position: 'relative',
-                                            transition: 'background 0.2s'
-                                        }}>
-                                            <div style={{ 
-                                                width: '27px', 
-                                                height: '27px', 
-                                                background: 'white', 
-                                                borderRadius: '50%', 
-                                                position: 'absolute', 
-                                                top: '2px', 
-                                                left: accessProfile.biometricLock ? '22px' : '2px',
-                                                transition: 'left 0.2s',
-                                                boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
-                                            }} />
+                                    <>
+                                        <div className="ios-row" onClick={() => updateAccessProfile({ biometricLock: !accessProfile.biometricLock })}>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                                                <span>🛡️ Use {biometricType}</span>
+                                                {accessProfile.biometricLock && (
+                                                    <span style={{ fontSize: '0.75rem', color: '#34C759', fontWeight: 600 }}>
+                                                        ✓ Active - Session unlocked for 5 min
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div style={{
+                                                width: '51px',
+                                                height: '31px',
+                                                background: accessProfile.biometricLock ? '#34C759' : '#E5E5EA',
+                                                borderRadius: '15.5px',
+                                                position: 'relative',
+                                                transition: 'background 0.2s'
+                                            }}>
+                                                <div style={{
+                                                    width: '27px',
+                                                    height: '27px',
+                                                    background: 'white',
+                                                    borderRadius: '50%',
+                                                    position: 'absolute',
+                                                    top: '2px',
+                                                    left: accessProfile.biometricLock ? '22px' : '2px',
+                                                    transition: 'left 0.2s',
+                                                    boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
+                                                }} />
+                                            </div>
                                         </div>
-                                    </div>
+
+                                        {accessProfile.biometricLock && (
+                                            <div className="ios-row" onClick={() => updateAccessProfile({ biometricLock: false })}>
+                                                <span style={{ color: '#FF3B30', fontWeight: 600 }}>🔓 Disable Protection</span>
+                                                <span className="ios-chevron">›</span>
+                                            </div>
+                                        )}
+                                    </>
                                 )}
-                                <div className="ios-row" style={{ minHeight: 'auto', padding: '0.5rem 0.9375rem', background: '#F2F2F7' }}>
-                                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
-                                        {isBiometryAvailable 
-                                            ? 'Secure adult settings with biometrics. Triple-tap fallback is always available.'
+                                <div className="ios-row" style={{ minHeight: 'auto', padding: '0.75rem 0.9375rem', background: '#F2F2F7' }}>
+                                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.4 }}>
+                                        {isBiometryAvailable
+                                            ? accessProfile.biometricLock
+                                                ? `Unlock with ${biometricType} or triple-tap the bottom bar. Session stays unlocked for 5 minutes after authentication.`
+                                                : `Protect adult settings with ${biometricType}. Triple-tap fallback is always available.`
                                             : 'Triple-tap the bottom bar to unlock adult settings.'}
                                     </p>
                                 </div>
@@ -820,8 +850,8 @@ const Controls = ({
                                             ))}
                                         </div>
                                         <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.75rem', marginInline: '0.25rem' }}>
-                                            {accessProfile.targetSize <= 10 ? 'Standard baseline (44pt/48dp).' : 
-                                             accessProfile.targetSize <= 15 ? 'Best for moderate motor challenges.' : 'Optimized for significant motor needs.'}
+                                            {accessProfile.targetSize <= 10 ? 'Standard baseline (44pt/48dp).' :
+                                                accessProfile.targetSize <= 15 ? 'Best for moderate motor challenges.' : 'Optimized for significant motor needs.'}
                                         </p>
                                     </div>
                                 </div>
@@ -850,12 +880,12 @@ const Controls = ({
                                 <div className="ios-row" style={{ padding: '0.9375rem', flexDirection: 'column', alignItems: 'flex-start', gap: '0.5rem' }}>
                                     <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>🌐 App Language (Mirroring)</span>
                                     <div className="ios-segmented-control" style={{ marginBottom: 0, width: '100%' }}>
-                                        <div 
-                                            className="selection-pill" 
-                                            style={{ 
+                                        <div
+                                            className="selection-pill"
+                                            style={{
                                                 width: 'calc(50% - 4px)',
                                                 transform: accessProfile.language === 'en' ? 'translateX(0)' : 'translateX(100%)'
-                                            }} 
+                                            }}
                                         />
                                         <button onClick={() => updateAccessProfile({ language: 'en' })}>🇺🇸 English</button>
                                         <button onClick={() => updateAccessProfile({ language: 'es' })}>🇪🇸 Español</button>
@@ -871,20 +901,20 @@ const Controls = ({
                                     else document.body.classList.remove('high-contrast');
                                 }}>
                                     <span>👁️ High Contrast Symbols</span>
-                                    <div style={{ 
-                                        width: '51px', 
-                                        height: '31px', 
-                                        background: accessProfile.visualContrast === 'high' ? '#34C759' : '#E5E5EA', 
-                                        borderRadius: '15.5px', 
+                                    <div style={{
+                                        width: '51px',
+                                        height: '31px',
+                                        background: accessProfile.visualContrast === 'high' ? '#34C759' : '#E5E5EA',
+                                        borderRadius: '15.5px',
                                         position: 'relative'
                                     }}>
-                                        <div style={{ 
-                                            width: '27px', 
-                                            height: '27px', 
-                                            background: 'white', 
-                                            borderRadius: '50%', 
-                                            position: 'absolute', 
-                                            top: '2px', 
+                                        <div style={{
+                                            width: '27px',
+                                            height: '27px',
+                                            background: 'white',
+                                            borderRadius: '50%',
+                                            position: 'absolute',
+                                            top: '2px',
                                             left: accessProfile.visualContrast === 'high' ? '22px' : '2px',
                                             transition: 'left 0.2s'
                                         }} />
@@ -893,14 +923,14 @@ const Controls = ({
                                 <div className="ios-row" style={{ padding: '0.9375rem', flexDirection: 'column', alignItems: 'flex-start', gap: '0.5rem' }}>
                                     <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>🔲 Field Size Limit</span>
                                     <div className="ios-segmented-control" style={{ marginBottom: 0, width: '100%' }}>
-                                        <div 
-                                            className="selection-pill" 
-                                            style={{ 
+                                        <div
+                                            className="selection-pill"
+                                            style={{
                                                 width: 'calc(25% - 4px)',
-                                                transform: accessProfile.fieldSize === '4' ? 'translateX(0)' : 
-                                                           accessProfile.fieldSize === '8' ? 'translateX(100%)' : 
-                                                           accessProfile.fieldSize === '12' ? 'translateX(200%)' : 'translateX(300%)' 
-                                            }} 
+                                                transform: accessProfile.fieldSize === '4' ? 'translateX(0)' :
+                                                    accessProfile.fieldSize === '8' ? 'translateX(100%)' :
+                                                        accessProfile.fieldSize === '12' ? 'translateX(200%)' : 'translateX(300%)'
+                                            }}
                                         />
                                         <button onClick={() => updateAccessProfile({ fieldSize: '4' })}>4</button>
                                         <button onClick={() => updateAccessProfile({ fieldSize: '8' })}>8</button>
@@ -918,7 +948,7 @@ const Controls = ({
                     {/* Extra Settings Tab */}
                     {activeTab === 'advanced' && (
                         <div style={{ background: '#F2F2F7', margin: '0 -1.5rem', padding: '0 1.5rem 1.5rem', flex: 1 }}>
-                            
+
                             <div className="ios-setting-group-header">Accessibility</div>
                             <div className="ios-setting-card">
                                 <div className="ios-row" onClick={onToggleColorCoding}>
@@ -927,21 +957,21 @@ const Controls = ({
                                         <span style={{ fontSize: '0.875rem', fontWeight: 600, color: isColorCodingEnabled ? '#34C759' : '#8E8E93' }}>
                                             {isColorCodingEnabled ? 'On' : 'Off'}
                                         </span>
-                                        <div style={{ 
-                                            width: '51px', 
-                                            height: '31px', 
-                                            background: isColorCodingEnabled ? '#34C759' : '#E5E5EA', 
-                                            borderRadius: '15.5px', 
+                                        <div style={{
+                                            width: '51px',
+                                            height: '31px',
+                                            background: isColorCodingEnabled ? '#34C759' : '#E5E5EA',
+                                            borderRadius: '15.5px',
                                             position: 'relative',
                                             transition: 'background 0.2s'
                                         }}>
-                                            <div style={{ 
-                                                width: '27px', 
-                                                height: '27px', 
-                                                background: 'white', 
-                                                borderRadius: '50%', 
-                                                position: 'absolute', 
-                                                top: '2px', 
+                                            <div style={{
+                                                width: '27px',
+                                                height: '27px',
+                                                background: 'white',
+                                                borderRadius: '50%',
+                                                position: 'absolute',
+                                                top: '2px',
                                                 left: isColorCodingEnabled ? '22px' : '2px',
                                                 transition: 'left 0.2s',
                                                 boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
@@ -955,21 +985,21 @@ const Controls = ({
                                         <span style={{ fontSize: '0.875rem', fontWeight: 600, color: showCategoryHeaders ? '#34C759' : '#8E8E93' }}>
                                             {showCategoryHeaders ? 'On' : 'Off'}
                                         </span>
-                                        <div style={{ 
-                                            width: '51px', 
-                                            height: '31px', 
-                                            background: showCategoryHeaders ? '#34C759' : '#E5E5EA', 
-                                            borderRadius: '15.5px', 
+                                        <div style={{
+                                            width: '51px',
+                                            height: '31px',
+                                            background: showCategoryHeaders ? '#34C759' : '#E5E5EA',
+                                            borderRadius: '15.5px',
                                             position: 'relative',
                                             transition: 'background 0.2s'
                                         }}>
-                                            <div style={{ 
-                                                width: '27px', 
-                                                height: '27px', 
-                                                background: 'white', 
-                                                borderRadius: '50%', 
-                                                position: 'absolute', 
-                                                top: '2px', 
+                                            <div style={{
+                                                width: '27px',
+                                                height: '27px',
+                                                background: 'white',
+                                                borderRadius: '50%',
+                                                position: 'absolute',
+                                                top: '2px',
                                                 left: showCategoryHeaders ? '22px' : '2px',
                                                 transition: 'left 0.2s',
                                                 boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
@@ -985,32 +1015,131 @@ const Controls = ({
                                 <div className="ios-row" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.75rem', padding: '1rem' }}>
                                     <span style={{ fontWeight: 600, fontSize: '0.875rem' }}>🎯 Vocabulary Level</span>
                                     <div className="ios-segmented-control" style={{ marginBottom: 0 }}>
-                                        <div 
-                                            className="selection-pill" 
-                                            style={{ 
+                                        <div
+                                            className="selection-pill"
+                                            style={{
                                                 width: 'calc(33.33% - 4px)',
-                                                transform: proficiencyLevel === 'beginner' ? 'translateX(0)' : 
-                                                           proficiencyLevel === 'intermediate' ? 'translateX(100%)' : 'translateX(200%)' 
-                                            }} 
+                                                transform: proficiencyLevel === 'beginner' ? 'translateX(0)' :
+                                                    proficiencyLevel === 'intermediate' ? 'translateX(100%)' : 'translateX(200%)'
+                                            }}
                                         />
                                         <button onClick={() => onUpdateProficiencyLevel('beginner')} style={{ minHeight: '2.75rem' }}>Beginner</button>
                                         <button onClick={() => onUpdateProficiencyLevel('intermediate')} style={{ minHeight: '2.75rem' }}>Intermediate</button>
                                         <button onClick={() => onUpdateProficiencyLevel('advanced')} style={{ minHeight: '2.75rem' }}>Advanced</button>
                                     </div>
                                     <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
-                                        {proficiencyLevel === 'beginner' ? 'Shows core words + 10 fringe icons. Others are grayed out.' : 
-                                         proficiencyLevel === 'intermediate' ? 'Shows core words + 40 fringe icons.' : 'Shows all vocabulary icons.'}
+                                        {proficiencyLevel === 'beginner' ? 'Shows core words + 10 fringe icons. Others are grayed out.' :
+                                            proficiencyLevel === 'intermediate' ? 'Shows core words + 40 fringe icons.' : 'Shows all vocabulary icons.'}
                                     </p>
                                 </div>
                                 <div className="ios-row" onClick={onRedoCalibration}>
                                     <span>👆 Redo Touch Calibration</span>
                                     <span className="ios-chevron">›</span>
                                 </div>
+                            </div>
+
+                            {/* Switch Access Settings */}
+                            <div className="ios-setting-group-header">Switch Access</div>
+                            <div className="ios-setting-card">
+                                <div className="ios-row" onClick={() => updateAccessProfile({ switchAccessEnabled: !accessProfile.switchAccessEnabled })}>
+                                    <span>♿ Enable Switch Access</span>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <span style={{ fontSize: '0.875rem', fontWeight: 600, color: accessProfile.switchAccessEnabled ? '#34C759' : '#8E8E93' }}>
+                                            {accessProfile.switchAccessEnabled ? 'On' : 'Off'}
+                                        </span>
+                                        <div style={{
+                                            width: '51px',
+                                            height: '31px',
+                                            background: accessProfile.switchAccessEnabled ? '#34C759' : '#E5E5EA',
+                                            borderRadius: '15.5px',
+                                            position: 'relative',
+                                            transition: 'background 0.2s'
+                                        }}>
+                                            <div style={{
+                                                width: '27px',
+                                                height: '27px',
+                                                background: 'white',
+                                                borderRadius: '50%',
+                                                position: 'absolute',
+                                                top: '2px',
+                                                left: accessProfile.switchAccessEnabled ? '22px' : '2px',
+                                                transition: 'left 0.2s',
+                                                boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
+                                            }} />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {accessProfile.switchAccessEnabled && (
+                                    <>
+                                        <div className="ios-row" style={{ padding: '0.9375rem' }}>
+                                            <div style={{ width: '100%' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                                                    <span style={{ fontSize: '0.875rem' }}>⏱️ Scan Speed</span>
+                                                    <span style={{ fontSize: '0.875rem', fontWeight: 700 }}>{(accessProfile.scanSpeed / 1000).toFixed(1)}s</span>
+                                                </div>
+                                                <input
+                                                    type="range"
+                                                    min="1000"
+                                                    max="3000"
+                                                    step="100"
+                                                    value={accessProfile.scanSpeed || 1500}
+                                                    onChange={(e) => updateAccessProfile({ scanSpeed: parseInt(e.target.value, 10) })}
+                                                    style={{ width: '100%', height: '2.75rem' }}
+                                                />
+                                                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem', marginInline: '0.25rem' }}>
+                                                    {accessProfile.scanSpeed <= 1200 ? 'Fast - For experienced users' :
+                                                        accessProfile.scanSpeed <= 2000 ? 'Medium - Good balance' : 'Slow - More time to select'}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="ios-row" onClick={() => updateAccessProfile({ audioFeedback: !accessProfile.audioFeedback })}>
+                                            <span>🔊 Audio Feedback</span>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <span style={{ fontSize: '0.875rem', fontWeight: 600, color: accessProfile.audioFeedback ? '#34C759' : '#8E8E93' }}>
+                                                    {accessProfile.audioFeedback ? 'On' : 'Off'}
+                                                </span>
+                                                <div style={{
+                                                    width: '51px',
+                                                    height: '31px',
+                                                    background: accessProfile.audioFeedback ? '#34C759' : '#E5E5EA',
+                                                    borderRadius: '15.5px',
+                                                    position: 'relative',
+                                                    transition: 'background 0.2s'
+                                                }}>
+                                                    <div style={{
+                                                        width: '27px',
+                                                        height: '27px',
+                                                        background: 'white',
+                                                        borderRadius: '50%',
+                                                        position: 'absolute',
+                                                        top: '2px',
+                                                        left: accessProfile.audioFeedback ? '22px' : '2px',
+                                                        transition: 'left 0.2s',
+                                                        boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
+                                                    }} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+
+                                <div className="ios-row" style={{ minHeight: 'auto', padding: '0.5rem 0.9375rem', background: '#F2F2F7' }}>
+                                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
+                                        {accessProfile.switchAccessEnabled
+                                            ? 'Icons highlight sequentially. Press Spacebar to select. Press S to start/pause, Esc to pause.'
+                                            : 'Sequential scanning for motor-impaired users. Works with external switches.'}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="ios-setting-card">
                                 <div className="ios-row" style={{ minHeight: 'auto', padding: '0.9375rem' }}>
                                     <div style={{ width: '100%' }}>
                                         <div className="ios-setting-group-header" style={{ margin: '0 0 0.75rem 0' }}>Grid Layout</div>
                                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.375rem' }}>
-                                            {[ 
+                                            {[
                                                 { id: 'super-big', label: '🐘', title: '2x2' },
                                                 { id: 'big', label: '🦒', title: '3x3' },
                                                 { id: 'standard', label: '🐕', title: '4x4' },
@@ -1121,13 +1250,13 @@ const Controls = ({
                                     >
                                         {languages.map(lang => (
                                             <option key={lang} value={lang}>
-                                                {lang === 'en' ? '🇺🇸 English' : 
-                                                 lang === 'es' ? '🇪🇸 Spanish' : 
-                                                 lang === 'fr' ? '🇫🇷 French' : 
-                                                 lang === 'de' ? '🇩🇪 German' : 
-                                                 lang === 'it' ? '🇮🇹 Italian' : 
-                                                 lang === 'pt' ? '🇵🇹 Portuguese' :
-                                                 lang.toUpperCase()}
+                                                {lang === 'en' ? '🇺🇸 English' :
+                                                    lang === 'es' ? '🇪🇸 Spanish' :
+                                                        lang === 'fr' ? '🇫🇷 French' :
+                                                            lang === 'de' ? '🇩🇪 German' :
+                                                                lang === 'it' ? '🇮🇹 Italian' :
+                                                                    lang === 'pt' ? '🇵🇹 Portuguese' :
+                                                                        lang.toUpperCase()}
                                             </option>
                                         ))}
                                     </select>
@@ -1184,7 +1313,7 @@ const Controls = ({
                                         </p>
                                     )}
                                 </div>
-                                
+
                                 {/* Clean Voice Quality Notification */}
                                 {!isHighQualityVoice(availableVoices.find(v => v.voiceURI === voiceSettings.voiceURI)) && (
                                     <div
@@ -1234,21 +1363,21 @@ const Controls = ({
                                         <span style={{ fontSize: '0.875rem', fontWeight: 600, color: autoSpeak ? '#34C759' : '#8E8E93' }}>
                                             {autoSpeak ? 'On' : 'Off'}
                                         </span>
-                                        <div style={{ 
-                                            width: '51px', 
-                                            height: '31px', 
-                                            background: autoSpeak ? '#34C759' : '#E5E5EA', 
-                                            borderRadius: '15.5px', 
+                                        <div style={{
+                                            width: '51px',
+                                            height: '31px',
+                                            background: autoSpeak ? '#34C759' : '#E5E5EA',
+                                            borderRadius: '15.5px',
                                             position: 'relative',
                                             transition: 'background 0.2s'
                                         }}>
-                                            <div style={{ 
-                                                width: '27px', 
-                                                height: '27px', 
-                                                background: 'white', 
-                                                borderRadius: '50%', 
-                                                position: 'absolute', 
-                                                top: '2px', 
+                                            <div style={{
+                                                width: '27px',
+                                                height: '27px',
+                                                background: 'white',
+                                                borderRadius: '50%',
+                                                position: 'absolute',
+                                                top: '2px',
                                                 left: autoSpeak ? '22px' : '2px',
                                                 transition: 'left 0.2s',
                                                 boxShadow: '0 3px 8px rgba(0,0,0,0.15)'
@@ -1294,7 +1423,7 @@ const Controls = ({
                             <div className="ios-setting-card" style={{ padding: '0.9375rem' }}>
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
                                     {COLOR_THEMES.map(theme => (
-                                        <div 
+                                        <div
                                             key={theme.id}
                                             onClick={async () => {
                                                 if (theme.premium && colorTheme !== theme.id) {
@@ -1346,7 +1475,7 @@ const Controls = ({
                     {/* Data Tab */}
                     {activeTab === 'data' && (
                         <div style={{ background: '#F2F2F7', margin: '0 -1.5rem', padding: '0 1.5rem 1.5rem', flex: 1 }}>
-                            
+
                             <div className="ios-setting-group-header">Overview</div>
                             <div className="ios-setting-card" style={{ padding: '0.9375rem' }}>
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
@@ -1406,7 +1535,7 @@ const Controls = ({
                                     <span className="ios-chevron">›</span>
                                 </div>
                             </div>
-                            
+
                             <p style={{ fontSize: '0.75rem', color: '#999', textAlign: 'center', marginTop: '0.75rem' }}>
                                 © 2024 Behavior School LLC. All rights reserved.
                             </p>

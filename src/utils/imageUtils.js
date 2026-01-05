@@ -1,6 +1,19 @@
-// Standard PPI estimate for mobile devices (can be refined per platform)
-export const PPI_ESTIMATE = 160; 
-export const getPxFromMm = (mm) => (mm / 25.4) * PPI_ESTIMATE;
+import { getDeviceDPI, mmToPixels } from './physicalScaling';
+
+/**
+ * Convert millimeters to pixels using device DPI
+ * 
+ * DEPRECATED: Consider using mmToPixels from physicalScaling.js directly
+ * This wrapper exists for backwards compatibility with Grid.jsx
+ * 
+ * @param {number} mm - Measurement in millimeters
+ * @param {number} [dpi] - Device DPI (auto-detected if not provided)
+ * @returns {number} Equivalent measurement in pixels
+ */
+export const getPxFromMm = (mm, dpi) => {
+    const deviceDPI = dpi || getDeviceDPI();
+    return mmToPixels(mm, deviceDPI);
+};
 
 /**
  * Converts an emoji character to its OpenMoji SVG URL.
@@ -9,7 +22,7 @@ export const getPxFromMm = (mm) => (mm / 25.4) * PPI_ESTIMATE;
  */
 export const getOpenMojiUrl = (emoji) => {
     if (!emoji) return '';
-    
+
     // Get the hex code of the emoji
     const codes = [];
     for (let i = 0; i < emoji.length; i++) {
@@ -27,7 +40,7 @@ export const getOpenMojiUrl = (emoji) => {
             codes.push(code.toString(16).toUpperCase());
         }
     }
-    
+
     const hexCode = codes.join('-');
     return `https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji/color/svg/${hexCode}.svg`;
 };

@@ -968,7 +968,7 @@
             overflow-x: auto;
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-lg);
-            border: 1px solid rgba(0,0,0,0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .comparison-table {
@@ -978,7 +978,8 @@
             text-align: left;
         }
 
-        .comparison-table th, .comparison-table td {
+        .comparison-table th,
+        .comparison-table td {
             padding: 1.5rem;
             border-bottom: 1px solid #F2F2F7;
         }
@@ -1013,484 +1014,1752 @@
             text-align: center;
         }
 
-        .check-icon { color: #34D399; font-weight: bold; font-size: 1.2rem; }
-        .cross-icon { color: #FF6B6B; font-weight: bold; font-size: 1.2rem; }
-        .warn-icon { color: #F97316; font-weight: bold; font-size: 1.2rem; }
+        .check-icon {
+            color: #34D399;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .cross-icon {
+            color: #FF6B6B;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .warn-icon {
+            color: #F97316;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Pain Points Section */
+        .pain-points-section {
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d1b3d 100%);
+            color: white;
+            padding: var(--spacing-xl) 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pain-points-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -10%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(78, 205, 196, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .pain-points-section::after {
+            content: '';
+            position: absolute;
+            bottom: -50%;
+            right: -10%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(88, 86, 214, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .pain-points-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .pain-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            backdrop-filter: blur(10px);
+            transition: var(--transition);
+        }
+
+        .pain-card:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(78, 205, 196, 0.3);
+            box-shadow: 0 20px 60px rgba(78, 205, 196, 0.2);
+        }
+
+        .pain-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--accent) 0%, #ff8787 100%);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+            animation: pulse-glow 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 40px rgba(255, 107, 107, 0.6);
+            }
+        }
+
+        .solution-icon {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            animation: pulse-glow-success 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow-success {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(78, 205, 196, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 40px rgba(78, 205, 196, 0.6);
+            }
+        }
+
+        .pain-card h3 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+            color: white;
+        }
+
+        .pain-card .pain-label {
+            color: var(--accent);
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .pain-card .solution-label {
+            color: var(--primary);
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .pain-card p {
+            opacity: 0.9;
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+
+        /* Deep Dive Sections */
+        .deep-dive-section {
+            padding: var(--spacing-xl) 2rem;
+            position: relative;
+        }
+
+        .deep-dive-section:nth-child(even) {
+            background: var(--bg-light);
+        }
+
+        .deep-dive-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .deep-dive-section:nth-child(even) .deep-dive-container {
+            direction: rtl;
+        }
+
+        .deep-dive-section:nth-child(even) .deep-dive-content,
+        .deep-dive-section:nth-child(even) .deep-dive-image {
+            direction: ltr;
+        }
+
+        .deep-dive-badge {
+            display: inline-block;
+            padding: 0.5rem 1.25rem;
+            background: rgba(78, 205, 196, 0.1);
+            color: var(--primary);
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.5rem;
+        }
+
+        .deep-dive-content h2 {
+            font-size: 2.75rem;
+            font-weight: 900;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .deep-dive-content p {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        .deep-dive-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .deep-dive-content ul li {
+            padding: 0.75rem 0;
+            padding-left: 2rem;
+            position: relative;
+            color: var(--text-light);
+            font-size: 1.05rem;
+        }
+
+        .deep-dive-content ul li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: 900;
+            font-size: 1.2rem;
+        }
+
+        .deep-dive-image {
+            position: relative;
+        }
+
+        .deep-dive-mockup {
+            width: 100%;
+            max-width: 450px;
+            margin: 0 auto;
+            aspect-ratio: 9/19.5;
+            background: #1a1a2e;
+            border-radius: 50px;
+            padding: 12px;
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .deep-dive-mockup::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 25px;
+            background: #1a1a2e;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            z-index: 2;
+        }
+
+        .deep-dive-screen {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            border-radius: 40px;
+            overflow: hidden;
+        }
+
+        .deep-dive-screen img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            padding: var(--spacing-xl) 2rem;
+            background: white;
+        }
+
+        .faq-container {
+            max-width: 900px;
+            margin: 3rem auto 0;
+        }
+
+        .faq-item {
+            background: white;
+            border: 2px solid rgba(0, 0, 0, 0.06);
+            border-radius: var(--radius-md);
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .faq-item:hover {
+            border-color: rgba(78, 205, 196, 0.3);
+        }
+
+        .faq-item.active {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .faq-question {
+            padding: 1.75rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .faq-question h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin: 0;
+            flex: 1;
+        }
+
+        .faq-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--bg-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.25rem;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-left: 1rem;
+        }
+
+        .faq-answer {
+            height: 0;
+            overflow: hidden;
+        }
+
+        .faq-answer-content {
+            padding: 0 2rem 1.75rem;
+            color: var(--text-light);
+            font-size: 1.05rem;
+            line-height: 1.8;
+        }
+
+        /* Social Proof Section */
+        .social-proof-section {
+            padding: var(--spacing-xl) 2rem;
+            background: var(--bg-light);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .testimonial-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .testimonial-stars {
+            color: #FFC107;
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .testimonial-text {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .testimonial-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .testimonial-info h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .testimonial-info p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* Enhanced Comparison Table */
+        .comparison-table th.highlight-col,
+        .comparison-table td.highlight-col {
+            background: linear-gradient(135deg, rgba(78, 205, 196, 0.08) 0%, rgba(78, 205, 196, 0.12) 100%);
+            position: relative;
+        }
+
+        .comparison-table th.highlight-col::before {
+            content: '⭐ BEST VALUE';
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            padding: 0.35rem 1rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+
+        .cost-savings {
+            max-width: 1000px;
+            margin: 3rem auto 0;
+            padding: 2.5rem;
+            background: linear-gradient(135deg, #f6f8fa 0%, #e9ecef 100%);
+            border-radius: var(--radius-lg);
+            border: 2px solid rgba(78, 205, 196, 0.2);
+        }
+
+        .cost-savings h3 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .savings-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .savings-item {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .savings-item .comparison-text {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            margin-bottom: 0.75rem;
+        }
+
+        .savings-item .savings-amount {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--success);
+            margin-bottom: 0.5rem;
+        }
+
+        .savings-item .savings-label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Responsive Updates */
+        @media (max-width: 1024px) {
+            .pain-points-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .deep-dive-container {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .deep-dive-section:nth-child(even) .deep-dive-container {
+                direction: ltr;
+            }
+
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .savings-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .pain-points-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .deep-dive-content h2 {
+                font-size: 2rem;
+            }
+
+            .deep-dive-content p {
+                font-size: 1.05rem;
+            }
+
+            .showcase-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
+
 </head>
 
 <body>
     <!-- Navigation -->
     <nav id="navbar">
-        <div class="nav-container">
-            <a href="#" class="logo">
-                <img src="images/logo.png" alt="Kiwi Voice Logo">
-                <span>Kiwi Voice</span>
-            </a>
-            <div class="nav-links">
-                <a href="#features">Features</a>
-                <a href="#how-it-works">How It Works</a>
-                <a href="#privacy">Privacy</a>
-                <a href="#download" class="btn-primary">Download App</a>
-            </div>
+        <div class="nav-container"><a href="#" class="logo"><img src="images/logo.png" alt="Kiwi Voice Logo"><span>Kiwi
+                    Voice</span></a>
+            <div class="nav-links"><a href="#features">Features</a><a href="#how-it-works">How It Works</a><a
+                    href="#privacy">Privacy</a><a href="#download" class="btn-primary">Download App</a></div>
         </div>
     </nav>
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-container">
-            <div class="hero-content">
-                <h1>Help Your Child Learn to Talk</h1>
-                <p class="subtitle">The fun, visual way to build language skills</p>
-                <p>Picture-based communication that makes learning words exciting. Fully customizable, privacy-first,
-                    and designed to accelerate your child's language development.</p>
-                <div class="cta-group">
-                    <a href="#download" class="btn-hero btn-hero-primary">
-                        <span>Get Started Free</span>
-                        <span>→</span>
-                    </a>
-                    <a href="#features" class="btn-hero btn-hero-secondary">
-                        <span>Learn More</span>
-                    </a>
+    < !-- Hero Section -->
+        <section class="hero">
+            <div class="hero-container">
+                <div class="hero-content">
+                    <h1>Help Your Child Learn to Talk</h1>
+                    <p class="subtitle">The fun,
+                        visual way to build language skills</p>
+                    <p>Picture-based communication that makes learning words exciting. Fully customizable,
+                        privacy-first,
+                        and designed to accelerate your child's language development.</p>
+                    <div class="cta-group"><a href="#download" class="btn-hero btn-hero-primary"><span>Get Started
+                                Free</span><span>→</span></a><a href="#features"
+                            class="btn-hero btn-hero-secondary"><span>Learn More</span></a></div>
                 </div>
-            </div>
-            <div class="hero-image">
-                <div class="phone-mockup">
-                    <div class="phone-screen">
-                        <img src="images/hero-demo.gif" alt="Kiwi Voice Demo">
+                <div class="hero-image">
+                    <div class="phone-mockup">
+                        <div class="phone-screen"><img src="images/hero-demo.gif" alt="Kiwi Voice Demo"></div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Trust Bar -->
-    <section class="trust-bar">
-        <div class="trust-container">
-            <div class="trust-item">
-                <h3>44,000+</h3>
-                <p>Professional Symbols</p>
+        <!-- Pain Points Section -->
+        <section class="pain-points-section">
+            <div class="container">
+                <div class="section-header">
+                    <div class="section-badge" style="background: rgba(255, 107, 107, 0.2); color: var(--accent);">
+                        Common Frustrations</div>
+                    <h2 class="section-title" style="color: white;">AAC Shouldn't Be This Hard</h2>
+                    <p class="section-subtitle" style="color: rgba(255, 255, 255, 0.9);">Traditional AAC devices create
+                        barriers. Kiwi Voice removes them.</p>
+                </div>
+                <div class="pain-points-grid">
+                    <div class="pain-card">
+                        <div class="pain-icon">💸</div>
+                        <div class="pain-label">The Problem</div>
+                        <h3>Prohibitive Cost</h3>
+                        <p>Traditional AAC devices cost $8,000-15,000 upfront. Insurance battles. Months of waiting.
+                            Many families simply can't afford it.</p>
+                        <div class="solution-label">Kiwi's Solution</div>
+                        <div class="solution-icon">✨</div>
+                        <p><strong>FREE to start.</strong> Pro features $39/year or $149.99 lifetime. Start
+                            communicating today, not months from now.</p>
+                    </div>
+                    <div class="pain-card">
+                        <div class="pain-icon">🔒</div>
+                        <div class="pain-label">The Problem</div>
+                        <h3>Vendor Lock-In</h3>
+                        <p>Proprietary symbol sets. Single device only. Lose the device, lose everything. No backup, no
+                            flexibility.</p>
+                        <div class="solution-label">Kiwi's Solution</div>
+                        <div class="solution-icon">🌐</div>
+                        <p><strong>44,000+ open symbols.</strong> Works on any device. Cloud sync optional. Export your
+                            data anytime.</p>
+                    </div>
+                    <div class="pain-card">
+                        <div class="pain-icon">📚</div>
+                        <div class="pain-label">The Problem</div>
+                        <h3>Overwhelming Complexity</h3>
+                        <p>200-page manuals. Weeks of training required. Families struggle to configure basic settings.
+                            Too complicated to use daily.</p>
+                        <div class="solution-label">Kiwi's Solution</div>
+                        <div class="solution-icon">🎯</div>
+                        <p><strong>Guided progression.</strong> Start with one button. Build to sentences. Intuitive
+                            interface parents understand in minutes.</p>
+                    </div>
+                    <div class="pain-card">
+                        <div class="pain-icon">🎨</div>
+                        <div class="pain-label">The Problem</div>
+                        <h3>Outdated Design</h3>
+                        <p>1990s clip-art aesthetics. Generic symbols children don't connect with. Feels institutional,
+                            not personal.</p>
+                        <div class="solution-label">Kiwi's Solution</div>
+                        <div class="solution-icon">✨</div>
+                        <p><strong>Modern 3D Memojis.</strong> Characters that look like family. Engaging design kids
+                            actually want to use.</p>
+                    </div>
+                    <div class="pain-card">
+                        <div class="pain-icon">🎓</div>
+                        <div class="pain-label">The Problem</div>
+                        <h3>No Skill Building</h3>
+                        <p>Communication only. No training tools. No prompting systems. Therapists have to build
+                            everything from scratch.</p>
+                        <div class="solution-label">Kiwi's Solution</div>
+                        <div class="solution-icon">📊</div>
+                        <p><strong>Built-in training tools.</strong> FCR, denial, prompting with fade schedules.
+                            Progress tracking and mastery criteria included.</p>
+                    </div>
+                    <div class="pain-card">
+                        <div class="pain-icon">⚠️</div>
+                        <div class="pain-label">The Problem</div>
+                        <h3>Single Point of Failure</h3>
+                        <p>One device breaks = communication stops. No backup plan. Repairs take weeks. Child is left
+                            without a voice.</p>
+                        <div class="solution-label">Kiwi's Solution</div>
+                        <div class="solution-icon">☁️</div>
+                        <p><strong>Multi-device sync.</strong> Phone, tablet, backup device. Seamless switching.
+                            Communication never stops.</p>
+                    </div>
+                </div>
             </div>
-            <div class="trust-item">
-                <h3>100%</h3>
-                <p>Offline-First</p>
-            </div>
-            <div class="trust-item">
-                <h3>∞</h3>
-                <p>Custom Symbols</p>
-            </div>
-            <div class="trust-item">
-                <h3>0</h3>
-                <p>Ads or Tracking</p>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Screenshot Showcase -->
-    <section class="showcase">
-        <div class="container">
-            <div class="section-header">
-                <div class="section-badge">See it in Action</div>
-                <h2 class="section-title">Designed for Communication</h2>
-                <p class="section-subtitle">A clean, vibrant interface that helps children focus on what matters: finding their voice.</p>
-            </div>
-            <div class="showcase-grid">
-                <div class="showcase-item">
-                    <div class="showcase-mockup">
-                        <div class="showcase-screen">
-                            <img src="images/hero-screenshot.png" alt="Main Hero Grid">
+        < !-- Trust Bar -->
+            <section class="trust-bar">
+                <div class="trust-container">
+                    <div class="trust-item">
+                        <h3>44,
+                            000+</h3>
+                        <p>Professional Symbols</p>
+                    </div>
+                    <div class="trust-item">
+                        <h3>100%</h3>
+                        <p>Offline-First</p>
+                    </div>
+                    <div class="trust-item">
+                        <h3>∞</h3>
+                        <p>Custom Symbols</p>
+                    </div>
+                    <div class="trust-item">
+                        <h3>0</h3>
+                        <p>Ads or Tracking</p>
+                    </div>
+                </div>
+            </section>
+            < !-- Screenshot Showcase -->
+                <section class="showcase">
+                    <div class="container">
+                        <div class="section-header">
+                            <div class="section-badge">See it in Action</div>
+                            <h2 class="section-title">Designed for Communication</h2>
+                            <p class="section-subtitle">A clean,
+                                vibrant interface that helps children focus on what matters: finding their voice.</p>
+                        </div>
+                        <div class="showcase-grid">
+                            <div class="showcase-item">
+                                <div class="showcase-mockup">
+                                    <div class="showcase-screen"><img src="images/hero-screenshot.png"
+                                            alt="Main Hero Grid"></div>
+                                </div>
+                                <h3>Hero Grid</h3>
+                                <p>Large,
+                                    colorful icons designed for easy selection and visual recognition.</p>
+                            </div>
+                            <div class="showcase-item">
+                                <div class="showcase-mockup">
+                                    <div class="showcase-screen"><img src="images/sentence-strip.png"
+                                            alt="Sentence Strip"></div>
+                                </div>
+                                <h3>Sentence Builder</h3>
+                                <p>Combine symbols to create full sentences and express complex thoughts.</p>
+                            </div>
+                            <div class="showcase-item">
+                                <div class="showcase-mockup">
+                                    <div class="showcase-screen"><img src="images/character-builder.png"
+                                            alt="Character Builder"></div>
+                                </div>
+                                <h3>Character Builder</h3>
+                                <p>Personalize avatars for family members to make learning more engaging.</p>
+                            </div>
+                            <div class="showcase-item">
+                                <div class="showcase-mockup">
+                                    <div class="showcase-screen"><img src="images/dashboard-analytics.png"
+                                            alt="Dashboard Analytics"></div>
+                                </div>
+                                <h3>Progress Dashboard</h3>
+                                <p>Track daily usage, independence levels, and celebrate milestones with visual
+                                    analytics.</p>
+                            </div>
+                            <div class="showcase-item">
+                                <div class="showcase-mockup">
+                                    <div class="showcase-screen"><img src="images/settings-panel.png"
+                                            alt="Settings Panel"></div>
+                                </div>
+                                <h3>Customization Settings</h3>
+                                <p>Fine-tune every aspect: grid size, voice, accessibility features, and more.</p>
+                            </div>
+                            <div class="showcase-item">
+                                <div class="showcase-mockup">
+                                    <div class="showcase-screen"><img src="images/progress-tracking.png"
+                                            alt="Progress Tracking"></div>
+                                </div>
+                                <h3>Skill Mastery Tracking</h3>
+                                <p>Monitor progress across communication skills with detailed reports for therapy teams.
+                                </p>
+                            </div>
                         </div>
                     </div>
-                    <h3>Hero Grid</h3>
-                    <p>Large, colorful icons designed for easy selection and visual recognition.</p>
-                </div>
-                <div class="showcase-item">
-                    <div class="showcase-mockup">
-                        <div class="showcase-screen">
-                            <img src="images/sentence-strip.png" alt="Sentence Strip">
+                </section>
+
+                <!-- Deep Dive Feature Sections -->
+                <section class="deep-dive-section">
+                    <div class="deep-dive-container">
+                        <div class="deep-dive-content">
+                            <div class="deep-dive-badge">Motor Planning</div>
+                            <h2>Build Muscle Memory, Not Frustration</h2>
+                            <p>Fixed grid layouts ensure icons never move. Your child's brain builds automatic pathways
+                                to each word, making communication faster and more natural over time.</p>
+                            <ul>
+                                <li>Consistent icon positions across all sessions</li>
+                                <li>Reduces cognitive load during communication</li>
+                                <li>Enables faster, more confident expression</li>
+                                <li>Supports motor planning development</li>
+                                <li>Anchored positions prevent accidental changes</li>
+                            </ul>
+                        </div>
+                        <div class="deep-dive-image">
+                            <div class="deep-dive-mockup">
+                                <div class="deep-dive-screen">
+                                    <img src="images/hero-screenshot.png" alt="Fixed Grid Layout">
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <h3>Sentence Builder</h3>
-                    <p>Combine symbols to create full sentences and express complex thoughts.</p>
-                </div>
-                <div class="showcase-item">
-                    <div class="showcase-mockup">
-                        <div class="showcase-screen">
-                            <img src="images/character-builder.png" alt="Character Builder">
+                </section>
+
+                <section class="deep-dive-section">
+                    <div class="deep-dive-container">
+                        <div class="deep-dive-content">
+                            <div class="deep-dive-badge">AI Visual Scenes</div>
+                            <h2>Context-Aware Communication</h2>
+                            <p>On-device AI generates visual scenes tailored to your child's environment. All processing
+                                happens locally—no internet required, complete privacy guaranteed.</p>
+                            <ul>
+                                <li>TensorFlow.js powers local scene generation</li>
+                                <li>Automatic suggestions based on context</li>
+                                <li>No data sent to cloud servers</li>
+                                <li>Works completely offline</li>
+                                <li>Customizable scene libraries</li>
+                            </ul>
+                        </div>
+                        <div class="deep-dive-image">
+                            <div class="deep-dive-mockup">
+                                <div class="deep-dive-screen">
+                                    <img src="images/dashboard-analytics.png" alt="Visual Scenes">
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <h3>Character Builder</h3>
-                    <p>Personalize avatars for family members to make learning more engaging.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+                </section>
 
-    <!-- Features Section -->
-    <section class="section" id="features">
-        <div class="container">
-            <div class="section-header">
-                <div class="section-badge">Powerful Features</div>
-                <h2 class="section-title">Everything You Need for Language Success</h2>
-                <p class="section-subtitle">Built with input from speech therapists, educators, and families. Every
-                    feature helps your child communicate better.</p>
-            </div>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">📚</div>
-                    <h3>Professional Symbols</h3>
-                    <p>Access 44,000+ ARASAAC pictograms and OpenMoji icons. Consistent, professional styles preferred by speech therapists and clinics worldwide.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🎯</div>
-                    <h3>Motor Planning</h3>
-                    <p>Fixed grid layouts and anchored positions ensure your child builds muscle memory. Faster communication through consistent, predictable icon placement.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">♿</div>
-                    <h3>Switch Access</h3>
-                    <p>Designed for all motor abilities. Integrated auto-scanning support allows users to navigate and communicate using a single external switch.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📊</div>
-                    <h3>Progress Analytics</h3>
-                    <p>Detailed usage tracking shows which words are used most, independence levels, and mastery
-                        progress. Export reports to share with your therapy team.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📍</div>
-                    <h3>Multiple Contexts</h3>
-                    <p>Create unlimited location-specific boards: Home, School, Grandparents, Store. Different
-                        vocabulary for different environments.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🎤</div>
-                    <h3>Custom Voice Recording</h3>
-                    <p>Record Mom's voice, Dad's voice, or siblings for every symbol. Familiar voices increase
-                        engagement and make communication feel natural.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔒</div>
-                    <h3>Child Lock Mode</h3>
-                    <p>Guided Access ready with iOS integration. Lock the app to prevent accidental exits. Triple-tap
-                        unlock for caregivers. Secure and reliable.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🌐</div>
-                    <h3>Works Offline</h3>
-                    <p>No internet? No problem. Everything works offline so your child can communicate anywhere - car
-                        rides,
-                        parks, or grandma's house.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🎨</div>
-                    <h3>Modern 3D Characters</h3>
-                    <p>Engaging Memoji-style avatars that children love. High-fidelity representation that makes the app feel fresh, personal, and fun.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- How It Works Timeline -->
-    <section class="section section-alt" id="how-it-works">
-        <div class="container">
-            <div class="section-header">
-                <div class="section-badge">Smart Learning Path</div>
-                <h2 class="section-title">Designed for Growth, Built for Kids</h2>
-                <p class="section-subtitle">Kiwi Voice guides children through a proven learning journey. Each level
-                    builds on the last, making communication natural and fun.</p>
-            </div>
-            <div class="timeline">
-                <div class="timeline-item">
-                    <div class="timeline-number">1</div>
-                    <div class="timeline-content">
-                        <h3>Level 1: First Words</h3>
-                        <p>Children learn that tapping a picture makes their voice heard. The exciting foundation of
-                            expressing themselves.</p>
-                        <ul>
-                            <li>Single icon display mode</li>
-                            <li>Attention bell with configurable sounds</li>
-                            <li>Prompting system for teaching trials</li>
-                            <li>Success tracking for mastery decisions</li>
-                        </ul>
+                <section class="deep-dive-section">
+                    <div class="deep-dive-container">
+                        <div class="deep-dive-content">
+                            <div class="deep-dive-badge">Skill Training</div>
+                            <h2>Professional Tools for Real Progress</h2>
+                            <p>Built-in training systems that therapists love. Functional Communication Request (FCR),
+                                denial training, prompting with fade schedules, and comprehensive progress tracking.</p>
+                            <ul>
+                                <li>FCR training with customizable prompts</li>
+                                <li>Denial and rejection skill building</li>
+                                <li>Prompt fading schedules</li>
+                                <li>Mastery criteria tracking</li>
+                                <li>Exportable progress reports</li>
+                            </ul>
+                        </div>
+                        <div class="deep-dive-image">
+                            <div class="deep-dive-mockup">
+                                <div class="deep-dive-screen">
+                                    <img src="images/progress-tracking.png" alt="Skill Training">
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="timeline-visual">
-                        <div class="timeline-emoji">🙋</div>
+                </section>
+
+                <section class="deep-dive-section">
+                    <div class="deep-dive-container">
+                        <div class="deep-dive-content">
+                            <div class="deep-dive-badge">Cross-Platform</div>
+                            <h2>Your Data, Everywhere You Need It</h2>
+                            <p>Seamless sync across all your devices. Anonymous cloud backup with Neon database. Switch
+                                between phone, tablet, and backup devices without missing a beat.</p>
+                            <ul>
+                                <li>Encrypted cloud synchronization</li>
+                                <li>Anonymous device identifiers</li>
+                                <li>Works on iOS, Android, and web</li>
+                                <li>Instant device switching</li>
+                                <li>Export and backup anytime</li>
+                            </ul>
+                        </div>
+                        <div class="deep-dive-image">
+                            <div class="deep-dive-mockup">
+                                <div class="deep-dive-screen">
+                                    <img src="images/settings-panel.png" alt="Cross-Platform Sync">
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </section>
 
-                <div class="timeline-item">
-                    <div class="timeline-number">2</div>
-                    <div class="timeline-content">
-                        <h3>Level 2: Getting Attention</h3>
-                        <p>Learning to communicate with different people in different places. Building confidence to
-                            speak up anywhere.</p>
-                        <ul>
-                            <li>Partner calling system</li>
-                            <li>Wait timer with visual countdown</li>
-                            <li>Multiple context support</li>
-                            <li>Distance discrimination training</li>
-                        </ul>
-                    </div>
-                    <div class="timeline-visual">
-                        <div class="timeline-emoji">🔔</div>
-                    </div>
-                </div>
+                < !-- Features Section -->
+                    <section class="section" id="features">
+                        <div class="container">
+                            <div class="section-header">
+                                <div class="section-badge">Powerful Features</div>
+                                <h2 class="section-title">Everything You Need for Language Success</h2>
+                                <p class="section-subtitle">Built with input from speech therapists,
+                                    educators,
+                                    and families. Every feature helps your child communicate better.</p>
+                            </div>
+                            <div class="features-grid">
+                                <div class="feature-card">
+                                    <div class="feature-icon">📚</div>
+                                    <h3>Professional Symbols</h3>
+                                    <p>Access 44,
+                                        000+ARASAAC pictograms and OpenMoji icons. Consistent,
+                                        professional styles preferred by speech therapists and clinics worldwide.</p>
+                                </div>
+                                <div class="feature-card">
+                                    <div class="feature-icon">🎯</div>
+                                    <h3>Motor Planning</h3>
+                                    <p>Fixed grid layouts and anchored positions ensure your child builds muscle memory.
+                                        Faster communication through consistent,
+                                        predictable icon placement.</p>
+                                </div>
+                                <div class="feature-card">
+                                    <div class="feature-icon">♿</div>
+                                    <h3>Switch Access</h3>
+                                    <p>Designed for all motor abilities. Integrated auto-scanning support allows users
+                                        to navigate and communicate using a single external switch.</p>
+                                </div>
+                                <div class="feature-card">
+                                    <div class="feature-icon">📊</div>
+                                    <h3>Progress Analytics</h3>
+                                    <p>Detailed usage tracking shows which words are used most,
+                                        independence levels,
+                                        and mastery progress. Export reports to share with your therapy team.</p>
+                                </div>
+                                <div class="feature-card">
+                                    <div class="feature-icon">📍</div>
+                                    <h3>Multiple Contexts</h3>
+                                    <p>Create unlimited location-specific boards: Home,
+                                        School,
+                                        Grandparents,
+                                        Store. Different vocabulary for different environments.</p>
+                                </div>
+                                <div class="feature-card">
+                                    <div class="feature-icon">🎤</div>
+                                    <h3>Custom Voice Recording</h3>
+                                    <p>Record Mom's voice, Dad' s voice,
+                                        or siblings for every symbol. Familiar voices increase engagement and make
+                                        communication feel natural.</p>
+                                </div>
+                                <div class="feature-card">
+                                    <div class="feature-icon">🔒</div>
+                                    <h3>Child Lock Mode</h3>
+                                    <p>Guided Access ready with iOS integration. Lock the app to prevent accidental
+                                        exits. Triple-tap unlock for caregivers. Secure and reliable.</p>
+                                </div>
+                                <div class="feature-card">
+                                    <div class="feature-icon">🌐</div>
+                                    <h3>Works Offline</h3>
+                                    <p>No internet? No problem. Everything works offline so your child can communicate
+                                        anywhere - car rides,
+                                        parks,
+                                        or grandma's house.</p>
+                                </div>
+                                <div class="feature-card">
+                                    <div class="feature-icon">🎨</div>
+                                    <h3>Modern 3D Characters</h3>
+                                    <p>Engaging Memoji-style avatars that children love. High-fidelity representation
+                                        that makes the app feel fresh,
+                                        personal,
+                                        and fun.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    < !-- How It Works Timeline -->
+                        <section class="section section-alt" id="how-it-works">
+                            <div class="container">
+                                <div class="section-header">
+                                    <div class="section-badge">Smart Learning Path</div>
+                                    <h2 class="section-title">Designed for Growth,
+                                        Built for Kids</h2>
+                                    <p class="section-subtitle">Kiwi Voice guides children through a proven learning
+                                        journey. Each level builds on the last,
+                                        making communication natural and fun.</p>
+                                </div>
+                                <div class="timeline">
+                                    <div class="timeline-item">
+                                        <div class="timeline-number">1</div>
+                                        <div class="timeline-content">
+                                            <h3>Level 1: First Words</h3>
+                                            <p>Children learn that tapping a picture makes their voice heard. The
+                                                exciting foundation of expressing themselves.</p>
+                                            <ul>
+                                                <li>Single icon display mode</li>
+                                                <li>Attention bell with configurable sounds</li>
+                                                <li>Prompting system for teaching trials</li>
+                                                <li>Success tracking for mastery decisions</li>
+                                            </ul>
+                                        </div>
+                                        <div class="timeline-visual">
+                                            <div class="timeline-emoji">🙋</div>
+                                        </div>
+                                    </div>
+                                    <div class="timeline-item">
+                                        <div class="timeline-number">2</div>
+                                        <div class="timeline-content">
+                                            <h3>Level 2: Getting Attention</h3>
+                                            <p>Learning to communicate with different people in different places.
+                                                Building confidence to speak up anywhere.</p>
+                                            <ul>
+                                                <li>Partner calling system</li>
+                                                <li>Wait timer with visual countdown</li>
+                                                <li>Multiple context support</li>
+                                                <li>Distance discrimination training</li>
+                                            </ul>
+                                        </div>
+                                        <div class="timeline-visual">
+                                            <div class="timeline-emoji">🔔</div>
+                                        </div>
+                                    </div>
+                                    <div class="timeline-item">
+                                        <div class="timeline-number">3</div>
+                                        <div class="timeline-content">
+                                            <h3>Level 3: Making Choices</h3>
+                                            <p>Choosing between options and being specific. Children learn to ask for
+                                                exactly what they want.</p>
+                                            <ul>
+                                                <li>Multi-icon grid display</li>
+                                                <li>Customizable grid sizes (3-20 items)</li>
+                                                <li>Error correction prompting</li>
+                                                <li>Distractor management tools</li>
+                                            </ul>
+                                        </div>
+                                        <div class="timeline-visual">
+                                            <div class="timeline-emoji">🎯</div>
+                                        </div>
+                                    </div>
+                                    <div class="timeline-item">
+                                        <div class="timeline-number">4</div>
+                                        <div class="timeline-content">
+                                            <h3>Levels 4-6: Building Sentences</h3>
+                                            <p>Creating full sentences with colors,
+                                                sizes,
+                                                and descriptions. Answering questions and having real conversations.</p>
+                                            <ul>
+                                                <li>Sentence strip with starter phrases</li>
+                                                <li>Attributes folder (colors, numbers, sizes)</li>
+                                                <li>Question response templates</li>
+                                                <li>Complex sentence construction support</li>
+                                            </ul>
+                                        </div>
+                                        <div class="timeline-visual">
+                                            <div class="timeline-emoji">💬</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        < !-- Comparison Table Section -->
+                            <section class="comparison-section" id="comparison">
+                                <div class="container">
+                                    <div class="section-header">
+                                        <div class="section-badge">Competitive Advantage</div>
+                                        <h2 class="section-title">Professional Power,
+                                            Accessible Price</h2>
+                                        <p class="section-subtitle">Kiwi Voice provides the professional features your
+                                            child needs at a fraction of the cost of legacy apps.</p>
+                                    </div>
+                                    <div class="comparison-table-wrapper">
+                                        <table class="comparison-table">
+                                            <thead>
+                                                <tr>
+                                                    <th class="feature-name">Feature</th>
+                                                    <th class="kiwi-col highlight-col">Kiwi Voice</th>
+                                                    <th>Proloquo2Go</th>
+                                                    <th>TouchChat</th>
+                                                    <th>GoTalk NOW</th>
+                                                    <th>LAMP Words</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="feature-name">Symbol Library</td>
+                                                    <td class="highlight-col">44,000+ (ARASAAC)</td>
+                                                    <td>50,000+ (PCS)</td>
+                                                    <td>40,000+ (Stix)</td>
+                                                    <td>10,000+</td>
+                                                    <td>3,000+</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="feature-name">Motor Planning</td>
+                                                    <td class="highlight-col"><span class="check-icon">✓</span> Fixed
+                                                        Grid</td>
+                                                    <td><span class="check-icon">✓</span> Yes</td>
+                                                    <td><span class="check-icon">✓</span> Yes</td>
+                                                    <td><span class="check-icon">✓</span> Yes</td>
+                                                    <td><span class="check-icon">✓</span> Yes</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="feature-name">Modern Aesthetic</td>
+                                                    <td class="highlight-col">✨ 3D Memojis</td>
+                                                    <td>📁 2D Clip-art</td>
+                                                    <td>📁 2D Clip-art</td>
+                                                    <td>📁 2D Clip-art</td>
+                                                    <td>📁 Basic</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="feature-name">Switch Access</td>
+                                                    <td class="highlight-col"><span class="check-icon">✓</span> Built-in
+                                                    </td>
+                                                    <td><span class="check-icon">✓</span> Yes</td>
+                                                    <td><span class="check-icon">✓</span> Yes</td>
+                                                    <td><span class="check-icon">✓</span> Yes</td>
+                                                    <td><span class="cross-icon">✕</span> No</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="feature-name">Skill Training Tools</td>
+                                                    <td class="highlight-col"><span class="check-icon">✓</span> FCR &
+                                                        Denial</td>
+                                                    <td><span class="cross-icon">✕</span> No</td>
+                                                    <td><span class="cross-icon">✕</span> No</td>
+                                                    <td><span class="cross-icon">✕</span> No</td>
+                                                    <td><span class="cross-icon">✕</span> No</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="feature-name">Visual Scene Generation</td>
+                                                    <td class="highlight-col"><span class="check-icon">✓</span>
+                                                        AI-Powered</td>
+                                                    <td><span class="check-icon">✓</span> Manual</td>
+                                                    <td><span class="check-icon">✓</span> Manual</td>
+                                                    <td><span class="cross-icon">✕</span> No</td>
+                                                    <td><span class="cross-icon">✕</span> No</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="feature-name">Cloud Sync</td>
+                                                    <td class="highlight-col"><span class="check-icon">✓</span> Optional
+                                                    </td>
+                                                    <td><span class="check-icon">✓</span> iCloud</td>
+                                                    <td><span class="check-icon">✓</span> Proprietary</td>
+                                                    <td><span class="cross-icon">✕</span> No</td>
+                                                    <td><span class="cross-icon">✕</span> No</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="feature-name">Custom Voice Recording</td>
+                                                    <td class="highlight-col"><span class="check-icon">✓</span>
+                                                        Unlimited</td>
+                                                    <td><span class="check-icon">✓</span> Limited</td>
+                                                    <td><span class="check-icon">✓</span> Yes</td>
+                                                    <td><span class="cross-icon">✕</span> No</td>
+                                                    <td><span class="cross-icon">✕</span> No</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="feature-name">Export & Backup</td>
+                                                    <td class="highlight-col"><span class="check-icon">✓</span> Full
+                                                        Export</td>
+                                                    <td><span class="warn-icon">!</span> Limited</td>
+                                                    <td><span class="check-icon">✓</span> Yes</td>
+                                                    <td><span class="cross-icon">✕</span> No</td>
+                                                    <td><span class="cross-icon">✕</span> No</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="feature-name">Multi-Language</td>
+                                                    <td class="highlight-col"><span class="check-icon">✓</span> 40+
+                                                        Languages</td>
+                                                    <td><span class="check-icon">✓</span> 20+ Languages</td>
+                                                    <td><span class="check-icon">✓</span> 15+ Languages</td>
+                                                    <td><span class="warn-icon">!</span> Limited</td>
+                                                    <td><span class="cross-icon">✕</span> English Only</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="feature-name">Biometric Security</td>
+                                                    <td class="highlight-col"><span class="check-icon">✓</span>
+                                                        FaceID/TouchID</td>
+                                                    <td><span class="cross-icon">✕</span> No</td>
+                                                    <td><span class="cross-icon">✕</span> No</td>
+                                                    <td><span class="cross-icon">✕</span> No</td>
+                                                    <td><span class="cross-icon">✕</span> No</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="feature-name">Physical Scaling (mm)</td>
+                                                    <td class="highlight-col"><span class="check-icon">✓</span> Precise
+                                                    </td>
+                                                    <td><span class="cross-icon">✕</span> No</td>
+                                                    <td><span class="cross-icon">✕</span> No</td>
+                                                    <td><span class="cross-icon">✕</span> No</td>
+                                                    <td><span class="cross-icon">✕</span> No</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="feature-name">Platforms</td>
+                                                    <td class="highlight-col">Web / iOS / Android</td>
+                                                    <td><span class="warn-icon">!</span> iOS Only</td>
+                                                    <td><span class="warn-icon">!</span> iOS Only</td>
+                                                    <td><span class="warn-icon">!</span> iOS Only</td>
+                                                    <td><span class="warn-icon">!</span> iOS Only</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="feature-name">Price</td>
+                                                    <td class="highlight-col"><strong>FREE</strong> ($39/yr
+                                                        Pro)<br><small>$149.99 Lifetime</small></td>
+                                                    <td>$249.99</td>
+                                                    <td>$299.99</td>
+                                                    <td>$149.99</td>
+                                                    <td>$299.99</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
 
-                <div class="timeline-item">
-                    <div class="timeline-number">3</div>
-                    <div class="timeline-content">
-                        <h3>Level 3: Making Choices</h3>
-                        <p>Choosing between options and being specific. Children learn to ask for exactly what they
-                            want.</p>
-                        <ul>
-                            <li>Multi-icon grid display</li>
-                            <li>Customizable grid sizes (3-20 items)</li>
-                            <li>Error correction prompting</li>
-                            <li>Distractor management tools</li>
-                        </ul>
-                    </div>
-                    <div class="timeline-visual">
-                        <div class="timeline-emoji">🎯</div>
-                    </div>
-                </div>
+                                    <!-- Cost Savings Calculator -->
+                                    <div class="cost-savings">
+                                        <h3>💰 Your Savings with Kiwi Voice</h3>
+                                        <div class="savings-grid">
+                                            <div class="savings-item">
+                                                <div class="comparison-text">Kiwi Lifetime vs Proloquo2Go</div>
+                                                <div class="savings-amount">$100</div>
+                                                <div class="savings-label">You Save</div>
+                                            </div>
+                                            <div class="savings-item">
+                                                <div class="comparison-text">Kiwi Lifetime vs TouchChat</div>
+                                                <div class="savings-amount">$150</div>
+                                                <div class="savings-label">You Save</div>
+                                            </div>
+                                            <div class="savings-item">
+                                                <div class="comparison-text">Kiwi 5-Year Pro vs TouchChat</div>
+                                                <div class="savings-amount">$105</div>
+                                                <div class="savings-label">You Save</div>
+                                            </div>
+                                        </div>
+                                        <p
+                                            style="text-align: center; margin-top: 1.5rem; color: var(--text-light); font-size: 0.95rem;">
+                                            <strong>Plus:</strong> Start using Kiwi Voice FREE today. No upfront cost,
+                                            no insurance battles, no waiting.
+                                        </p>
+                                    </div>
+                                </div>
+                            </section>
+                            < !-- Character Builder Showcase -->
+                                <section class="character-showcase">
+                                    <div class="container">
+                                        <div class="character-grid">
+                                            <div class="character-content">
+                                                <h2>Make It Personal. Make It Engaging.</h2>
+                                                <p>Children communicate better when they see themselves in the app. Our
+                                                    character builder lets you create avatars that look like the most
+                                                    important people in a child's life.</p>
+                                                <ul class="feature-list">
+                                                    <li>Full emoji composition with mix-and-match parts</li>
+                                                    <li>Skin tone customization for representation</li>
+                                                    <li>Import premium Apple Memoji characters</li>
+                                                    <li>Use custom photos for ultimate personalization</li>
+                                                    <li>Save multiple characters for family members</li>
+                                                </ul>
+                                            </div>
+                                            <div class="character-preview">
+                                                <div class="character-example">👧🏽</div>
+                                                <div class="character-example">👦🏻</div>
+                                                <div class="character-example">🧒🏾</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                                < !-- Privacy Section -->
+                                    <section class="section" id="privacy">
+                                        <div class="container">
+                                            <div class="section-header">
+                                                <div class="section-badge">Privacy First</div>
+                                                <h2 class="section-title">Your Data Stays Yours</h2>
+                                                <p class="section-subtitle">We don't sell data. We don' t track users.
+                                                    We don't share information.
+                                                    Everything stays on your device.</p>
+                                            </div>
+                                            <div class="privacy-grid">
+                                                <div class="privacy-card">
+                                                    <div class="privacy-card-icon">🔒</div>
+                                                    <h3>100% Offline</h3>
+                                                    <p>All communication data,
+                                                        voice recordings,
+                                                        and progress tracking stored locally. Works on airplanes,
+                                                        in basements,
+                                                        anywhere.</p>
+                                                </div>
+                                                <div class="privacy-card">
+                                                    <div class="privacy-card-icon">🚫</div>
+                                                    <h3>Zero Tracking</h3>
+                                                    <p>No tracking. No cookies. We don't know what words your child is
+                                                        using, and that' s by design.</p>
+                                                </div>
+                                                <div class="privacy-card">
+                                                    <div class="privacy-card-icon">🛡️</div>
+                                                    <h3>Your Data,
+                                                        Your Control</h3>
+                                                    <p>All data stays on your device. Export or share only when you
+                                                        choose. No cloud accounts,
+                                                        no sync required,
+                                                        no data collection.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
 
-                <div class="timeline-item">
-                    <div class="timeline-number">4</div>
-                    <div class="timeline-content">
-                        <h3>Levels 4-6: Building Sentences</h3>
-                        <p>Creating full sentences with colors, sizes, and descriptions. Answering questions and having
-                            real conversations.</p>
-                        <ul>
-                            <li>Sentence strip with starter phrases</li>
-                            <li>Attributes folder (colors, numbers, sizes)</li>
-                            <li>Question response templates</li>
-                            <li>Complex sentence construction support</li>
-                        </ul>
-                    </div>
-                    <div class="timeline-visual">
-                        <div class="timeline-emoji">💬</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+                                    <!-- Social Proof Section -->
+                                    <section class="social-proof-section">
+                                        <div class="container">
+                                            <div class="section-header">
+                                                <div class="section-badge">Trusted by Families</div>
+                                                <h2 class="section-title">Real Stories, Real Progress</h2>
+                                                <p class="section-subtitle">Hear from parents and therapists who've seen
+                                                    the difference Kiwi Voice makes.</p>
+                                            </div>
+                                            <div class="testimonials-grid">
+                                                <div class="testimonial-card">
+                                                    <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                                                    <p class="testimonial-text">"Within two weeks, my son went from
+                                                        single words to 3-word phrases. The progress tracking helped us
+                                                        show his SLP exactly what was working. Game changer for our
+                                                        family."</p>
+                                                    <div class="testimonial-author">
+                                                        <div class="testimonial-avatar">SM</div>
+                                                        <div class="testimonial-info">
+                                                            <h4>Sarah M.</h4>
+                                                            <p>Parent of 4-year-old</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="testimonial-card">
+                                                    <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                                                    <p class="testimonial-text">"As a BCBA, I recommend Kiwi Voice to
+                                                        all my clients. The built-in FCR training and prompting systems
+                                                        save me hours of setup time. Finally, an AAC app that
+                                                        understands behavior analysis."</p>
+                                                    <div class="testimonial-author">
+                                                        <div class="testimonial-avatar">JR</div>
+                                                        <div class="testimonial-info">
+                                                            <h4>Dr. Jennifer R.</h4>
+                                                            <p>Board Certified Behavior Analyst</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="testimonial-card">
+                                                    <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                                                    <p class="testimonial-text">"The cost savings alone made this worth
+                                                        it, but the modern interface is what keeps my daughter engaged.
+                                                        She actually WANTS to use it. That's never happened with other
+                                                        AAC apps."</p>
+                                                    <div class="testimonial-author">
+                                                        <div class="testimonial-avatar">MK</div>
+                                                        <div class="testimonial-info">
+                                                            <h4>Michael K.</h4>
+                                                            <p>Parent of 6-year-old</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
 
-    <!-- Comparison Table Section -->
-    <section class="comparison-section" id="comparison">
-        <div class="container">
-            <div class="section-header">
-                <div class="section-badge">Competitive Advantage</div>
-                <h2 class="section-title">Professional Power, Accessible Price</h2>
-                <p class="section-subtitle">Kiwi Voice provides the professional features your child needs at a fraction of the cost of legacy apps.</p>
-            </div>
-            
-            <div class="comparison-table-wrapper">
-                <table class="comparison-table">
-                    <thead>
-                        <tr>
-                            <th class="feature-name">Feature</th>
-                            <th class="kiwi-col">Kiwi Voice</th>
-                            <th>Proloquo2Go</th>
-                            <th>TouchChat</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="feature-name">Symbol Library</td>
-                            <td class="kiwi-col">44,000+ (ARASAAC)</td>
-                            <td>50,000+ (PCS)</td>
-                            <td>40,000+ (Stix)</td>
-                        </tr>
-                        <tr>
-                            <td class="feature-name">Motor Planning</td>
-                            <td class="kiwi-col"><span class="check-icon">✓</span> Fixed Grid</td>
-                            <td><span class="check-icon">✓</span> Yes</td>
-                            <td><span class="check-icon">✓</span> Yes</td>
-                        </tr>
-                        <tr>
-                            <td class="feature-name">Aesthetic</td>
-                            <td class="kiwi-col">✨ 3D Memojis</td>
-                            <td>📁 2D Clip-art</td>
-                            <td>📁 2D Clip-art</td>
-                        </tr>
-                        <tr>
-                            <td class="feature-name">Switch Access</td>
-                            <td class="kiwi-col"><span class="check-icon">✓</span> Built-in</td>
-                            <td><span class="check-icon">✓</span> Yes</td>
-                            <td><span class="check-icon">✓</span> Yes</td>
-                        </tr>
-                        <tr>
-                            <td class="feature-name">Skill Training</td>
-                            <td class="kiwi-col"><span class="check-icon">✓</span> FCR & Denial</td>
-                            <td><span class="cross-icon">✕</span> No</td>
-                            <td><span class="cross-icon">✕</span> No</td>
-                        </tr>
-                        <tr>
-                            <td class="feature-name">Platforms</td>
-                            <td class="kiwi-col">Web / iOS / Android</td>
-                            <td><span class="warn-icon">!</span> iOS Only</td>
-                            <td><span class="warn-icon">!</span> iOS Only</td>
-                        </tr>
-                        <tr>
-                            <td class="feature-name">Price</td>
-                            <td class="kiwi-col">FREE ($39/yr Pro)<br><small>$149.99 Lifetime (Limited)</small></td>
-                            <td>$249.99</td>
-                            <td>$299.99</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
+                                    <!-- FAQ Section -->
+                                    <section class="faq-section">
+                                        <div class="container">
+                                            <div class="section-header">
+                                                <div class="section-badge">Questions?</div>
+                                                <h2 class="section-title">Frequently Asked Questions</h2>
+                                                <p class="section-subtitle">Everything you need to know about Kiwi
+                                                    Voice.</p>
+                                            </div>
+                                            <div class="faq-container">
+                                                <div class="faq-item">
+                                                    <div class="faq-question">
+                                                        <h3>Is Kiwi Voice really free?</h3>
+                                                        <div class="faq-icon">↓</div>
+                                                    </div>
+                                                    <div class="faq-answer">
+                                                        <div class="faq-answer-content">
+                                                            Yes! Kiwi Voice is completely free to download and use with
+                                                            core communication features. Pro features (advanced
+                                                            analytics, cloud sync, unlimited contexts) are available for
+                                                            $39/year or $149.99 lifetime. You can start communicating
+                                                            immediately without any payment.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="faq-item">
+                                                    <div class="faq-question">
+                                                        <h3>Will this work for my child's specific needs?</h3>
+                                                        <div class="faq-icon">↓</div>
+                                                    </div>
+                                                    <div class="faq-answer">
+                                                        <div class="faq-answer-content">
+                                                            Kiwi Voice supports children at all communication levels,
+                                                            from first words to complex sentences. It includes switch
+                                                            access for motor disabilities, customizable grid sizes, and
+                                                            guided progression through 6 skill levels. If your child can
+                                                            use a touchscreen or switch, Kiwi Voice can help them
+                                                            communicate.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="faq-item">
+                                                    <div class="faq-question">
+                                                        <h3>How is this different from Proloquo2Go or TouchChat?</h3>
+                                                        <div class="faq-icon">↓</div>
+                                                    </div>
+                                                    <div class="faq-answer">
+                                                        <div class="faq-answer-content">
+                                                            Kiwi Voice offers modern 3D characters instead of 90s
+                                                            clip-art, built-in skill training tools (FCR, denial,
+                                                            prompting), AI-powered visual scenes, cross-platform support
+                                                            (not just iOS), and biometric security—all at a fraction of
+                                                            the cost. Plus, it works on web, iOS, and Android, not just
+                                                            one platform.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="faq-item">
+                                                    <div class="faq-question">
+                                                        <h3>Does it work offline?</h3>
+                                                        <div class="faq-icon">↓</div>
+                                                    </div>
+                                                    <div class="faq-answer">
+                                                        <div class="faq-answer-content">
+                                                            Absolutely! Kiwi Voice is offline-first. All communication
+                                                            features, voice recordings, and progress tracking work
+                                                            without internet. Cloud sync is optional and only used when
+                                                            you want to backup or sync across devices.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="faq-item">
+                                                    <div class="faq-question">
+                                                        <h3>Can I use my own photos and voice recordings?</h3>
+                                                        <div class="faq-icon">↓</div>
+                                                    </div>
+                                                    <div class="faq-answer">
+                                                        <div class="faq-answer-content">
+                                                            Yes! You can upload custom photos for any symbol and record
+                                                            unlimited custom voices (Mom's voice, Dad's voice, siblings,
+                                                            etc.). You can also import Apple Memoji characters for
+                                                            ultra-personalization.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="faq-item">
+                                                    <div class="faq-question">
+                                                        <h3>Is my child's data private and secure?</h3>
+                                                        <div class="faq-icon">↓</div>
+                                                    </div>
+                                                    <div class="faq-answer">
+                                                        <div class="faq-answer-content">
+                                                            100%. All data stays on your device by default. We don't
+                                                            track usage, sell data, or know what words your child uses.
+                                                            Optional cloud sync uses encrypted anonymous identifiers.
+                                                            You can export all data anytime. Biometric authentication
+                                                            (FaceID/TouchID) protects adult settings.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="faq-item">
+                                                    <div class="faq-question">
+                                                        <h3>What if I lose my device?</h3>
+                                                        <div class="faq-icon">↓</div>
+                                                    </div>
+                                                    <div class="faq-answer">
+                                                        <div class="faq-answer-content">
+                                                            With Pro features enabled, your data automatically syncs to
+                                                            secure cloud storage. You can restore everything on a new
+                                                            device instantly. You can also export backups manually
+                                                            anytime. Unlike single-device AAC systems, you'll never lose
+                                                            your child's communication setup.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="faq-item">
+                                                    <div class="faq-question">
+                                                        <h3>Can therapists and teachers access progress data?</h3>
+                                                        <div class="faq-icon">↓</div>
+                                                    </div>
+                                                    <div class="faq-answer">
+                                                        <div class="faq-answer-content">
+                                                            Yes! You can export detailed progress reports showing word
+                                                            usage, independence levels, skill mastery, and session data.
+                                                            Reports are formatted for easy sharing with SLPs, BCBAs,
+                                                            teachers, and therapy teams. You control what data is shared
+                                                            and when.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
 
-    <!-- Character Builder Showcase -->
-    <section class="character-showcase">
-        <div class="container">
-            <div class="character-grid">
-                <div class="character-content">
-                    <h2>Make It Personal. Make It Engaging.</h2>
-                    <p>Children communicate better when they see themselves in the app. Our character builder lets you
-                        create avatars that look like the most important people in a child's life.</p>
-                    <ul class="feature-list">
-                        <li>Full emoji composition with mix-and-match parts</li>
-                        <li>Skin tone customization for representation</li>
-                        <li>Import premium Apple Memoji characters</li>
-                        <li>Use custom photos for ultimate personalization</li>
-                        <li>Save multiple characters for family members</li>
-                    </ul>
-                </div>
-                <div class="character-preview">
-                    <div class="character-example">👧🏽</div>
-                    <div class="character-example">👦🏻</div>
-                    <div class="character-example">🧒🏾</div>
-                </div>
-            </div>
-        </div>
-    </section>
+                                    < !-- CTA Section -->
+                                        <section class="cta-section" id="download">
+                                            <div class="cta-content">
+                                                <h2>Start Building Communication Today</h2>
+                                                <p>Download Kiwi Voice and give your child the tools to express
+                                                    themselves.</p>
+                                                <div class="store-buttons"><a href="https://apps.apple.com"
+                                                        class="store-button"><svg viewBox="0 0 384 512">
+                                                            <path fill="currentColor"
+                                                                d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 79.9c14.2 40.2 40.8 81.7 70.4 83.4 28 1.6 35.7-17.4 67.3-17.4 31.9 0 40.8 17.4 71.7 17.4 30.5 0 54.4-27.5 72.7-55.1 14.2-20.2 19.2-38.6 19.2-38.6-42.1-17.9-37.5-64.4-31-74.4zM261.7 89.6c14-18.3 26.9-43.6 26.9-69.6 0-3.7-.4-7.3-1-10.7-24 2.8-53.1 16.6-70.8 37.7-13.8 16.2-22.3 43-22.3 67.8 0 3.5.7 7.6 1.2 10.7 27.2 2.6 52.9-17.6 66-35.9z" />
+                                                        </svg><span>Download on App Store</span></a><a
+                                                        href="https://play.google.com" class="store-button"><svg
+                                                            viewBox="0 0 512 512">
+                                                            <path fill="currentColor"
+                                                                d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z" />
+                                                        </svg><span>Get it on Google Play</span></a></div>
+                                            </div>
+                                        </section>
+                                        < !-- Footer -->
+                                            <footer>
+                                                <div class="footer-container">
+                                                    <div class="footer-brand">
+                                                        <div
+                                                            style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                                                            <img src="images/logo.png" alt="Kiwi Voice Logo"
+                                                                style="width: 40px; height: 40px; border-radius: 10px;">
+                                                            <h3 style="margin-bottom: 0;">Kiwi Voice</h3>
+                                                        </div>
+                                                        <p>A fun,
+                                                            visual language learning app built by parents and educators
+                                                            who understand what kids need to thrive.</p>
+                                                        <p style="opacity: 0.5; font-size: 0.9rem;">A Behavior School
+                                                            LLC Product</p>
+                                                    </div>
+                                                    <div class="footer-section">
+                                                        <h4>Product</h4>
+                                                        <ul class="footer-links">
+                                                            <li><a href="#features">Features</a></li>
+                                                            <li><a href="#how-it-works">How It Works</a></li>
+                                                            <li><a href="#privacy">Privacy</a></li>
+                                                            <li><a href="#download">Download</a></li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="footer-section">
+                                                        <h4>Support</h4>
+                                                        <ul class="footer-links">
+                                                            <li><a href="mailto:support@behaviorschool.com">Contact
+                                                                    Support</a></li>
+                                                            <li><a href="/public/privacy.html">Privacy Policy</a></li>
+                                                            <li><a href="/public/terms.html">Terms of Service</a></li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="footer-section">
+                                                        <h4>Company</h4>
+                                                        <ul class="footer-links">
+                                                            <li><a href="https://behaviorschool.com">Behavior School</a>
+                                                            </li>
+                                                            <li><a href="https://behaviorschool.com/about">About Us</a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="footer-bottom">
+                                                    <p>&copy;
+                                                        2025 Behavior School LLC. All rights reserved.</p>
+                                                </div>
+                                            </footer>
+                                            < !-- GSAP Animation Library -->
+                                                <script
+                                                    src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+                                                <script
+                                                    src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+                                                <script> // Navbar scroll effect
 
-    <!-- Privacy Section -->
-    <section class="section" id="privacy">
-        <div class="container">
-            <div class="section-header">
-                <div class="section-badge">Privacy First</div>
-                <h2 class="section-title">Your Data Stays Yours</h2>
-                <p class="section-subtitle">We don't sell data. We don't track users. We don't share information.
-                    Everything stays on your device.</p>
-            </div>
-            <div class="privacy-grid">
-                <div class="privacy-card">
-                    <div class="privacy-card-icon">🔒</div>
-                    <h3>100% Offline</h3>
-                    <p>All communication data, voice recordings, and progress tracking stored locally. Works on
-                        airplanes, in basements, anywhere.</p>
-                </div>
-                <div class="privacy-card">
-                    <div class="privacy-card-icon">🚫</div>
-                    <h3>Zero Tracking</h3>
-                    <p>No tracking. No cookies. We don't know what words your child is using, and that's by design.</p>
-                </div>
-                <div class="privacy-card">
-                    <div class="privacy-card-icon">🛡️</div>
-                    <h3>Your Data, Your Control</h3>
-                    <p>All data stays on your device. Export or share only when you choose. No cloud accounts, no sync
-                        required, no data collection.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+                                                    window.addEventListener('scroll', () => {
+                                                        const navbar = document.getElementById('navbar');
 
-    <!-- CTA Section -->
-    <section class="cta-section" id="download">
-        <div class="cta-content">
-            <h2>Start Building Communication Today</h2>
-            <p>Download Kiwi Voice and give your child the tools to express themselves.</p>
-            <div class="store-buttons">
-                <a href="https://apps.apple.com" class="store-button">
-                    <svg viewBox="0 0 384 512">
-                        <path fill="currentColor"
-                            d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 79.9c14.2 40.2 40.8 81.7 70.4 83.4 28 1.6 35.7-17.4 67.3-17.4 31.9 0 40.8 17.4 71.7 17.4 30.5 0 54.4-27.5 72.7-55.1 14.2-20.2 19.2-38.6 19.2-38.6-42.1-17.9-37.5-64.4-31-74.4zM261.7 89.6c14-18.3 26.9-43.6 26.9-69.6 0-3.7-.4-7.3-1-10.7-24 2.8-53.1 16.6-70.8 37.7-13.8 16.2-22.3 43-22.3 67.8 0 3.5.7 7.6 1.2 10.7 27.2 2.6 52.9-17.6 66-35.9z" />
-                    </svg>
-                    <span>Download on App Store</span>
-                </a>
-                <a href="https://play.google.com" class="store-button">
-                    <svg viewBox="0 0 512 512">
-                        <path fill="currentColor"
-                            d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z" />
-                    </svg>
-                    <span>Get it on Google Play</span>
-                </a>
-            </div>
-        </div>
-    </section>
+                                                        if (window.scrollY > 50) {
+                                                            navbar.classList.add('scrolled');
+                                                        }
 
-    <!-- Footer -->
-    <footer>
-        <div class="footer-container">
-            <div class="footer-brand">
-                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
-                    <img src="images/logo.png" alt="Kiwi Voice Logo" style="width: 40px; height: 40px; border-radius: 10px;">
-                    <h3 style="margin-bottom: 0;">Kiwi Voice</h3>
-                </div>
-                <p>A fun, visual language learning app built by parents and educators who understand what kids need to
-                    thrive.</p>
-                <p style="opacity: 0.5; font-size: 0.9rem;">A Behavior School LLC Product</p>
-            </div>
-            <div class="footer-section">
-                <h4>Product</h4>
-                <ul class="footer-links">
-                    <li><a href="#features">Features</a></li>
-                    <li><a href="#how-it-works">How It Works</a></li>
-                    <li><a href="#privacy">Privacy</a></li>
-                    <li><a href="#download">Download</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Support</h4>
-                <ul class="footer-links">
-                    <li><a href="mailto:support@behaviorschool.com">Contact Support</a></li>
-                    <li><a href="/public/privacy.html">Privacy Policy</a></li>
-                    <li><a href="/public/terms.html">Terms of Service</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Company</h4>
-                <ul class="footer-links">
-                    <li><a href="https://behaviorschool.com">Behavior School</a></li>
-                    <li><a href="https://behaviorschool.com/about">About Us</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 Behavior School LLC. All rights reserved.</p>
-        </div>
-    </footer>
+                                                        else {
+                                                            navbar.classList.remove('scrolled');
+                                                        }
+                                                    });
 
-    <script>
-        // Navbar scroll effect
-        window.addEventListener('scroll', () => {
-            const navbar = document.getElementById('navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
+                                                    // Smooth scrolling for anchor links
+                                                    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                                                        anchor.addEventListener('click', function (e) {
+                                                            e.preventDefault();
+                                                            const target = document.querySelector(this.getAttribute('href'));
 
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-    </script>
+                                                            if (target) {
+                                                                target.scrollIntoView({
+                                                                    behavior: 'smooth',
+                                                                    block: 'start'
+                                                                });
+                                                            }
+                                                        });
+                                                    });
+
+                                                    // GSAP Animations
+                                                    gsap.registerPlugin(ScrollTrigger);
+
+                                                    // Hero animations
+                                                    gsap.from('.hero-content h1', {
+                                                        duration: 1,
+                                                        y: 50,
+                                                        opacity: 0,
+                                                        ease: 'power3.out'
+                                                    });
+
+                                                    gsap.from('.hero-content .subtitle', {
+                                                        duration: 0.8,
+                                                        y: 30,
+                                                        opacity: 0,
+                                                        delay: 0.3,
+                                                        ease: 'power3.out'
+                                                    });
+
+                                                    gsap.from('.hero-content p', {
+                                                        duration: 0.8,
+                                                        y: 30,
+                                                        opacity: 0,
+                                                        delay: 0.5,
+                                                        ease: 'power3.out'
+                                                    });
+
+                                                    gsap.from('.btn-hero', {
+                                                        duration: 0.8,
+                                                        y: 30,
+                                                        opacity: 0,
+                                                        stagger: 0.2,
+                                                        delay: 0.7,
+                                                        ease: 'back.out(1.7)'
+                                                    });
+
+                                                    gsap.from('.phone-mockup', {
+                                                        duration: 1.2,
+                                                        scale: 0.8,
+                                                        opacity: 0,
+                                                        delay: 0.5,
+                                                        ease: 'back.out(1.7)'
+                                                    });
+
+                                                    // Feature cards animation
+                                                    gsap.utils.toArray('.feature-card').forEach((card, i) => {
+                                                        gsap.from(card, {
+                                                            scrollTrigger: {
+                                                                trigger: card,
+                                                                start: 'top 85%',
+                                                                toggleActions: 'play none none reverse'
+                                                            }
+
+                                                            ,
+                                                            y: 60,
+                                                            opacity: 0,
+                                                            duration: 0.8,
+                                                            delay: i * 0.1
+                                                        });
+                                                    });
+
+                                                    // Pain point cards animation
+                                                    gsap.utils.toArray('.pain-card').forEach((card, i) => {
+                                                        gsap.from(card, {
+                                                            scrollTrigger: {
+                                                                trigger: card,
+                                                                start: 'top 85%',
+                                                                toggleActions: 'play none none reverse'
+                                                            }
+
+                                                            ,
+                                                            x: i % 2 === 0 ? -60 : 60,
+                                                            opacity: 0,
+                                                            duration: 0.8,
+                                                            delay: i * 0.15
+                                                        });
+                                                    });
+
+                                                    // Showcase items animation
+                                                    gsap.utils.toArray('.showcase-item').forEach((item, i) => {
+                                                        gsap.from(item, {
+                                                            scrollTrigger: {
+                                                                trigger: item,
+                                                                start: 'top 85%',
+                                                                toggleActions: 'play none none reverse'
+                                                            }
+
+                                                            ,
+                                                            y: 60,
+                                                            opacity: 0,
+                                                            duration: 0.8,
+                                                            delay: i * 0.2
+                                                        });
+                                                    });
+
+                                                    // Timeline animations
+                                                    gsap.utils.toArray('.timeline-item').forEach((item, i) => {
+                                                        gsap.from(item, {
+                                                            scrollTrigger: {
+                                                                trigger: item,
+                                                                start: 'top 80%',
+                                                                toggleActions: 'play none none reverse'
+                                                            }
+
+                                                            ,
+                                                            opacity: 0,
+                                                            y: 50,
+                                                            duration: 0.8
+                                                        });
+                                                    });
+
+                                                    // Comparison table row animation
+                                                    gsap.utils.toArray('.comparison-table tbody tr').forEach((row, i) => {
+                                                        gsap.from(row, {
+                                                            scrollTrigger: {
+                                                                trigger: row,
+                                                                start: 'top 90%',
+                                                                toggleActions: 'play none none reverse'
+                                                            }
+
+                                                            ,
+                                                            x: -30,
+                                                            opacity: 0,
+                                                            duration: 0.6,
+                                                            delay: i * 0.05
+                                                        });
+                                                    });
+
+                                                    // Deep dive sections
+                                                    gsap.utils.toArray('.deep-dive-section').forEach((section, i) => {
+                                                        gsap.from(section.querySelector('.deep-dive-content'), {
+                                                            scrollTrigger: {
+                                                                trigger: section,
+                                                                start: 'top 75%',
+                                                                toggleActions: 'play none none reverse'
+                                                            }
+
+                                                            ,
+                                                            x: i % 2 === 0 ? -60 : 60,
+                                                            opacity: 0,
+                                                            duration: 0.8
+                                                        });
+
+                                                        gsap.from(section.querySelector('.deep-dive-image'), {
+                                                            scrollTrigger: {
+                                                                trigger: section,
+                                                                start: 'top 75%',
+                                                                toggleActions: 'play none none reverse'
+                                                            }
+
+                                                            ,
+                                                            x: i % 2 === 0 ? 60 : -60,
+                                                            opacity: 0,
+                                                            duration: 0.8,
+                                                            delay: 0.2
+                                                        });
+                                                    });
+
+                                                    // FAQ items
+                                                    document.querySelectorAll('.faq-item').forEach(item => {
+                                                        const question = item.querySelector('.faq-question');
+                                                        const answer = item.querySelector('.faq-answer');
+                                                        const icon = item.querySelector('.faq-icon');
+
+                                                        question.addEventListener('click', () => {
+                                                            const isOpen = item.classList.contains('active');
+
+                                                            // Close all other items
+                                                            document.querySelectorAll('.faq-item').forEach(otherItem => {
+                                                                if (otherItem !== item) {
+                                                                    otherItem.classList.remove('active');
+
+                                                                    gsap.to(otherItem.querySelector('.faq-answer'), {
+                                                                        height: 0,
+                                                                        duration: 0.3,
+                                                                        ease: 'power2.inOut'
+                                                                    });
+
+                                                                    gsap.to(otherItem.querySelector('.faq-icon'), {
+                                                                        rotation: 0,
+                                                                        duration: 0.3
+                                                                    });
+                                                                }
+                                                            });
+
+                                                            if (!isOpen) {
+                                                                item.classList.add('active');
+
+                                                                gsap.to(answer, {
+                                                                    height: 'auto',
+                                                                    duration: 0.4,
+                                                                    ease: 'power2.inOut'
+                                                                });
+
+                                                                gsap.to(icon, {
+                                                                    rotation: 180,
+                                                                    duration: 0.3
+                                                                });
+                                                            }
+
+                                                            else {
+                                                                item.classList.remove('active');
+
+                                                                gsap.to(answer, {
+                                                                    height: 0,
+                                                                    duration: 0.3,
+                                                                    ease: 'power2.inOut'
+                                                                });
+
+                                                                gsap.to(icon, {
+                                                                    rotation: 0,
+                                                                    duration: 0.3
+                                                                });
+                                                            }
+                                                        });
+                                                    });
+                                                </script>
 </body>
 
 </html>

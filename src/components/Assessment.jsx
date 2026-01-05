@@ -71,7 +71,7 @@ const favoriteOptions = [
     { id: 'toy', word: 'Toy', icon: '🧸' },
 ];
 
-const Assessment = ({ onComplete }) => {
+const Assessment = ({ onComplete, onBack }) => {
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [result, setResult] = useState(null);
     const [showResult, setShowResult] = useState(false);
@@ -84,11 +84,12 @@ const Assessment = ({ onComplete }) => {
     const [history, setHistory] = useState([]);
     const [answers, setAnswers] = useState({});
 
+
     const question = questions[currentQuestion];
 
     const calculateResult = (finalAnswers) => {
         let recommendedPhase = 0; // Default to advanced/free mode if all Yes
-        
+
         // Iterate through questions to find the first skill gap
         for (let i = 0; i < questions.length; i++) {
             const q = questions[i];
@@ -99,7 +100,7 @@ const Assessment = ({ onComplete }) => {
                 break;
             }
         }
-        
+
         // If they answered Yes to everything, recommendedPhase stays 0
         setResult(recommendedPhase);
         setShowFavoritesPicker(true);
@@ -108,7 +109,7 @@ const Assessment = ({ onComplete }) => {
     const handleAnswer = (isYes) => {
         // Save current question to history before moving
         setHistory([...history, currentQuestion]);
-        
+
         // Record answer
         const newAnswers = { ...answers, [question.id]: isYes };
         setAnswers(newAnswers);
@@ -460,9 +461,9 @@ const Assessment = ({ onComplete }) => {
             }}>
                 {showIntro && (
                     <div style={{ position: 'fixed', inset: 0, zIndex: 2000 }}>
-                        <LevelIntro 
-                            phase={result} 
-                            onComplete={() => setShowIntro(false)} 
+                        <LevelIntro
+                            phase={result}
+                            onComplete={() => setShowIntro(false)}
                             onChangeLevel={() => {
                                 setShowIntro(false);
                                 setShowResult(false);
@@ -580,9 +581,15 @@ const Assessment = ({ onComplete }) => {
             zIndex: 1000
         }}>
             {/* Back Button */}
-            {history.length > 0 && (
-                <button 
-                    onClick={handleBack}
+            {(history.length > 0 || onBack) && (
+                <button
+                    onClick={() => {
+                        if (history.length > 0) {
+                            handleBack();
+                        } else if (onBack) {
+                            onBack();
+                        }
+                    }}
                     style={{
                         position: 'absolute',
                         top: '1.25rem',

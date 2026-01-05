@@ -9,7 +9,15 @@ const DEFAULT_ACCESS_PROFILE = {
     visualContrast: 'standard',
     fieldSize: 'unlimited',
     language: 'en', // 'en' | 'es'
-    biometricLock: false
+    biometricLock: false,
+    // Physical Scaling
+    deviceDPI: null, // Auto-detected on first load, null = not yet detected
+    dpiCalibrated: false, // Has user manually calibrated DPI?
+    // Switch Access Settings
+    switchAccessEnabled: false,
+    scanSpeed: 1500, // milliseconds (1-3 seconds)
+    audioFeedback: false,
+    switchKey: 'Space' // Default switch key
 };
 
 const DEFAULT_PROFILE = {
@@ -29,7 +37,7 @@ export const ProfileProvider = ({ children }) => {
             ...p,
             accessProfile: {
                 ...(p.accessProfile || DEFAULT_ACCESS_PROFILE),
-                selectionType: 'touch' 
+                selectionType: 'touch'
             }
         }));
     });

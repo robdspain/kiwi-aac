@@ -40,16 +40,16 @@ const Onboarding = ({ onComplete }) => {
             title: "Welcome to Kiwi Voice! 🥝",
             content: (
                 <div style={{ textAlign: 'center' }}>
-                    <img 
-                        src="/images/logo.png" 
-                        alt="Kiwi Voice Logo" 
-                        style={{ 
-                            width: '10rem', 
-                            height: '10rem', 
+                    <img
+                        src="/images/logo.png"
+                        alt="Kiwi Voice Logo"
+                        style={{
+                            width: '10rem',
+                            height: '10rem',
                             marginBottom: '1.25rem',
                             borderRadius: '2rem',
                             boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
-                        }} 
+                        }}
                     />
                     <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
                         A powerful communication tool designed for children learning to express themselves.
@@ -61,12 +61,12 @@ const Onboarding = ({ onComplete }) => {
             title: "Who are we helping?",
             content: (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
-                    <div 
+                    <div
                         onClick={takePhoto}
                         aria-label="Take or upload photo"
-                        style={{ 
-                            width: '8rem', height: '8rem', borderRadius: '50%', 
-                            background: 'var(--gray-light, #F2F2F7)', display: 'flex', alignItems: 'center', 
+                        style={{
+                            width: '8rem', height: '8rem', borderRadius: '50%',
+                            background: 'var(--gray-light, #F2F2F7)', display: 'flex', alignItems: 'center',
                             justifyContent: 'center', fontSize: '3rem', cursor: 'pointer',
                             overflow: 'hidden', border: '0.25rem solid var(--card-bg, #FFFFFF)',
                             boxShadow: '0 0.5rem 1rem rgba(0,0,0,0.1)',
@@ -79,21 +79,21 @@ const Onboarding = ({ onComplete }) => {
                             <span style={{ fontSize: '3.5rem' }}>📸</span>
                         )}
                         <div style={{
-                            position: 'absolute', bottom: 0, width: '100%', 
-                            background: 'rgba(0,0,0,0.5)', color: 'white', 
+                            position: 'absolute', bottom: 0, width: '100%',
+                            background: 'rgba(0,0,0,0.5)', color: 'white',
                             fontSize: '0.7rem', fontWeight: 'bold', padding: '4px 0',
                             textAlign: 'center'
                         }}>EDIT</div>
                     </div>
                     <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                         <label style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-secondary)', marginLeft: '0.5rem' }}>LEARNER&apos;S NAME</label>
-                        <input 
-                            type="text" 
-                            placeholder="Enter name (optional)" 
+                        <input
+                            type="text"
+                            placeholder="Enter name (optional)"
                             value={learnerName}
                             onChange={(e) => setLearnerName(e.target.value)}
-                            style={{ 
-                                width: '100%', padding: '1rem 1.25rem', borderRadius: '1rem', 
+                            style={{
+                                width: '100%', padding: '1rem 1.25rem', borderRadius: '1rem',
                                 border: '1px solid var(--gray-border)', background: 'var(--card-bg)', fontSize: '1.1rem',
                                 boxShadow: '0 2px 4px rgba(0,0,0,0.05)', outline: 'none', color: 'var(--text-primary)'
                             }}
@@ -186,6 +186,12 @@ const Onboarding = ({ onComplete }) => {
         }
     ];
 
+    const handleBack = () => {
+        if (step > 0) {
+            setStep(step - 1);
+        }
+    };
+
     const handleNext = () => {
         if (step === 0) {
             // After welcome, check motor skills
@@ -224,12 +230,28 @@ const Onboarding = ({ onComplete }) => {
     };
 
     if (showCalibration) {
-        return <TouchCalibration onComplete={handleCalibrationComplete} />;
+        return (
+            <TouchCalibration
+                onComplete={handleCalibrationComplete}
+                onBack={() => {
+                    setShowCalibration(false);
+                    setStep(0);
+                }}
+            />
+        );
     }
 
     // Show assessment
     if (showAssessment) {
-        return <Assessment onComplete={handleAssessmentComplete} />;
+        return (
+            <Assessment
+                onComplete={handleAssessmentComplete}
+                onBack={() => {
+                    setShowAssessment(false);
+                    setShowCalibration(true);
+                }}
+            />
+        );
     }
 
     if (showFavorites) {
@@ -276,6 +298,24 @@ const Onboarding = ({ onComplete }) => {
 
             {/* Navigation */}
             <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem' }}>
+                {step > 0 && (
+                    <button
+                        onClick={handleBack}
+                        style={{
+                            flex: 1, padding: '1rem',
+                            background: 'var(--card-bg)',
+                            border: '0.125rem solid var(--gray-border)',
+                            borderRadius: '1rem',
+                            fontSize: '1.1rem',
+                            fontWeight: 600,
+                            color: 'var(--text-secondary)',
+                            cursor: 'pointer',
+                            minHeight: '3.5rem'
+                        }}
+                    >
+                        ← Back
+                    </button>
+                )}
                 {step < steps.length - 1 && (
                     <button
                         onClick={handleSkip}
