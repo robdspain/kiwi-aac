@@ -124,6 +124,29 @@ export const BACKGROUND_COLORS = [
 ];
 
 
+const SKIN_COLOR_VALUES = {
+    pale: 'ffdbb4',
+    light: 'edb98a',
+    brown: 'd08b5b',
+    darkBrown: 'ae5d29',
+    black: '614335',
+    tanned: 'fd9841',
+    yellow: 'f8d25c'
+};
+
+const HAIR_COLOR_VALUES = {
+    auburn: 'a55728',
+    black: '2c1b18',
+    blonde: 'b58143',
+    blondeGolden: 'd6b370',
+    brown: '724133',
+    brownDark: '4a312c',
+    pastelPink: 'f59797',
+    platinum: 'ecf0f3',
+    red: 'c93305',
+    silverGray: 'e8e1e1'
+};
+
 export function generateAvatar(options = {}) {
     const {
         seed = 'Avatar',
@@ -138,9 +161,9 @@ export function generateAvatar(options = {}) {
 
     const dicebearOptions = {
         seed,
-        skinColor: [SKIN_TONE_OPTIONS[skinColor] ? skinColor : 'light'], // Using keys directly as values for avataaars usually works if mapped correctly
+        skinColor: [SKIN_COLOR_VALUES[skinColor] || 'edb98a'],
         top: [top],
-        hairColor: [hairColor],
+        hairColor: [HAIR_COLOR_VALUES[hairColor] || '724133'],
         facialHair: [FACIAL_HAIR_TYPES[facialHair] || 'blank'],
         clothing: [clothing],
         accessories: [ACCESSORIES_TYPES[accessories] || 'blank'],
