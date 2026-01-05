@@ -1360,7 +1360,7 @@ const Controls = ({
                                     </div>
                                     <div style={{ background: '#F2F2F7', padding: '0.75rem', borderRadius: '0.5rem', textAlign: 'center' }}>
                                         <div style={{ fontSize: '1.125rem', fontWeight: 'bold', color: '#34C759' }}>
-                                            {Object.values(progressData || {}).reduce((acc, curr) => acc + (curr.totalUses || 0), 0) || 0}
+                                            {Object.values(progressData || {}).reduce((acc, curr) => acc + (curr?.totalUses || 0), 0) || 0}
                                         </div>
                                         <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.25rem', fontWeight: 700 }}>Total Taps</div>
                                     </div>

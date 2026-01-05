@@ -16,6 +16,28 @@
 
 ---
 
+## Clickability Sweep (Automated)
+
+This test clicks every visible interactive element on the main app
+and fails if any click throws, triggers unexpected dialogs, or logs console errors.
+
+### 1) Start the dev server
+```
+npm run dev -- --host 127.0.0.1 --port 5173
+```
+
+### 2) Run the sweep
+```
+npm run test:clickability
+```
+
+Notes:
+- The test skips destructive buttons (delete/remove/reset/clear/logout) and billing/legal links.
+- It opens Settings and sweeps each tab (Basic, Avatar, Access, Extra, Data).
+- It dismisses dialogs automatically to avoid destructive actions.
+
+---
+
 ## Pre-Testing Setup
 
 ### Clear State for Fresh Test
