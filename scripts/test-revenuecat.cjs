@@ -45,7 +45,7 @@ function logInfo(message) {
 
 // Test configuration
 const EXPECTED_CONFIG = {
-  apiKey: process.env.VITE_REVENUECAT_API_KEY || 'test_GVsVAPHELhFcgnBFbWlVyrYGiUS',
+  apiKey: process.env.VITE_REVENUECAT_API_KEY || 'YOUR_API_KEY_HERE',
   entitlement: 'pro',
   products: ['kiwi_monthly', 'kiwi_annual', 'kiwi_lifetime'],
   packages: ['$rc_monthly', '$rc_annual', '$rc_lifetime'],
@@ -61,12 +61,6 @@ logSection('Test 1: Environment Variables');
 
 if (process.env.VITE_REVENUECAT_API_KEY) {
   logSuccess(`API Key configured: ${process.env.VITE_REVENUECAT_API_KEY.substring(0, 15)}...`);
-
-  if (process.env.VITE_REVENUECAT_API_KEY === 'test_GVsVAPHELhFcgnBFbWlVyrYGiUS') {
-    logWarning('Using TEST API key. Replace with production key before deploying.');
-  } else {
-    logSuccess('Using custom API key (likely production).');
-  }
 } else {
   logError('VITE_REVENUECAT_API_KEY not found in environment variables!');
   logInfo('Create a .env file with: VITE_REVENUECAT_API_KEY=your_key_here');

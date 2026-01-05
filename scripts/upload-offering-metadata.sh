@@ -5,8 +5,8 @@
 # to drive custom paywall UI in your app
 #
 # Usage:
-#   export REVENUECAT_SECRET_KEY="strp_ePYKboHXqhgmcCNvcHhTSDCRXpL"
-#   export REVENUECAT_PROJECT_ID="proj31d3aec2"
+#   export REVENUECAT_SECRET_KEY="your-secret-key"
+#   export REVENUECAT_PROJECT_ID="your-project-id"
 #   ./scripts/upload-offering-metadata.sh
 
 set -e
