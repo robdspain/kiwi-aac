@@ -1,4 +1,5 @@
 import { useState, useEffect, Suspense, lazy, useRef, useCallback } from 'react';
+import MainCommunicationPage from './components/MainCommunicationPage';
 import Grid from './components/Grid';
 import SentenceStrip from './components/SentenceStrip';
 import Controls from './components/Controls';
@@ -1283,9 +1284,6 @@ function App() {
   }
 
   const totalCustomPhotos = rootItems.reduce((sum, page) => sum + countCustomPhotosInItems(page.items || []), 0);
-
-  return (
-import MainCommunicationPage from './components/MainCommunicationPage';
 
   return (
     <div id="main-area">
