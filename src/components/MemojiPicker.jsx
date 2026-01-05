@@ -8,6 +8,9 @@ import {
     FACIAL_HAIR_LABELS,
     CLOTHING_LABELS,
     ACCESSORIES_LABELS,
+    EYES_LABELS,
+    EYEBROW_LABELS,
+    MOUTH_LABELS,
     BACKGROUND_COLORS
 } from '../utils/dicebearGenerator';
 
@@ -15,6 +18,9 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
     const [name, setName] = useState(initialName || '');
     const [activeTab, setActiveTab] = useState('presets');
     const [activeCategory, setActiveCategory] = useState('body');
+
+    // Seed state DECOUPLED from name
+    const [seed, setSeed] = useState(initialConfig?.seed || Math.random().toString(36).substring(7));
 
     // Presets tab state
     const [presets, setPresets] = useState([]);
@@ -27,6 +33,12 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
     const [facialHair, setFacialHair] = useState(initialConfig?.facialHair || 'none');
     const [clothing, setClothing] = useState(initialConfig?.clothing || 'shirtCrewNeck');
     const [accessories, setAccessories] = useState(initialConfig?.accessories || 'none');
+
+    // New Face Attributes
+    const [eyes, setEyes] = useState(initialConfig?.eyes || 'default');
+    const [eyebrows, setEyebrows] = useState(initialConfig?.eyebrows || 'default');
+    const [mouth, setMouth] = useState(initialConfig?.mouth || 'default');
+
     const [bgColor, setBgColor] = useState(initialConfig?.backgroundColor || 'b6e3f4');
 
     // Preview
@@ -41,18 +53,21 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
     useEffect(() => {
         if (activeTab === 'customize' || activeTab === 'presets') {
             const dataUrl = generateAvatar({
-                seed: name || 'Avatar',
+                seed, // Stable seed, not name
                 skinColor,
                 top,
                 hairColor,
                 facialHair,
                 clothing,
                 accessories,
+                eyes,
+                eyebrows,
+                mouth,
                 backgroundColor: bgColor
             });
             setPreview(dataUrl);
         }
-    }, [activeTab, skinColor, top, hairColor, facialHair, clothing, accessories, bgColor, name]);
+    }, [activeTab, seed, skinColor, top, hairColor, facialHair, clothing, accessories, eyes, eyebrows, mouth, bgColor]);
 
     // Initial name set
     useEffect(() => {
@@ -64,39 +79,32 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
         setPresets(newPresets);
         if (newPresets.length > 0 && !selectedPreset) {
             setSelectedPreset(0);
-            const first = newPresets[0];
-            setSkinColor(first.config.skinColor);
-            setTop(first.config.top);
-            setHairColor(first.config.hairColor);
-            setFacialHair(first.config.facialHair);
-            setClothing(first.config.clothing);
-            setAccessories(first.config.accessories);
-            setBgColor(first.config.backgroundColor);
+            applyConfig(newPresets[0].config);
         }
     };
 
     const handlePresetSelect = (index) => {
         setSelectedPreset(index);
-        const preset = presets[index];
-        // Load preset config into customize tab
-        setSkinColor(preset.config.skinColor);
-        setTop(preset.config.top);
-        setHairColor(preset.config.hairColor);
-        setFacialHair(preset.config.facialHair);
-        setClothing(preset.config.clothing);
-        setAccessories(preset.config.accessories);
-        setBgColor(preset.config.backgroundColor);
+        applyConfig(presets[index].config);
+    };
+
+    const applyConfig = (config) => {
+        setSeed(config.seed);
+        setSkinColor(config.skinColor);
+        setTop(config.top);
+        setHairColor(config.hairColor);
+        setFacialHair(config.facialHair);
+        setClothing(config.clothing);
+        setAccessories(config.accessories);
+        setEyes(config.eyes || 'default');
+        setEyebrows(config.eyebrows || 'default');
+        setMouth(config.mouth || 'default');
+        setBgColor(config.backgroundColor);
     };
 
     const randomizeCustomize = () => {
         const random = generateRandomAvatars(1)[0];
-        setSkinColor(random.config.skinColor);
-        setTop(random.config.top);
-        setHairColor(random.config.hairColor);
-        setFacialHair(random.config.facialHair);
-        setClothing(random.config.clothing);
-        setAccessories(random.config.accessories);
-        setBgColor(random.config.backgroundColor);
+        applyConfig(random.config);
     };
 
     const handleSave = () => {
@@ -108,13 +116,16 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
             type: 'dicebear',
             style: 'avataaars',
             config: {
-                seed: trimmedName || 'Avatar',
+                seed,
                 skinColor,
                 top,
                 hairColor,
                 facialHair,
                 clothing,
                 accessories,
+                eyes,
+                eyebrows,
+                mouth,
                 backgroundColor: bgColor
             }
         };
@@ -173,8 +184,20 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
                             width: '7rem', height: '7rem',
                             background: 'white', borderRadius: '50%',
                             border: '4px solid white', boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                            overflow: 'hidden', marginBottom: '1rem'
+                            overflow: 'hidden', marginBottom: '1rem', position: 'relative'
                         }}>
+                            {/* Re-seed button overlay */}
+                            <button
+                                onClick={() => setSeed(Math.random().toString(36))}
+                                style={{
+                                    position: 'absolute', bottom: 0, right: 0,
+                                    background: 'rgba(0,0,0,0.5)', color: 'white',
+                                    border: 'none', borderRadius: '50% 0 0 0',
+                                    padding: '4px 8px', fontSize: '0.8rem', cursor: 'pointer'
+                                }}
+                            >
+                                🎲
+                            </button>
                             {preview && <img src={preview} alt="Avatar preview" style={{ width: '100%', height: '100%' }} />}
                         </div>
 
@@ -185,6 +208,7 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
                                     type="text"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
+                                    // Removed seed link
                                     style={{ border: 'none', textAlign: 'right', fontSize: '1.0625rem', outline: 'none', background: 'transparent', flex: 1, minHeight: '2.75rem' }}
                                     placeholder="e.g. Mom"
                                 />
@@ -254,6 +278,7 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
                             }}>
                                 {[
                                     { id: 'body', label: 'Body', icon: '🎨' },
+                                    { id: 'face', label: 'Face', icon: '🙂' },
                                     { id: 'hair', label: 'Hair', icon: '💇' },
                                     { id: 'outfit', label: 'Outfit', icon: '👕' },
                                     { id: 'bg', label: 'Back', icon: '🖼️' }
@@ -289,6 +314,15 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
                                     <OptionGroup label="Skin Tone" options={SKIN_TONE_OPTIONS} selected={skinColor} onChange={setSkinColor} />
                                 )}
 
+                                {activeCategory === 'face' && (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                                        <OptionGroup label="Eyes" options={EYES_LABELS} selected={eyes} onChange={setEyes} />
+                                        <OptionGroup label="Eyebrows" options={EYEBROW_LABELS} selected={eyebrows} onChange={setEyebrows} />
+                                        <OptionGroup label="Mouth" options={MOUTH_LABELS} selected={mouth} onChange={setMouth} />
+                                        <OptionGroup label="Accessories" options={ACCESSORIES_LABELS} selected={accessories} onChange={setAccessories} />
+                                    </div>
+                                )}
+
                                 {activeCategory === 'hair' && (
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                                         <OptionGroup label="Hairstyle & Hats" options={TOP_TYPE_LABELS} selected={top} onChange={setTop} />
@@ -300,7 +334,6 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
                                 {activeCategory === 'outfit' && (
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                                         <OptionGroup label="Clothing" options={CLOTHING_LABELS} selected={clothing} onChange={setClothing} />
-                                        <OptionGroup label="Accessories" options={ACCESSORIES_LABELS} selected={accessories} onChange={setAccessories} />
                                     </div>
                                 )}
 

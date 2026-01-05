@@ -119,62 +119,130 @@ export const ACCESSORIES_LABELS = {
     sunglasses: 'Sunglasses'
 };
 
+export const EYES_TYPES = {
+    default: 'default',
+    happy: 'happy',
+    wink: 'wink',
+    winkWacky: 'winkWacky',
+    hearts: 'hearts',
+    squint: 'squint',
+    surprised: 'surprised',
+    cry: 'cry',
+    close: 'close',
+    dizzy: 'dizzy',
+    eyeRoll: 'eyeRoll',
+    side: 'side'
+};
+
+export const EYES_LABELS = {
+    default: '👀 Default',
+    happy: '😊 Happy',
+    wink: '😉 Wink',
+    winkWacky: '😜 Wacky',
+    hearts: '😍 Hearts',
+    squint: '😆 Squint',
+    surprised: '😲 Shocked',
+    cry: '😢 Cry',
+    close: '😌 Closed',
+    dizzy: '😵 Dizzy',
+    eyeRoll: '🙄 Roll',
+    side: '😒 Side'
+};
+
+export const EYEBROW_TYPES = {
+    default: 'default',
+    defaultNatural: 'defaultNatural',
+    angry: 'angry',
+    angryNatural: 'angryNatural',
+    flatNatural: 'flatNatural',
+    raisedExcited: 'raisedExcited',
+    raisedExcitedNatural: 'raisedExcitedNatural',
+    sadConcerned: 'sadConcerned',
+    sadConcernedNatural: 'sadConcernedNatural',
+    unibrowNatural: 'unibrowNatural',
+    upDown: 'upDown',
+    upDownNatural: 'upDownNatural'
+};
+
+export const EYEBROW_LABELS = {
+    default: '😐 Default',
+    defaultNatural: '😐 Natural',
+    angry: '😠 Angry',
+    angryNatural: '😠 Mad',
+    flatNatural: '😑 Flat',
+    raisedExcited: '🤩 Excited',
+    raisedExcitedNatural: '🤩 Pumped',
+    sadConcerned: '😟 Sad',
+    sadConcernedNatural: '😟 Worried',
+    unibrowNatural: '🤨 Unibrow',
+    upDown: '🤨 Skeptical',
+    upDownNatural: '🤨 Doubt'
+};
+
+export const MOUTH_TYPES = {
+    default: 'default',
+    concerned: 'concerned',
+    disbelief: 'disbelief',
+    eating: 'eating',
+    grimace: 'grimace',
+    sad: 'sad',
+    screamOpen: 'screamOpen',
+    serious: 'serious',
+    smile: 'smile',
+    tongue: 'tongue',
+    twinkle: 'twinkle',
+    vomit: 'vomit'
+};
+
+export const MOUTH_LABELS = {
+    default: '😐 Default',
+    concerned: '😟 Worried',
+    disbelief: '🤨 ??',
+    eating: '😋 Nom',
+    grimace: '😬 Grimace',
+    sad: '😞 Sad',
+    screamOpen: '😱 Scream',
+    serious: '😐 Serious',
+    smile: '🙂 Smile',
+    tongue: '😛 Tongue',
+    twinkle: '😏 Smirk',
+    vomit: '🤢 Sick'
+};
+
 export const BACKGROUND_COLORS = [
-    'b6e3f4', 'c0aede', 'd1d4f9', 'ffdfbf', 'ffd5dc'
+    'b6e3f4', 'c0aede', 'd1d4f9', 'ffdfbf', 'ffd5dc', 'd5f5e3', 'fcf3cf'
 ];
 
-
-const SKIN_COLOR_VALUES = {
-    pale: 'ffdbb4',
-    light: 'edb98a',
-    brown: 'd08b5b',
-    darkBrown: 'ae5d29',
-    black: '614335',
-    tanned: 'fd9841',
-    yellow: 'f8d25c'
-};
-
-const HAIR_COLOR_VALUES = {
-    auburn: 'a55728',
-    black: '2c1b18',
-    blonde: 'b58143',
-    blondeGolden: 'd6b370',
-    brown: '724133',
-    brownDark: '4a312c',
-    pastelPink: 'f59797',
-    platinum: 'ecf0f3',
-    red: 'c93305',
-    silverGray: 'e8e1e1'
-};
+// Removed Hex Value Maps because Avataaars expects Enum Strings
 
 export function generateAvatar(options = {}) {
     const {
         seed = 'Avatar',
         skinColor = 'light',
-        top = 'longHairStraight',
+        top = 'shortHairShortFlat',
         hairColor = 'brown',
         facialHair = 'none',
         clothing = 'shirtCrewNeck',
         accessories = 'none',
+        eyes = 'default',
+        eyebrows = 'default',
+        mouth = 'default',
         backgroundColor = 'b6e3f4'
     } = options;
 
     const dicebearOptions = {
         seed,
-        skinColor: [SKIN_COLOR_VALUES[skinColor] || 'edb98a'],
+        skinColor: [skinColor],
         top: [top],
-        hairColor: [HAIR_COLOR_VALUES[hairColor] || '724133'],
+        hairColor: [hairColor],
         facialHair: [FACIAL_HAIR_TYPES[facialHair] || 'blank'],
         clothing: [clothing],
         accessories: [ACCESSORIES_TYPES[accessories] || 'blank'],
+        eyes: [eyes],
+        eyebrows: [eyebrows],
+        mouth: [mouth],
         backgroundColor: [backgroundColor]
     };
-
-    // Fix mapping: Avataaars expects specific mapped values for skinColor if we passed labels, but we are passing keys.
-    // The SDK expects arrays of values.
-
-    // Let's ensure strict mapping if needed.
-    // Actually, for skinColor, Avataaars uses 'light', 'pale', etc. so passing the key 'light' is correct.
 
     return createAvatar(avataaars, dicebearOptions).toDataUri();
 }
@@ -186,6 +254,9 @@ export function generateRandomAvatar(seed) {
     const clothes = Object.keys(CLOTHING_TYPES);
     const accs = Object.keys(ACCESSORIES_TYPES);
     const facial = Object.keys(FACIAL_HAIR_TYPES);
+    const eyesList = Object.keys(EYES_TYPES);
+    const browsList = Object.keys(EYEBROW_TYPES);
+    const mouthList = Object.keys(MOUTH_TYPES);
 
     const config = {
         seed: seed || Math.random().toString(36).substring(7),
@@ -195,6 +266,9 @@ export function generateRandomAvatar(seed) {
         facialHair: Math.random() > 0.8 ? facial[Math.floor(Math.random() * facial.length)] : 'none',
         clothing: clothes[Math.floor(Math.random() * clothes.length)],
         accessories: Math.random() > 0.8 ? accs[Math.floor(Math.random() * accs.length)] : 'none',
+        eyes: eyesList[Math.floor(Math.random() * eyesList.length)],
+        eyebrows: browsList[Math.floor(Math.random() * browsList.length)],
+        mouth: mouthList[Math.floor(Math.random() * mouthList.length)],
         backgroundColor: BACKGROUND_COLORS[Math.floor(Math.random() * BACKGROUND_COLORS.length)]
     };
 
