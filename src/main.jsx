@@ -1,8 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { Route } from 'react-router-dom'
-import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react'
-import { IonReactRouter } from '@ionic/react-router'
+import { IonApp, setupIonicReact } from '@ionic/react'
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -22,7 +20,6 @@ import '@ionic/react/css/display.css';
 
 import './index.css'
 import App from './App.jsx'
-import EmojiCurator from './components/EmojiCurator.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 import { ProfileProvider } from './context/ProfileContext.jsx'
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
@@ -39,12 +36,7 @@ createRoot(document.getElementById('root')).render(
     <ErrorBoundary>
       <ProfileProvider>
         <IonApp>
-          <IonReactRouter>
-            <IonRouterOutlet>
-              <Route path="/" exact={true} component={App} />
-              <Route path="/emoji" component={EmojiCurator} />
-            </IonRouterOutlet>
-          </IonReactRouter>
+          <App />
         </IonApp>
       </ProfileProvider>
     </ErrorBoundary>
