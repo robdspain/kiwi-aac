@@ -63,6 +63,18 @@ class RevenueCatService {
       return;
     }
 
+    // Web Platform Guard - Graceful Fallback
+    if (!Capacitor.isNativePlatform()) {
+      console.log('🌐 Web platform detected: RevenueCat services mocked');
+      this.isInitialized = true;
+      this.isWeb = true;
+      this.customerInfo = {
+        entitlements: { all: {}, active: {} },
+        activeSubscriptions: []
+      };
+      return;
+    }
+
     try {
       // Lazy load the RevenueCat plugin
       const module = await import('../plugins/revenuecat');
@@ -84,7 +96,7 @@ class RevenueCatService {
       await this.loadOfferings();
     } catch (error) {
       console.error('❌ Failed to initialize RevenueCat:', error);
-      throw error;
+      // Don't throw, just log, so app continues
     }
   }
 
@@ -92,6 +104,8 @@ class RevenueCatService {
    * Refresh customer info from RevenueCat
    */
   async refreshCustomerInfo() {
+    if (this.isWeb) return this.customerInfo;
+
     try {
       this.customerInfo = await this.revenueCat.getCustomerInfo();
       console.log('Customer info refreshed:', this.customerInfo);
@@ -106,6 +120,8 @@ class RevenueCatService {
    * Load available offerings (products)
    */
   async loadOfferings() {
+    if (this.isWeb) return null;
+
     try {
       this.offerings = await this.revenueCat.getOfferings();
       console.log('Offerings loaded:', this.offerings);
@@ -120,6 +136,8 @@ class RevenueCatService {
    * Check if user has premium access (PRO entitlement)
    */
   async hasPremiumAccess() {
+    if (this.isWeb) return false; // Default to false (Free Tier) on Web
+
     try {
       if (!this.isInitialized) {
         await this.initialize();
@@ -127,17 +145,21 @@ class RevenueCatService {
       return await this.revenueCat.checkEntitlement(CONFIG.ENTITLEMENTS.PRO);
     } catch (error) {
       console.error('Error checking premium access:', error);
-      // Default to true in development mode if check fails
-      return true;
+      // Default to true in development mode if check fails - wait, let's differ to false for stability
+      return false;
     }
   }
 
   /**
    * Present native paywall UI
-   * This shows the beautiful native RevenueCat paywall
-   * @param {string} feature - Name of the feature triggering the paywall (for analytics)
    */
   async showPaywall(feature = null) {
+    if (this.isWeb) {
+      console.log(`[Web Logic] Would show paywall for: ${feature}`);
+      alert('Premium features are available in the iOS/Android app!');
+      return { cancelled: true };
+    }
+
     try {
       if (!this.isInitialized) {
         await this.initialize();
@@ -164,6 +186,12 @@ class RevenueCatService {
    * This is the recommended approach - RevenueCat handles the check
    */
   async showPaywallIfNeeded(feature = null) {
+    if (this.isWeb) {
+      console.log(`[Web Logic] Would show paywall if needed for: ${feature}`);
+      alert('Premium features are available in the iOS/Android app!');
+      return { cancelled: true };
+    }
+
     try {
       if (!this.isInitialized) {
         await this.initialize();
@@ -191,6 +219,11 @@ class RevenueCatService {
    * Allows users to manage their subscription, cancel, change plans, etc.
    */
   async showCustomerCenter() {
+    if (this.isWeb) {
+      alert('Manage your subscription via the relevant App Store.');
+      return;
+    }
+
     try {
       if (!this.isInitialized) {
         await this.initialize();
@@ -219,6 +252,11 @@ class RevenueCatService {
    * Important for iOS - required by App Store guidelines
    */
   async restorePurchases() {
+    if (this.isWeb) {
+      alert('Restore purchases is only available on iOS/Android.');
+      return { activeSubscriptions: [] };
+    }
+
     try {
       if (!this.isInitialized) {
         await this.initialize();
