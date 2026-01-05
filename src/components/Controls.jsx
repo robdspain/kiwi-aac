@@ -97,11 +97,11 @@ const Controls = ({
     const [showAllVoices, setShowAllVoices] = useState(false);
 
     const tabs = [
-        { id: 'basic', label: 'Basic', icon: '⚡' },
-        { id: 'character', label: 'Avatar', icon: '✨' },
-        { id: 'access', label: 'Access', icon: '♿' },
-        { id: 'advanced', label: 'Extra', icon: '⚙️' },
-        { id: 'data', label: 'Data', icon: '📊' }
+        { id: 'basic', label: 'Basic' },
+        { id: 'character', label: 'Avatar' },
+        { id: 'access', label: 'Access' },
+        { id: 'advanced', label: 'Extra' },
+        { id: 'data', label: 'Data' }
     ];
     const activeTabIndex = tabs.findIndex(t => t.id === activeTab);
 
@@ -364,26 +364,24 @@ const Controls = ({
         }}>
             <div id="controls-content">
                 <div className="drag-handle"></div>
-                <div id="parent-header">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div className="ios-sheet-header">
+                    <button
+                        className="ios-cancel-button"
+                        onClick={onToggleMenu}
+                        aria-label="Close Settings"
+                    >
+                        Close
+                    </button>
+                    <div className="ios-sheet-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <img src="/images/logo.png" alt="Logo" style={{ width: '24px', height: '24px', borderRadius: '6px' }} />
                         <span>Adult Settings</span>
                     </div>
                     <button
+                        className="ios-done-button"
                         onClick={onToggleMenu}
-                        aria-label="Close Settings"
-                        style={{
-                            background: 'transparent',
-                            border: 'none',
-                            color: '#007AFF',
-                            fontSize: '1.0625rem',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            padding: '0.5rem 0.75rem',
-                            minHeight: '2.75rem'
-                        }}
+                        aria-label="Save Settings"
                     >
-                        Done
+                        Save
                     </button>
                 </div>
 
@@ -421,8 +419,7 @@ const Controls = ({
                                 onClick={() => setActiveTab(tab.id)}
                                 className={activeTab === tab.id ? 'active' : ''}
                             >
-                                <span className="seg-icon">{tab.icon}</span>
-                                <span className="seg-label">{tab.label}</span>
+                                <span className="seg-label" style={{ fontSize: '1.1rem', fontWeight: 800 }}>{tab.label}</span>
                             </button>
                         ))}
                     </div>
@@ -947,7 +944,7 @@ const Controls = ({
 
                     {/* Extra Settings Tab */}
                     {activeTab === 'advanced' && (
-                        <div style={{ background: '#F2F2F7', margin: '0 -1.5rem', padding: '0 1.5rem 1.5rem', flex: 1 }}>
+                        <div style={{ background: '#F2F2F7', margin: '0 -1.5rem', padding: '1.5rem 1.5rem 1.5rem', flex: 1 }}>
 
                             <div className="ios-setting-group-header">Accessibility</div>
                             <div className="ios-setting-card">
@@ -1156,8 +1153,8 @@ const Controls = ({
                                                         flexDirection: 'column',
                                                         alignItems: 'center',
                                                         justifyContent: 'center',
-                                                        background: gridSize === size.id ? 'var(--primary)' : 'var(--gray-light)',
-                                                        color: gridSize === size.id ? 'white' : 'var(--text-primary)',
+                                                        background: gridSize === size.id ? 'var(--btn-selected-bg)' : 'var(--gray-light)',
+                                                        color: gridSize === size.id ? 'var(--btn-selected-text)' : 'var(--text-primary)',
                                                         borderRadius: '0.75rem',
                                                         border: gridSize === size.id ? 'none' : '1px solid var(--gray-border)',
                                                         fontWeight: 600,
@@ -1165,7 +1162,7 @@ const Controls = ({
                                                     }}
                                                 >
                                                     <span>{size.label}</span>
-                                                    <span style={{ fontSize: '0.5rem', marginTop: '2px', color: gridSize === size.id ? 'white' : 'var(--text-muted)' }}>{size.title}</span>
+                                                    <span style={{ fontSize: '0.5rem', marginTop: '2px', color: gridSize === size.id ? 'var(--btn-selected-text)' : 'var(--text-muted)' }}>{size.title}</span>
                                                 </button>
                                             ))}
                                         </div>
@@ -1186,8 +1183,8 @@ const Controls = ({
                                                     flex: 1,
                                                     padding: '0.5rem',
                                                     fontSize: '0.75rem',
-                                                    background: (voiceSettings.pitch === preset.pitch && voiceSettings.rate === preset.rate) ? 'var(--primary)' : '#E5E5EA',
-                                                    color: (voiceSettings.pitch === preset.pitch && voiceSettings.rate === preset.rate) ? 'var(--primary-text)' : 'black',
+                                                    background: (voiceSettings.pitch === preset.pitch && voiceSettings.rate === preset.rate) ? 'var(--btn-selected-bg)' : '#E5E5EA',
+                                                    color: (voiceSettings.pitch === preset.pitch && voiceSettings.rate === preset.rate) ? 'var(--btn-selected-text)' : 'black',
                                                     borderRadius: '0.5rem',
                                                     border: 'none',
                                                     fontWeight: 600,
@@ -1297,7 +1294,6 @@ const Controls = ({
                                         <option value="">System Default</option>
                                         {filteredVoices.map(v => (
                                             <option key={v.voiceURI} value={v.voiceURI}>
-                                                {isHighQualityVoice(v) ? '✨ ' : '🤖 '}
                                                 {v.name.replace(/System |Apple |Microsoft |\(Enhanced\)|Premium |Google /g, '').trim()}
                                             </option>
                                         ))}
@@ -1309,7 +1305,7 @@ const Controls = ({
                                     )}
                                     {showAllVoices && (
                                         <p style={{ fontSize: '0.75rem', color: '#8E8E93', margin: 0 }}>
-                                            ⚠️ Showing all voices. Voices without ✨ may sound robotic.
+                                            ⚠️ Showing all voices. Standard voices may sound robotic.
                                         </p>
                                     )}
                                 </div>

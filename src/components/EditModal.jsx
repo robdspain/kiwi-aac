@@ -9,6 +9,7 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
     const [word, setWord] = useState('');
     const [icon, setIcon] = useState('');
     const [bgColor, setBgColor] = useState('');
+    const [wc, setWc] = useState('');
     const [viewMode, setViewMode] = useState('grid');
     const [customAudio, setCustomAudio] = useState(null);
     const [isImage, setIsImage] = useState(false);
@@ -42,6 +43,7 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                 setWord(item.word);
                 setIcon(resolvedIcon);
                 setBgColor(item.bgColor || '');
+                setWc(item.wc || item.category || '');
                 setViewMode(item.viewMode || 'grid');
                 setCustomAudio(resolvedAudio);
                 setCharacterConfig(item.characterConfig || null);
@@ -158,7 +160,7 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                                 finalAudio = `db:${audioId}`;
                             }
 
-                            onSave(word, finalIcon, bgColor, viewMode, finalAudio, characterConfig);
+                            onSave(word, finalIcon, bgColor, viewMode, finalAudio, characterConfig, wc);
                             onClose();
                         }}
                     >
@@ -204,19 +206,40 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                                 {isImage ? <img src={icon} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} /> : icon}
                             </div>
 
-                            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-                                {['', '#FF3B30', '#FF9500', '#FFCC00', '#34C759', '#007AFF', '#5556D6', '#AF52DE'].map(color => (
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', width: '100%' }}>
+                                {[
+                                    { id: 'noun', label: 'Noun', color: '#FFEB3B', text: '#2D3436' },
+                                    { id: 'verb', label: 'Verb', color: '#1B5E20', text: '#FFFFFF' },
+                                    { id: 'adj', label: 'Adjective', color: '#0D47A1', text: '#FFFFFF' },
+                                    { id: 'social', label: 'Social', color: '#880E4F', text: '#FFFFFF' },
+                                    { id: 'question', label: 'Question', color: '#4A148C', text: '#FFFFFF' },
+                                    { id: 'misc', label: 'Misc', color: '#BF360C', text: '#FFFFFF' }
+                                ].map(cat => (
                                     <button
-                                        key={color}
-                                        onClick={() => setBgColor(color)}
-                                        style={{
-                                            width: '2.75rem', height: '2.75rem', borderRadius: '50%',
-                                            background: color || 'white',
-                                            border: bgColor === color ? '3px solid #007AFF' : '1px solid #ddd',
-                                            cursor: 'pointer',
-                                            boxShadow: bgColor === color ? '0 0 0 2px white' : 'none'
+                                        key={cat.id}
+                                        onClick={() => {
+                                            setWc(cat.id);
+                                            setBgColor(''); // Clear manual color so dynamic color takes over
                                         }}
-                                    />
+                                        style={{
+                                            padding: '0.75rem 0.25rem',
+                                            borderRadius: '8px',
+                                            background: (wc === cat.id) ? cat.color : '#F2F2F7',
+                                            color: (wc === cat.id) ? cat.text : '#000',
+                                            border: (wc === cat.id) ? '2px solid #000' : '1px solid #E5E5EA',
+                                            cursor: 'pointer',
+                                            fontSize: '0.8rem',
+                                            fontWeight: 600,
+                                            boxShadow: (wc === cat.id) ? '0 2px 5px rgba(0,0,0,0.2)' : 'none',
+                                            transition: 'all 0.2s',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}
+                                    >
+                                        {cat.label}
+                                    </button>
                                 ))}
                             </div>
                         </div>

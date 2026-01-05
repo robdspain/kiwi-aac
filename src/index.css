@@ -43,6 +43,10 @@
   --gray-light: #F2F2F7;
   --gray-border: #E5E5EA;
 
+  /* Selection Colors (Pastel) */
+  --btn-selected-bg: #AED9E0;
+  --btn-selected-text: #1A535C;
+
   /* Zen Specifics */
   --transition-zen: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-pop: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -100,6 +104,10 @@ body.dark-theme {
   --btn-primary-text: #000000;
   --btn-blue-bg: #0A84FF;
   --btn-blue-text: #FFFFFF;
+
+  /* Selection Colors (Dark Mode) */
+  --btn-selected-bg: #4ECDC4;
+  --btn-selected-text: #000000;
 }
 
 body.dark-theme .ios-setting-card,

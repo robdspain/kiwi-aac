@@ -922,12 +922,12 @@ function App() {
   };
 
   const handleEdit = (index) => { setEditingItemIndex(index); setEditModalOpen(true); };
-  const handleSaveEdit = (newWord, newIcon, newBgColor, newViewMode, newCustomAudio, newCharacterConfig) => {
+  const handleSaveEdit = (newWord, newIcon, newBgColor, newViewMode, newCustomAudio, newCharacterConfig, newWc) => {
     if (editingItemIndex === null) return;
     const currentPageItems = rootItems[currentPageIndex]?.items || [];
     const currentList = currentPath.length === 0 ? currentPageItems : currentPath.reduce((acc, i) => acc[i].contents, currentPageItems);
     const item = currentList[editingItemIndex];
-    const newItem = { ...item, word: newWord, icon: newIcon, bgColor: newBgColor, customAudio: newCustomAudio, characterConfig: newCharacterConfig };
+    const newItem = { ...item, word: newWord, icon: newIcon, bgColor: newBgColor, customAudio: newCustomAudio, characterConfig: newCharacterConfig, wc: newWc };
     if (item.type === 'folder') newItem.viewMode = newViewMode;
     const newList = [...currentList]; newList[editingItemIndex] = newItem;
 
