@@ -12,9 +12,9 @@ import { Capacitor } from '@capacitor/core';
  */
 const CONFIG = {
   // Use Vite environment variables for production
-  API_KEY: Capacitor.isNativePlatform() 
-    ? (import.meta.env.VITE_REVENUECAT_API_KEY || 'test_GVsVAPHELhFcgnBFbWlVyrYGiUS')
-    : (import.meta.env.VITE_REVENUECAT_STRIPE_API_KEY || 'strp_ePYKboHXqhgmcCNvcHhTSDCRXpL'),
+  API_KEY: Capacitor.isNativePlatform()
+    ? import.meta.env.VITE_REVENUECAT_API_KEY
+    : import.meta.env.VITE_REVENUECAT_STRIPE_API_KEY,
   ENTITLEMENTS: {
     PRO: 'pro', // Main premium entitlement
   },

@@ -9,6 +9,10 @@ lerna-debug.log*
 
 node_modules
 dist
+.xcarchive/
+ios/App/App.xcarchive/
+ios/App/App/public/
+android/app/src/main/assets/public/
 dist-ssr
 *.local
 
