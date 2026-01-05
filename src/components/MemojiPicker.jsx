@@ -14,6 +14,7 @@ import {
 const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = null }) => {
     const [name, setName] = useState(initialName || '');
     const [activeTab, setActiveTab] = useState('presets');
+    const [activeCategory, setActiveCategory] = useState('body');
 
     // Presets tab state
     const [presets, setPresets] = useState([]);
@@ -216,48 +217,99 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
 
                     {/* Customize Tab */}
                     {activeTab === 'customize' && (
-                        <div style={{ padding: '0 1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                            {/* Skin Color */}
-                            <OptionGroup label="Skin Tone" options={SKIN_TONE_OPTIONS} selected={skinColor} onChange={setSkinColor} />
-
-                            {/* Top / Hair */}
-                            <OptionGroup label="Hair & Hats" options={TOP_TYPE_LABELS} selected={top} onChange={setTop} />
-
-                            {/* Hair Color */}
-                            <OptionGroup label="Hair Color" options={HAIR_COLOR_LABELS} selected={hairColor} onChange={setHairColor} />
-
-                            {/* Facial Hair */}
-                            <OptionGroup label="Facial Hair" options={FACIAL_HAIR_LABELS} selected={facialHair} onChange={setFacialHair} />
-
-                            {/* Clothing */}
-                            <OptionGroup label="Clothing" options={CLOTHING_LABELS} selected={clothing} onChange={setClothing} />
-
-                            {/* Accessories */}
-                            <OptionGroup label="Accessories" options={ACCESSORIES_LABELS} selected={accessories} onChange={setAccessories} />
-
-                            {/* Background */}
-                            <div>
-                                <div className="ios-setting-group-header">Background</div>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.5rem' }}>
-                                    {BACKGROUND_COLORS.map(color => (
-                                        <button
-                                            key={color}
-                                            onClick={() => setBgColor(color)}
-                                            style={{
-                                                aspectRatio: '1/1',
-                                                background: `#${color}`,
-                                                border: bgColor === color ? '3px solid #007AFF' : '1px solid #ddd',
-                                                borderRadius: '0.5rem',
-                                                cursor: 'pointer'
-                                            }}
-                                        />
-                                    ))}
-                                </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+                            {/* Category Menu */}
+                            <div className="ios-scroll-container" style={{
+                                padding: '0 1rem 1rem',
+                                display: 'flex',
+                                gap: '0.75rem',
+                                overflowX: 'auto',
+                                flexShrink: 0,
+                                borderBottom: '1px solid #e5e5ea',
+                                marginBottom: '1rem'
+                            }}>
+                                {[
+                                    { id: 'body', label: 'Body', icon: '🎨' },
+                                    { id: 'hair', label: 'Hair', icon: '💇' },
+                                    { id: 'outfit', label: 'Outfit', icon: '👕' },
+                                    { id: 'bg', label: 'Back', icon: '🖼️' }
+                                ].map(cat => (
+                                    <button
+                                        key={cat.id}
+                                        onClick={() => setActiveCategory(cat.id)}
+                                        style={{
+                                            padding: '0.5rem 1rem',
+                                            borderRadius: '2rem',
+                                            border: 'none',
+                                            background: activeCategory === cat.id ? '#007AFF' : '#fff',
+                                            color: activeCategory === cat.id ? '#fff' : '#000',
+                                            fontWeight: 600,
+                                            whiteSpace: 'nowrap',
+                                            fontSize: '0.9rem',
+                                            boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
+                                            flexShrink: 0,
+                                            transition: 'all 0.2s ease',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '6px'
+                                        }}
+                                    >
+                                        <span>{cat.icon}</span>
+                                        <span>{cat.label}</span>
+                                    </button>
+                                ))}
                             </div>
 
-                            <button onClick={randomizeCustomize} style={{ padding: '1rem', background: 'white', border: '1px solid #ddd', borderRadius: '0.75rem', fontWeight: 600, color: 'var(--primary)', marginBottom: '2rem' }}>
-                                🎲 Randomize All
-                            </button>
+                            <div style={{ padding: '0 1rem 2rem', overflowY: 'auto', flex: 1 }}>
+                                {activeCategory === 'body' && (
+                                    <OptionGroup label="Skin Tone" options={SKIN_TONE_OPTIONS} selected={skinColor} onChange={setSkinColor} />
+                                )}
+
+                                {activeCategory === 'hair' && (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                                        <OptionGroup label="Hairstyle & Hats" options={TOP_TYPE_LABELS} selected={top} onChange={setTop} />
+                                        <OptionGroup label="Hair Color" options={HAIR_COLOR_LABELS} selected={hairColor} onChange={setHairColor} />
+                                        <OptionGroup label="Facial Hair" options={FACIAL_HAIR_LABELS} selected={facialHair} onChange={setFacialHair} />
+                                    </div>
+                                )}
+
+                                {activeCategory === 'outfit' && (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                                        <OptionGroup label="Clothing" options={CLOTHING_LABELS} selected={clothing} onChange={setClothing} />
+                                        <OptionGroup label="Accessories" options={ACCESSORIES_LABELS} selected={accessories} onChange={setAccessories} />
+                                    </div>
+                                )}
+
+                                {activeCategory === 'bg' && (
+                                    <div>
+                                        <div className="ios-setting-group-header">Background Color</div>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.75rem' }}>
+                                            {BACKGROUND_COLORS.map(color => (
+                                                <button
+                                                    key={color}
+                                                    onClick={() => setBgColor(color)}
+                                                    style={{
+                                                        aspectRatio: '1/1',
+                                                        background: `#${color}`,
+                                                        border: bgColor === color ? '3px solid #007AFF' : '2px solid white',
+                                                        borderRadius: '50%',
+                                                        cursor: 'pointer',
+                                                        boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+                                                        transform: bgColor === color ? 'scale(1.1)' : 'scale(1)',
+                                                        transition: 'transform 0.2s'
+                                                    }}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid #e5e5ea' }}>
+                                    <button onClick={randomizeCustomize} style={{ width: '100%', padding: '1rem', background: '#fff', border: '1px solid #ddd', borderRadius: '0.75rem', fontWeight: 600, color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                                        🎲 Randomize Avatar
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>
