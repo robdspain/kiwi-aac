@@ -430,6 +430,7 @@ button.primary:active {
   width: auto !important;
   /* Allow auto width in focus mode */
   min-width: 0 !important;
+  aspect-ratio: 1 / 1 !important;
 }
 
 .size-standard.phase-large-grid .app-item {
