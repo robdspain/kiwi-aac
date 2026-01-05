@@ -108,7 +108,6 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
     return (
         <div className="ios-bottom-sheet-overlay" onClick={onClose}>
             <div className="ios-bottom-sheet" onClick={e => e.stopPropagation()}>
-                <button className="ios-close-button" onClick={onClose} aria-label="Close">✕</button>
                 <div className="ios-sheet-header">
                     <button className="ios-cancel-button" onClick={onClose}>Cancel</button>
                     <h2 className="ios-sheet-title">{item?.type === 'folder' ? 'Edit Folder' : 'Edit Button'}</h2>
@@ -163,7 +162,7 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                             onClose();
                         }}
                     >
-                        {processing ? '...' : 'Done'}
+                        {processing ? '...' : 'Save'}
                     </button>
                 </div>
 

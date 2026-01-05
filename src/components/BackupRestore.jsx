@@ -19,7 +19,7 @@ const BackupRestore = ({ isOpen, onClose }) => {
         try {
             // Get full data including media from IndexedDB
             const fullData = await cloudSyncService.getFullLocalData();
-            
+
             const backup = {
                 version: '2.0',
                 timestamp: new Date().toISOString(),
@@ -179,15 +179,30 @@ const BackupRestore = ({ isOpen, onClose }) => {
                 width: '90%', maxWidth: '400px', maxHeight: '90vh', overflowY: 'auto',
                 position: 'relative'
             }}>
-                <button className="ios-close-button" onClick={onClose} aria-label="Close">✕</button>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                    <h2 style={{ margin: 0 }}>💾 Backup & Sync</h2>
+                <div className="ios-sheet-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', paddingBottom: '1rem', borderBottom: '1px solid #E5E5EA' }}>
+                    <div style={{ width: '60px' }}></div>
+                    <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Backup & Sync</h2>
+                    <button
+                        onClick={onClose}
+                        style={{
+                            padding: '6px 16px',
+                            background: '#E5E5EA',
+                            color: '#000',
+                            borderRadius: '20px',
+                            fontWeight: '600',
+                            fontSize: '0.9rem',
+                            border: 'none',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Done
+                    </button>
                 </div>
 
                 <div style={{ display: 'flex', background: '#F2F2F7', borderRadius: '10px', padding: '4px', marginBottom: '20px' }}>
-                    <button 
+                    <button
                         onClick={() => setActiveTab('local')}
-                        style={{ 
+                        style={{
                             flex: 1, padding: '10px', border: 'none', borderRadius: '8px',
                             background: activeTab === 'local' ? 'white' : 'transparent',
                             fontWeight: activeTab === 'local' ? 'bold' : 'normal',
@@ -197,9 +212,9 @@ const BackupRestore = ({ isOpen, onClose }) => {
                     >
                         📁 File
                     </button>
-                    <button 
+                    <button
                         onClick={() => setActiveTab('cloud')}
-                        style={{ 
+                        style={{
                             flex: 1, padding: '10px', border: 'none', borderRadius: '8px',
                             background: activeTab === 'cloud' ? 'white' : 'transparent',
                             fontWeight: activeTab === 'cloud' ? 'bold' : 'normal',
@@ -259,14 +274,14 @@ const BackupRestore = ({ isOpen, onClose }) => {
                                 ⚠️ <b>Cloud Not Configured:</b> Database URL missing from environment.
                             </div>
                         )}
-                        
+
                         <p style={{ color: '#666', marginBottom: '20px', lineHeight: '1.5', fontSize: '0.9rem' }}>
                             Sync your boards across devices using a code. <b>Includes all photos and voice.</b>
                         </p>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                             {syncCode && (
-                                <div style={{ 
+                                <div style={{
                                     background: '#F0F9FF', border: '2px dashed #007AFF', borderRadius: '12px',
                                     padding: '15px', textAlign: 'center', marginBottom: '10px'
                                 }}>

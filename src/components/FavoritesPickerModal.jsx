@@ -49,14 +49,37 @@ const FavoritesPickerModal = ({ onClose, onAddFavorites, existingFavorites = [] 
                 boxShadow: '0 1.25rem 3.125rem rgba(0,0,0,0.3)',
                 position: 'relative'
             }}>
-                <button className="ios-close-button" onClick={onClose} aria-label="Close">✕</button>
-                <div style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '1rem' }}>
-                    ⭐
+                <div className="ios-sheet-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid #E5E5EA' }}>
+                    <button
+                        onClick={onClose}
+                        style={{ color: '#007AFF', background: 'transparent', border: 'none', fontSize: '1rem', cursor: 'pointer' }}
+                    >
+                        Cancel
+                    </button>
+                    <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Add Favorites</h2>
+                    <button
+                        disabled={selectedFavorites.length === 0}
+                        onClick={() => {
+                            if (selectedFavorites.length > 0) {
+                                onAddFavorites(selectedFavorites);
+                                onClose();
+                            }
+                        }}
+                        style={{
+                            padding: '6px 16px',
+                            background: selectedFavorites.length > 0 ? '#007AFF' : '#E5E5EA',
+                            color: selectedFavorites.length > 0 ? 'white' : '#999',
+                            borderRadius: '20px',
+                            fontSize: '0.9rem',
+                            fontWeight: 600,
+                            border: 'none',
+                            cursor: selectedFavorites.length > 0 ? 'pointer' : 'default',
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        Add
+                    </button>
                 </div>
-
-                <h2 style={{ margin: '0 0 0.5rem 0', fontSize: '1.5rem', color: '#333', textAlign: 'center' }}>
-                    Add More Favorites
-                </h2>
 
                 <p style={{ color: '#666', textAlign: 'center', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
                     Select items to add to the home screen
@@ -81,13 +104,13 @@ const FavoritesPickerModal = ({ onClose, onAddFavorites, existingFavorites = [] 
                                     background: isSelected
                                         ? 'linear-gradient(135deg, #FFD700, #FFA500)'
                                         : alreadyExists
-                                        ? '#F0F0F0'
-                                        : 'white',
+                                            ? '#F0F0F0'
+                                            : 'white',
                                     border: isSelected
                                         ? '0.1875rem solid #FF8C00'
                                         : alreadyExists
-                                        ? '0.125rem solid #D0D0D0'
-                                        : '0.125rem solid #E5E5EA',
+                                            ? '0.125rem solid #D0D0D0'
+                                            : '0.125rem solid #E5E5EA',
                                     borderRadius: '1rem',
                                     padding: '1rem 0.5rem',
                                     cursor: alreadyExists ? 'not-allowed' : 'pointer',
@@ -150,54 +173,7 @@ const FavoritesPickerModal = ({ onClose, onAddFavorites, existingFavorites = [] 
                         `✨ ${selectedFavorites.length} selected`}
                 </div>
 
-                <div style={{ display: 'flex', gap: '0.75rem' }}>
-                    <button
-                        onClick={onClose}
-                        style={{
-                            flex: 1,
-                            padding: '0.875rem',
-                            background: '#F5F5F7',
-                            color: '#2D3436',
-                            border: 'none',
-                            borderRadius: '0.875rem',
-                            fontSize: '1rem',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            minHeight: '2.75rem'
-                        }}
-                    >
-                        Cancel
-                    </button>
 
-                    <button
-                        onClick={() => {
-                            if (selectedFavorites.length > 0) {
-                                onAddFavorites(selectedFavorites);
-                                onClose();
-                            }
-                        }}
-                        disabled={selectedFavorites.length === 0}
-                        style={{
-                            flex: 1,
-                            padding: '0.875rem',
-                            background: selectedFavorites.length > 0
-                                ? 'linear-gradient(135deg, #4ECDC4, #3DB8B0)'
-                                : '#D1D5DB',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '0.875rem',
-                            fontSize: '1rem',
-                            fontWeight: 700,
-                            cursor: selectedFavorites.length > 0 ? 'pointer' : 'not-allowed',
-                            boxShadow: selectedFavorites.length > 0
-                                ? '0 6px 20px rgba(78, 205, 196, 0.3)'
-                                : 'none',
-                            minHeight: '2.75rem'
-                        }}
-                    >
-                        Add {selectedFavorites.length > 0 ? `(${selectedFavorites.length})` : ''}
-                    </button>
-                </div>
             </div>
         </div>
     );

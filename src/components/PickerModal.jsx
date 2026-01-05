@@ -15,11 +15,11 @@ const ImageWithFallback = ({ src, alt, fallback, style }) => {
     const [failed, setFailed] = useState(false);
     if (failed || !src) return <span style={style}>{fallback}</span>;
     return (
-        <img 
-            src={src} 
-            alt={alt} 
-            style={style} 
-            onError={() => setFailed(true)} 
+        <img
+            src={src}
+            alt={alt}
+            style={style}
+            onError={() => setFailed(true)}
         />
     );
 };
@@ -89,7 +89,7 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
     const getGlobalPhotos = () => {
         const saved = localStorage.getItem('kiwi-user-photos');
         const globalList = saved ? JSON.parse(saved) : [];
-        
+
         // Also pull from current userItems just in case they aren't in registry yet
         const currentBoardPhotos = (userItems || [])
             .filter(item => item.type === 'button' && typeof item.icon === 'string' && (item.icon.startsWith('data:') || item.icon.startsWith('http')))
@@ -201,13 +201,13 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
 
     useEffect(() => {
         if (activeTab === 'symbol' && searchQuery.length >= 2) {
-            const timer = setTimeout(() => { 
+            const timer = setTimeout(() => {
                 if (selectedLibraries.includes('emoji') || selectedLibraries.includes('openmoji')) {
                     searchBuiltInEmojis(searchQuery);
                 } else {
                     setSymbols([]);
                 }
-                
+
                 if (selectedLibraries.includes('arasaac')) {
                     searchARASAAC(searchQuery);
                 } else {
@@ -241,7 +241,7 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
         return (
             <div className="ios-bottom-sheet-overlay" onClick={() => setCustomizingItem(null)}>
                 <div className="ios-bottom-sheet" onClick={e => e.stopPropagation()} style={{ height: 'auto', minHeight: '400px' }}>
-                    <button className="ios-close-button" onClick={() => setCustomizingItem(null)} aria-label="Close">✕</button>
+
                     <div className="ios-sheet-header">
                         <button className="ios-cancel-button" onClick={() => setCustomizingItem(null)}>Back</button>
                         <h2 className="ios-sheet-title">Customize Icon</h2>
@@ -254,10 +254,10 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                         <div className="ios-setting-card" style={{ width: '100%', maxWidth: '18.75rem' }}>
                             <div className="ios-row ios-row-input">
                                 <span style={{ fontWeight: 600 }}>Label</span>
-                                <input 
-                                    type="text" 
-                                    value={customName} 
-                                    onChange={(e) => setCustomName(e.target.value)} 
+                                <input
+                                    type="text"
+                                    value={customName}
+                                    onChange={(e) => setCustomName(e.target.value)}
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') {
                                             handleConfirmSelection();
@@ -288,26 +288,26 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
     return (
         <div className="ios-bottom-sheet-overlay" onClick={onClose}>
             <div className="ios-bottom-sheet" onClick={e => e.stopPropagation()}>
-                <button className="ios-close-button" onClick={onClose} aria-label="Close">✕</button>
+
                 <div className="ios-sheet-header" style={{ borderBottom: 'none', padding: '16px 20px 8px' }}>
                     <button className="ios-cancel-button" onClick={onClose} style={{ flexShrink: 0 }}>Cancel</button>
                     <div className="ios-segmented-control" style={{ marginBottom: 0, flex: 1, margin: '0 12px' }}>
-                        <div 
-                            className="selection-pill" 
-                            style={{ 
+                        <div
+                            className="selection-pill"
+                            style={{
                                 width: `calc(${100 / tabs.length}% - 4px)`,
-                                transform: `translateX(${activeTabIndex * 100}%)` 
-                            }} 
+                                transform: `translateX(${activeTabIndex * 100}%)`
+                            }}
                         />
                         {tabs.map(tab => (
-                            <button 
-                                key={tab.id} 
+                            <button
+                                key={tab.id}
                                 onClick={() => {
                                     triggerHaptic('light');
                                     setActiveTab(tab.id);
-                                }} 
-                                style={{ 
-                                    padding: '0.5rem 0', 
+                                }}
+                                style={{
+                                    padding: '0.5rem 0',
                                     minHeight: '3rem',
                                     fontSize: '1.25rem',
                                     display: 'flex',
@@ -326,16 +326,16 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                 <div style={{ padding: '0 1.25rem 0.9375rem' }}>
                     <div style={{ position: 'relative', display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
                         <div style={{ position: 'relative', flex: 1 }}>
-                            <input 
-                                type="text" 
-                                placeholder="Search icons..." 
-                                value={searchQuery} 
-                                onChange={(e) => setSearchQuery(e.target.value)} 
+                            <input
+                                type="text"
+                                placeholder="Search icons..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
                                 style={{ width: '100%', padding: '0.75rem 2.5rem', borderRadius: '0.75rem', border: 'none', background: '#E3E3E8', fontSize: '1.0625rem', outline: 'none', minHeight: '3.5rem' }}
                             />
                             <span style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.4, fontSize: '1.2rem' }}>🔍</span>
                             {searchQuery && (
-                                <button 
+                                <button
                                     onClick={() => setSearchQuery('')}
                                     aria-label="Clear search"
                                     style={{
@@ -360,13 +360,13 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                                 </button>
                             )}
                         </div>
-                        <button 
+                        <button
                             onClick={() => {
                                 triggerHaptic('light');
                                 setShowLibraryFilters(!showLibraryFilters);
                             }}
-                            style={{ 
-                                width: '3.5rem', height: '3.5rem', borderRadius: '0.75rem', 
+                            style={{
+                                width: '3.5rem', height: '3.5rem', borderRadius: '0.75rem',
                                 border: 'none', background: showLibraryFilters ? 'var(--primary)' : '#E3E3E8',
                                 color: showLibraryFilters ? 'white' : 'black',
                                 fontSize: '1.5rem', cursor: 'pointer',
@@ -379,9 +379,9 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                     </div>
 
                     {showLibraryFilters && (
-                        <div style={{ 
-                            marginTop: '0.75rem', padding: '0.75rem', background: '#F2F2F7', 
-                            borderRadius: '0.75rem', display: 'flex', flexWrap: 'wrap', gap: '0.5rem' 
+                        <div style={{
+                            marginTop: '0.75rem', padding: '0.75rem', background: '#F2F2F7',
+                            borderRadius: '0.75rem', display: 'flex', flexWrap: 'wrap', gap: '0.5rem'
                         }}>
                             <span style={{ width: '100%', fontSize: '0.75rem', fontWeight: 700, color: '#666', marginBottom: '0.25rem' }}>SEARCH SOURCES</span>
                             {[{ id: 'emoji', label: '😀 System Emoji' }, { id: 'openmoji', label: '🎨 OpenMoji' }, { id: 'arasaac', label: '📚 Symbols' }].map(lib => (
@@ -421,26 +421,26 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                         <>
                             {!searchQuery.trim() && (
                                 <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.9375rem', paddingRight: '1.25rem' }}>
-                                    <button 
+                                    <button
                                         onClick={() => {
                                             triggerHaptic('light');
                                             setActiveCategory('My Icons');
-                                        }} 
+                                        }}
                                         style={{ background: activeCategory === 'My Icons' ? '#34C759' : '#F2F2F7', color: activeCategory === 'My Icons' ? '#fff' : '#34C759', padding: '0.5rem 1rem', borderRadius: '1.25rem', border: 'none', fontWeight: '600', whiteSpace: 'nowrap', fontSize: '0.8125rem', minHeight: '2.75rem', flexShrink: 0 }}
                                     >
                                         ⭐ My Icons
                                     </button>
-                                    {Object.keys(iconsData).map(cat => ( 
-                                        <button 
-                                            key={cat} 
+                                    {Object.keys(iconsData).map(cat => (
+                                        <button
+                                            key={cat}
                                             onClick={() => {
                                                 triggerHaptic('light');
                                                 setActiveCategory(cat);
-                                            }} 
+                                            }}
                                             style={{ background: activeCategory === cat ? '#007AFF' : '#F2F2F7', color: activeCategory === cat ? '#fff' : '#000', padding: '0.5rem 1rem', borderRadius: '1.25rem', border: 'none', fontWeight: '500', whiteSpace: 'nowrap', fontSize: '0.8125rem', minHeight: '2.75rem', flexShrink: 0 }}
                                         >
                                             {cat}
-                                        </button> 
+                                        </button>
                                     ))}
                                 </div>
                             )}
@@ -448,13 +448,13 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                                 {(() => {
                                     const userIconsList = (userItems || []).filter(item => item.type === 'button').map(item => ({ w: item.word, i: item.icon, isUserIcon: true }));
                                     const libraryIcons = Object.values(iconsData).flat();
-                                    
+
                                     let displayIcons = [];
                                     const normalizedQuery = searchQuery.trim().toLowerCase();
                                     if (normalizedQuery) {
                                         const userMatches = userIconsList.filter(item => item.w.toLowerCase().includes(normalizedQuery));
                                         const libraryMatches = libraryIcons.filter(item => item.w.toLowerCase().includes(normalizedQuery));
-                                        
+
                                         // Also search emoji data
                                         const allEmojis = Object.values(EMOJI_DATA).flat();
                                         const emojiResults = allEmojis.filter(item => item.name?.toLowerCase().includes(normalizedQuery)).slice(0, 30);
@@ -468,12 +468,12 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                                     }
 
                                     if (displayIcons.length === 0) return <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '2.5rem', color: '#666', fontSize: '0.875rem' }}>No icons found</div>;
-                                    
+
                                     return displayIcons.map((item, index) => {
                                         const iconVal = item.icon || item.emoji || item.i;
                                         const wordVal = item.word || item.name || item.w;
                                         const isAlreadyImage = typeof iconVal === 'string' && (iconVal.startsWith('http') || iconVal.startsWith('data:'));
-                                        
+
                                         let displayIcon = iconVal;
                                         let isOutputImage = isAlreadyImage;
 
@@ -485,11 +485,11 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                                         return (
                                             <button key={`${wordVal}-${index}`} className="picker-btn" onClick={() => handleItemSelect(wordVal, displayIcon, isOutputImage)}>
                                                 {isOutputImage ? (
-                                                    <ImageWithFallback 
-                                                        src={displayIcon} 
-                                                        alt={wordVal} 
+                                                    <ImageWithFallback
+                                                        src={displayIcon}
+                                                        alt={wordVal}
                                                         fallback={item.emoji || item.i}
-                                                        style={{ width: '48px', height: '48px', objectFit: 'contain', marginBottom: '8px' }} 
+                                                        style={{ width: '48px', height: '48px', objectFit: 'contain', marginBottom: '8px' }}
                                                     />
                                                 ) : (
                                                     <span className="emoji-span">{displayIcon}</span>
@@ -507,8 +507,8 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                         <>
                             {!searchQuery.trim() && (
                                 <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.9375rem', paddingRight: '1.25rem' }}>
-                                    {Object.keys(EMOJI_DATA).map(cat => ( 
-                                        <button key={cat} onClick={() => setActiveCategory(cat)} style={{ background: activeCategory === cat ? '#5856D6' : '#F2F2F7', color: activeCategory === cat ? '#fff' : '#333', padding: '0.5rem 1rem', borderRadius: '1.25rem', border: 'none', fontWeight: '500', fontSize: '0.8125rem', whiteSpace: 'nowrap', cursor: 'pointer', minHeight: '2.75rem' }}>{cat}</button> 
+                                    {Object.keys(EMOJI_DATA).map(cat => (
+                                        <button key={cat} onClick={() => setActiveCategory(cat)} style={{ background: activeCategory === cat ? '#5856D6' : '#F2F2F7', color: activeCategory === cat ? '#fff' : '#333', padding: '0.5rem 1rem', borderRadius: '1.25rem', border: 'none', fontWeight: '500', fontSize: '0.8125rem', whiteSpace: 'nowrap', cursor: 'pointer', minHeight: '2.75rem' }}>{cat}</button>
                                     ))}
                                 </div>
                             )}
@@ -517,22 +517,22 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                                 {(() => {
                                     if (searchQuery.length >= 2) {
                                         const results = [];
-                                        
+
                                         if (selectedLibraries.includes('emoji') || selectedLibraries.includes('openmoji')) {
                                             results.push(...symbols.map(s => ({ ...s, isArasaac: false, type: 'emoji' })));
                                         }
-                                        
+
                                         if (selectedLibraries.includes('arasaac')) {
                                             results.push(...arasaacSymbols.map(s => ({ ...s, isArasaac: true, type: 'arasaac' })));
                                         }
 
                                         if (results.length === 0 && !isLoading) return <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '2.5rem', color: '#666' }}>No results found</div>;
-                                        
+
                                         return results.map((item, index) => {
                                             const iconVal = item.emoji || item.i;
                                             const wordVal = item.name || item.w;
                                             const isArasaac = item.isArasaac;
-                                            
+
                                             let displayIcon = iconVal;
                                             let isImage = isArasaac;
 
@@ -543,21 +543,21 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                                             }
 
                                             return (
-                                                <button 
-                                                    key={`${wordVal}-${index}`} 
-                                                    className="picker-btn" 
-                                                    onClick={() => handleItemSelect(wordVal, displayIcon, isImage)} 
+                                                <button
+                                                    key={`${wordVal}-${index}`}
+                                                    className="picker-btn"
+                                                    onClick={() => handleItemSelect(wordVal, displayIcon, isImage)}
                                                     onPointerDown={() => handlePointerDown(wordVal, displayIcon, isImage)}
                                                     onPointerUp={handlePointerUp}
                                                     onPointerLeave={handlePointerUp}
                                                     style={{ position: 'relative' }}
                                                 >
                                                     {isImage ? (
-                                                        <ImageWithFallback 
-                                                            src={displayIcon} 
-                                                            alt={wordVal} 
+                                                        <ImageWithFallback
+                                                            src={displayIcon}
+                                                            alt={wordVal}
                                                             fallback={iconVal}
-                                                            style={{ width: '48px', height: '48px', objectFit: 'contain', marginBottom: '8px' }} 
+                                                            style={{ width: '48px', height: '48px', objectFit: 'contain', marginBottom: '8px' }}
                                                         />
                                                     ) : (
                                                         <span className="emoji-span">{displayIcon}</span>
@@ -569,7 +569,7 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                                             );
                                         });
                                     }
-                                    
+
                                     const displayEmojis = EMOJI_DATA[activeCategory] || [];
                                     if (displayEmojis.length === 0) return <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '2.5rem', color: '#666', fontSize: '0.875rem' }}>Select a category</div>;
                                     return displayEmojis.map((item, index) => {
@@ -579,20 +579,20 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                                         const displayIcon = isImage ? getOpenMojiUrl(iconVal) : iconVal;
 
                                         return (
-                                            <button 
-                                                key={`${wordVal}-${index}`} 
-                                                className="picker-btn" 
+                                            <button
+                                                key={`${wordVal}-${index}`}
+                                                className="picker-btn"
                                                 onClick={() => handleItemSelect(wordVal, displayIcon, isImage)}
                                                 onPointerDown={() => handlePointerDown(wordVal, displayIcon, isImage)}
                                                 onPointerUp={handlePointerUp}
                                                 onPointerLeave={handlePointerUp}
                                             >
                                                 {isImage ? (
-                                                    <ImageWithFallback 
-                                                        src={displayIcon} 
-                                                        alt={wordVal} 
+                                                    <ImageWithFallback
+                                                        src={displayIcon}
+                                                        alt={wordVal}
                                                         fallback={iconVal}
-                                                        style={{ width: '48px', height: '48px', objectFit: 'contain', marginBottom: '8px' }} 
+                                                        style={{ width: '48px', height: '48px', objectFit: 'contain', marginBottom: '8px' }}
                                                     />
                                                 ) : (
                                                     <span className="emoji-span">{displayIcon}</span>
@@ -610,16 +610,16 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                                 <button onClick={handleUploadClick} className="ios-row" style={{ width: '100%', borderRadius: '0.75rem', border: 'none', justifyContent: 'center', minHeight: '2.75rem' }}>
                                     <span style={{ color: '#007AFF', fontWeight: 600 }}>📱 Upload from Device</span>
                                 </button>
-                                <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" style={{ display: 'none' }}/>
+                                <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" style={{ display: 'none' }} />
                             </div>
                             {(() => {
                                 const filteredPhotos = searchQuery ? userPhotos.filter(p => p.w.toLowerCase().includes(searchQuery.toLowerCase())) : userPhotos;
                                 if (filteredPhotos.length === 0) return <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '2.5rem', opacity: 0.5, fontSize: '0.875rem' }}>No uploaded photos yet.</div>;
-                                return filteredPhotos.map((photo, index) => ( 
+                                return filteredPhotos.map((photo, index) => (
                                     <button key={index} className="picker-btn" onClick={() => handleItemSelect(photo.w, photo.i, true)} style={{ minHeight: '5.625rem' }}>
                                         <img src={photo.i} alt={photo.w} style={{ width: '100%', height: '3.75rem', objectFit: 'cover', borderRadius: '0.5rem' }} />
                                         <span style={{ fontSize: '0.75rem', marginTop: '0.25rem', opacity: 0.8, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '100%' }}>{photo.w}</span>
-                                    </button> 
+                                    </button>
                                 ));
                             })()}
                         </div>

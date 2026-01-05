@@ -137,7 +137,7 @@ const ImageCropModal = ({
   return (
     <div className="ios-bottom-sheet-overlay" onClick={onCancel}>
       <div className="ios-bottom-sheet" onClick={(e) => e.stopPropagation()} style={{ maxHeight: '95vh' }}>
-        <button className="ios-close-button" onClick={onCancel} aria-label="Close">✕</button>
+
         <div className="ios-sheet-header">
           <button className="ios-cancel-button" onClick={onCancel}>Cancel</button>
           <h2 className="ios-sheet-title">{title}</h2>

@@ -36,16 +36,42 @@ const PronunciationEditor = ({ onClose }) => {
     return (
         <div className="ios-modal-overlay" onClick={onClose}>
             <div className="ios-modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '400px', width: '90%' }}>
-                <div className="ios-modal-header">
-                    <h3>Pronunciation Editor</h3>
-                    <button className="ios-close-button" onClick={onClose} aria-label="Close">✕</button>
+                <div className="ios-sheet-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '1rem', borderBottom: '1px solid #E5E5EA' }}>
+                    <button
+                        onClick={onClose}
+                        style={{
+                            color: '#007AFF',
+                            fontSize: '1rem',
+                            background: 'transparent',
+                            border: 'none',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Cancel
+                    </button>
+                    <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Pronunciation</h3>
+                    <button
+                        onClick={onClose}
+                        style={{
+                            padding: '6px 16px',
+                            background: '#007AFF',
+                            color: 'white',
+                            borderRadius: '20px',
+                            fontWeight: '600',
+                            fontSize: '0.9rem',
+                            border: 'none',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Done
+                    </button>
                 </div>
-                
+
                 <div style={{ padding: '1.25rem' }}>
                     <p style={{ fontSize: '0.75rem', color: '#666', marginBottom: '1rem' }}>
                         Type a word and how you want it to sound (phonetically).
-                        <br/>Example: <b>Kiwi</b> → <b>Kee-wee</b>
-                        <br/>
+                        <br />Example: <b>Kiwi</b> → <b>Kee-wee</b>
+                        <br />
                         <span style={{ color: Object.keys(pronunciations).length >= FREE_TIER_LIMITS.MAX_PRONUNCIATION_ENTRIES ? '#FF3B30' : '#007AFF' }}>
                             {Object.keys(pronunciations).length}/{FREE_TIER_LIMITS.MAX_PRONUNCIATION_ENTRIES} free entries used
                         </span>
@@ -54,9 +80,9 @@ const PronunciationEditor = ({ onClose }) => {
                     <form onSubmit={handleAdd} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                         <div className="ios-input-group">
                             <label>Original Word</label>
-                            <input 
-                                type="text" 
-                                value={word} 
+                            <input
+                                type="text"
+                                value={word}
                                 onChange={e => setWord(e.target.value)}
                                 placeholder="e.g. Kiwi"
                                 className="ios-input"
@@ -64,17 +90,17 @@ const PronunciationEditor = ({ onClose }) => {
                         </div>
                         <div className="ios-input-group">
                             <label>Phonetic Spelling</label>
-                            <input 
-                                type="text" 
-                                value={phonetic} 
+                            <input
+                                type="text"
+                                value={phonetic}
                                 onChange={e => setPhonetic(e.target.value)}
                                 placeholder="e.g. Kee-wee"
                                 className="ios-input"
                             />
                         </div>
-                        <button 
-                            type="submit" 
-                            className="apple-blue-button" 
+                        <button
+                            type="submit"
+                            className="apple-blue-button"
                             disabled={!word || !phonetic}
                             style={{ marginTop: '0.75rem', minHeight: '2.75rem' }}
                         >
@@ -98,7 +124,7 @@ const PronunciationEditor = ({ onClose }) => {
                                             <span style={{ fontWeight: 600, fontSize: '0.9375rem' }}>{w}</span>
                                             <span style={{ fontSize: '0.75rem', color: '#007AFF' }}>sounds like: {p}</span>
                                         </div>
-                                        <button 
+                                        <button
                                             onClick={() => deletePronunciation(w)}
                                             style={{ border: 'none', background: '#FFE5E5', color: '#FF3B30', borderRadius: '50%', width: '2.75rem', height: '2.75rem', fontSize: '0.875rem', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
                                         >×</button>
