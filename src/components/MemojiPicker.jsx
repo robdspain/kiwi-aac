@@ -134,11 +134,35 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
                 onPointerDown={e => e.stopPropagation()}
                 style={{ height: '90vh' }}
             >
-                <button className="ios-close-button" onClick={onClose} aria-label="Close">✕</button>
-                <div className="ios-sheet-header">
-                    <button className="ios-cancel-button" onClick={onClose}>Cancel</button>
-                    <h2 className="ios-sheet-title">Create Avatar</h2>
-                    <button className="ios-done-button" onClick={handleSave}>Done</button>
+                <div className="ios-sheet-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 1rem 0 1rem', marginBottom: '1rem' }}>
+                    <button
+                        onClick={onClose}
+                        style={{
+                            color: '#007AFF',
+                            fontSize: '1rem',
+                            background: 'transparent',
+                            border: 'none',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Cancel
+                    </button>
+                    <h2 className="ios-sheet-title" style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Create Avatar</h2>
+                    <button
+                        onClick={handleSave}
+                        style={{
+                            padding: '6px 16px',
+                            background: '#007AFF',
+                            color: 'white',
+                            borderRadius: '20px',
+                            fontWeight: '600',
+                            fontSize: '0.9rem',
+                            border: 'none',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Save
+                    </button>
                 </div>
 
                 <div className="ios-sheet-content" style={{ background: '#F2F2F7', display: 'flex', flexDirection: 'column', gap: '1rem', paddingBottom: '3rem' }}>

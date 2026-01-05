@@ -7,24 +7,25 @@ const VoiceSetupModal = ({ isOpen, onClose, onRefresh, isRefreshing, isIOS }) =>
         <div className="ios-bottom-sheet-overlay" onClick={onClose}>
             <div className="ios-bottom-sheet" onClick={e => e.stopPropagation()}>
                 {/* iOS Standard Header */}
-                <div className="ios-sheet-header" style={{ borderBottom: '1px solid #E5E5EA', paddingBottom: '1rem' }}>
+                <div className="ios-sheet-header" style={{ borderBottom: '1px solid #E5E5EA', paddingBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ width: '60px' }}></div>
-                    <h2 className="ios-sheet-title" style={{ fontSize: '1.0625rem', fontWeight: 600 }}>
+                    <h2 className="ios-sheet-title" style={{ fontSize: '1.0625rem', fontWeight: 600, margin: 0 }}>
                         Better Voice Quality
                     </h2>
                     <button
                         onClick={onClose}
                         style={{
-                            background: 'transparent',
+                            padding: '6px 16px',
+                            background: '#E5E5EA',
+                            color: '#000',
+                            borderRadius: '20px',
+                            fontWeight: '600',
+                            fontSize: '0.9rem',
                             border: 'none',
-                            color: '#007AFF',
-                            fontSize: '1.0625rem',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            padding: '0.5rem 0.75rem'
+                            cursor: 'pointer'
                         }}
                     >
-                        Done
+                        Close
                     </button>
                 </div>
 
