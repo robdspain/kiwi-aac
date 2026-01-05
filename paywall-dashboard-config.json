@@ -45,39 +45,39 @@
           "icon": "✨",
           "icon_size": 32,
           "title": "Unlimited Vocabulary",
-          "description": "Break free from the 50-word limit. Add unlimited custom buttons and folders.",
+          "description": "Break free from the 50-icon limit. Add unlimited custom buttons and folders.",
           "highlight": true,
           "highlight_color": "#F0F9FF",
           "border_color": "#1A535C"
         },
         {
-          "icon": "🎙️",
+          "icon": "📸",
           "icon_size": 32,
-          "title": "Premium Voice Quality",
-          "description": "Access enhanced, natural-sounding voices for clearer communication.",
+          "title": "Unlimited Custom Photos",
+          "description": "Add unlimited custom photos from your camera roll or device.",
           "highlight": true,
           "highlight_color": "#F0F9FF",
           "border_color": "#1A535C"
-        },
-        {
-          "icon": "👥",
-          "icon_size": 32,
-          "title": "Multiple User Profiles",
-          "description": "Perfect for families, schools, and clinics. Unlimited profiles with personalized settings.",
-          "highlight": false
         },
         {
           "icon": "☁️",
           "icon_size": 32,
           "title": "Cloud Backup & Sync",
-          "description": "Never lose your vocabulary. Automatic backup and sync across all devices.",
+          "description": "Sync boards across devices with a secure code. Never lose your vocabulary.",
+          "highlight": false
+        },
+        {
+          "icon": "👥",
+          "icon_size": 32,
+          "title": "Multiple Profiles",
+          "description": "Perfect for families, schools, and clinics. Unlimited profiles with personalized settings.",
           "highlight": false
         },
         {
           "icon": "📊",
           "icon_size": 32,
           "title": "Advanced Analytics",
-          "description": "Track communication progress with detailed insights and usage reports.",
+          "description": "View progress history beyond 7 days and track usage trends.",
           "highlight": false
         },
         {
@@ -88,24 +88,17 @@
           "highlight": false
         },
         {
-          "icon": "📸",
+          "icon": "🗣️",
           "icon_size": 32,
-          "title": "Unlimited Photos",
-          "description": "Add unlimited custom photos from your camera roll or family albums.",
+          "title": "Custom Pronunciations",
+          "description": "Unlock unlimited pronunciation overrides for clearer speech.",
           "highlight": false
         },
         {
-          "icon": "🧑‍💼",
+          "icon": "🎭",
           "icon_size": 32,
-          "title": "Custom Characters",
+          "title": "Character Builder",
           "description": "Create unlimited personalized avatars for your Circle of Support.",
-          "highlight": false
-        },
-        {
-          "icon": "🔔",
-          "icon_size": 32,
-          "title": "Priority Support",
-          "description": "Get fast, dedicated help from our AAC specialists whenever you need it.",
           "highlight": false
         }
       ],
@@ -185,16 +178,16 @@
           "price_display": {
             "show_price": true,
             "show_period": true,
-            "price_per_month_text": "$6.67/month",
+            "price_per_month_text": "$3.33/month",
             "savings_badge": {
               "enabled": true,
               "text": "Save 33%",
-              "subtext": "Save $40/year"
+              "subtext": "Save $20/year"
             }
           },
           "features": [
             "All premium features",
-            "Save $40 per year",
+            "Save $20 per year",
             "Best value for families"
           ],
           "is_default": true,
@@ -211,6 +204,32 @@
             "offset_y": 4,
             "blur_radius": 12
           }
+        },
+        {
+          "package_identifier": "$rc_lifetime",
+          "display_name": "Lifetime",
+          "badge": {
+            "enabled": true,
+            "text": "One-Time Payment",
+            "background_color": "#111827",
+            "text_color": "#FFFFFF"
+          },
+          "price_display": {
+            "show_price": true,
+            "show_period": false,
+            "custom_text": null
+          },
+          "features": [
+            "All premium features",
+            "One-time payment",
+            "No recurring fees"
+          ],
+          "is_default": false,
+          "highlight": false,
+          "background_color": "#FFFFFF",
+          "border_color": "#E5E5EA",
+          "border_width": 2,
+          "corner_radius": 16
         }
       ],
       "card_spacing": 16,
@@ -393,39 +412,35 @@
         "features": [
           {
             "title": "Vocabulario Ilimitado",
-            "description": "Libérate del límite de 50 palabras. Agrega botones y carpetas personalizados ilimitados."
+            "description": "Libérate del límite de 50 iconos. Agrega botones y carpetas personalizados ilimitados."
           },
           {
-            "title": "Calidad de Voz Premium",
-            "description": "Accede a voces mejoradas y naturales para una comunicación más clara."
-          },
-          {
-            "title": "Múltiples Perfiles de Usuario",
-            "description": "Perfecto para familias, escuelas y clínicas. Perfiles ilimitados con configuraciones personalizadas."
+            "title": "Fotos Personalizadas Ilimitadas",
+            "description": "Agrega fotos personalizadas ilimitadas desde tu dispositivo."
           },
           {
             "title": "Copia de Seguridad en la Nube",
-            "description": "Nunca pierdas tu vocabulario. Copia de seguridad automática y sincronización en todos los dispositivos."
+            "description": "Sincroniza tableros entre dispositivos con un código seguro."
+          },
+          {
+            "title": "Múltiples Perfiles",
+            "description": "Perfecto para familias, escuelas y clínicas. Perfiles ilimitados con configuraciones personalizadas."
           },
           {
             "title": "Análisis Avanzados",
-            "description": "Sigue el progreso de comunicación con informes detallados y de uso."
+            "description": "Ve el historial de progreso más allá de 7 días."
           },
           {
             "title": "Temas Premium",
             "description": "Personaliza tu experiencia con temas Océano, Atardecer, Bosque, Mora y Dulce."
           },
           {
-            "title": "Fotos Ilimitadas",
-            "description": "Agrega fotos personalizadas ilimitadas desde tu rollo de cámara o álbumes familiares."
+            "title": "Pronunciaciones Personalizadas",
+            "description": "Desbloquea pronunciaciones ilimitadas para un habla más clara."
           },
           {
-            "title": "Personajes Personalizados",
+            "title": "Creador de Personajes",
             "description": "Crea avatares personalizados ilimitados para tu Círculo de Apoyo."
-          },
-          {
-            "title": "Soporte Prioritario",
-            "description": "Obtén ayuda rápida y dedicada de nuestros especialistas en AAC cuando la necesites."
           }
         ]
       },
@@ -472,7 +487,7 @@
         "variant_overrides": {
           "header": {
             "title": "Save 33% with Annual Plan",
-            "subtitle": "Get unlimited features for less than $7/month"
+            "subtitle": "Get unlimited features for less than $4/month"
           }
         }
       },

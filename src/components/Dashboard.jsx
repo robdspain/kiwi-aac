@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { getTopItems, getDailyStats, getTotalStats, exportToCSV, getRecentSentences } from '../utils/AnalyticsService';
 import { getLevel, getStage } from '../data/levelDefinitions';
+import { FREE_TIER_LIMITS } from '../utils/paywall';
 
 const Dashboard = ({ onClose, progressData, currentLevel, rootItems = [] }) => {
 
@@ -11,9 +13,11 @@ const Dashboard = ({ onClose, progressData, currentLevel, rootItems = [] }) => {
         ? Math.round((independentTrials / totalTrials) * 100)
         : 0;
 
+    const [analyticsDays, setAnalyticsDays] = useState(FREE_TIER_LIMITS.ANALYTICS_HISTORY_DAYS);
+
     // Analytics data
     const topItems = getTopItems(5);
-    const dailyStats = getDailyStats(7);
+    const dailyStats = getDailyStats(analyticsDays);
     const totalStats = getTotalStats();
     const maxDaily = Math.max(...dailyStats.map(d => d.clicks), 1);
 
@@ -56,6 +60,35 @@ Communication is growing! 🥝
             navigator.clipboard.writeText(report);
             alert("Report copied to clipboard!");
         }
+    };
+
+    const handleSetAnalyticsRange = async (days) => {
+        if (days === analyticsDays) return;
+        if (days <= FREE_TIER_LIMITS.ANALYTICS_HISTORY_DAYS) {
+            setAnalyticsDays(days);
+            return;
+        }
+
+        try {
+            const { checkAdvancedAnalytics } = await import('../utils/paywall');
+            const hasAccess = await checkAdvancedAnalytics();
+            if (hasAccess) setAnalyticsDays(days);
+        } catch (error) {
+            console.error('Failed to check advanced analytics access:', error);
+            setAnalyticsDays(days);
+        }
+    };
+
+    const analyticsRanges = [
+        { label: `${FREE_TIER_LIMITS.ANALYTICS_HISTORY_DAYS} Days`, value: FREE_TIER_LIMITS.ANALYTICS_HISTORY_DAYS, premium: false },
+        { label: '30 Days', value: 30, premium: true }
+    ];
+
+    const formatTrendLabel = (date) => {
+        const labelFormat = analyticsDays > 7
+            ? { month: 'numeric', day: 'numeric' }
+            : { weekday: 'short' };
+        return date.toLocaleDateString('en-US', labelFormat);
     };
 
     return (
@@ -307,9 +340,31 @@ Communication is growing! 🥝
                     </div>
                 </div>
 
-                {/* Weekly Activity Chart */}
+                {/* Activity Chart */}
                 <div className="dashboard-card" style={{ background: 'var(--gray-light)' }}>
-                    <h3 style={{ margin: '0 0 0.9375rem 0', fontSize: '1rem', color: 'var(--text-primary)' }}>Weekly Activity</h3>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', gap: '0.75rem', flexWrap: 'wrap' }}>
+                        <h3 style={{ margin: 0, fontSize: '1rem', color: 'var(--text-primary)' }}>Activity (Last {analyticsDays} Days)</h3>
+                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                            {analyticsRanges.map(range => (
+                                <button
+                                    key={range.value}
+                                    onClick={() => handleSetAnalyticsRange(range.value)}
+                                    style={{
+                                        padding: '0.3125rem 0.625rem',
+                                        borderRadius: '0.75rem',
+                                        border: analyticsDays === range.value ? '0.125rem solid var(--primary)' : '1px solid var(--gray-border)',
+                                        background: analyticsDays === range.value ? 'var(--primary)' : 'white',
+                                        color: analyticsDays === range.value ? 'white' : 'var(--text-primary)',
+                                        fontSize: '0.7rem',
+                                        fontWeight: 700,
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    {range.label}{range.premium ? ' 👑' : ''}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                     <div style={{ display: 'flex', alignItems: 'flex-end', gap: '0.5rem', height: '6.25rem' }}>
                         {dailyStats.map((day, i) => (
                             <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -329,12 +384,12 @@ Communication is growing! 🥝
                 {/* Independence Trend Chart */}
                 {trials.length > 5 && (
                     <div className="dashboard-card" style={{ background: 'var(--card-bg)', border: '1px solid var(--gray-border)' }}>
-                        <h3 style={{ margin: '0 0 0.9375rem 0', color: 'var(--text-primary)', fontSize: '1rem' }}>📈 Independence Trend (Last 7 Days)</h3>
+                        <h3 style={{ margin: '0 0 0.9375rem 0', color: 'var(--text-primary)', fontSize: '1rem' }}>📈 Independence Trend (Last {analyticsDays} Days)</h3>
                         {(() => {
                             // Calculate daily independence rates
                             const days = [];
                             const today = new Date();
-                            for (let i = 6; i >= 0; i--) {
+                            for (let i = analyticsDays - 1; i >= 0; i--) {
                                 const d = new Date(today);
                                 d.setDate(d.getDate() - i);
                                 const dateStr = d.toISOString().split('T')[0];
@@ -342,12 +397,12 @@ Communication is growing! 🥝
                                 const total = dayTrials.length;
                                 const independent = dayTrials.filter(t => !t.isPrompted).length;
                                 const rate = total > 0 ? (independent / total) * 100 : 0;
-                                days.push({ label: d.toLocaleDateString('en-US', { weekday: 'short' }), rate, hasData: total > 0 });
+                                days.push({ label: formatTrendLabel(d), rate, hasData: total > 0 });
                             }
 
                             // Generate SVG points
                             const points = days.map((d, i) => {
-                                const x = (i / 6) * 100;
+                                const x = analyticsDays > 1 ? (i / (analyticsDays - 1)) * 100 : 0;
                                 const y = 100 - d.rate; // Invert for SVG coords
                                 return `${x},${y}`;
                             }).join(' ');
@@ -374,7 +429,7 @@ Communication is growing! 🥝
                                         {days.map((d, i) => (
                                             <circle
                                                 key={i}
-                                                cx={(i / 6) * 100}
+                                                cx={analyticsDays > 1 ? (i / (analyticsDays - 1)) * 100 : 0}
                                                 cy={100 - d.rate}
                                                 r={d.hasData ? "3" : "1.5"}
                                                 fill={d.hasData ? "var(--success)" : "var(--gray-border)"}

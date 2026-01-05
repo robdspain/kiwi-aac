@@ -5,7 +5,7 @@ import MemojiPicker from './MemojiPicker';
 import ImageCropModal from './ImageCropModal';
 import { saveMedia, getMedia, deleteMedia } from '../utils/db';
 
-const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item }) => {
+const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item, customPhotoCount = 0 }) => {
     const [word, setWord] = useState('');
     const [icon, setIcon] = useState('');
     const [bgColor, setBgColor] = useState('');
@@ -52,9 +52,25 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item 
         }
     }, [isOpen, item]);
 
-    const handleFileChange = (e) => {
+    const isCustomPhotoIcon = (value) => typeof value === 'string' && (value.startsWith('data:') || value.startsWith('db:'));
+    const isAvatarItem = item?.isCustomPerson || item?.characterConfig?.type === 'multiavatar';
+
+    const ensureCustomPhotoAccess = async () => {
+        if (isCustomPhotoIcon(item?.icon) && !isAvatarItem) return true;
+        try {
+            const { checkCustomPhotoLimit } = await import('../utils/paywall');
+            return await checkCustomPhotoLimit(customPhotoCount);
+        } catch (error) {
+            console.error('Failed to check custom photo limit:', error);
+            return true;
+        }
+    };
+
+    const handleFileChange = async (e) => {
         const file = e.target.files[0];
         if (file) {
+            const hasAccess = await ensureCustomPhotoAccess();
+            if (!hasAccess) return;
             setProcessing(true);
             const reader = new FileReader();
             reader.onload = (event) => {
@@ -68,6 +84,8 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item 
     };
 
     const takePhoto = async (source = CameraSource.Prompt) => {
+        const hasAccess = await ensureCustomPhotoAccess();
+        if (!hasAccess) return;
         try {
             const image = await Camera.getPhoto({
                 quality: 90,
@@ -101,6 +119,21 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item 
                         onClick={async () => { 
                             let finalIcon = icon;
                             let finalAudio = customAudio;
+
+                            const shouldTrackCustomPhoto = typeof icon === 'string' && icon.startsWith('data:') && !characterConfig;
+
+                            if (shouldTrackCustomPhoto) {
+                                try {
+                                    const saved = localStorage.getItem('kiwi-user-photos');
+                                    const photos = saved ? JSON.parse(saved) : [];
+                                    if (!photos.find(p => p.i === icon)) {
+                                        photos.unshift({ w: word || 'Photo', i: icon });
+                                        localStorage.setItem('kiwi-user-photos', JSON.stringify(photos));
+                                    }
+                                } catch (error) {
+                                    console.warn('Failed to update custom photo registry:', error);
+                                }
+                            }
 
                             // Move heavy icon to IndexedDB if it's a new data URL
                             if (typeof icon === 'string' && icon.startsWith('data:')) {

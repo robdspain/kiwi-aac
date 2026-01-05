@@ -67,7 +67,7 @@ npm run preview
 
 1. Go to https://app.revenuecat.com
 2. Create account → Link store credentials
-3. Configure products (`kiwi_monthly`, `kiwi_annual`)
+3. Configure products (`kiwi_monthly`, `kiwi_annual`, `kiwi_lifetime`)
 4. Add Production API key to `.env`
 5. Test subscription flow in Sandbox mode
 
@@ -76,7 +76,7 @@ npm run preview
 ## Files Created for You
 
 - `PWA-DEPLOYMENT-GUIDE.md` - Full deployment instructions
-- `REVENUECAT-SETUP-GUIDE.md` - Complete paywall setup guide
+- `PAYWALL-SETUP-README.md` - Complete paywall setup guide
 - `DEPLOYMENT-READY-SUMMARY.md` - What was completed
 - `src/utils/paywall.js` - Paywall helper functions
 

@@ -94,6 +94,9 @@ export const getDailyStats = (days = 7) => {
     const analytics = getAnalytics();
     const stats = [];
     const today = new Date();
+    const labelFormat = days > 7
+        ? { month: 'numeric', day: 'numeric' }
+        : { weekday: 'short' };
 
     for (let i = days - 1; i >= 0; i--) {
         const date = new Date(today);
@@ -101,7 +104,7 @@ export const getDailyStats = (days = 7) => {
         const dateStr = date.toISOString().split('T')[0];
         stats.push({
             date: dateStr,
-            label: date.toLocaleDateString('en-US', { weekday: 'short' }),
+            label: date.toLocaleDateString('en-US', labelFormat),
             clicks: analytics.dailyUsage[dateStr]?.clicks || 0
         });
     }

@@ -1,327 +1,136 @@
-# Kiwi AAC Paywall Setup
+# Kiwi Paywall Setup (All-in-One Manual Steps)
 
-## 📦 What's Included
+Use this single document for all remaining paywall setup steps in RevenueCat and the stores.
 
-I've created a complete RevenueCat paywall configuration package for you:
-
-### 1. **Backend Setup Script** (`scripts/setup-revenuecat.sh`)
-Automated script that creates all the backend infrastructure via RevenueCat REST API:
-- ✅ Products (kiwi_monthly, kiwi_annual)
-- ✅ Entitlement (pro)
-- ✅ Offering (default)
-- ✅ Packages ($rc_monthly, $rc_annual)
-
-### 2. **Dashboard Configuration** (`paywall-dashboard-config.json`)
-Complete JSON configuration matching RevenueCat's paywall format:
-- 🎨 Header (icon, title, subtitle)
-- ✨ 9 Premium features (2 highlighted)
-- 💰 Pricing (monthly + annual with badges)
-- 🎁 7-day free trial
-- 🎯 CTA buttons (Kiwi teal + iOS blue)
-- 📋 Footer (legal links, disclaimer)
-- 🌍 Localization (English + Spanish)
-- 🎯 Audience targeting (3 variants)
-
-### 3. **Implementation Guide** (`FIRST-KIWI-PAYWALL-CONFIG.md`)
-Step-by-step manual for configuring the paywall in RevenueCat dashboard.
-
-### 4. **JavaScript API Script** (`scripts/create-paywall.js`)
-Node.js script for programmatic paywall management (create, update, list).
+## 0) Quick Checklist
+- Products exist in App Store Connect / Google Play with correct IDs and prices.
+- RevenueCat products created and linked to entitlement `pro`.
+- Offering `default` created with packages `$rc_monthly`, `$rc_annual`, `$rc_lifetime`.
+- Paywall UI configured in RevenueCat Paywalls with the exact copy below.
+- Preview + sandbox test completes and grants `pro` entitlement.
 
 ---
 
-## 🚀 Quick Start
+## 1) Store Products (App Store Connect / Google Play)
 
-### Option A: Automated Backend Setup (Recommended)
+Create these in-app purchases with exact IDs:
+- Monthly (auto-renewing): `kiwi_monthly` — $4.99 / month
+- Annual (auto-renewing): `kiwi_annual` — $39.99 / year
+- Lifetime (non-consumable): `kiwi_lifetime` — $149.99 one-time
 
-1. **Get your RevenueCat credentials:**
-   ```bash
-   # Go to: https://app.revenuecat.com/settings/api-keys
-   # Copy your "Secret API Key" (starts with "sk_")
-   # Get your project ID from the dashboard URL
-   ```
-
-2. **Set environment variables:**
-   ```bash
-   export REVENUECAT_SECRET_KEY="sk_your_secret_key_here"
-   export REVENUECAT_PROJECT_ID="your_project_id_here"
-   ```
-
-3. **Run the setup script:**
-   ```bash
-   ./scripts/setup-revenuecat.sh
-   ```
-
-   This will create:
-   - Products: `kiwi_monthly`, `kiwi_annual`
-   - Entitlement: `pro`
-   - Offering: `default` (with 2 packages)
-
-4. **Configure the paywall visually:**
-   - Go to https://app.revenuecat.com
-   - Navigate to **Paywalls** → **Create Paywall**
-   - Name it **"First Kiwi Paywall"**
-   - Use `paywall-dashboard-config.json` as your reference
-   - Copy/paste all content from `FIRST-KIWI-PAYWALL-CONFIG.md`
+Notes:
+- Use the same product IDs across stores and RevenueCat.
+- Ensure products are in an "Active" or "Ready to Submit" state.
 
 ---
 
-### Option B: Manual Dashboard Setup
+## 2) RevenueCat Setup (Dashboard)
 
-If you prefer to set everything up manually:
+### 2.1 Products
+In RevenueCat, create/verify:
+- `kiwi_monthly` (subscription)
+- `kiwi_annual` (subscription)
+- `kiwi_lifetime` (one_time / non-consumable)
 
-1. **Follow the step-by-step guide:**
-   - Open `FIRST-KIWI-PAYWALL-CONFIG.md`
-   - Complete all 14 sections in order
-   - Use the checklist at the end to verify
+### 2.2 Entitlement
+Create entitlement:
+- **Lookup Key**: `pro`
+- **Display Name**: `Pro`
 
-2. **Use the JSON config as reference:**
-   - `paywall-dashboard-config.json` has all the exact values
-   - Copy colors, font sizes, text content directly
+Attach products to `pro`:
+- `kiwi_monthly`, `kiwi_annual`, `kiwi_lifetime`
+
+### 2.3 Offering + Packages
+Create offering:
+- **Lookup Key**: `default`
+- **Display Name**: `Default Offering`
+
+Create packages inside the offering and link to products:
+1) `$rc_annual` → `kiwi_annual` (position 1, default/selected)
+2) `$rc_monthly` → `kiwi_monthly` (position 2)
+3) `$rc_lifetime` → `kiwi_lifetime` (position 3)
 
 ---
 
-## 📱 App Integration
+## 3) Paywall UI (RevenueCat Paywalls)
 
-Your app is already set up! The RevenueCat SDK is integrated:
+### 3.1 Template
+- Template: **Standard Full Screen** (Full Screen with Features)
 
-### Show Paywall in Your App
+### 3.2 Header
+- Title: **Unlock Kiwi Pro**
+- Subtitle: **Empower unlimited communication with premium AAC features**
+- Image: Kiwi logo / app icon
 
-```javascript
-import { revenueCatService } from './services/RevenueCatService';
+### 3.3 Features (copy exact text)
+1. ✨ **Unlimited Vocabulary** - Break free from the 50-icon limit.
+2. 📸 **Unlimited Custom Photos** - Add unlimited custom photos from your device.
+3. ☁️ **Cloud Backup & Sync** - Sync boards, photos, and voice across devices with a secure code.
+4. 👥 **Multiple Profiles** - Perfect for families & therapists.
+5. 📊 **Advanced Analytics** - View progress history beyond 7 days (30-day view).
+6. 🎨 **Premium Themes** - Ocean, Sunset, Forest, Berry, Candy & more.
+7. 🗣️ **Custom Pronunciations** - Unlock unlimited pronunciation overrides.
+8. 🎭 **Character Builder** - Create unlimited custom avatars.
 
-// Show paywall for a specific feature
-await revenueCatService.showPaywallIfNeeded('premium_themes');
+### 3.4 Pricing + Badges
+- **Monthly**: $4.99
+  - Package: `$rc_monthly`
+  - Badge: "Most Flexible"
+- **Annual**: $39.99
+  - Package: `$rc_annual`
+  - Badge: "Best Value 🏆"
+  - Offer: "Save 33%" (Save $20/year)
+  - Show: "$3.33/month"
+  - Pre-select/highlight
+- **Lifetime**: $149.99
+  - Package: `$rc_lifetime`
+  - Badge: "One-Time Payment"
 
-// OR show paywall unconditionally
-await revenueCatService.showPaywall('subscription_prompt');
+### 3.5 Colors
+- Primary/Button: `#1A535C` (Kiwi Teal)
+- Text: `#2D3436` (Charcoal)
+- Background: `#FDF8F3` (Cream Shell)
+- Accent: `#4ECDC4` (Kiwi Teal)
+- Surface/Card: `#FFFFFF` (White)
+- Secondary button outline: `#007AFF`
+
+### 3.6 Free Trial (Subscriptions)
+- Duration: 7 days
+- CTA: "Start Free Trial"
+- Disclaimer: "Free for 7 days, then {{price}} per {{period}}. Cancel anytime."
+
+### 3.7 Footer Links
+- Terms: `https://kiwivoiceapp.com/terms`
+- Privacy: `https://kiwivoiceapp.com/privacy`
+- Support: `mailto:support@kiwivoiceapp.com`
+
+---
+
+## 4) Testing
+
+1) Preview in RevenueCat Paywalls (all device sizes).
+2) Sandbox purchase test:
+   - Trigger a premium feature in-app (e.g., premium theme).
+   - Complete purchase.
+   - Verify `pro` entitlement is granted.
+3) Verify premium features unlock:
+   - 50+ icons
+   - 20+ custom photos
+   - 3+ custom people/avatars
+   - 30-day analytics
+   - Cloud backup & sync
+
+Cloud sync note:
+- Requires `VITE_NEON_DATABASE_URL` in the environment.
+- Cloud sync runs only when user has `pro`.
+
+---
+
+## 5) Optional: Attach Metadata to Offering
+
+If you want to attach the JSON metadata to the offering:
+```
+./scripts/upload-offering-metadata.sh
 ```
 
-### Check Premium Access
-
-```javascript
-const hasPremium = await revenueCatService.hasPremiumAccess();
-
-if (hasPremium) {
-  // Grant access to premium features
-} else {
-  // Show paywall
-  await revenueCatService.showPaywallIfNeeded('feature_name');
-}
-```
-
-### Paywall Triggers Already Implemented
-
-The following features already trigger the paywall automatically:
-- ✅ Color themes (beyond default)
-- ✅ Custom vocabulary (beyond 50 words)
-- ✅ Multiple user profiles
-- ✅ Advanced analytics
-- ✅ Cloud sync
-- ✅ Custom photos (beyond 20)
-- ✅ Custom people (beyond 3)
-
-See `src/utils/paywall.js` for all trigger points.
-
----
-
-## 🎨 Paywall Design Highlights
-
-### Visual Design
-- **Icon**: 🥝 (80×80px)
-- **Title**: "Unlock Kiwi Pro"
-- **Subtitle**: "Empower unlimited communication with premium AAC features"
-- **Primary Color**: #1A535C (Kiwi Teal)
-- **Accent Color**: #007AFF (iOS Blue)
-
-### 9 Premium Features
-1. ✨ **Unlimited Vocabulary** (highlighted)
-2. 🎙️ **Premium Voice Quality** (highlighted)
-3. 👥 Multiple User Profiles
-4. ☁️ Cloud Backup & Sync
-5. 📊 Advanced Analytics
-6. 🎨 Premium Themes
-7. 📸 Unlimited Photos
-8. 🧑‍💼 Custom Characters
-9. 🔔 Priority Support
-
-### Pricing
-- **Monthly**: $9.99/month (Most Flexible badge)
-- **Annual**: $79.99/year (Best Value badge 🏆)
-  - Shows as $6.67/month
-  - "Save 33%" badge
-  - "Save $40/year" text
-  - **Pre-selected by default**
-
-### Free Trial
-- **Duration**: 7 days
-- **CTA**: "Start Free Trial"
-- **Disclaimer**: "Free for 7 days, then {{price}} per {{period}}. Cancel anytime."
-
----
-
-## 🧪 Testing
-
-### 1. Preview in Dashboard
-- Click **Preview** in RevenueCat paywall editor
-- View on iPhone SE, iPhone 15, iPad
-- Test light/dark mode
-
-### 2. Sandbox Testing (iOS)
-
-```bash
-# 1. Create sandbox tester in App Store Connect
-# 2. Build app on device
-# 3. Sign in with sandbox account in Settings > App Store
-# 4. Trigger paywall in app
-# 5. Complete purchase with sandbox credentials
-```
-
-### 3. Verify Entitlement
-
-```javascript
-// Check in app
-const status = await revenueCatService.getSubscriptionStatus();
-console.log('Subscription:', status.tier); // 'free' or 'pro'
-```
-
----
-
-## 📊 Success Metrics
-
-Track these in RevenueCat dashboard:
-
-| Metric | Goal |
-|--------|------|
-| Conversion Rate | 5-10% |
-| Trial-to-Paid | 40-60% |
-| Annual Preference | 70%+ |
-| Avg Revenue Per User | Monitor |
-
----
-
-## 🌍 Localization
-
-Spanish translation is ready to use:
-
-| English | Spanish |
-|---------|---------|
-| Unlock Kiwi Pro | Desbloquea Kiwi Pro |
-| Start Free Trial | Comenzar Prueba Gratis |
-| Choose Your Plan | Elige Tu Plan |
-| Restore Purchases | Restaurar Compras |
-
-Full translations available in `paywall-dashboard-config.json`.
-
----
-
-## 🎯 A/B Test Variants
-
-Three audience-targeted variants ready:
-
-### Variant A: New Users (0-7 days)
-- Title: "Try Kiwi Pro Free"
-- Subtitle: "7 days free, then unlock unlimited AAC features"
-- CTA: "Start Free Trial Now"
-
-### Variant B: Engaged Users (7+ days, 5+ sessions)
-- Title: "Save 33% with Annual Plan"
-- Subtitle: "Get unlimited features for less than $7/month"
-- Emphasis: Annual package
-
-### Variant C: Users at Free Limit (50+ words)
-- Title: "Go Unlimited"
-- Subtitle: "Break free from limits. Unlimited vocabulary, photos, and profiles."
-- Emphasis: Unlimited Vocabulary feature
-
----
-
-## ✅ Launch Checklist
-
-### Backend Configuration
-- [ ] Products created (kiwi_monthly, kiwi_annual)
-- [ ] Entitlement created (pro)
-- [ ] Offering created (default)
-- [ ] Packages added to offering
-
-### Paywall Design
-- [ ] Paywall created in dashboard
-- [ ] Set as default paywall
-- [ ] Header configured (icon, title, subtitle)
-- [ ] All 9 features added with correct text
-- [ ] Features 1 & 2 highlighted
-- [ ] Social proof added (rating, user count)
-- [ ] Monthly package configured
-- [ ] Annual package configured (default, highlighted)
-- [ ] 7-day free trial enabled
-- [ ] CTA buttons styled (Kiwi Teal + iOS Blue)
-- [ ] Legal links added (terms, privacy, support)
-- [ ] Disclaimer text added
-- [ ] Colors match Kiwi brand
-- [ ] Typography set (SF Pro)
-
-### Testing
-- [ ] Previewed on iPhone/iPad
-- [ ] Tested in sandbox mode
-- [ ] Verified entitlement grants correctly
-- [ ] Tested restore purchases
-- [ ] Checked analytics tracking
-
-### App Store / Play Store
-- [ ] Products created in App Store Connect
-- [ ] Products created in Google Play Console
-- [ ] Pricing configured ($9.99, $79.99)
-- [ ] Free trial configured (7 days)
-- [ ] Screenshots updated (show Pro features)
-
-### Optional
-- [ ] Spanish localization added
-- [ ] A/B test variants created
-- [ ] Custom audiences configured
-
----
-
-## 🛠️ Troubleshooting
-
-### Paywall Not Showing
-1. Check RevenueCat is initialized: `revenueCatService.isInitialized`
-2. Verify API keys in environment variables
-3. Check offerings are loaded: `revenueCatService.offerings`
-4. Look for errors in console
-
-### Purchase Not Working
-1. Verify products exist in App Store Connect / Google Play
-2. Check product IDs match exactly: `kiwi_monthly`, `kiwi_annual`
-3. Ensure products are approved and available
-4. Test with sandbox account, not production
-
-### Entitlement Not Granted
-1. Check entitlement ID is `pro` (lowercase)
-2. Verify products are attached to entitlement
-3. Refresh customer info: `revenueCatService.refreshCustomerInfo()`
-4. Check RevenueCat dashboard for customer status
-
----
-
-## 📞 Support Resources
-
-**RevenueCat:**
-- Dashboard: https://app.revenuecat.com
-- Docs: https://www.revenuecat.com/docs
-- Paywalls Guide: https://www.revenuecat.com/docs/paywalls
-
-**Kiwi AAC Files:**
-- Service: `src/services/RevenueCatService.js`
-- Plugin: `src/plugins/revenuecat.ts`
-- Triggers: `src/utils/paywall.js`
-- Config: `paywall-dashboard-config.json`
-
----
-
-## 🎉 You're Ready!
-
-Everything is set up and ready to go. Your paywall is professionally designed, optimized for conversions, and ready to turn free users into Kiwi Pro subscribers.
-
-**Next Step**: Run `./scripts/setup-revenuecat.sh` to create the backend infrastructure, then configure the visual paywall in the RevenueCat dashboard using `FIRST-KIWI-PAYWALL-CONFIG.md` as your guide.
-
-Good luck with your launch! 🥝🚀
+This does not replace the Paywall UI; it only attaches metadata for custom UI use.

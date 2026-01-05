@@ -324,6 +324,18 @@ const EmojiCurator = () => {
 
   const handleGetPhoto = async (source) => {
     try {
+      const customPhotoCount = customItems.filter(item => {
+        const isAvatar = item?.type === 'avatar' || item?.type === 'custom_avatar' || (typeof item?.emoji === 'string' && item.emoji.startsWith('av-'));
+        return !isAvatar && typeof item.image === 'string' && item.image.startsWith('data:');
+      }).length;
+      try {
+        const { checkCustomPhotoLimit } = await import('../utils/paywall');
+        const hasAccess = await checkCustomPhotoLimit(customPhotoCount);
+        if (!hasAccess) return;
+      } catch (error) {
+        console.error('Failed to check custom photo limit:', error);
+      }
+
       const image = await Camera.getPhoto({ quality: 90, allowEditing: true, resultType: CameraResultType.DataUrl, source });
       if (image?.dataUrl) {
         const name = prompt("Enter name:");

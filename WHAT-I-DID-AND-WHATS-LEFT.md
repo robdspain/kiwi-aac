@@ -31,22 +31,18 @@
   9. Premium Templates (pro only)
 
 ### 4. **Configuration Files Created** ✅
-- ✅ `revenuecat-paywall-config.json` - Complete paywall configuration
-  - Title: "Unlock access to all recipes"
-  - 4 features with icons
-  - 2 packages (monthly/annual)
-  - "Save 30%" badge on annual
+- ✅ `revenuecat-paywall-config.json` - Paywall configuration reference
+  - Title: "Unlock Kiwi Pro"
+  - 8 features with icons
+  - 3 packages (monthly/annual/lifetime)
+  - "Save 33%" badge on annual
   - Styling specs (colors, fonts, spacing)
 
-- ✅ `PRODUCT-SETUP-CHECKLIST.md` - Step-by-step manual setup guide
-  - App Store Connect setup (~15 min)
-  - Google Play Console setup (~15 min)
-  - RevenueCat Dashboard setup (~20 min)
-  - Paywall Builder configuration (~10 min)
-  - Testing guide (~20 min)
-
-- ✅ `REVENUECAT-SETUP-GUIDE.md` - Complete technical documentation
-- ✅ `REVENUECAT-QUICK-REFERENCE.md` - Quick reference guide
+- ✅ `PAYWALL-SETUP-README.md` - Combined manual setup guide
+  - Store product setup
+  - RevenueCat products/entitlement/offering/packages
+  - Paywall copy/paste content
+  - Testing guide
 - ✅ `.env.example` - Environment variables template
 - ✅ `scripts/test-revenuecat.cjs` - Automated integration test
 
@@ -212,7 +208,7 @@ node scripts/test-revenuecat.cjs
 This verifies all programmatic work is complete. ✅
 
 ### **Step 2: Follow the Checklist** (85 minutes)
-Open `PRODUCT-SETUP-CHECKLIST.md` and follow step-by-step:
+Open `PAYWALL-SETUP-README.md` and follow step-by-step:
 1. ⏱️ 15 min - App Store Connect
 2. ⏱️ 15 min - Google Play Console
 3. ⏱️ 20 min - RevenueCat Dashboard
@@ -233,9 +229,7 @@ All files you need:
 ```
 /Users/robspain/Desktop/Kiwi AAC/
 ├── revenuecat-paywall-config.json      # Paywall configuration
-├── PRODUCT-SETUP-CHECKLIST.md           # ⭐ FOLLOW THIS
-├── REVENUECAT-SETUP-GUIDE.md            # Technical docs
-├── REVENUECAT-QUICK-REFERENCE.md        # Quick reference
+├── PAYWALL-SETUP-README.md              # ⭐ FOLLOW THIS
 ├── .env.example                         # Env template
 ├── .env                                 # Has test key
 ├── scripts/
@@ -262,7 +256,7 @@ Features:
   ⚡ Priority support
 
 Packages:
-  ⭐ Annual - $39.99/year [SAVE 30%]
+  ⭐ Annual - $39.99/year [SAVE 33%]
   📅 Monthly - $4.99/month
 
 Button: "Continue in-app"
@@ -310,7 +304,7 @@ Run this before manual steps:
 ✅ Testing script
 
 ### What You Do:
-📝 Follow `PRODUCT-SETUP-CHECKLIST.md`
+📝 Follow `PAYWALL-SETUP-README.md`
 ⏱️ ~85 minutes total (1.5 hours)
 🎨 Use `revenuecat-paywall-config.json` for paywall
 📱 Test on devices
@@ -327,4 +321,4 @@ Run this before manual steps:
 
 **You're 85 minutes away from having a fully monetized app!** 🚀
 
-Open `PRODUCT-SETUP-CHECKLIST.md` and start with Step 1.
+Open `PAYWALL-SETUP-README.md` and start with Step 1.

@@ -95,12 +95,11 @@ All **5 HIGH/MEDIUM severity bugs** from the .agent error log have been resolved
 - Performance metrics and targets
 - Known issues (none critical)
 
-**REVENUECAT-SETUP-GUIDE.md:**
-- Complete RevenueCat configuration guide
-- Store linking instructions
-- Dashboard setup for products and offerings
+**PAYWALL-SETUP-README.md:**
+- Complete paywall setup steps (stores + RevenueCat + paywall UI)
+- Product and entitlement linking
+- Copy/paste paywall content
 - Testing procedures
-- Troubleshooting guide
 
 ---
 
@@ -260,7 +259,7 @@ All critical bugs from Cycle 44 have been resolved.
 - `PRD.md` - Complete product requirements
 - `ROADMAP.md` - Feature timeline
 - `PWA-DEPLOYMENT-GUIDE.md` - Testing and deployment
-- `REVENUECAT-SETUP-GUIDE.md` - Paywall configuration
+- `PAYWALL-SETUP-README.md` - Paywall configuration
 - `agent/.agent` - Error tracking log
 
 **Key Files Modified:**

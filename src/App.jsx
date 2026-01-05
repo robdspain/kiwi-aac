@@ -413,19 +413,8 @@ function App() {
 
 
   useEffect(() => {
-    // Initialize RevenueCat SDK on app startup
-    const configureRevenueCat = async () => {
-      try {
-        const { default: revenueCatService } = await import('./services/RevenueCatService');
-        const userId = currentProfile?.id || null;
-        await revenueCatService.initialize(userId);
-        console.log('✅ RevenueCat initialized in App.jsx');
-      } catch (error) {
-        console.error('❌ Failed to initialize RevenueCat:', error);
-      }
-    };
-
     const attemptCloudRestore = async () => {
+      if (!relationalSyncService.isConfigured()) return;
       const onboardingComplete = localStorage.getItem('kiwi-onboarding-complete');
       if (onboardingComplete) return;
 
@@ -460,10 +449,37 @@ function App() {
       }
     };
 
-    configureRevenueCat();
-    attemptCloudRestore();
-    // Auto-sync if a cloud code is active
-    cloudSyncService.autoSync();
+    const initializeApp = async () => {
+      let revenueCatService = null;
+
+      // Initialize RevenueCat SDK on app startup
+      try {
+        const module = await import('./services/RevenueCatService');
+        revenueCatService = module.default;
+        const userId = currentProfile?.id || null;
+        await revenueCatService.initialize(userId);
+        console.log('✅ RevenueCat initialized in App.jsx');
+      } catch (error) {
+        console.error('❌ Failed to initialize RevenueCat:', error);
+      }
+
+      let canUseCloudSync = false;
+      try {
+        if (cloudSyncService.isConfigured() && revenueCatService) {
+          canUseCloudSync = await revenueCatService.hasPremiumAccess();
+        }
+      } catch (error) {
+        console.error('Failed to verify cloud sync entitlement:', error);
+      }
+
+      if (canUseCloudSync) {
+        await attemptCloudRestore();
+        // Auto-sync if a cloud code is active
+        cloudSyncService.autoSync();
+      }
+    };
+
+    initializeApp();
 
     // Ensure a high-quality voice is selected
     const initVoice = async () => {
@@ -945,6 +961,20 @@ function App() {
     }, 0);
   };
 
+  const countCustomPhotosInItems = (items) => {
+    return (items || []).reduce((count, item) => {
+      if (item.type === 'folder') {
+        return count + countCustomPhotosInItems(item.contents || []);
+      }
+      if (item.isCustomPerson || item.characterConfig?.type === 'multiavatar') {
+        return count;
+      }
+      const icon = item.icon;
+      const isCustomPhoto = typeof icon === 'string' && (icon.startsWith('data:') || icon.startsWith('db:'));
+      return count + (isCustomPhoto ? 1 : 0);
+    }, 0);
+  };
+
   const getPersonInsertIndex = (items) => {
     let lastPersonIndex = -1;
     items.forEach((item, index) => {
@@ -1203,6 +1233,8 @@ function App() {
     return <SplashScreen onComplete={() => setShowSplash(false)} />;
   }
 
+  const totalCustomPhotos = rootItems.reduce((sum, page) => sum + countCustomPhotosInItems(page.items || []), 0);
+
   return (
     <div id="main-area">
       {showLevelIntro && <Suspense fallback={null}><LevelIntro level={currentLevel} onComplete={() => { localStorage.setItem(`kiwi-intro-seen-level-${currentLevel}`, 'true'); setShowLevelIntro(false); if (currentStage <= 2 && !phase1TargetId) setShowPhase1Selector(true); }} onChangeLevel={() => { setShowLevelIntro(false); setIsEditMode(true); }}/></Suspense>}
@@ -1369,7 +1401,7 @@ function App() {
           </span>
         </div>
       )}
-      <EditModal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} onSave={handleSaveEdit} onDelete={() => { if (editingItemIndex !== null) { handleDelete(editingItemIndex); setEditModalOpen(false); } }} onOpenEmojiPicker={handlePickerOpen} item={editingItemIndex !== null ? (currentPath.length === 0 ? (rootItems[currentPageIndex]?.items || []) : currentPath.reduce((acc, i) => acc[i].contents, (rootItems[currentPageIndex]?.items || [])))[editingItemIndex] : null} triggerPaywall={triggerPaywall}/>
+      <EditModal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} onSave={handleSaveEdit} onDelete={() => { if (editingItemIndex !== null) { handleDelete(editingItemIndex); setEditModalOpen(false); } }} onOpenEmojiPicker={handlePickerOpen} item={editingItemIndex !== null ? (currentPath.length === 0 ? (rootItems[currentPageIndex]?.items || []) : currentPath.reduce((acc, i) => acc[i].contents, (rootItems[currentPageIndex]?.items || [])))[editingItemIndex] : null} customPhotoCount={totalCustomPhotos} triggerPaywall={triggerPaywall}/>
       <PickerModal isOpen={pickerOpen} onClose={() => setPickerOpen(false)} userItems={rootItems[currentPageIndex]?.items || []} triggerPaywall={triggerPaywall} onSelect={(w, i, isImage) => { if (pickerCallback) pickerCallback(w, i, isImage); }}/>
       {showPhase1Selector && <Phase1TargetSelector rootItems={rootItems[currentPageIndex]?.items || []} onSelect={(id) => { setPhase1TargetId(id); setShowPhase1Selector(false); }}/>}
       {showAdvancementModal && <AdvancementModal currentPhase={currentPhase} onAdvance={handleAdvance} onWait={handleWait}/>}

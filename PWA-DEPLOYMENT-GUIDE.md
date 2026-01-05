@@ -224,7 +224,7 @@ This opens Android Studio. You can then:
 6. **Multi-Profile Support**
 
 ### To Complete Paywall Setup:
-1. Configure products in RevenueCat Dashboard (see `PRODUCT-SETUP-CHECKLIST.md`)
+1. Configure products in RevenueCat Dashboard (see `PAYWALL-SETUP-README.md`)
 2. Link App Store and Google Play credentials to RevenueCat
 3. Add Production API key to environment variables
 4. Test all premium feature triggers in sandbox mode

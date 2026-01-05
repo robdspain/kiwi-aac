@@ -47,8 +47,8 @@ function logInfo(message) {
 const EXPECTED_CONFIG = {
   apiKey: process.env.VITE_REVENUECAT_API_KEY || 'test_GVsVAPHELhFcgnBFbWlVyrYGiUS',
   entitlement: 'pro',
-  products: ['kiwi_monthly', 'kiwi_annual'],
-  packages: ['$rc_monthly', '$rc_annual'],
+  products: ['kiwi_monthly', 'kiwi_annual', 'kiwi_lifetime'],
+  packages: ['$rc_monthly', '$rc_annual', '$rc_lifetime'],
   offeringId: 'default',
 };
 
@@ -83,7 +83,7 @@ const requiredFiles = [
   'src/services/RevenueCatService.js',
   'src/utils/paywall.js',
   'revenuecat-paywall-config.json',
-  'PRODUCT-SETUP-CHECKLIST.md',
+  'PAYWALL-SETUP-README.md',
   '.env.example',
 ];
 
@@ -143,30 +143,30 @@ try {
 
   // Check products
   const products = config.entitlement_config.products;
-  if (products.includes('kiwi_monthly') && products.includes('kiwi_annual')) {
-    logSuccess('Both products configured: kiwi_monthly, kiwi_annual ✓');
+  if (products.includes('kiwi_monthly') && products.includes('kiwi_annual') && products.includes('kiwi_lifetime')) {
+    logSuccess('Products configured: kiwi_monthly, kiwi_annual, kiwi_lifetime ✓');
   } else {
     logError(`Products found: ${products.join(', ')}`);
-    logInfo('Expected: kiwi_monthly, kiwi_annual');
+    logInfo('Expected: kiwi_monthly, kiwi_annual, kiwi_lifetime');
   }
 
   // Check packages
   const packages = config.offering_config.packages.map(p => p.identifier);
-  if (packages.includes('$rc_monthly') && packages.includes('$rc_annual')) {
-    logSuccess('Both packages configured: $rc_monthly, $rc_annual ✓');
+  if (packages.includes('$rc_monthly') && packages.includes('$rc_annual') && packages.includes('$rc_lifetime')) {
+    logSuccess('Packages configured: $rc_monthly, $rc_annual, $rc_lifetime ✓');
   } else {
     logWarning(`Packages found: ${packages.join(', ')}`);
   }
 
   // Check paywall features
   const features = config.paywall_config.localization.en_US.features;
-  if (features.length === 4) {
-    logSuccess(`Paywall has 4 features configured ✓`);
+  if (features.length === 8) {
+    logSuccess(`Paywall has 8 features configured ✓`);
     features.forEach((f, i) => {
       log(`  ${i + 1}. ${f.title}`, 'blue');
     });
   } else {
-    logWarning(`Paywall has ${features.length} features (expected 4)`);
+    logWarning(`Paywall has ${features.length} features (expected 8)`);
   }
 
 } catch (error) {
@@ -237,7 +237,7 @@ try {
 logSection('Test Summary');
 
 log('\n📋 Next Steps:\n', 'bright');
-log('1. Complete manual setup steps in PRODUCT-SETUP-CHECKLIST.md', 'cyan');
+log('1. Complete manual setup steps in PAYWALL-SETUP-README.md', 'cyan');
 log('2. Create products in App Store Connect and Google Play Console', 'cyan');
 log('3. Configure RevenueCat Dashboard (products, entitlement, offering)', 'cyan');
 log('4. Design paywall using revenuecat-paywall-config.json', 'cyan');
@@ -246,9 +246,7 @@ log('6. Replace test API key with production key', 'cyan');
 log('7. Deploy and monetize! 🚀', 'green');
 
 log('\n📚 Documentation:', 'bright');
-log('- PRODUCT-SETUP-CHECKLIST.md - Complete setup guide', 'blue');
-log('- REVENUECAT-SETUP-GUIDE.md - Technical documentation', 'blue');
-log('- REVENUECAT-QUICK-REFERENCE.md - Quick reference', 'blue');
+log('- PAYWALL-SETUP-README.md - Complete setup guide', 'blue');
 log('- revenuecat-paywall-config.json - Paywall configuration\n', 'blue');
 
 logSection('Test Complete');

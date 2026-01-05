@@ -30,6 +30,7 @@ const CONFIG = {
 export const PRODUCT_IDS = {
   MONTHLY: 'kiwi_monthly',
   YEARLY: 'kiwi_annual',
+  LIFETIME: 'kiwi_lifetime',
 };
 
 /**

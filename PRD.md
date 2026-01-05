@@ -447,7 +447,7 @@ The following features are currently integrated with RevenueCat using the `premi
 | Feature Category | Free Tier Limit | Premium (Kiwi Pro) Access | Status |
 | :--- | :--- | :--- | :--- |
 | **Vocabulary Size** | Max 50 Icons | Unlimited Icons | ✅ Active |
-| **Custom Photos** | Max 20 Photos | Unlimited Photos | ✅ Active |
+| **Custom Photos** | Max 20 Photos | Unlimited Custom Photos | ✅ Active |
 | **Profiles** | 1 Learner Profile | Unlimited Profiles | ✅ Active |
 | **Characters** | Max 3 Custom People | Unlimited Memojis/Characters | ✅ Active |
 | **Color Themes** | Default Theme only | All Premium Themes (Ocean, Forest, etc.) | ✅ Active |

@@ -38,7 +38,7 @@ const dedupeIcons = (icons) => {
     return results;
 };
 
-const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall }) => {
+const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
     const [activeTab, setActiveTab] = useState('emoji');
     const [activeCategory, setActiveCategory] = useState(Object.keys(iconsData)[0] || 'My Icons');
     const [searchQuery, setSearchQuery] = useState('');
@@ -110,14 +110,28 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
         }
     }, [customizingItem]);
 
-    const handleConfirmSelection = () => {
+    const isDataUrlPhoto = (value) => typeof value === 'string' && value.startsWith('data:');
+    const countCustomPhotos = (photos) => photos.filter(photo => isDataUrlPhoto(photo.i)).length;
+
+    const handleConfirmSelection = async () => {
         if (customizingItem) {
             // Save to global registry
             if (customizingItem.isImage) {
                 const photos = getGlobalPhotos();
-                if (!photos.find(p => p.i === customizingItem.icon)) {
+                const isNewPhoto = !photos.find(p => p.i === customizingItem.icon);
+                if (isNewPhoto) {
+                    const isCustomPhoto = isDataUrlPhoto(customizingItem.icon);
+                    if (isCustomPhoto) {
+                        try {
+                            const { checkCustomPhotoLimit } = await import('../utils/paywall');
+                            const hasAccess = await checkCustomPhotoLimit(countCustomPhotos(photos));
+                            if (!hasAccess) return;
+                        } catch (error) {
+                            console.error('Failed to check custom photo limit:', error);
+                        }
+                    }
                     photos.unshift({ w: customName || customizingItem.word, i: customizingItem.icon });
-                    localStorage.setItem('kiwi-user-photos', JSON.stringify(photos.slice(0, 20))); // Keep last 20
+                    localStorage.setItem('kiwi-user-photos', JSON.stringify(photos));
                 }
             }
 
@@ -143,9 +157,15 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [], triggerPaywall
         }
     };
 
-    const handleUploadClick = () => {
-        if (triggerPaywall) { triggerPaywall('upload_photo', () => fileInputRef.current?.click()); }
-        else { fileInputRef.current?.click(); }
+    const handleUploadClick = async () => {
+        try {
+            const { checkCustomPhotoLimit } = await import('../utils/paywall');
+            const hasAccess = await checkCustomPhotoLimit(countCustomPhotos(getGlobalPhotos()));
+            if (!hasAccess) return;
+        } catch (error) {
+            console.error('Failed to check custom photo limit:', error);
+        }
+        fileInputRef.current?.click();
     };
 
     const searchBuiltInEmojis = (query) => {

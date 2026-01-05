@@ -1,7 +1,7 @@
 {
   "paywall_config": {
     "identifier": "kiwi_pro_paywall_v1",
-    "name": "Kiwi Pro - Recipe Access",
+    "name": "Kiwi Pro - AAC Access",
     "type": "template_4",
     "template_name": "Multi-Package with Features",
     "config": {
@@ -20,37 +20,57 @@
       },
       "blurred_background_image": false,
       "display_restore_purchases": true,
-      "tos_url": "https://kiwi-aac.netlify.app/terms.html",
-      "privacy_url": "https://kiwi-aac.netlify.app/privacy.html"
+      "tos_url": "https://kiwivoiceapp.com/terms",
+      "privacy_url": "https://kiwivoiceapp.com/privacy"
     },
     "localization": {
       "en_US": {
-        "title": "Unlock access to all recipes",
-        "subtitle": "",
-        "call_to_action": "Continue in-app",
+        "title": "Unlock Kiwi Pro",
+        "subtitle": "Empower unlimited communication with premium AAC features",
+        "call_to_action": "Start Free Trial",
         "call_to_action_with_intro_offer": "Start Free Trial",
-        "offer_details": "Or, save 30%",
+        "offer_details": "Save 33% with annual",
         "offer_details_with_intro_offer": "Then {{ product.price_per_period_abbreviated }} after trial",
         "features": [
           {
-            "title": "Healthy recipes, specially curated",
-            "content": "Access our full library of nutritious and delicious recipes",
-            "icon_id": "recipes"
+            "title": "Unlimited Vocabulary",
+            "content": "Break free from the 50-icon limit. Add unlimited custom buttons and folders.",
+            "icon_id": "vocabulary"
           },
           {
-            "title": "A welcoming cooking community",
-            "content": "Connect with other cooking enthusiasts and share tips",
-            "icon_id": "community"
+            "title": "Unlimited Custom Photos",
+            "content": "Add unlimited custom photos from your camera roll or device.",
+            "icon_id": "photos"
           },
           {
-            "title": "New recipe recommendations",
-            "content": "Get personalized recommendations based on your preferences",
-            "icon_id": "recommendations"
+            "title": "Cloud Backup & Sync",
+            "content": "Sync boards across devices with a secure code.",
+            "icon_id": "cloud"
           },
           {
-            "title": "Priority support",
-            "content": "Get help when you need it with priority customer support",
-            "icon_id": "support"
+            "title": "Multiple Profiles",
+            "content": "Unlimited profiles with personalized settings.",
+            "icon_id": "profiles"
+          },
+          {
+            "title": "Advanced Analytics",
+            "content": "View progress history beyond 7 days and track usage trends.",
+            "icon_id": "analytics"
+          },
+          {
+            "title": "Premium Themes",
+            "content": "Ocean, Sunset, Forest, Berry, and Candy themes.",
+            "icon_id": "themes"
+          },
+          {
+            "title": "Custom Pronunciations",
+            "content": "Unlock unlimited pronunciation overrides.",
+            "icon_id": "pronunciations"
+          },
+          {
+            "title": "Character Builder",
+            "content": "Create unlimited personalized avatars.",
+            "icon_id": "characters"
           }
         ]
       }
@@ -58,12 +78,17 @@
     "packages": [
       {
         "package_id": "$rc_annual",
-        "badge_text": "SAVE 30%",
+        "badge_text": "SAVE 33%",
         "is_default": true
       },
       {
         "package_id": "$rc_monthly",
         "badge_text": null,
+        "is_default": false
+      },
+      {
+        "package_id": "$rc_lifetime",
+        "badge_text": "ONE-TIME",
         "is_default": false
       }
     ]
@@ -79,12 +104,16 @@
       {
         "identifier": "$rc_monthly",
         "platform_product_identifier": "kiwi_monthly"
+      },
+      {
+        "identifier": "$rc_lifetime",
+        "platform_product_identifier": "kiwi_lifetime"
       }
     ],
     "metadata": {
       "recommended_package": "$rc_annual",
       "trial_available": false,
-      "discount_percentage": 30
+      "discount_percentage": 33
     }
   },
   "entitlement_config": {
@@ -92,7 +121,8 @@
     "display_name": "Kiwi Pro",
     "products": [
       "kiwi_monthly",
-      "kiwi_annual"
+      "kiwi_annual",
+      "kiwi_lifetime"
     ]
   },
   "product_configs": {
@@ -107,6 +137,11 @@
       "subscription_period": "P1Y",
       "display_name": "Kiwi Pro Annual",
       "description": "Full access to all premium features - Best Value!"
+    },
+    "kiwi_lifetime": {
+      "type": "non_consumable",
+      "display_name": "Kiwi Pro Lifetime",
+      "description": "Full access to all premium features - Lifetime"
     }
   },
   "styling": {
@@ -182,7 +217,7 @@
       "monthly": "$4.99",
       "annual": "$39.99",
       "savings_percentage": "33%",
-      "discount_text": "Save 30%"
+      "discount_text": "Save 33%"
     }
   }
 }
