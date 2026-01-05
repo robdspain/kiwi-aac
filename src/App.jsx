@@ -48,8 +48,6 @@ import { Capacitor } from '@capacitor/core';
 import { NativeBiometric } from 'capacitor-native-biometric';
 import { authenticateWithBiometric, isSessionValid } from './utils/biometricAuth';
 import { getDeviceDPI } from './utils/physicalScaling';
-import cloudSyncService from './services/CloudSyncService';
-import relationalSyncService from './services/RelationalSyncService';
 import { saveMedia, deleteMedia } from './utils/db';
 
 const synth = window.speechSynthesis || null;
@@ -419,6 +417,15 @@ function App() {
 
   useEffect(() => {
     const attemptCloudRestore = async () => {
+      let relationalSyncService;
+      try {
+        const module = await import('./services/RelationalSyncService');
+        relationalSyncService = module.default;
+      } catch (e) {
+        console.error('Failed to load RelationalSyncService', e);
+        return;
+      }
+
       if (!relationalSyncService.isConfigured()) return;
       const onboardingComplete = localStorage.getItem('kiwi-onboarding-complete');
       if (onboardingComplete) return;
@@ -469,15 +476,19 @@ function App() {
       }
 
       let canUseCloudSync = false;
+      let cloudSyncService = null;
       try {
-        if (cloudSyncService.isConfigured() && revenueCatService) {
+        const csModule = await import('./services/CloudSyncService');
+        cloudSyncService = csModule.default;
+
+        if (cloudSyncService && cloudSyncService.isConfigured() && revenueCatService) {
           canUseCloudSync = await revenueCatService.hasPremiumAccess();
         }
       } catch (error) {
         console.error('Failed to verify cloud sync entitlement:', error);
       }
 
-      if (canUseCloudSync) {
+      if (canUseCloudSync && cloudSyncService) {
         await attemptCloudRestore();
         // Auto-sync if a cloud code is active
         cloudSyncService.autoSync();

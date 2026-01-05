@@ -1,9 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import GuidedAccessModal from './GuidedAccessModal';
-import FavoritesPickerModal from './FavoritesPickerModal';
-import PronunciationEditor from './PronunciationEditor';
-import MemojiPicker from './MemojiPicker';
-import VoiceSetupModal from './VoiceSetupModal';
 import { STAGES, LEVEL_ORDER, getLevel, getStage } from '../data/levelDefinitions';
 import { BELL_SOUNDS, playBellSound } from '../utils/sounds';
 import { useProfile } from '../context/ProfileContext';
@@ -12,7 +8,11 @@ import { NativeBiometric } from 'capacitor-native-biometric';
 import { Capacitor } from '@capacitor/core';
 import { getMedia } from '../utils/db';
 
-import BackupRestore from './BackupRestore';
+const HelperBackupRestore = lazy(() => import('./BackupRestore'));
+const FavoritesPickerModal = lazy(() => import('./FavoritesPickerModal'));
+const PronunciationEditor = lazy(() => import('./PronunciationEditor'));
+const MemojiPicker = lazy(() => import('./MemojiPicker'));
+const VoiceSetupModal = lazy(() => import('./VoiceSetupModal'));
 
 const Controls = ({
     isEditMode,
@@ -1565,66 +1565,76 @@ const Controls = ({
             )}
 
             {showFavoritesPicker && (
-                <FavoritesPickerModal
-                    onClose={() => setShowFavoritesPicker(false)}
-                    onAddFavorites={(favorites) => {
-                        if (onAddFavorites) {
-                            onAddFavorites(favorites);
-                        }
-                    }}
-                    existingFavorites={[]} // We'll pass this from App
-                />
+                <Suspense fallback={null}>
+                    <FavoritesPickerModal
+                        onClose={() => setShowFavoritesPicker(false)}
+                        onAddFavorites={(favorites) => {
+                            if (onAddFavorites) {
+                                onAddFavorites(favorites);
+                            }
+                        }}
+                        existingFavorites={[]} // We'll pass this from App
+                    />
+                </Suspense>
             )}
 
             {showPronunciationEditor && (
-                <PronunciationEditor
-                    onClose={() => setShowPronunciationEditor(false)}
-                />
+                <Suspense fallback={null}>
+                    <PronunciationEditor
+                        onClose={() => setShowPronunciationEditor(false)}
+                    />
+                </Suspense>
             )}
 
             {showVoiceSetup && (
-                <VoiceSetupModal
-                    isOpen={showVoiceSetup}
-                    onClose={() => setShowVoiceSetup(false)}
-                    onRefresh={refreshVoices}
-                    isRefreshing={isRefreshingVoices}
-                    isIOS={isIOS}
-                />
+                <Suspense fallback={null}>
+                    <VoiceSetupModal
+                        isOpen={showVoiceSetup}
+                        onClose={() => setShowVoiceSetup(false)}
+                        onRefresh={refreshVoices}
+                        isRefreshing={isRefreshingVoices}
+                        isIOS={isIOS}
+                    />
+                </Suspense>
             )}
 
             {showMemojiPicker && (
-                <MemojiPicker
-                    onSelect={(icon, config) => {
-                        if (memojiTarget?.mode === 'edit' && onUpdatePerson && memojiTarget.person) {
-                            onUpdatePerson(memojiTarget.person.id, {
-                                name: config?.name || memojiTarget.person.word,
-                                icon,
-                                config
-                            });
-                        } else if (onAddPerson) {
-                            onAddPerson({
-                                name: config?.name,
-                                icon,
-                                config
-                            });
-                        }
-                        setShowMemojiPicker(false);
-                        setMemojiTarget(null);
-                    }}
-                    onClose={() => {
-                        setShowMemojiPicker(false);
-                        setMemojiTarget(null);
-                    }}
-                    initialName={memojiTarget?.person?.word || ''}
-                    initialSeed={memojiTarget?.person?.characterConfig?.seed || null}
-                />
+                <Suspense fallback={null}>
+                    <MemojiPicker
+                        onSelect={(icon, config) => {
+                            if (memojiTarget?.mode === 'edit' && onUpdatePerson && memojiTarget.person) {
+                                onUpdatePerson(memojiTarget.person.id, {
+                                    name: config?.name || memojiTarget.person.word,
+                                    icon,
+                                    config
+                                });
+                            } else if (onAddPerson) {
+                                onAddPerson({
+                                    name: config?.name,
+                                    icon,
+                                    config
+                                });
+                            }
+                            setShowMemojiPicker(false);
+                            setMemojiTarget(null);
+                        }}
+                        onClose={() => {
+                            setShowMemojiPicker(false);
+                            setMemojiTarget(null);
+                        }}
+                        initialName={memojiTarget?.person?.word || ''}
+                        initialSeed={memojiTarget?.person?.characterConfig?.seed || null}
+                    />
+                </Suspense>
             )}
 
             {showBackupRestore && (
-                <BackupRestore
-                    isOpen={showBackupRestore}
-                    onClose={() => setShowBackupRestore(false)}
-                />
+                <Suspense fallback={null}>
+                    <HelperBackupRestore
+                        isOpen={showBackupRestore}
+                        onClose={() => setShowBackupRestore(false)}
+                    />
+                </Suspense>
             )}
         </div>
     );
