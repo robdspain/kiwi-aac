@@ -974,6 +974,11 @@ function App() {
       target[currentPath[currentPath.length - 1]].contents = newList;
     }
     setRootItems(newRootItems);
+
+    // Save to localStorage (FIX: This was missing!)
+    const key = getContextStorageKey(currentContext);
+    localStorage.setItem(key, JSON.stringify(newRootItems));
+
     setEditingItemIndex(newList.length - 1); setEditModalOpen(true);
   };
 
