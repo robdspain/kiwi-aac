@@ -1,0 +1,349 @@
+{
+  "paywall": {
+    "id": "kiwi_pro_default",
+    "name": "Kiwi Pro - Default Paywall",
+    "type": "FULL_SCREEN",
+    "template": "TEMPLATE_5",
+    "design": {
+      "colors": {
+        "primary": "#1A535C",
+        "accent": "#007AFF",
+        "background": "#FFFFFF",
+        "text_primary": "#2D3436",
+        "text_secondary": "#6C757D",
+        "success": "#22C55E",
+        "card_background": "#F8F9FA"
+      },
+      "typography": {
+        "font_family": "SF Pro",
+        "title_size": 28,
+        "subtitle_size": 17,
+        "body_size": 15,
+        "caption_size": 13
+      },
+      "spacing": {
+        "padding": 24,
+        "item_spacing": 16,
+        "section_spacing": 32
+      },
+      "corner_radius": 16,
+      "shadow_enabled": true
+    },
+    "content": {
+      "header": {
+        "icon": "🥝",
+        "icon_size": 80,
+        "title": "Unlock Kiwi Pro",
+        "title_color": "#2D3436",
+        "subtitle": "Empower unlimited communication with premium AAC features",
+        "subtitle_color": "#6C757D",
+        "background_gradient": [
+          "#FFFFFF",
+          "#F8F9FA"
+        ]
+      },
+      "features": [
+        {
+          "icon": "✨",
+          "title": "Unlimited Vocabulary",
+          "description": "Break free from the 50-word limit. Add unlimited custom buttons and folders.",
+          "highlight": true
+        },
+        {
+          "icon": "🎙️",
+          "title": "Premium Voice Quality",
+          "description": "Access enhanced, natural-sounding voices for clearer communication.",
+          "highlight": true
+        },
+        {
+          "icon": "👥",
+          "title": "Multiple User Profiles",
+          "description": "Perfect for families, schools, and clinics. Unlimited profiles with personalized settings.",
+          "highlight": false
+        },
+        {
+          "icon": "☁️",
+          "title": "Cloud Backup & Sync",
+          "description": "Never lose your vocabulary. Automatic backup and sync across all devices.",
+          "highlight": false
+        },
+        {
+          "icon": "📊",
+          "title": "Advanced Analytics",
+          "description": "Track communication progress with detailed insights and usage reports.",
+          "highlight": false
+        },
+        {
+          "icon": "🎨",
+          "title": "Premium Themes",
+          "description": "Personalize your experience with Ocean, Sunset, Forest, Berry, and Candy themes.",
+          "highlight": false
+        },
+        {
+          "icon": "📸",
+          "title": "Unlimited Photos",
+          "description": "Add unlimited custom photos from your camera roll or family albums.",
+          "highlight": false
+        },
+        {
+          "icon": "🧑‍💼",
+          "title": "Custom Characters",
+          "description": "Create unlimited personalized avatars for your Circle of Support.",
+          "highlight": false
+        },
+        {
+          "icon": "🔔",
+          "title": "Priority Support",
+          "description": "Get fast, dedicated help from our AAC specialists whenever you need it.",
+          "highlight": false
+        }
+      ],
+      "social_proof": {
+        "enabled": true,
+        "text": "Join 10,000+ AAC users worldwide",
+        "stars": 5,
+        "rating_text": "4.9 out of 5 stars"
+      },
+      "pricing": {
+        "header": "Choose Your Plan",
+        "comparison_enabled": true,
+        "packages": [
+          {
+            "identifier": "$rc_monthly",
+            "product_id": "kiwi_monthly",
+            "title": "Monthly",
+            "badge": "Most Flexible",
+            "badge_color": "#007AFF",
+            "price_display": "$9.99",
+            "billing_period": "per month",
+            "description": "Cancel anytime",
+            "features": [
+              "All premium features",
+              "Monthly billing",
+              "Cancel anytime"
+            ],
+            "is_default": false,
+            "highlight": false
+          },
+          {
+            "identifier": "$rc_annual",
+            "product_id": "kiwi_annual",
+            "title": "Annual",
+            "badge": "Best Value",
+            "badge_color": "#22C55E",
+            "price_display": "$79.99",
+            "billing_period": "per year",
+            "price_per_month": "$6.67/month",
+            "savings_text": "Save 33%",
+            "savings_amount": "$40/year",
+            "description": "Best value for families",
+            "features": [
+              "All premium features",
+              "Save $40 per year",
+              "Best value"
+            ],
+            "is_default": true,
+            "highlight": true
+          }
+        ]
+      },
+      "free_trial": {
+        "enabled": true,
+        "duration": 7,
+        "duration_unit": "days",
+        "cta_text": "Start 7-Day Free Trial",
+        "disclaimer": "Free for 7 days, then {{price}} per {{period}}. Cancel anytime."
+      },
+      "call_to_action": {
+        "primary_button": {
+          "text": "Start Free Trial",
+          "background_color": "#1A535C",
+          "text_color": "#FFFFFF",
+          "corner_radius": 12,
+          "height": 56,
+          "shadow": true
+        },
+        "secondary_button": {
+          "text": "Restore Purchases",
+          "background_color": "transparent",
+          "text_color": "#007AFF",
+          "corner_radius": 12,
+          "height": 44,
+          "border_color": "#007AFF",
+          "border_width": 2
+        }
+      },
+      "footer": {
+        "legal_links": [
+          {
+            "text": "Terms of Service",
+            "url": "https://kiwivoiceapp.com/terms"
+          },
+          {
+            "text": "Privacy Policy",
+            "url": "https://kiwivoiceapp.com/privacy"
+          },
+          {
+            "text": "Support",
+            "url": "mailto:support@kiwivoiceapp.com"
+          }
+        ],
+        "disclaimer": "Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Manage subscriptions in Settings.",
+        "text_color": "#6C757D",
+        "font_size": 12
+      }
+    },
+    "localization": {
+      "default_language": "en",
+      "supported_languages": [
+        "en",
+        "es"
+      ],
+      "translations": {
+        "es": {
+          "header": {
+            "title": "Desbloquea Kiwi Pro",
+            "subtitle": "Potencia la comunicación ilimitada con funciones AAC premium"
+          },
+          "features": [
+            {
+              "title": "Vocabulario Ilimitado",
+              "description": "Libérate del límite de 50 palabras. Agrega botones y carpetas personalizados ilimitados."
+            },
+            {
+              "title": "Calidad de Voz Premium",
+              "description": "Accede a voces mejoradas y naturales para una comunicación más clara."
+            },
+            {
+              "title": "Múltiples Perfiles de Usuario",
+              "description": "Perfecto para familias, escuelas y clínicas. Perfiles ilimitados con configuraciones personalizadas."
+            },
+            {
+              "title": "Copia de Seguridad en la Nube",
+              "description": "Nunca pierdas tu vocabulario. Copia de seguridad automática y sincronización en todos los dispositivos."
+            },
+            {
+              "title": "Análisis Avanzados",
+              "description": "Sigue el progreso de comunicación con informes detallados y de uso."
+            },
+            {
+              "title": "Temas Premium",
+              "description": "Personaliza tu experiencia con temas Océano, Atardecer, Bosque, Mora y Dulce."
+            },
+            {
+              "title": "Fotos Ilimitadas",
+              "description": "Agrega fotos personalizadas ilimitadas desde tu rollo de cámara o álbumes familiares."
+            },
+            {
+              "title": "Personajes Personalizados",
+              "description": "Crea avatares personalizados ilimitados para tu Círculo de Apoyo."
+            },
+            {
+              "title": "Soporte Prioritario",
+              "description": "Obtén ayuda rápida y dedicada de nuestros especialistas en AAC cuando la necesites."
+            }
+          ],
+          "pricing": {
+            "header": "Elige Tu Plan"
+          },
+          "free_trial": {
+            "cta_text": "Comenzar Prueba Gratis de 7 Días"
+          },
+          "call_to_action": {
+            "primary_button": {
+              "text": "Comenzar Prueba Gratis"
+            },
+            "secondary_button": {
+              "text": "Restaurar Compras"
+            }
+          }
+        }
+      }
+    },
+    "targeting": {
+      "audiences": [
+        {
+          "name": "New Users (0-7 days)",
+          "conditions": {
+            "days_since_install": {
+              "min": 0,
+              "max": 7
+            }
+          },
+          "variant": "emphasis_free_trial"
+        },
+        {
+          "name": "Engaged Users (7+ days)",
+          "conditions": {
+            "days_since_install": {
+              "min": 7
+            },
+            "session_count": {
+              "min": 5
+            }
+          },
+          "variant": "emphasis_value"
+        },
+        {
+          "name": "Hit Free Limit",
+          "conditions": {
+            "custom_attribute": "vocabulary_count",
+            "operator": ">=",
+            "value": 50
+          },
+          "variant": "emphasis_unlimited"
+        }
+      ]
+    },
+    "analytics": {
+      "track_impressions": true,
+      "track_conversions": true,
+      "track_dismissals": true,
+      "custom_events": [
+        "paywall_viewed",
+        "paywall_dismissed",
+        "paywall_purchased_monthly",
+        "paywall_purchased_annual",
+        "paywall_trial_started",
+        "paywall_restore_attempted"
+      ]
+    }
+  },
+  "paywall_variants": [
+    {
+      "id": "emphasis_free_trial",
+      "name": "Emphasis on Free Trial",
+      "changes": {
+        "content.header.title": "Try Kiwi Pro Free",
+        "content.header.subtitle": "7 days free, then unlock unlimited AAC features",
+        "content.call_to_action.primary_button.text": "Start Free Trial Now"
+      }
+    },
+    {
+      "id": "emphasis_value",
+      "name": "Emphasis on Value",
+      "changes": {
+        "content.header.title": "Save 33% with Annual Plan",
+        "content.header.subtitle": "Get unlimited features for less than $7/month",
+        "content.pricing.packages[1].highlight": true
+      }
+    },
+    {
+      "id": "emphasis_unlimited",
+      "name": "Emphasis on Unlimited",
+      "changes": {
+        "content.header.title": "Go Unlimited",
+        "content.header.subtitle": "Break free from limits. Unlimited vocabulary, photos, and profiles.",
+        "content.features[0].highlight": true
+      }
+    }
+  ],
+  "metadata": {
+    "created_by": "Claude Code",
+    "created_at": "2026-01-04",
+    "version": "1.0",
+    "app_name": "Kiwi AAC",
+    "template_based_on": "RevenueCat Template 5 (Full Screen)",
+    "notes": "Optimized for AAC users and families. Emphasizes communication empowerment and unlimited features."
+  }
+}
