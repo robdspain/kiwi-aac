@@ -56,6 +56,7 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
     const fileInputRef = useRef(null);
     const lastCustomizingItemIdRef = useRef(null);
     const peekTimerRef = useRef(null);
+    const [showSaveOptions, setShowSaveOptions] = useState(false);
 
     const triggerHaptic = async (style) => {
         try {
@@ -113,31 +114,50 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
     const isDataUrlPhoto = (value) => typeof value === 'string' && value.startsWith('data:');
     const countCustomPhotos = (photos) => photos.filter(photo => isDataUrlPhoto(photo.i)).length;
 
-    const handleConfirmSelection = async () => {
-        if (customizingItem) {
-            // Save to global registry
-            if (customizingItem.isImage) {
-                const photos = getGlobalPhotos();
-                const isNewPhoto = !photos.find(p => p.i === customizingItem.icon);
-                if (isNewPhoto) {
-                    const isCustomPhoto = isDataUrlPhoto(customizingItem.icon);
-                    if (isCustomPhoto) {
-                        try {
-                            const { checkCustomPhotoLimit } = await import('../utils/paywall');
-                            const hasAccess = await checkCustomPhotoLimit(countCustomPhotos(photos));
-                            if (!hasAccess) return;
-                        } catch (error) {
-                            console.error('Failed to check custom photo limit:', error);
-                        }
-                    }
-                    photos.unshift({ w: customName || customizingItem.word, i: customizingItem.icon });
-                    localStorage.setItem('kiwi-user-photos', JSON.stringify(photos));
-                }
-            }
+    const handleConfirmSelection = () => {
+        // Show options dialog instead of immediate save
+        setShowSaveOptions(true);
+    };
 
-            onSelect(customName || customizingItem.word, customizingItem.icon, customizingItem.isImage);
-            setCustomizingItem(null); setSearchQuery('');
+    const executeSave = async (alsoUse) => {
+        if (!customizingItem) return;
+
+        // Save to global registry
+        if (customizingItem.isImage) {
+            const photos = getGlobalPhotos();
+            const isNewPhoto = !photos.find(p => p.i === customizingItem.icon);
+            if (isNewPhoto) {
+                const isCustomPhoto = isDataUrlPhoto(customizingItem.icon);
+                if (isCustomPhoto) {
+                    try {
+                        const { checkCustomPhotoLimit } = await import('../utils/paywall');
+                        const hasAccess = await checkCustomPhotoLimit(countCustomPhotos(photos));
+                        if (!hasAccess) {
+                            setShowSaveOptions(false);
+                            return;
+                        }
+                    } catch (error) {
+                        console.error('Failed to check custom photo limit:', error);
+                    }
+                }
+                photos.unshift({ w: customName || customizingItem.word, i: customizingItem.icon });
+                localStorage.setItem('kiwi-user-photos', JSON.stringify(photos));
+            }
         }
+
+        if (alsoUse) {
+            onSelect(customName || customizingItem.word, customizingItem.icon, customizingItem.isImage);
+            setCustomizingItem(null);
+            setSearchQuery('');
+        } else {
+            // Just library save. Stay in customization or go back to picker?
+            // Usually "Save to Library" implies we are done editing.
+            // Let's go back to the picker view so they can see it in "My Icons"
+            setCustomizingItem(null);
+            // Optionally switch to "My Icons" tab?
+            // setActiveTab('emoji'); setActiveCategory('My Icons');
+        }
+        setShowSaveOptions(false);
     };
 
     const handleItemSelect = (word, icon, isImage) => {
@@ -681,6 +701,59 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                     }}
                     title="Crop Photo"
                 />
+            )}
+
+            {showSaveOptions && (
+                <div className="ios-bottom-sheet-overlay" style={{ zIndex: 6000 }} onClick={() => setShowSaveOptions(false)}>
+                    <div className="ios-bottom-sheet" style={{ height: 'auto', maxHeight: '50vh', padding: '1.5rem', background: 'white' }} onClick={e => e.stopPropagation()}>
+                        <h3 style={{ textAlign: 'center', marginBottom: '1.5rem', fontSize: '1.1rem' }}>Save Icon</h3>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            <button
+                                onClick={() => executeSave(true)}
+                                style={{
+                                    padding: '1rem',
+                                    background: '#007AFF',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '1rem',
+                                    fontSize: '1rem',
+                                    fontWeight: 600
+                                }}
+                            >
+                                Save to Library & Use
+                            </button>
+                            <button
+                                onClick={() => executeSave(false)}
+                                style={{
+                                    padding: '1rem',
+                                    background: '#F2F2F7',
+                                    color: '#007AFF',
+                                    border: 'none',
+                                    borderRadius: '1rem',
+                                    fontSize: '1rem',
+                                    fontWeight: 600
+                                }}
+                            >
+                                Save to Library Only
+                            </button>
+                            <button
+                                onClick={() => setShowSaveOptions(false)}
+                                style={{
+                                    padding: '1rem',
+                                    background: 'white',
+                                    color: '#FF3B30',
+                                    border: 'none',
+                                    borderRadius: '1rem',
+                                    fontSize: '1rem',
+                                    fontWeight: 600,
+                                    marginTop: '0.5rem'
+                                }}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );
