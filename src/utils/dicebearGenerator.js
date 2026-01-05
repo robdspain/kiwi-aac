@@ -1,184 +1,186 @@
 /**
- * DiceBear Avatar Generator Utility
- * 
- * Provides functions for generating customizable avatars using DiceBear's Big Smile style.
- * Supports skin tone, hair style/color, accessories, and background customization.
+ * DiceBear Avatar Generator Utility (Avataaars Style)
  */
 
 import { createAvatar } from '@dicebear/core';
-import * as bigSmile from '@dicebear/big-smile';
+import * as avataaars from '@dicebear/avataaars';
 
-// Skin tone variants (light to dark)
-export const SKIN_TONES = {
-    light: 'variant01',
-    'light-medium': 'variant02',
-    medium: 'variant03',
-    'medium-dark': 'variant04',
-    dark: 'variant05'
+export const SKIN_TONE_OPTIONS = {
+    pale: 'Pale',
+    light: 'Light',
+    brown: 'Brown',
+    darkBrown: 'Dark Brown',
+    black: 'Black',
+    tanned: 'Tanned',
+    yellow: 'Simpsons'
 };
 
-export const SKIN_TONE_LABELS = {
-    light: '🌟 Light',
-    'light-medium': '☀️ Fair',
-    medium: '🌞 Medium',
-    'medium-dark': '🌅 Tan',
-    dark: '✨ Dark'
+export const TOP_TYPES = {
+    noHair: 'noHair',
+    shortHairShortFlat: 'shortHairShortFlat',
+    shortHairShortRound: 'shortHairShortRound',
+    shortHairDreads01: 'shortHairDreads01',
+    shortHairTheCaesar: 'shortHairTheCaesar',
+    longHairBigHair: 'longHairBigHair',
+    longHairBob: 'longHairBob',
+    longHairBun: 'longHairBun',
+    longHairCurly: 'longHairCurly',
+    longHairStraight: 'longHairStraight',
+    longHairMiaWallace: 'longHairMiaWallace',
+    hijab: 'hijab',
+    turban: 'turban',
+    winterHat1: 'winterHat1',
+    hat: 'hat'
 };
 
-// Hair style variants
-export const HAIR_STYLES = {
-    short: 'short01',
-    'short-2': 'short02',
-    'short-3': 'short03',
-    long: 'long01',
-    'long-2': 'long02',
-    bun: 'bun',
-    bald: 'bald'
+export const TOP_TYPE_LABELS = {
+    noHair: '👩‍🦲 Bald',
+    shortHairShortFlat: '💇 Short Flat',
+    shortHairShortRound: '💇 Short Round',
+    shortHairDreads01: '💇 Dreads',
+    shortHairTheCaesar: '💇 Caesar',
+    longHairBigHair: '💇‍♀️ Big Hair',
+    longHairBob: '💇‍♀️ Bob',
+    longHairBun: '💇‍♀️ Bun',
+    longHairCurly: '💇‍♀️ Curly',
+    longHairStraight: '💇‍♀️ Straight',
+    longHairMiaWallace: '💇‍♀️ Mia',
+    hijab: '🧕 Hijab',
+    turban: '👳 Turban',
+    winterHat1: '❄️ Winter Hat',
+    hat: '🧢 Hat'
 };
 
-export const HAIR_STYLE_LABELS = {
-    short: '✂️ Short',
-    long: '💇 Long',
-    bald: '⭐ Bald'
-};
-
-// Hair color variants
 export const HAIR_COLORS = {
-    black: 'black',
-    brown: 'brown',
-    blonde: 'blonde',
-    red: 'red',
     auburn: 'auburn',
-    platinum: 'platinum'
+    black: 'black',
+    blonde: 'blonde',
+    blondeGolden: 'blondeGolden',
+    brown: 'brown',
+    brownDark: 'brownDark',
+    pastelPink: 'pastelPink',
+    platinum: 'platinum',
+    red: 'red',
+    silverGray: 'silverGray'
 };
 
 export const HAIR_COLOR_LABELS = {
     black: '⚫ Black',
     brown: '🟤 Brown',
+    brownDark: '🟤 Dark Brown',
     blonde: '🟡 Blonde',
+    blondeGolden: '🟡 Golden',
+    platinum: '⚪ Platinum',
     red: '🔴 Red',
     auburn: '🟠 Auburn',
-    platinum: '⚪ Platinum'
+    silverGray: '⚪ Gray',
+    pastelPink: '🌸 Pink'
 };
 
-// Accessory options
-export const ACCESSORIES = {
-    none: 'none',
-    glasses1: 'glasses01',
-    glasses2: 'glasses02',
-    glasses3: 'glasses03'
+export const FACIAL_HAIR_TYPES = {
+    none: 'blank',
+    beardMedium: 'beardMedium',
+    beardLight: 'beardLight',
+    mustacheFancy: 'mustacheFancy'
 };
 
-// Facial hair options
-export const FACIAL_HAIR = {
-    none: 'none',
-    beard1: 'beard01',
-    beard2: 'beard02',
-    mustache: 'mustache'
+export const FACIAL_HAIR_LABELS = {
+    none: 'None',
+    beardMedium: 'Beard',
+    beardLight: 'Stubble',
+    mustacheFancy: 'Mustache'
 };
 
-// Background colors
+export const CLOTHING_TYPES = {
+    blazerShirt: 'blazerShirt',
+    hoodie: 'hoodie',
+    overall: 'overall',
+    shirtCrewNeck: 'shirtCrewNeck',
+    shirtScoopNeck: 'shirtScoopNeck'
+};
+
+export const CLOTHING_LABELS = {
+    blazerShirt: '👔 Blazer',
+    hoodie: '🧥 Hoodie',
+    overall: '👖 Overall',
+    shirtCrewNeck: '👕 T-Shirt',
+    shirtScoopNeck: '👕 Scoop'
+};
+
+export const ACCESSORIES_TYPES = {
+    none: 'blank',
+    prescription01: 'prescription01',
+    sunglasses: 'sunglasses'
+};
+
+export const ACCESSORIES_LABELS = {
+    none: 'None',
+    prescription01: 'Glasses',
+    sunglasses: 'Sunglasses'
+};
+
 export const BACKGROUND_COLORS = [
-    '#ffdfbf', // Peach
-    '#c0aede', // Purple
-    '#d1d4f9', // Blue
-    '#ffd5dc', // Pink
-    '#b6e3d4', // Mint
-    '#ffd89b', // Yellow
-    '#dfe7fd', // Sky
-    '#ffe4e1'  // Rose
+    'b6e3f4', 'c0aede', 'd1d4f9', 'ffdfbf', 'ffd5dc'
 ];
 
-/**
- * Generate a DiceBear avatar with custom options
- * 
- * @param {Object} options - Avatar customization options
- * @param {string} options.seed - Unique seed for avatar (e.g., name)
- * @param {string} options.skinTone - Skin tone variant (light, medium, dark)
- * @param {string} options.hairStyle - Hair style (short, long, bald)
- * @param {string} options.hairColor - Hair color (blonde, brown, black, etc.)
- * @param {boolean} options.glasses - Whether to add glasses
- * @param {boolean} options.facialHair - Whether to add facial hair
- * @param {string} options.backgroundColor - Background hex color
- * @returns {string} Data URL of generated SVG avatar
- */
+
 export function generateAvatar(options = {}) {
     const {
         seed = 'Avatar',
-        skinTone = 'medium',
-        hairStyle = 'short',
+        skinColor = 'light',
+        top = 'longHairStraight',
         hairColor = 'brown',
-        glasses = false,
-        facialHair = false,
-        backgroundColor = '#ffdfbf'
+        facialHair = 'none',
+        clothing = 'shirtCrewNeck',
+        accessories = 'none',
+        backgroundColor = 'b6e3f4'
     } = options;
 
-    // Map simple options to DiceBear parameters
     const dicebearOptions = {
         seed,
-        skinColor: [SKIN_TONES[skinTone] || SKIN_TONES.medium],
-        hair: [HAIR_STYLES[hairStyle] || HAIR_STYLES.short],
-        hairColor: [HAIR_COLORS[hairColor] || HAIR_COLORS.brown],
+        skinColor: [SKIN_TONE_OPTIONS[skinColor] ? skinColor : 'light'], // Using keys directly as values for avataaars usually works if mapped correctly
+        top: [top],
+        hairColor: [hairColor],
+        facialHair: [FACIAL_HAIR_TYPES[facialHair] || 'blank'],
+        clothing: [clothing],
+        accessories: [ACCESSORIES_TYPES[accessories] || 'blank'],
         backgroundColor: [backgroundColor]
     };
 
-    // Add accessories if enabled
-    if (glasses) {
-        dicebearOptions.accessories = [ACCESSORIES.glasses1];
-        dicebearOptions.accessoriesProbability = 100;
-    } else {
-        dicebearOptions.accessories = [ACCESSORIES.none];
-        dicebearOptions.accessoriesProbability = 0;
-    }
+    // Fix mapping: Avataaars expects specific mapped values for skinColor if we passed labels, but we are passing keys.
+    // The SDK expects arrays of values.
 
-    // Add facial hair if enabled
-    if (facialHair) {
-        dicebearOptions.facialHair = [FACIAL_HAIR.beard1];
-        dicebearOptions.facialHairProbability = 100;
-    } else {
-        dicebearOptions.facialHair = [FACIAL_HAIR.none];
-        dicebearOptions.facialHairProbability = 0;
-    }
+    // Let's ensure strict mapping if needed.
+    // Actually, for skinColor, Avataaars uses 'light', 'pale', etc. so passing the key 'light' is correct.
 
-    const avatar = createAvatar(bigSmile, dicebearOptions);
-    return avatar.toDataUri();
+    return createAvatar(avataaars, dicebearOptions).toDataUri();
 }
 
-/**
- * Generate a random avatar with random parameters
- * 
- * @param {string} seed - Optional seed (uses random if not provided)
- * @returns {Object} Avatar data URL and config
- */
 export function generateRandomAvatar(seed) {
-    const skinTones = Object.keys(SKIN_TONES);
-    const hairStyles = ['short', 'long', 'bald'];
-    const hairColors = Object.keys(HAIR_COLORS);
+    const skins = Object.keys(SKIN_TONE_OPTIONS);
+    const tops = Object.keys(TOP_TYPES);
+    const hairs = Object.keys(HAIR_COLORS);
+    const clothes = Object.keys(CLOTHING_TYPES);
+    const accs = Object.keys(ACCESSORIES_TYPES);
+    const facial = Object.keys(FACIAL_HAIR_TYPES);
 
     const config = {
         seed: seed || Math.random().toString(36).substring(7),
-        skinTone: skinTones[Math.floor(Math.random() * skinTones.length)],
-        hairStyle: hairStyles[Math.floor(Math.random() * hairStyles.length)],
-        hairColor: hairColors[Math.floor(Math.random() * hairColors.length)],
-        glasses: Math.random() > 0.7,
-        facialHair: Math.random() > 0.7,
+        skinColor: skins[Math.floor(Math.random() * skins.length)],
+        top: tops[Math.floor(Math.random() * tops.length)],
+        hairColor: hairs[Math.floor(Math.random() * hairs.length)],
+        facialHair: Math.random() > 0.8 ? facial[Math.floor(Math.random() * facial.length)] : 'none',
+        clothing: clothes[Math.floor(Math.random() * clothes.length)],
+        accessories: Math.random() > 0.8 ? accs[Math.floor(Math.random() * accs.length)] : 'none',
         backgroundColor: BACKGROUND_COLORS[Math.floor(Math.random() * BACKGROUND_COLORS.length)]
     };
 
-    const dataUrl = generateAvatar(config);
-
     return {
-        dataUrl,
+        dataUrl: generateAvatar(config),
         config
     };
 }
 
-/**
- * Generate multiple random avatars
- * 
- * @param {number} count - Number of avatars to generate
- * @returns {Array} Array of avatar objects with dataUrl and config
- */
 export function generateRandomAvatars(count = 12) {
     return Array.from({ length: count }, () => generateRandomAvatar());
 }

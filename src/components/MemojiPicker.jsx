@@ -2,9 +2,12 @@ import { useState, useEffect } from 'react';
 import {
     generateAvatar,
     generateRandomAvatars,
-    SKIN_TONE_LABELS,
-    HAIR_STYLE_LABELS,
+    SKIN_TONE_OPTIONS,
+    TOP_TYPE_LABELS,
     HAIR_COLOR_LABELS,
+    FACIAL_HAIR_LABELS,
+    CLOTHING_LABELS,
+    ACCESSORIES_LABELS,
     BACKGROUND_COLORS
 } from '../utils/dicebearGenerator';
 
@@ -17,12 +20,13 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
     const [selectedPreset, setSelectedPreset] = useState(null);
 
     // Customize tab state
-    const [skinTone, setSkinTone] = useState(initialConfig?.skinTone || 'medium');
-    const [hairStyle, setHairStyle] = useState(initialConfig?.hairStyle || 'short');
+    const [skinColor, setSkinColor] = useState(initialConfig?.skinColor || 'light');
+    const [top, setTop] = useState(initialConfig?.top || 'shortHairShortFlat');
     const [hairColor, setHairColor] = useState(initialConfig?.hairColor || 'brown');
-    const [glasses, setGlasses] = useState(initialConfig?.glasses || false);
-    const [facialHair, setFacialHair] = useState(initialConfig?.facialHair || false);
-    const [bgColor, setBgColor] = useState(initialConfig?.backgroundColor || '#ffdfbf');
+    const [facialHair, setFacialHair] = useState(initialConfig?.facialHair || 'none');
+    const [clothing, setClothing] = useState(initialConfig?.clothing || 'shirtCrewNeck');
+    const [accessories, setAccessories] = useState(initialConfig?.accessories || 'none');
+    const [bgColor, setBgColor] = useState(initialConfig?.backgroundColor || 'b6e3f4');
 
     // Preview
     const [preview, setPreview] = useState('');
@@ -37,16 +41,17 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
         if (activeTab === 'customize' || activeTab === 'presets') {
             const dataUrl = generateAvatar({
                 seed: name || 'Avatar',
-                skinTone,
-                hairStyle,
+                skinColor,
+                top,
                 hairColor,
-                glasses,
                 facialHair,
+                clothing,
+                accessories,
                 backgroundColor: bgColor
             });
             setPreview(dataUrl);
         }
-    }, [activeTab, skinTone, hairStyle, hairColor, glasses, facialHair, bgColor, name]);
+    }, [activeTab, skinColor, top, hairColor, facialHair, clothing, accessories, bgColor, name]);
 
     // Initial name set
     useEffect(() => {
@@ -59,11 +64,12 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
         if (newPresets.length > 0 && !selectedPreset) {
             setSelectedPreset(0);
             const first = newPresets[0];
-            setSkinTone(first.config.skinTone);
-            setHairStyle(first.config.hairStyle);
+            setSkinColor(first.config.skinColor);
+            setTop(first.config.top);
             setHairColor(first.config.hairColor);
-            setGlasses(first.config.glasses);
             setFacialHair(first.config.facialHair);
+            setClothing(first.config.clothing);
+            setAccessories(first.config.accessories);
             setBgColor(first.config.backgroundColor);
         }
     };
@@ -72,21 +78,23 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
         setSelectedPreset(index);
         const preset = presets[index];
         // Load preset config into customize tab
-        setSkinTone(preset.config.skinTone);
-        setHairStyle(preset.config.hairStyle);
+        setSkinColor(preset.config.skinColor);
+        setTop(preset.config.top);
         setHairColor(preset.config.hairColor);
-        setGlasses(preset.config.glasses);
         setFacialHair(preset.config.facialHair);
+        setClothing(preset.config.clothing);
+        setAccessories(preset.config.accessories);
         setBgColor(preset.config.backgroundColor);
     };
 
     const randomizeCustomize = () => {
         const random = generateRandomAvatars(1)[0];
-        setSkinTone(random.config.skinTone);
-        setHairStyle(random.config.hairStyle);
+        setSkinColor(random.config.skinColor);
+        setTop(random.config.top);
         setHairColor(random.config.hairColor);
-        setGlasses(random.config.glasses);
         setFacialHair(random.config.facialHair);
+        setClothing(random.config.clothing);
+        setAccessories(random.config.accessories);
         setBgColor(random.config.backgroundColor);
     };
 
@@ -97,14 +105,15 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
 
         const config = {
             type: 'dicebear',
-            style: 'big-smile',
+            style: 'avataaars',
             config: {
                 seed: trimmedName || 'Avatar',
-                skinTone,
-                hairStyle,
+                skinColor,
+                top,
                 hairColor,
-                glasses,
                 facialHair,
+                clothing,
+                accessories,
                 backgroundColor: bgColor
             }
         };
@@ -122,7 +131,7 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
                 className="ios-bottom-sheet"
                 onClick={e => e.stopPropagation()}
                 onPointerDown={e => e.stopPropagation()}
-                style={{ height: '85vh' }}
+                style={{ height: '90vh' }}
             >
                 <button className="ios-close-button" onClick={onClose} aria-label="Close">✕</button>
                 <div className="ios-sheet-header">
@@ -131,7 +140,7 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
                     <button className="ios-done-button" onClick={handleSave}>Done</button>
                 </div>
 
-                <div className="ios-sheet-content" style={{ background: '#F2F2F7', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div className="ios-sheet-content" style={{ background: '#F2F2F7', display: 'flex', flexDirection: 'column', gap: '1rem', paddingBottom: '3rem' }}>
 
                     {/* Preview Section */}
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1rem' }}>
@@ -151,12 +160,8 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
                                     type="text"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') handleSave();
-                                    }}
                                     style={{ border: 'none', textAlign: 'right', fontSize: '1.0625rem', outline: 'none', background: 'transparent', flex: 1, minHeight: '2.75rem' }}
                                     placeholder="e.g. Mom"
-                                    autoCapitalize="words"
                                 />
                             </div>
                         </div>
@@ -172,18 +177,8 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
                                 transition: 'transform 0.25s ease'
                             }}
                         />
-                        <button
-                            onClick={() => setActiveTab('presets')}
-                            style={{ flex: 1, minHeight: '2.75rem' }}
-                        >
-                            Presets
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('customize')}
-                            style={{ flex: 1, minHeight: '2.75rem' }}
-                        >
-                            Customize
-                        </button>
+                        <button onClick={() => setActiveTab('presets')} style={{ flex: 1, minHeight: '2.75rem' }}>Presets</button>
+                        <button onClick={() => setActiveTab('customize')} style={{ flex: 1, minHeight: '2.75rem' }}>Customize</button>
                     </div>
 
                     {/* Presets Tab */}
@@ -195,13 +190,7 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
                                     🔄 Shuffle
                                 </button>
                             </div>
-
-                            <div style={{
-                                display: 'grid',
-                                gridTemplateColumns: 'repeat(4, 1fr)',
-                                gap: '0.75rem',
-                                paddingBottom: '2rem'
-                            }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.75rem', paddingBottom: '2rem' }}>
                                 {presets.map((preset, index) => (
                                     <button
                                         key={index}
@@ -213,7 +202,6 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
                                             borderRadius: '1rem',
                                             padding: '0.25rem',
                                             cursor: 'pointer',
-                                            transition: 'all 0.2s',
                                             transform: selectedPreset === index ? 'scale(1.05)' : 'scale(1)',
                                             boxShadow: selectedPreset === index ? '0 4px 12px rgba(0,122,255,0.2)' : 'none',
                                             overflow: 'hidden'
@@ -228,164 +216,49 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
 
                     {/* Customize Tab */}
                     {activeTab === 'customize' && (
-                        <>
-                            <div style={{ padding: '0 1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                {/* Skin Tone */}
-                                <div>
-                                    <div className="ios-setting-group-header">Skin Tone</div>
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
-                                        {Object.entries(SKIN_TONE_LABELS).map(([key, label]) => (
-                                            <button
-                                                key={key}
-                                                onClick={() => setSkinTone(key)}
-                                                style={{
-                                                    padding: '0.75rem',
-                                                    background: skinTone === key ? '#007AFF' : 'white',
-                                                    color: skinTone === key ? 'white' : '#000',
-                                                    border: skinTone === key ? '2px solid #007AFF' : '1px solid #ddd',
-                                                    borderRadius: '0.5rem',
-                                                    fontSize: '0.85rem',
-                                                    fontWeight: 600,
-                                                    cursor: 'pointer',
-                                                    transition: 'all 0.2s'
-                                                }}
-                                            >
-                                                {label}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
+                        <div style={{ padding: '0 1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            {/* Skin Color */}
+                            <OptionGroup label="Skin Tone" options={SKIN_TONE_OPTIONS} selected={skinColor} onChange={setSkinColor} />
 
-                                {/* Hair Style */}
-                                <div>
-                                    <div className="ios-setting-group-header">Hair Style</div>
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
-                                        {Object.entries(HAIR_STYLE_LABELS).map(([key, label]) => (
-                                            <button
-                                                key={key}
-                                                onClick={() => setHairStyle(key)}
-                                                style={{
-                                                    padding: '0.75rem',
-                                                    background: hairStyle === key ? '#007AFF' : 'white',
-                                                    color: hairStyle === key ? 'white' : '#000',
-                                                    border: hairStyle === key ? '2px solid #007AFF' : '1px solid #ddd',
-                                                    borderRadius: '0.5rem',
-                                                    fontSize: '0.85rem',
-                                                    fontWeight: 600,
-                                                    cursor: 'pointer',
-                                                    transition: 'all 0.2s'
-                                                }}
-                                            >
-                                                {label}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
+                            {/* Top / Hair */}
+                            <OptionGroup label="Hair & Hats" options={TOP_TYPE_LABELS} selected={top} onChange={setTop} />
 
-                                {/* Hair Color */}
-                                {hairStyle !== 'bald' && (
-                                    <div>
-                                        <div className="ios-setting-group-header">Hair Color</div>
-                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
-                                            {Object.entries(HAIR_COLOR_LABELS).map(([key, label]) => (
-                                                <button
-                                                    key={key}
-                                                    onClick={() => setHairColor(key)}
-                                                    style={{
-                                                        padding: '0.75rem',
-                                                        background: hairColor === key ? '#007AFF' : 'white',
-                                                        color: hairColor === key ? 'white' : '#000',
-                                                        border: hairColor === key ? '2px solid #007AFF' : '1px solid #ddd',
-                                                        borderRadius: '0.5rem',
-                                                        fontSize: '0.85rem',
-                                                        fontWeight: 600,
-                                                        cursor: 'pointer',
-                                                        transition: 'all 0.2s'
-                                                    }}
-                                                >
-                                                    {label}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
+                            {/* Hair Color */}
+                            <OptionGroup label="Hair Color" options={HAIR_COLOR_LABELS} selected={hairColor} onChange={setHairColor} />
 
-                                {/* Accessories */}
-                                <div>
-                                    <div className="ios-setting-group-header">Accessories</div>
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
+                            {/* Facial Hair */}
+                            <OptionGroup label="Facial Hair" options={FACIAL_HAIR_LABELS} selected={facialHair} onChange={setFacialHair} />
+
+                            {/* Clothing */}
+                            <OptionGroup label="Clothing" options={CLOTHING_LABELS} selected={clothing} onChange={setClothing} />
+
+                            {/* Accessories */}
+                            <OptionGroup label="Accessories" options={ACCESSORIES_LABELS} selected={accessories} onChange={setAccessories} />
+
+                            {/* Background */}
+                            <div>
+                                <div className="ios-setting-group-header">Background</div>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.5rem' }}>
+                                    {BACKGROUND_COLORS.map(color => (
                                         <button
-                                            onClick={() => setGlasses(!glasses)}
+                                            key={color}
+                                            onClick={() => setBgColor(color)}
                                             style={{
-                                                padding: '0.75rem',
-                                                background: glasses ? '#007AFF' : 'white',
-                                                color: glasses ? 'white' : '#000',
-                                                border: glasses ? '2px solid #007AFF' : '1px solid #ddd',
+                                                aspectRatio: '1/1',
+                                                background: `#${color}`,
+                                                border: bgColor === color ? '3px solid #007AFF' : '1px solid #ddd',
                                                 borderRadius: '0.5rem',
-                                                fontSize: '0.85rem',
-                                                fontWeight: 600,
                                                 cursor: 'pointer'
                                             }}
-                                        >
-                                            👓 Glasses
-                                        </button>
-                                        <button
-                                            onClick={() => setFacialHair(!facialHair)}
-                                            style={{
-                                                padding: '0.75rem',
-                                                background: facialHair ? '#007AFF' : 'white',
-                                                color: facialHair ? 'white' : '#000',
-                                                border: facialHair ? '2px solid #007AFF' : '1px solid #ddd',
-                                                borderRadius: '0.5rem',
-                                                fontSize: '0.85rem',
-                                                fontWeight: 600,
-                                                cursor: 'pointer'
-                                            }}
-                                        >
-                                            🧔 Facial Hair
-                                        </button>
-                                    </div>
+                                        />
+                                    ))}
                                 </div>
-
-                                {/* Background Color */}
-                                <div>
-                                    <div className="ios-setting-group-header">Background</div>
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
-                                        {BACKGROUND_COLORS.map(color => (
-                                            <button
-                                                key={color}
-                                                onClick={() => setBgColor(color)}
-                                                style={{
-                                                    aspectRatio: '1/1',
-                                                    background: color,
-                                                    border: bgColor === color ? '3px solid #007AFF' : '1px solid #ddd',
-                                                    borderRadius: '0.5rem',
-                                                    cursor: 'pointer',
-                                                    boxShadow: bgColor === color ? '0 0 0 2px white' : 'none'
-                                                }}
-                                            />
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Randomize Button */}
-                                <button
-                                    onClick={randomizeCustomize}
-                                    style={{
-                                        padding: '1rem',
-                                        background: 'white',
-                                        border: '1px solid #ddd',
-                                        borderRadius: '0.75rem',
-                                        fontWeight: 600,
-                                        color: 'var(--primary)',
-                                        cursor: 'pointer',
-                                        marginBottom: '2rem'
-                                    }}
-                                >
-                                    🎲 Randomize All
-                                </button>
                             </div>
-                        </>
+
+                            <button onClick={randomizeCustomize} style={{ padding: '1rem', background: 'white', border: '1px solid #ddd', borderRadius: '0.75rem', fontWeight: 600, color: 'var(--primary)', marginBottom: '2rem' }}>
+                                🎲 Randomize All
+                            </button>
+                        </div>
                     )}
                 </div>
             </div>
@@ -393,5 +266,31 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
     );
 };
 
-export default MemojiPicker;
+const OptionGroup = ({ label, options, selected, onChange }) => (
+    <div>
+        <div className="ios-setting-group-header">{label}</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
+            {Object.entries(options).map(([key, label]) => (
+                <button
+                    key={key}
+                    onClick={() => onChange(key)}
+                    style={{
+                        padding: '0.75rem',
+                        background: selected === key ? '#007AFF' : 'white',
+                        color: selected === key ? 'white' : '#000',
+                        border: selected === key ? '2px solid #007AFF' : '1px solid #ddd',
+                        borderRadius: '0.5rem',
+                        fontSize: '0.85rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        textAlign: 'center'
+                    }}
+                >
+                    {label}
+                </button>
+            ))}
+        </div>
+    </div>
+);
 
+export default MemojiPicker;
