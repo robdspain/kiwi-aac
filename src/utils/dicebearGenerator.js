@@ -6,7 +6,7 @@
  */
 
 import { createAvatar } from '@dicebear/core';
-import { bigSmile } from '@dicebear/big-smile';
+import * as bigSmile from '@dicebear/big-smile';
 
 // Skin tone variants (light to dark)
 export const SKIN_TONES = {
