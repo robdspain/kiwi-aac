@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { Suspense, lazy } from 'react';
 import {
     IonPage,
     IonHeader,
@@ -14,7 +14,7 @@ import {
 import { chevronBackOutline, settingsOutline } from 'ionicons/icons';
 import Grid from './Grid';
 import SentenceStrip from './SentenceStrip';
-import SwitchAccessMode from './SwitchAccessMode';
+const SwitchAccessMode = lazy(() => import('./SwitchAccessMode'));
 import { trackSentence } from '../utils/AnalyticsService';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 

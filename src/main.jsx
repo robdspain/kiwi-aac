@@ -25,7 +25,6 @@ import App from './App.jsx'
 import EmojiCurator from './components/EmojiCurator.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 import { ProfileProvider } from './context/ProfileContext.jsx'
-import { AACProvider } from './context/AAContext.jsx'
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 
 // Initialize PWA Elements for Camera/Photos support on web
@@ -39,16 +38,14 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ErrorBoundary>
       <ProfileProvider>
-        <AACProvider>
-          <IonApp>
-            <IonReactRouter>
-              <IonRouterOutlet>
-                <Route path="/" exact={true} component={App} />
-                <Route path="/emoji" component={EmojiCurator} />
-              </IonRouterOutlet>
-            </IonReactRouter>
-          </IonApp>
-        </AACProvider>
+        <IonApp>
+          <IonReactRouter>
+            <IonRouterOutlet>
+              <Route path="/" exact={true} component={App} />
+              <Route path="/emoji" component={EmojiCurator} />
+            </IonRouterOutlet>
+          </IonReactRouter>
+        </IonApp>
       </ProfileProvider>
     </ErrorBoundary>
   </StrictMode>,
