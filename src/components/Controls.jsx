@@ -54,11 +54,11 @@ import {
     bookOutline,
     listOutline,
     colorWandOutline,
-
     lockClosedOutline,
     helpCircleOutline,
     schoolOutline,
-    videocamOutline
+    videocamOutline,
+    trashOutline
 } from 'ionicons/icons';
 
 const HelperBackupRestore = lazy(() => import('./BackupRestore'));
@@ -565,7 +565,7 @@ const Controls = ({
                                 {onDeletePage && (
                                     <IonItem button onClick={() => onDeletePage(currentPageIndex)} disabled={currentPageIndex === 0}>
                                         <IonLabel color="danger"><b>Delete Current Page</b></IonLabel>
-                                        <IonIcon slot="end" icon="trash-outline" /> {/* Assuming trash icon or similar, keeping text for now if icon import missing */}
+                                        <IonIcon slot="end" icon={trashOutline} />
                                         <IonNote slot="end">🗑️</IonNote>
                                     </IonItem>
                                 )}

@@ -1552,10 +1552,12 @@ function App() {
       )}
 
       {isEssentialSkillsMode && (
-        <EssentialSkillsMode
-          onExit={() => setIsEssentialSkillsMode(false)}
-          onLogEvent={(event) => console.log('Skills Event:', event)}
-        />
+        <Suspense fallback={null}>
+          <EssentialSkillsMode
+            onExit={() => setIsEssentialSkillsMode(false)}
+            onLogEvent={(event) => console.log('Skills Event:', event)}
+          />
+        </Suspense>
       )}
 
       {showDashboard && <Suspense fallback={null}><Dashboard onClose={() => setShowDashboard(false)} progressData={progressData} currentPhase={currentPhase} currentLevel={currentLevel} rootItems={rootItems[currentPageIndex]?.items || []} /></Suspense>}
@@ -1570,37 +1572,43 @@ function App() {
         </Suspense>
       )}
 
-      {showCalibration && <TouchCalibration onComplete={() => setShowCalibration(false)} />}
+      {showCalibration && (
+        <Suspense fallback={null}>
+          <TouchCalibration onComplete={() => setShowCalibration(false)} />
+        </Suspense>
+      )}
 
       {showOnboarding && (
-        <Onboarding onComplete={(recommendedPhase, favorites, canRead, learnerProfile) => {
-          if (typeof recommendedPhase === 'number') handleSetPhase(recommendedPhase);
-          if (canRead !== null && canRead !== undefined) { localStorage.setItem('kiwi-literacy', JSON.stringify(canRead)); if (canRead === true || canRead === 'partial') document.body.classList.add('literacy-mode'); }
+        <Suspense fallback={null}>
+          <Onboarding onComplete={(recommendedPhase, favorites, canRead, learnerProfile) => {
+            if (typeof recommendedPhase === 'number') handleSetPhase(recommendedPhase);
+            if (canRead !== null && canRead !== undefined) { localStorage.setItem('kiwi-literacy', JSON.stringify(canRead)); if (canRead === true || canRead === 'partial') document.body.classList.add('literacy-mode'); }
 
-          if (learnerProfile) {
-            if (learnerProfile.name) updateProfile('default', { name: learnerProfile.name });
-            if (learnerProfile.photo) updateProfile('default', { avatar: learnerProfile.photo });
-          }
+            if (learnerProfile) {
+              if (learnerProfile.name) updateProfile('default', { name: learnerProfile.name });
+              if (learnerProfile.photo) updateProfile('default', { avatar: learnerProfile.photo });
+            }
 
-          if (favorites && Array.isArray(favorites) && favorites.length > 0) {
-            const now = new Date().getTime();
-            const newFavs = favorites.map((fav, i) => ({ id: `fav-${now}-${i}`, type: 'button', word: fav.word || fav.label, icon: fav.icon, bgColor: '#FFF3E0' }));
-            const newRootItems = [...rootItems];
-            const list = [...(newRootItems[currentPageIndex]?.items || [])];
-            let insertIndex = 0;
-            for (let i = 0; i < list.length; i++) if (list[i].category === 'starter') insertIndex = i + 1; else break;
-            list.splice(insertIndex, 0, ...newFavs);
-            if (canRead === true) list.push({ id: 'keyboard-folder', type: 'folder', word: 'Keyboard', icon: '⌨️', contents: [{ id: 'type-word', type: 'button', word: 'Type a word', icon: '✏️' }, { id: 'abc', type: 'button', word: 'ABC', icon: '🔤' }] });
-            newRootItems[currentPageIndex] = { ...newRootItems[currentPageIndex], items: list };
-            setRootItems(newRootItems);
-          }
-          setShowOnboarding(false);
-          setIsEditMode(false); // Ensure controls are closed
-          // Trigger tour if not completed
-          if (!localStorage.getItem('kiwi-tour-completed')) {
-            setShowTour(true);
-          }
-        }} />
+            if (favorites && Array.isArray(favorites) && favorites.length > 0) {
+              const now = new Date().getTime();
+              const newFavs = favorites.map((fav, i) => ({ id: `fav-${now}-${i}`, type: 'button', word: fav.word || fav.label, icon: fav.icon, bgColor: '#FFF3E0' }));
+              const newRootItems = [...rootItems];
+              const list = [...(newRootItems[currentPageIndex]?.items || [])];
+              let insertIndex = 0;
+              for (let i = 0; i < list.length; i++) if (list[i].category === 'starter') insertIndex = i + 1; else break;
+              list.splice(insertIndex, 0, ...newFavs);
+              if (canRead === true) list.push({ id: 'keyboard-folder', type: 'folder', word: 'Keyboard', icon: '⌨️', contents: [{ id: 'type-word', type: 'button', word: 'Type a word', icon: '✏️' }, { id: 'abc', type: 'button', word: 'ABC', icon: '🔤' }] });
+              newRootItems[currentPageIndex] = { ...newRootItems[currentPageIndex], items: list };
+              setRootItems(newRootItems);
+            }
+            setShowOnboarding(false);
+            setIsEditMode(false); // Ensure controls are closed
+            // Trigger tour if not completed
+            if (!localStorage.getItem('kiwi-tour-completed')) {
+              setShowTour(true);
+            }
+          }} />
+        </Suspense>
       )}
 
       <GuidedTour

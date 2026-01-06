@@ -589,19 +589,20 @@ button.primary:active {
 }
 
 /* Controls cleanup */
-background: #FF3B30;
-color: white;
-border: none;
-border-radius: 12px;
-font-weight: 600;
-font-size: 17px;
-display: flex;
-align-items: center;
-justify-content: center;
-gap: 8px;
-cursor: pointer;
-transition: opacity 0.2s;
-margin-bottom: 20px;
+.apple-red-button {
+  background: #FF3B30;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  margin-bottom: 20px;
 }
 
 .apple-red-button:active {
@@ -1367,50 +1368,56 @@ body {
 #controls.collapsed #controls-content {
   display: none;
 }
+
 /* Ensure Full Height for Centering */
-html, body, #root {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden; /* Prevent body scroll, let inner containers scroll */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  /* Prevent body scroll, let inner containers scroll */
 }
 
 /* Ensure App container fills logical screen */
 #main-grid {
-    height: 100%;
-    flex: 1;
+  height: 100%;
+  flex: 1;
 }
 
 /* Safety Fix for Controls Visibility */
 #controls {
-    position: fixed !important;
-    inset: 0 !important;
-    z-index: 9999 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    pointer-events: auto !important;
-    background: transparent; /* Container is transparent, content is white */
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  pointer-events: auto !important;
+  background: transparent;
+  /* Container is transparent, content is white */
 }
 
 /* Ensure content is visible when not collapsed */
 #controls:not(.collapsed) #controls-content {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    transform: translateY(0) !important;
-    background: var(--bg-color) !important; /* Force background color */
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  background: var(--bg-color) !important;
+  /* Force background color */
 }
 
 /* Fix App Root Layout */
 #main-area {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 /* Ensure controls content flows vertically */
 #controls:not(.collapsed) #controls-content {
-    flex-direction: column !important;
+  flex-direction: column !important;
 }
