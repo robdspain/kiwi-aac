@@ -15,6 +15,7 @@ Biometric security uses your device's built-in authentication (FaceID, TouchID, 
 - ⏱️ **5-Minute Session** - Stay unlocked after authentication
 - 🔓 **Triple-Tap Fallback** - Always available if biometric fails
 - 📱 **Platform Support** - iOS and Android only (not available on web)
+- ✨ **Ionic UI** - Native-styled settings using Ionic Framework components
 
 ---
 
@@ -263,5 +264,11 @@ We'd love to hear about your experience with biometric security:
 
 ---
 
+## Technical Note: Ionic UI
+
+As of Phase 33, all Adult Settings modals and components use **Ionic Framework** for native-styled UI on both iOS and Android. The biometric controls appear in an `IonModal` with `IonItem`, `IonToggle`, and `IonButton` components for a polished, platform-native look.
+
+---
+
 **Last Updated:** January 5, 2026  
-**Version:** 1.0 (Phase 29)
+**Version:** 2.0 (Phase 33 - Ionic UI Migration)

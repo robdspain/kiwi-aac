@@ -23,7 +23,11 @@ import {
     IonToggle,
     IonIcon,
     IonNote,
-    IonInput
+    IonInput,
+    IonCard,
+    IonGrid,
+    IonRow,
+    IonCol
 } from '@ionic/react';
 import {
     colorPaletteOutline,

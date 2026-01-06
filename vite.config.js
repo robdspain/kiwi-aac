@@ -9,7 +9,7 @@ export default defineConfig({
       output: {
         manualChunks: {
           'dnd-kit': ['@dnd-kit/core', '@dnd-kit/sortable', '@dnd-kit/utilities'],
-          'vendor': ['react', 'react-dom', 'react-router-dom'],
+          'vendor': ['react', 'react-dom'],
           'capacitor': [
             '@capacitor/core',
             '@capacitor/haptics',
