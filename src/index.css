@@ -1,7 +1,7 @@
 :root {
   /* High-Contrast Modern Palette - Light Mode is the Strict Default */
-  --bg-color: #FDF8F3;
-  --bg-gradient: linear-gradient(180deg, #FDF8F3 0%, #F5F0EB 100%);
+  --bg-color: #FAFAFA;
+  --bg-gradient: linear-gradient(180deg, #FAFAFA 0%, #F0F0F0 100%);
   --card-bg: #FFFFFF;
   --primary: #1A535C;
   --primary-light: #4ECDC4;
@@ -1328,7 +1328,89 @@ body {
 
 
 .strip-item:active {
-
   transform: scale(0.95);
+}
 
+/* Full Screen Settings Override */
+#controls #controls-content {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  max-height: none !important;
+  border-radius: 0 !important;
+}
+
+#controls .ios-sheet-header {
+  padding-top: max(20px, env(safe-area-inset-top));
+}
+
+/* Full Screen Settings Override */
+#controls #controls-content {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  max-height: none !important;
+  border-radius: 0 !important;
+}
+
+#controls .ios-sheet-header {
+  padding-top: max(20px, env(safe-area-inset-top));
+}
+
+/* Hide Controls Completely When Collapsed */
+#controls.collapsed {
+  pointer-events: none;
+  visibility: hidden;
+  transform: translateY(100vh);
+}
+
+#controls.collapsed #controls-content {
+  display: none;
+}
+/* Ensure Full Height for Centering */
+html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Prevent body scroll, let inner containers scroll */
+}
+
+/* Ensure App container fills logical screen */
+#main-grid {
+    height: 100%;
+    flex: 1;
+}
+
+/* Safety Fix for Controls Visibility */
+#controls {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 9999 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    pointer-events: auto !important;
+    background: transparent; /* Container is transparent, content is white */
+}
+
+/* Ensure content is visible when not collapsed */
+#controls:not(.collapsed) #controls-content {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    background: var(--bg-color) !important; /* Force background color */
+}
+
+/* Fix App Root Layout */
+#main-area {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Ensure controls content flows vertically */
+#controls:not(.collapsed) #controls-content {
+    flex-direction: column !important;
 }

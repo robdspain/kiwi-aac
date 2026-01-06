@@ -53,7 +53,13 @@ import {
     playOutline,
     bookOutline,
     listOutline,
-    colorWandOutline
+    colorWandOutline,
+    listOutline,
+    colorWandOutline,
+    lockClosedOutline,
+    helpCircleOutline,
+    schoolOutline,
+    videocamOutline
 } from 'ionicons/icons';
 
 const HelperBackupRestore = lazy(() => import('./BackupRestore'));
@@ -61,6 +67,10 @@ const FavoritesPickerModal = lazy(() => import('./FavoritesPickerModal'));
 const PronunciationEditor = lazy(() => import('./PronunciationEditor'));
 const MemojiPicker = lazy(() => import('./MemojiPicker'));
 const VoiceSetupModal = lazy(() => import('./VoiceSetupModal'));
+const TemplateGallery = lazy(() => import('./TemplateGallery'));
+const ParentGuideModal = lazy(() => import('./ParentGuideModal'));
+const VideoTutorialsModal = lazy(() => import('./VideoTutorialsModal'));
+import HelpTooltip from './HelpTooltip';
 
 const Controls = ({
     isEditMode,
@@ -120,11 +130,12 @@ const Controls = ({
     onUpdatePerson,
     onRemovePerson,
     progressData = {},
-    allRootItems
+    allRootItems,
+    handleRef
 }) => {
 
     const COLOR_THEMES = [
-        { id: 'default', label: 'Kiwi', icon: '🥝', primary: '#1A535C', bg: '#FDF8F3', premium: false },
+        { id: 'default', label: 'Kiwi', icon: '🥝', primary: '#1A535C', bg: '#FAFAFA', premium: false },
         { id: 'ocean', label: 'Ocean', icon: '🌊', primary: '#0EA5E9', bg: '#E8F4FC', premium: true },
         { id: 'sunset', label: 'Sunset', icon: '🌅', primary: '#F97316', bg: '#FFF7ED', premium: true },
         { id: 'forest', label: 'Forest', icon: '🌲', primary: '#22C55E', bg: '#F0FDF4', premium: true },
@@ -143,6 +154,9 @@ const Controls = ({
     const [activeTab, setActiveTab] = useState('basic');
     const [resolvedPeopleIcons, setResolvedPeopleIcons] = useState({});
     const [showAllVoices, setShowAllVoices] = useState(false);
+    const [showTemplateGallery, setShowTemplateGallery] = useState(false);
+    const [showParentGuide, setShowParentGuide] = useState(false);
+    const [showVideoTutorials, setShowVideoTutorials] = useState(false);
 
     const tabs = [
         { id: 'basic', label: 'Basic' },
@@ -411,11 +425,14 @@ const Controls = ({
             if (e.target.id === 'controls') onToggleMenu();
         }}>
             <div id="controls-content">
-                <div className="drag-handle"></div>
+                <div className="drag-handle" ref={handleRef}></div>
                 <div className="ios-sheet-header" style={{ padding: 0, borderBottom: 'none' }}>
                     <IonToolbar>
                         <IonButtons slot="start">
                             <IonButton onClick={onToggleMenu}>Close</IonButton>
+                            <IonButton onClick={handleLock} color="danger" fill="clear">
+                                <IonIcon slot="icon-only" icon={lockClosedOutline} />
+                            </IonButton>
                         </IonButtons>
                         <IonTitle>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
@@ -995,7 +1012,7 @@ const Controls = ({
                             <IonList inset={true}>
                                 <IonItem>
                                     <IonIcon icon={colorPaletteOutline} slot="start" color="primary" />
-                                    <IonLabel>Color Coding (Fitzgerald Key)</IonLabel>
+                                    <IonLabel>Color Coding (Fitzgerald Key) <HelpTooltip text="Colors keys by grammar: Yellow (Pronouns), Green (Verbs), Blue (Adjectives), Orange (Nouns)." /></IonLabel>
                                     <IonToggle
                                         checked={isColorCodingEnabled}
                                         onIonChange={onToggleColorCoding}
@@ -1068,7 +1085,9 @@ const Controls = ({
                                         <IonItem lines="none">
                                             <div style={{ width: '100%', padding: '0.5rem 0' }}>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                                                    <IonLabel style={{ fontSize: '0.875rem' }}>⏱️ Scan Speed</IonLabel>
+                                                    <IonLabel style={{ fontSize: '0.875rem' }}>
+                                                        ⏱️ Scan Speed <HelpTooltip text="How many seconds each item highlights before moving to the next." />
+                                                    </IonLabel>
                                                     <IonNote slot="end" style={{ fontSize: '0.875rem', fontWeight: 700 }}>{(accessProfile.scanSpeed / 1000).toFixed(1)}s</IonNote>
                                                 </div>
                                                 <IonRange
@@ -1107,7 +1126,9 @@ const Controls = ({
                                 </p>
                             </div>
 
-                            <IonListHeader>Grid Layout</IonListHeader>
+                            <IonListHeader>
+                                Grid Layout <HelpTooltip text="Choose how many buttons per screen. Fewer buttons = easier to see." />
+                            </IonListHeader>
                             <IonCard className="ion-no-margin" style={{ margin: '0 1rem' }}>
                                 <div style={{ padding: '0.9375rem' }}>
                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.375rem' }}>
@@ -1405,6 +1426,24 @@ const Controls = ({
                                 </div>
                             </IonCard>
 
+                            <IonListHeader>Help & Support</IonListHeader>
+                            <IonList inset={true}>
+                                <IonItem onClick={() => setShowParentGuide(true)} button={true}>
+                                    <div slot="start" style={{ background: '#FFF7ED', padding: '0.4rem', borderRadius: '0.6rem', color: '#F97316' }}>
+                                        <IonIcon icon={schoolOutline} />
+                                    </div>
+                                    <IonLabel>Parent Guide</IonLabel>
+                                    <IonIcon icon={chevronForwardOutline} slot="end" color="medium" size="small" />
+                                </IonItem>
+                                <IonItem onClick={() => setShowVideoTutorials(true)} button={true}>
+                                    <div slot="start" style={{ background: '#EFF6FF', padding: '0.4rem', borderRadius: '0.6rem', color: '#3B82F6' }}>
+                                        <IonIcon icon={videocamOutline} />
+                                    </div>
+                                    <IonLabel>Video Tutorials</IonLabel>
+                                    <IonIcon icon={chevronForwardOutline} slot="end" color="medium" size="small" />
+                                </IonItem>
+                            </IonList>
+
                             <IonListHeader>Advanced</IonListHeader>
                             <IonList inset={true}>
                                 <IonItem onClick={() => setShowBackupRestore(true)} button={true}>
@@ -1601,6 +1640,45 @@ const Controls = ({
                         <HelperBackupRestore
                             isOpen={showBackupRestore}
                             onClose={() => setShowBackupRestore(false)}
+                        />
+                    </Suspense>
+                )
+            }
+
+            {
+                showTemplateGallery && (
+                    <Suspense fallback={null}>
+                        <TemplateGallery
+                            isOpen={showTemplateGallery}
+                            onClose={() => setShowTemplateGallery(false)}
+                            onApply={(templateName) => {
+                                if (window.handleApplyTemplate) {
+                                    window.handleApplyTemplate(templateName);
+                                }
+                                setShowTemplateGallery(false);
+                                onToggleMenu(); // Close controls
+                            }}
+                        />
+                    </Suspense>
+                )
+            }
+            {
+                showParentGuide && (
+                    <Suspense fallback={null}>
+                        <ParentGuideModal
+                            isOpen={showParentGuide}
+                            onClose={() => setShowParentGuide(false)}
+                        />
+                    </Suspense>
+                )
+            }
+
+            {
+                showVideoTutorials && (
+                    <Suspense fallback={null}>
+                        <VideoTutorialsModal
+                            isOpen={showVideoTutorials}
+                            onClose={() => setShowVideoTutorials(false)}
                         />
                     </Suspense>
                 )

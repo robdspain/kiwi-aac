@@ -13,256 +13,305 @@ import {
     IonCol,
     IonText,
     IonIcon,
-    IonModal,
-    IonFooter
+    IonFooter,
+    IonProgressBar
 } from '@ionic/react';
-import { chevronBackOutline, helpCircleOutline, checkmarkCircleOutline } from 'ionicons/icons';
+import { chevronBackOutline, chevronForwardOutline, checkmarkCircleOutline, handLeftOutline } from 'ionicons/icons';
 
-// Grid size configurations - ordered from smallest to largest animals
+// Grid size configurations
 const GRID_SIZES = [
-    { id: '2x2', icon: '🐜', label: '10mm', animal: 'ant', gridSize: 'dense', targetSize: 10 },
-    { id: '3x3', icon: '🐈', label: '12mm', animal: 'cat', gridSize: 'medium', targetSize: 12 },
-    { id: '4x4', icon: '🐕', label: '15mm', animal: 'dog', gridSize: 'standard', targetSize: 15 },
-    { id: '5x5', icon: '🦒', label: '18mm', animal: 'giraffe', gridSize: 'big', targetSize: 18 },
-    { id: '6x6', icon: '🐘', label: '22mm', animal: 'elephant', gridSize: 'super-big', targetSize: 22 }
+    { id: 'dense', icon: '🐜', label: '10mm', description: 'Precise', gridSize: 'dense', targetSize: 10, cols: 6 },
+    { id: 'medium', icon: '🐈', label: '12mm', description: 'Compact', gridSize: 'medium', targetSize: 12, cols: 5 },
+    { id: 'standard', icon: '🐕', label: '15mm', description: 'Balanced', gridSize: 'standard', targetSize: 15, cols: 4 },
+    { id: 'big', icon: '🦒', label: '18mm', description: 'Comfortable', gridSize: 'big', targetSize: 18, cols: 3 },
+    { id: 'super-big', icon: '🐘', label: '22mm', description: 'Easy', gridSize: 'super-big', targetSize: 22, cols: 2 }
 ];
+
+const TEST_WORDS = ['Play', 'Snack', 'More', 'Help', 'Yes', 'No', 'Stop', 'Go'];
+const TEST_ICONS = ['🏃', '🥨', '➕', '🆘', '✅', '❌', '🛑', '🚀'];
 
 const TouchCalibration = ({ onComplete, onBack }) => {
     const { updateAccessProfile } = useProfile();
+    const [step, setStep] = useState(1); // 1: Intro, 2: Testing, 3: Confirmation
     const [selectedSize, setSelectedSize] = useState(null);
-    const [showPreview, setShowPreview] = useState(false);
+    const [testingSize, setTestingSize] = useState(null);
+    const [tappedTargets, setTappedTargets] = useState(new Set());
 
     const handleSizeSelect = (sizeConfig) => {
-        setSelectedSize(sizeConfig.id);
-
-        // Use target size directly from config
         const targetSize = sizeConfig.targetSize || 15;
-
-        // Update access profile with target size
         updateAccessProfile({ targetSize });
-
-        // Also save grid size for legacy compatibility
         localStorage.setItem('kiwi-grid-size', sizeConfig.gridSize);
 
-        // Complete after a brief delay for visual feedback
         setTimeout(() => {
             onComplete();
         }, 300);
     };
 
-    const handleTestSize = () => {
-        if (selectedSize) {
-            setShowPreview(true);
-        }
+    const handleTestTarget = (index) => {
+        setTappedTargets(prev => new Set([...prev, index]));
+        // Haptic feedback would go here
     };
 
-    const selectedConfig = GRID_SIZES.find(s => s.id === selectedSize);
+    const handleStartTesting = () => {
+        setTestingSize(GRID_SIZES[2]); // Start with standard (15mm)
+        setStep(2);
+    };
+
+    const handleConfirmSize = () => {
+        setSelectedSize(testingSize);
+        setStep(3);
+    };
+
+    const handleTryDifferentSize = (direction) => {
+        const currentIndex = GRID_SIZES.findIndex(s => s.id === testingSize.id);
+        const newIndex = direction === 'smaller'
+            ? Math.max(0, currentIndex - 1)
+            : Math.min(GRID_SIZES.length - 1, currentIndex + 1);
+        setTestingSize(GRID_SIZES[newIndex]);
+        setTappedTargets(new Set());
+    };
+
+    const progress = step / 3;
 
     return (
         <IonPage>
             <IonHeader className="ion-no-border">
                 <IonToolbar>
-                    {onBack && (
+                    {step > 1 && (
                         <IonButtons slot="start">
-                            <IonButton onClick={onBack}>
+                            <IonButton onClick={() => setStep(step - 1)}>
                                 <IonIcon icon={chevronBackOutline} slot="start" />
                                 Back
                             </IonButton>
                         </IonButtons>
                     )}
                     <IonTitle>Touch Calibration</IonTitle>
+                    {onBack && step === 1 && (
+                        <IonButtons slot="end">
+                            <IonButton onClick={onComplete} fill="clear">
+                                Skip
+                            </IonButton>
+                        </IonButtons>
+                    )}
                 </IonToolbar>
+                <IonProgressBar value={progress} color="primary" />
             </IonHeader>
 
-            <IonContent className="ion-padding ion-text-center">
-                <div style={{ padding: '1rem 0 2rem 0' }}>
-                    <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>☝️</div>
-                    <IonText>
-                        <h1 style={{ fontWeight: 800, fontSize: '1.75rem', margin: '0 0 0.5rem 0' }}>
-                            Touch Calibration
-                        </h1>
-                        <p style={{ color: 'var(--ion-color-medium)', fontSize: '1.1rem', maxWidth: '24rem', margin: '0 auto' }}>
-                            Choose the grid layout that feels most comfortable to tap
-                        </p>
-                    </IonText>
-                </div>
+            <IonContent className="ion-padding">
+                {/* Step 1: Introduction */}
+                {step === 1 && (
+                    <div style={{ maxWidth: '32rem', margin: '0 auto', textAlign: 'center', paddingTop: '2rem' }}>
+                        <div style={{ fontSize: '5rem', marginBottom: '1.5rem' }}>☝️</div>
+                        <IonText>
+                            <h1 style={{ fontWeight: 800, fontSize: '2rem', margin: '0 0 1rem 0' }}>
+                                Find Your Perfect Button Size
+                            </h1>
+                            <p style={{ color: 'var(--ion-color-medium)', fontSize: '1.1rem', lineHeight: '1.6', marginBottom: '2rem' }}>
+                                We'll help you choose the right button size for comfortable tapping. This ensures the app works best for your motor skills.
+                            </p>
+                        </IonText>
 
-                <div className="ios-setting-card" style={{ padding: '1.5rem', marginBottom: '1.5rem', maxWidth: '32rem', margin: '0 auto' }}>
-                    <IonText color="medium">
-                        <p style={{
-                            fontSize: '0.8rem',
-                            fontWeight: '700',
-                            textAlign: 'left',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.05rem',
-                            marginBottom: '1rem'
+                        <div style={{
+                            background: 'var(--ion-color-light)',
+                            borderRadius: '1.25rem',
+                            padding: '1.5rem',
+                            marginBottom: '2rem',
+                            textAlign: 'left'
                         }}>
-                            Grid Layout
-                        </p>
-                    </IonText>
+                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', marginBottom: '1rem' }}>
+                                <div style={{ fontSize: '2rem' }}>🎯</div>
+                                <div>
+                                    <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem', fontWeight: '700' }}>
+                                        What We'll Do
+                                    </h3>
+                                    <p style={{ margin: 0, color: 'var(--ion-color-medium)', fontSize: '0.95rem', lineHeight: '1.5' }}>
+                                        You'll tap some test buttons at different sizes. Choose the size that feels most comfortable and accurate for you.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
 
-                    <IonGrid className="ion-no-padding">
-                        <IonRow>
-                            {GRID_SIZES.map(size => (
-                                <IonCol key={size.id}>
+                        <IonButton
+                            expand="block"
+                            size="large"
+                            onClick={handleStartTesting}
+                            style={{ height: '3.5rem', marginTop: '2rem' }}
+                        >
+                            Let's Start
+                            <IonIcon icon={chevronForwardOutline} slot="end" />
+                        </IonButton>
+                    </div>
+                )}
+
+                {/* Step 2: Interactive Testing */}
+                {step === 2 && testingSize && (
+                    <div style={{ maxWidth: '36rem', margin: '0 auto' }}>
+                        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                            <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>{testingSize.icon}</div>
+                            <IonText>
+                                <h2 style={{ fontWeight: 800, fontSize: '1.5rem', margin: '0 0 0.5rem 0' }}>
+                                    {testingSize.label} - {testingSize.description}
+                                </h2>
+                                <p style={{ color: 'var(--ion-color-medium)', fontSize: '1rem' }}>
+                                    Tap the buttons below to test this size
+                                </p>
+                            </IonText>
+                        </div>
+
+                        {/* Interactive Test Grid */}
+                        <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: `repeat(${testingSize.cols}, 1fr)`,
+                            gap: '0.75rem',
+                            marginBottom: '2rem',
+                            padding: '1rem',
+                            background: 'var(--ion-color-light)',
+                            borderRadius: '1.25rem'
+                        }}>
+                            {TEST_WORDS.slice(0, testingSize.cols * 2).map((word, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => handleTestTarget(i)}
+                                    style={{
+                                        background: tappedTargets.has(i) ? 'var(--ion-color-success)' : 'white',
+                                        border: tappedTargets.has(i) ? '2px solid var(--ion-color-success-shade)' : '2px solid var(--ion-color-light-shade)',
+                                        borderRadius: '1.25rem',
+                                        aspectRatio: '1',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '0.5rem',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                                        boxShadow: tappedTargets.has(i) ? '0 4px 12px rgba(var(--ion-color-success-rgb), 0.3)' : '0 2px 8px rgba(0,0,0,0.05)',
+                                        transform: tappedTargets.has(i) ? 'scale(0.95)' : 'scale(1)'
+                                    }}
+                                >
+                                    <span style={{ fontSize: '2rem' }}>
+                                        {tappedTargets.has(i) ? '✓' : TEST_ICONS[i]}
+                                    </span>
+                                    <span style={{
+                                        fontSize: '0.8rem',
+                                        fontWeight: '600',
+                                        color: tappedTargets.has(i) ? 'white' : 'var(--ion-color-dark)'
+                                    }}>
+                                        {word}
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Size Adjustment */}
+                        <div style={{ marginBottom: '1.5rem' }}>
+                            <IonText color="medium">
+                                <p style={{ fontSize: '0.9rem', textAlign: 'center', marginBottom: '1rem' }}>
+                                    Not quite right? Try a different size:
+                                </p>
+                            </IonText>
+                            <div style={{ display: 'flex', gap: '0.75rem' }}>
+                                <IonButton
+                                    expand="block"
+                                    fill="outline"
+                                    onClick={() => handleTryDifferentSize('smaller')}
+                                    disabled={testingSize.id === GRID_SIZES[0].id}
+                                    style={{ flex: 1 }}
+                                >
+                                    ← Smaller
+                                </IonButton>
+                                <IonButton
+                                    expand="block"
+                                    fill="outline"
+                                    onClick={() => handleTryDifferentSize('larger')}
+                                    disabled={testingSize.id === GRID_SIZES[GRID_SIZES.length - 1].id}
+                                    style={{ flex: 1 }}
+                                >
+                                    Larger →
+                                </IonButton>
+                            </div>
+                        </div>
+
+                        <IonButton
+                            expand="block"
+                            size="large"
+                            onClick={handleConfirmSize}
+                            style={{ height: '3.5rem' }}
+                        >
+                            <IonIcon icon={checkmarkCircleOutline} slot="start" />
+                            This Size Feels Good
+                        </IonButton>
+                    </div>
+                )}
+
+                {/* Step 3: Confirmation */}
+                {step === 3 && selectedSize && (
+                    <div style={{ maxWidth: '32rem', margin: '0 auto', textAlign: 'center', paddingTop: '2rem' }}>
+                        <div style={{ fontSize: '5rem', marginBottom: '1rem' }}>✅</div>
+                        <IonText>
+                            <h1 style={{ fontWeight: 800, fontSize: '2rem', margin: '0 0 1rem 0' }}>
+                                Perfect!
+                            </h1>
+                            <p style={{ color: 'var(--ion-color-medium)', fontSize: '1.1rem', marginBottom: '2rem' }}>
+                                You've selected <strong>{selectedSize.label}</strong> buttons. Here's how your grid will look:
+                            </p>
+                        </IonText>
+
+                        {/* Preview Grid */}
+                        <div style={{
+                            background: 'var(--ion-color-light)',
+                            borderRadius: '1.25rem',
+                            padding: '1.5rem',
+                            marginBottom: '2rem'
+                        }}>
+                            <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: `repeat(${selectedSize.cols}, 1fr)`,
+                                gap: '0.75rem'
+                            }}>
+                                {TEST_WORDS.slice(0, selectedSize.cols * 2).map((word, i) => (
                                     <div
-                                        onClick={() => setSelectedSize(size.id)}
+                                        key={i}
                                         style={{
-                                            background: selectedSize === size.id ? 'var(--ion-color-primary)' : 'var(--ion-color-light)',
+                                            background: 'white',
+                                            border: '2px solid var(--ion-color-light-shade)',
                                             borderRadius: '1.25rem',
-                                            padding: '1rem 0.5rem',
+                                            aspectRatio: '1',
                                             display: 'flex',
                                             flexDirection: 'column',
                                             alignItems: 'center',
                                             justifyContent: 'center',
                                             gap: '0.5rem',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                                            minHeight: '7rem',
-                                            border: selectedSize === size.id ? '3px solid var(--ion-color-primary-shade)' : '1px solid transparent',
-                                            boxShadow: selectedSize === size.id ? '0 8px 16px rgba(var(--ion-color-primary-rgb), 0.2)' : 'none'
+                                            boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
                                         }}
                                     >
-                                        <span style={{ fontSize: '2.5rem' }}>{size.icon}</span>
-                                        <span style={{
-                                            fontSize: '0.8rem',
-                                            fontWeight: '700',
-                                            color: selectedSize === size.id ? 'white' : 'var(--ion-color-dark)'
-                                        }}>
-                                            {size.label}
-                                        </span>
+                                        <span style={{ fontSize: '2rem' }}>{TEST_ICONS[i]}</span>
+                                        <span style={{ fontSize: '0.8rem', fontWeight: '600' }}>{word}</span>
                                     </div>
-                                </IonCol>
-                            ))}
-                        </IonRow>
-                    </IonGrid>
+                                ))}
+                            </div>
+                        </div>
 
-                    <div style={{ marginTop: '1.5rem', textAlign: 'left', display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
-                        <IonIcon icon={helpCircleOutline} color="medium" style={{ fontSize: '1.2rem', marginTop: '0.1rem' }} />
-                        <IonText color="medium">
-                            <p style={{ fontSize: '0.85rem', lineHeight: '1.4', margin: 0 }}>
-                                Smaller targets (🐜) show more words but require more precision. Larger targets (🐘) have bigger buttons but fewer words visible.
-                            </p>
-                        </IonText>
+                        <div style={{ display: 'flex', gap: '0.75rem' }}>
+                            <IonButton
+                                expand="block"
+                                fill="outline"
+                                onClick={() => setStep(2)}
+                                style={{ flex: 1, height: '3.5rem' }}
+                            >
+                                Try Again
+                            </IonButton>
+                            <IonButton
+                                expand="block"
+                                onClick={() => handleSizeSelect(selectedSize)}
+                                style={{ flex: 1, height: '3.5rem' }}
+                            >
+                                <IonIcon icon={checkmarkCircleOutline} slot="start" />
+                                Confirm
+                            </IonButton>
+                        </div>
                     </div>
-                </div>
-
-                {selectedSize && (
-                    <IonButton
-                        expand="block"
-                        onClick={handleTestSize}
-                        style={{ maxWidth: '32rem', margin: '0 auto 1rem auto', height: '3.5rem' }}
-                    >
-                        <IonIcon icon={checkmarkCircleOutline} slot="start" />
-                        Test {selectedConfig?.label} Size
-                    </IonButton>
                 )}
             </IonContent>
-
-            <IonFooter className="ion-no-border">
-                <IonToolbar className="ion-padding-horizontal">
-                    <IonButton
-                        fill="clear"
-                        expand="block"
-                        onClick={selectedSize ? () => handleSizeSelect(selectedConfig) : onComplete}
-                        style={{ height: '3rem', fontWeight: '600' }}
-                    >
-                        {selectedSize ? 'Confirm & Continue →' : 'Skip for now'}
-                    </IonButton>
-                </IonToolbar>
-            </IonFooter>
-
-            {/* Preview Modal */}
-            <IonModal isOpen={showPreview} onDidDismiss={() => setShowPreview(false)}>
-                <IonHeader>
-                    <IonToolbar>
-                        <IonTitle>{selectedConfig?.icon} {selectedConfig?.label} Preview</IonTitle>
-                        <IonButtons slot="end">
-                            <IonButton onClick={() => setShowPreview(false)}>Close</IonButton>
-                        </IonButtons>
-                    </IonToolbar>
-                </IonHeader>
-                <IonContent className="ion-padding ion-text-center">
-                    <IonText color="medium">
-                        <p style={{ marginBottom: '2rem' }}>This is how buttons will look on your device</p>
-                    </IonText>
-
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: `repeat(${selectedConfig?.gridSize === 'super-big' ? 2 : selectedConfig?.gridSize === 'big' ? 3 : selectedConfig?.gridSize === 'standard' ? 4 : selectedConfig?.gridSize === 'medium' ? 5 : 6}, 1fr)`,
-                        gap: '0.75rem',
-                        marginBottom: '2rem',
-                        maxWidth: '400px',
-                        margin: '0 auto'
-                    }}>
-                        {['Play', 'Snack', 'More', 'Help', 'Yes', 'No'].slice(0, selectedConfig?.gridSize === 'super-big' ? 4 : 6).map((word, i) => (
-                            <div
-                                key={i}
-                                style={{
-                                    background: 'var(--ion-color-white)',
-                                    border: '2px solid var(--ion-color-light-shade)',
-                                    borderRadius: '1.25rem',
-                                    aspectRatio: '1',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: '0.5rem',
-                                    boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
-                                }}
-                            >
-                                <span style={{ fontSize: '2rem' }}>
-                                    {i === 0 ? '🏃' : i === 1 ? '🥨' : i === 2 ? '➕' : i === 3 ? '🆘' : i === 4 ? '✅' : '❌'}
-                                </span>
-                                <span style={{
-                                    fontSize: '0.8rem',
-                                    fontWeight: '600',
-                                    color: 'var(--ion-color-dark)'
-                                }}>
-                                    {word}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div style={{
-                        background: 'var(--ion-color-warning-tint)',
-                        borderRadius: '1rem',
-                        padding: '1rem',
-                        marginBottom: '2rem',
-                        maxWidth: '32rem',
-                        margin: '0 auto 2rem auto',
-                        textAlign: 'left'
-                    }}>
-                        <IonText color="warning-shade">
-                            <p style={{ margin: 0, fontSize: '0.9rem' }}>
-                                <strong>💡 Tip:</strong> Try tapping the sample buttons above to test if {selectedConfig?.label} feels comfortable for you!
-                            </p>
-                        </IonText>
-                    </div>
-
-                    <div style={{ display: 'flex', gap: '1rem', maxWidth: '32rem', margin: '0 auto' }}>
-                        <IonButton
-                            fill="outline"
-                            expand="block"
-                            onClick={() => setShowPreview(false)}
-                            style={{ flex: 1 }}
-                        >
-                            Try Different Size
-                        </IonButton>
-                        <IonButton
-                            expand="block"
-                            onClick={() => {
-                                setShowPreview(false);
-                                handleSizeSelect(selectedConfig);
-                            }}
-                            style={{ flex: 1 }}
-                        >
-                            Looks Good!
-                        </IonButton>
-                    </div>
-                </IonContent>
-            </IonModal>
         </IonPage>
     );
 };

@@ -266,7 +266,7 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                             ))}
                         </div>
                     </div>
-                    <IonItem onClick={() => onOpenEmojiPicker(setWord, (ni, isImg) => { setIcon(ni); setIsImage(!!isImg); })} button={true}>
+                    <IonItem onClick={() => onOpenEmojiPicker(setWord, (ni, isImg, cat) => { setIcon(ni); setIsImage(!!isImg); if (cat) { setWc(cat); setBgColor(''); } })} button={true}>
                         <IonIcon icon={libraryOutline} slot="start" color="primary" />
                         <IonLabel>Choose from Library</IonLabel>
                         <IonIcon icon={chevronForwardOutline} slot="end" color="medium" size="small" />

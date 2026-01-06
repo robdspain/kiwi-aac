@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { Capacitor } from '@capacitor/core';
 import Assessment from './Assessment';
 import TouchCalibration from './TouchCalibration';
 import FavoritesPicker from './FavoritesPicker';
@@ -17,22 +18,48 @@ const Onboarding = ({ onComplete }) => {
     const [learnerPhoto, setLearnerPhoto] = useState(null);
     const [cropSource, setCropSource] = useState(null);
     const [showCropper, setShowCropper] = useState(false);
+    const fileInputRef = useRef(null);
 
     const takePhoto = async () => {
         try {
-            const image = await Camera.getPhoto({
-                quality: 90,
-                allowEditing: false,
-                resultType: CameraResultType.DataUrl,
-                source: CameraSource.Prompt
-            });
-            if (image && image.dataUrl) {
-                setCropSource(image.dataUrl);
-                setShowCropper(true);
+            // Check if running on native platform
+            const isNative = Capacitor.isNativePlatform();
+
+            if (isNative) {
+                // Use Capacitor Camera API for native apps
+                const image = await Camera.getPhoto({
+                    quality: 90,
+                    allowEditing: false,
+                    resultType: CameraResultType.DataUrl,
+                    source: CameraSource.Prompt
+                });
+                if (image && image.dataUrl) {
+                    setCropSource(image.dataUrl);
+                    setShowCropper(true);
+                }
+            } else {
+                // Use file input for web browsers (PWA)
+                if (fileInputRef.current) {
+                    fileInputRef.current.click();
+                }
             }
         } catch (error) {
             console.error('Camera error:', error);
         }
+    };
+
+    const handleFileSelect = (event) => {
+        const file = event.target.files?.[0];
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setCropSource(e.target.result);
+                setShowCropper(true);
+            };
+            reader.readAsDataURL(file);
+        }
+        // Reset input so same file can be selected again
+        event.target.value = '';
     };
 
     const steps = [
@@ -164,7 +191,7 @@ const Onboarding = ({ onComplete }) => {
             content: (
                 <div style={{ textAlign: 'center' }}>
                     <img
-                        src="/images/guided-access.png"
+                        src="/images/guided-access-instruction.png"
                         alt="Guided Access Instructions"
                         style={{ width: '100%', maxWidth: '25rem', marginBottom: '1.25rem', borderRadius: '1rem', border: '1px solid var(--gray-border)' }}
                     />
@@ -265,6 +292,15 @@ const Onboarding = ({ onComplete }) => {
             zIndex: 1000, display: 'flex', flexDirection: 'column',
             padding: '2.5rem 1.5625rem', boxSizing: 'border-box'
         }}>
+            {/* Hidden file input for web browsers */}
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                style={{ display: 'none' }}
+            />
+
             {/* Progress dots */}
             <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginBottom: '1.875rem' }}>
                 {steps.map((_, i) => (

@@ -17,7 +17,9 @@ import {
     IonCol,
     IonList,
     IonItem,
-    IonNote
+    IonNote,
+    IonInput,
+    IonListHeader
 } from '@ionic/react';
 import {
     closeOutline,
@@ -33,6 +35,7 @@ import {
 } from 'ionicons/icons';
 import { EMOJI_DATA } from '../utils/emojiData';
 import { getOpenMojiUrl } from '../utils/imageUtils';
+import { AAC_LEXICON } from '../data/aacLexicon';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import ImageCropModal from './ImageCropModal';
 
@@ -45,14 +48,43 @@ const iconsData = {
 
 const ImageWithFallback = ({ src, alt, fallback, style }) => {
     const [failed, setFailed] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+
     if (failed || !src) return <span style={style}>{fallback}</span>;
+
     return (
-        <img
-            src={src}
-            alt={alt}
-            style={style}
-            onError={() => setFailed(true)}
-        />
+        <div style={{ position: 'relative', ...style }}>
+            {isLoading && (
+                <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: '#E5E5EA',
+                    borderRadius: '8px',
+                    animation: 'pulse 1.5s infinite ease-in-out'
+                }} />
+            )}
+            <img
+                src={src}
+                alt={alt}
+                style={{
+                    ...style,
+                    opacity: isLoading ? 0 : 1,
+                    transition: 'opacity 0.2s ease-in'
+                }}
+                onLoad={() => setIsLoading(false)}
+                onError={() => {
+                    setIsLoading(false);
+                    setFailed(true);
+                }}
+            />
+            <style>{`
+                @keyframes pulse {
+                    0% { opacity: 0.6; }
+                    50% { opacity: 0.8; }
+                    100% { opacity: 0.6; }
+                }
+            `}</style>
+        </div>
     );
 };
 
@@ -89,6 +121,16 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
     const lastCustomizingItemIdRef = useRef(null);
     const peekTimerRef = useRef(null);
     const [showSaveOptions, setShowSaveOptions] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState('');
+
+    useEffect(() => {
+        if (!customName) return;
+        const lower = customName.toLowerCase().trim();
+        const entry = AAC_LEXICON[lower];
+        if (entry) {
+            setSelectedCategory(entry.type);
+        }
+    }, [customName]);
 
     const triggerHaptic = async (style) => {
         try {
@@ -171,7 +213,7 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
         }
 
         if (alsoUse) {
-            onSelect(customName || customizingItem.word, customizingItem.icon, customizingItem.isImage);
+            onSelect(customName || customizingItem.word, customizingItem.icon, customizingItem.isImage, selectedCategory);
             setCustomizingItem(null);
             setSearchQuery('');
         } else {
@@ -267,7 +309,7 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                 setActiveCategory(emojiCategories[0] || 'My Icons');
             }
         } else if (activeTab === 'symbol') {
-            const symbolCategories = Object.keys(EMOJI_DATA);
+            const symbolCategories = Object.keys(EMOJI_DATA).filter(k => !k.startsWith('Tone') && !k.startsWith('Skin'));
             if (symbolCategories.length > 0 && !symbolCategories.includes(activeCategory)) {
                 setActiveCategory(symbolCategories[0]);
             }
@@ -325,16 +367,48 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                             {customizingItem.isImage ? <img src={customizingItem.icon} alt="Selected" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span>{customizingItem.icon}</span>}
                         </div>
                         <IonList inset={true} style={{ width: '100%' }}>
-                            <IonItem>
-                                <IonLabel position="fixed" style={{ fontWeight: 600 }}>Label</IonLabel>
-                                <IonInput
-                                    value={customName}
-                                    onIonInput={(e) => setCustomName(e.detail.value)}
-                                    placeholder="Enter label"
-                                    className="ion-text-right"
-                                    autofocus
-                                />
+                            <IonItem lines="none" style={{ '--background': 'transparent' }}>
+                                <div style={{ width: '100%', textAlign: 'center' }}>
+                                    <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '0.25rem' }}>LABEL</div>
+                                    <IonInput
+                                        value={customName}
+                                        onIonInput={(e) => setCustomName(e.detail.value)}
+                                        placeholder="Enter label"
+                                        className="ion-text-center"
+                                        style={{ '--padding-start': '0', fontSize: '1.25rem', fontWeight: 700 }}
+                                        autofocus
+                                    />
+                                </div>
                             </IonItem>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', width: '100%', padding: '0 0.5rem 1rem' }}>
+                                {[
+                                    { id: 'noun', label: 'Noun', color: '#FFEB3B', text: '#2D3436' },
+                                    { id: 'verb', label: 'Verb', color: '#1B5E20', text: '#FFFFFF' },
+                                    { id: 'adj', label: 'Adjective', color: '#0D47A1', text: '#FFFFFF' },
+                                    { id: 'social', label: 'Social', color: '#880E4F', text: '#FFFFFF' },
+                                    { id: 'question', label: 'Question', color: '#4A148C', text: '#FFFFFF' },
+                                    { id: 'misc', label: 'Misc', color: '#BF360C', text: '#FFFFFF' }
+                                ].map(cat => (
+                                    <button
+                                        key={cat.id}
+                                        onClick={() => setSelectedCategory(cat.id)}
+                                        style={{
+                                            padding: '0.5rem',
+                                            borderRadius: '8px',
+                                            background: selectedCategory === cat.id ? cat.color : '#F2F2F7',
+                                            color: selectedCategory === cat.id ? cat.text : '#000',
+                                            border: selectedCategory === cat.id ? '2px solid #000' : '1px solid #E5E5EA',
+                                            cursor: 'pointer',
+                                            fontSize: '0.75rem',
+                                            fontWeight: 600,
+                                            minHeight: '2.5rem',
+                                            transition: 'all 0.2s'
+                                        }}
+                                    >
+                                        {cat.label}
+                                    </button>
+                                ))}
+                            </div>
                         </IonList>
                     </div>
                 ) : (
@@ -378,7 +452,7 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
 
                             {!searchQuery.trim() && (activeTab === 'emoji' || activeTab === 'openmoji' || activeTab === 'symbol') && (
                                 <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '1rem' }}>
-                                    {(activeTab === 'symbol' ? Object.keys(EMOJI_DATA) : ['My Icons', ...Object.keys(iconsData)]).map(cat => (
+                                    {(activeTab === 'symbol' ? Object.keys(EMOJI_DATA).filter(k => !k.startsWith('Tone') && !k.startsWith('Skin')) : ['My Icons', ...Object.keys(iconsData)]).map(cat => (
                                         <button
                                             key={cat}
                                             onClick={() => {
@@ -478,7 +552,7 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                                                 onPointerLeave={handlePointerUp}
                                             >
                                                 {isOutputImage ? (
-                                                    <ImageWithFallback src={displayIcon} alt={wordVal} fallback={iconVal} style={{ width: '48px', height: '48px', objectFit: 'contain', marginBottom: '8px' }} />
+                                                    <ImageWithFallback src={displayIcon} alt={wordVal} fallback={iconVal} style={{ width: '72px', height: '72px', objectFit: 'contain', marginBottom: '8px' }} />
                                                 ) : <span className="emoji-span">{displayIcon}</span>}
                                                 <span>{wordVal}</span>
                                                 {item.isUserIcon && <span style={{ position: 'absolute', top: '0.125rem', right: '0.125rem', fontSize: '0.5rem', background: '#34C759', color: 'white', borderRadius: '0.25rem', padding: '0.0625rem 0.1875rem' }}>MY</span>}

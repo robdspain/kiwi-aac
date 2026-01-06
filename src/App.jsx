@@ -17,6 +17,7 @@ const EditModal = lazy(() => import('./components/EditModal'));
 const Onboarding = lazy(() => import('./components/Onboarding'));
 const TouchCalibration = lazy(() => import('./components/TouchCalibration'));
 const VisualSceneView = lazy(() => import('./components/VisualSceneView'));
+import GuidedTour from './components/GuidedTour';
 import { playBellSound } from './utils/sounds';
 import { trackSentence, trackItemClick } from './utils/AnalyticsService';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -35,12 +36,13 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
+import Toast from './components/Toast';
 import {
   sortableKeyboardCoordinates,
   arrayMove
 } from '@dnd-kit/sortable';
 import { AAC_LEXICON } from './data/aacLexicon';
-import { CORE_WORDS_LAYOUT } from './data/aacData';
+import { CORE_WORDS_LAYOUT, TEMPLATES } from './data/aacData';
 import { useProfile } from './context/ProfileContext';
 import { MIRROR_DICTIONARY } from './utils/translate';
 import { ensureDefaultVoice } from './utils/voiceUtils';
@@ -248,6 +250,12 @@ function App() {
   });
   const [shuffledItems, setShuffledItems] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
+
+  // Tour State & Refs
+  const [showTour, setShowTour] = useState(false);
+  const controlsHandleRef = useRef(null);
+  const mainCardRef = useRef(null);
+
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingItemIndex, setEditingItemIndex] = useState(null);
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -295,6 +303,8 @@ function App() {
     const saved = localStorage.getItem('kiwi-collapsed-sections');
     return saved ? JSON.parse(saved) : [];
   });
+
+  const [toastMessage, setToastMessage] = useState(null);
 
   const [speechDelay, setSpeechDelay] = useState(() => {
     const saved = localStorage.getItem('kiwi-speech-delay');
@@ -528,7 +538,7 @@ function App() {
 
     // Apply theme colors to CSS variables
     const themes = {
-      default: { primary: '#1A535C', bg: '#FDF8F3' },
+      default: { primary: '#1A535C', bg: '#FAFAFA' },
       ocean: { primary: '#0EA5E9', bg: '#E8F4FC' },
       sunset: { primary: '#F97316', bg: '#FFF7ED' },
       forest: { primary: '#22C55E', bg: '#F0FDF4' },
@@ -648,6 +658,60 @@ function App() {
       if (currentContext === id) handleSetContext('home');
     }
   };
+
+  const handleApplyTemplate = (templateName) => {
+    const wordList = TEMPLATES[templateName];
+    if (!wordList) return;
+
+    // Hydrate items from lexicon
+    const hydratedItems = wordList.map((word, index) => {
+      const lowerWord = word.toLowerCase();
+      const lexiconEntry = AAC_LEXICON[lowerWord];
+      const coreMatch = CORE_WORDS_LAYOUT.find(c => c.word.toLowerCase() === lowerWord);
+
+      return {
+        id: `template-${lowerWord}-${Date.now()}-${index}`,
+        type: 'button',
+        word: word, // Keep original casing from template
+        icon: lexiconEntry?.emoji || '⚪',
+        wc: coreMatch?.wc || lexiconEntry?.type || 'misc',
+        category: coreMatch?.wc || lexiconEntry?.type || 'misc'
+      };
+    });
+
+    // Determine grid structure
+    let newRootItems;
+    // Always use paged structure now
+    const pageSize = 20; // Default page size for templates
+    const pages = [];
+    for (let i = 0; i < hydratedItems.length; i += pageSize) {
+      pages.push({
+        name: `Page ${pages.length + 1}`,
+        items: hydratedItems.slice(i, i + pageSize)
+      });
+    }
+
+    newRootItems = pages;
+
+    setRootItems(newRootItems);
+
+    // Reset path to root
+    setCurrentPath([]);
+    setCurrentPageIndex(0);
+
+    // Save to storage (specific to context)
+    const key = getContextStorageKey(currentContext);
+    localStorage.setItem(key, JSON.stringify(newRootItems));
+
+    setToastMessage(`Applied template: ${templateName}`);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  // Expose handler for Controls.jsx (which can't easily access context/props in current arch)
+  useEffect(() => {
+    window.handleApplyTemplate = handleApplyTemplate;
+    return () => { delete window.handleApplyTemplate; };
+  }, [currentContext]);
 
   const speak = (text, customAudio = null) => {
     if (customAudio) { new Audio(customAudio).play(); return; }
@@ -1240,12 +1304,12 @@ function App() {
   };
   const handleStopTraining = () => { setIsTrainingMode(false); setShuffledItems(null); setTrainingSelection([]); setIsEditMode(false); };
   const handlePickerOpen = (setWord, setIcon) => {
-    setPickerCallback(() => (w, i, isImage) => {
+    setPickerCallback(() => (w, i, isImage, category) => {
       if (typeof setIcon === 'function') {
         setWord(w);
-        setIcon(i, isImage);
+        setIcon(i, isImage, category);
       } else if (typeof setWord === 'function') {
-        setWord(w, i, isImage);
+        setWord(w, i, isImage, category);
       }
       setPickerOpen(false);
     });
@@ -1314,7 +1378,7 @@ function App() {
       )}
       {callActive && <div className="call-overlay" style={{ background: 'rgba(255,255,255,0.95)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1000 }}><button onClick={() => { setCallActive(false); setIsCommunicating(true); }} style={{ background: '#FF3B30', color: 'white', border: 'none', borderRadius: '30px', padding: '40px 80px', fontSize: '2.5rem', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 10px 40px rgba(255, 59, 48, 0.4)', transition: 'transform 0.2s ease' }}>Let&apos;s talk!</button></div>}
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <div id="main-grid" role="main" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+        <div id="main-grid" ref={mainCardRef} role="main" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
           <Suspense fallback={<div style={{ flex: 1 }} />}>
             <SwitchAccessMode onIconSelect={handleItemClick}>
               <Grid
@@ -1353,7 +1417,7 @@ function App() {
         </div>
       </DndContext>
       {!isLocked && !isEditMode && !isTrainingMode && <button id="settings-button" onClick={() => setIsEditMode(true)} aria-label="Open Settings">⚙️</button>}
-      {!isLocked && <Controls isEditMode={isEditMode} isTrainingMode={isTrainingMode} currentPhase={currentPhase} currentLevel={currentLevel} showStrip={showStrip} currentContext={currentContext} contexts={contexts} onSetContext={handleSetContext} onToggleMenu={() => setIsEditMode(!isEditMode)} onAddItem={handleAddItem} onAddContext={handleAddContext} onRenameContext={handleRenameContext} onDeleteContext={handleDeleteContext} onSetLevel={handleSetLevel} onStartTraining={() => { setIsTrainingMode(true); setTrainingSelection([]); }} onStartEssentialSkills={() => setIsEssentialSkillsMode(true)} onReset={() => { if (confirm("Reset everything?")) { localStorage.clear(); location.reload(); } }} onShuffle={handleShuffle} onStopTraining={handleStopTraining} onOpenPicker={handlePickerOpen} onToggleDashboard={() => setShowDashboard(true)} onRedoCalibration={() => setShowCalibration(true)} onToggleLock={() => setIsLocked(true)} voiceSettings={voiceSettings} onUpdateVoiceSettings={setVoiceSettings} gridSize={gridSize} onUpdateGridSize={setGridSize} phase1TargetId={phase1TargetId} onSetPhase1Target={setPhase1TargetId} rootItems={currentPageItems} allRootItems={rootItems} colorTheme={colorTheme} onSetColorTheme={setColorTheme} triggerPaywall={triggerPaywall} bellSound={bellSound} onUpdateBellSound={setBellSound} speechDelay={speechDelay} onUpdateSpeechDelay={setSpeechDelay} autoSpeak={autoSpeak} onUpdateAutoSpeak={setAutoSpeak} isScanning={isScanning} onToggleScanning={() => setIsScanning(!isScanning)} scanSpeed={scanSpeed} onUpdateScanSpeed={setScanSpeed} isLayoutLocked={isLayoutLocked} onToggleLayoutLock={() => setIsLayoutLocked(!isLayoutLocked)} isColorCodingEnabled={isColorCodingEnabled} onToggleColorCoding={() => setIsColorCodingEnabled(!isColorCodingEnabled)} showCategoryHeaders={showCategoryHeaders} onToggleCategoryHeaders={() => setShowCategoryHeaders(!showCategoryHeaders)} proficiencyLevel={proficiencyLevel} onUpdateProficiencyLevel={setProficiencyLevel} onAddPage={handleAddNewPage} onDeletePage={handleDeletePage} currentPageIndex={currentPageIndex} onAddFavorites={(favorites) => {
+      {!isLocked && <Controls handleRef={controlsHandleRef} isEditMode={isEditMode} isTrainingMode={isTrainingMode} currentPhase={currentPhase} currentLevel={currentLevel} showStrip={showStrip} currentContext={currentContext} contexts={contexts} onSetContext={handleSetContext} onToggleMenu={() => setIsEditMode(!isEditMode)} onAddItem={handleAddItem} onAddContext={handleAddContext} onRenameContext={handleRenameContext} onDeleteContext={handleDeleteContext} onSetLevel={handleSetLevel} onStartTraining={() => { setIsTrainingMode(true); setTrainingSelection([]); }} onStartEssentialSkills={() => setIsEssentialSkillsMode(true)} onReset={() => { if (confirm("Reset everything?")) { localStorage.clear(); location.reload(); } }} onShuffle={handleShuffle} onStopTraining={handleStopTraining} onOpenPicker={handlePickerOpen} onToggleDashboard={() => setShowDashboard(true)} onRedoCalibration={() => setShowCalibration(true)} onToggleLock={() => setIsLocked(true)} voiceSettings={voiceSettings} onUpdateVoiceSettings={setVoiceSettings} gridSize={gridSize} onUpdateGridSize={setGridSize} phase1TargetId={phase1TargetId} onSetPhase1Target={setPhase1TargetId} rootItems={currentPageItems} allRootItems={rootItems} colorTheme={colorTheme} onSetColorTheme={setColorTheme} triggerPaywall={triggerPaywall} bellSound={bellSound} onUpdateBellSound={setBellSound} speechDelay={speechDelay} onUpdateSpeechDelay={setSpeechDelay} autoSpeak={autoSpeak} onUpdateAutoSpeak={setAutoSpeak} isScanning={isScanning} onToggleScanning={() => setIsScanning(!isScanning)} scanSpeed={scanSpeed} onUpdateScanSpeed={setScanSpeed} isLayoutLocked={isLayoutLocked} onToggleLayoutLock={() => setIsLayoutLocked(!isLayoutLocked)} isColorCodingEnabled={isColorCodingEnabled} onToggleColorCoding={() => setIsColorCodingEnabled(!isColorCodingEnabled)} showCategoryHeaders={showCategoryHeaders} onToggleCategoryHeaders={() => setShowCategoryHeaders(!showCategoryHeaders)} proficiencyLevel={proficiencyLevel} onUpdateProficiencyLevel={setProficiencyLevel} onAddPage={handleAddNewPage} onDeletePage={handleDeletePage} currentPageIndex={currentPageIndex} onAddFavorites={(favorites) => {
         const nowTime = new Date().getTime();
         const newFavs = favorites.map((fav, i) => ({ id: `fav-${nowTime}-${i}`, type: 'button', word: fav.word || fav.label, icon: fav.icon, bgColor: '#FFF3E0' }));
 
@@ -1437,7 +1501,7 @@ function App() {
       )}
 
       {editModalOpen && <Suspense fallback={null}><EditModal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} onSave={handleSaveEdit} onDelete={() => { if (editingItemIndex !== null) { handleDelete(editingItemIndex); setEditModalOpen(false); } }} onOpenEmojiPicker={handlePickerOpen} item={editingItemIndex !== null ? (currentPath.length === 0 ? (rootItems[currentPageIndex]?.items || []) : currentPath.reduce((acc, i) => acc[i].contents, (rootItems[currentPageIndex]?.items || [])))[editingItemIndex] : null} customPhotoCount={totalCustomPhotos} triggerPaywall={triggerPaywall} /></Suspense>}
-      {pickerOpen && <Suspense fallback={null}><PickerModal isOpen={pickerOpen} onClose={() => setPickerOpen(false)} userItems={rootItems[currentPageIndex]?.items || []} triggerPaywall={triggerPaywall} onSelect={(w, i, isImage) => { if (pickerCallback) pickerCallback(w, i, isImage); }} /></Suspense>}
+      {pickerOpen && <Suspense fallback={null}><PickerModal isOpen={pickerOpen} onClose={() => setPickerOpen(false)} userItems={rootItems[currentPageIndex]?.items || []} triggerPaywall={triggerPaywall} onSelect={(w, i, isImage, category) => { if (pickerCallback) pickerCallback(w, i, isImage, category); }} /></Suspense>}
       {showPhase1Selector && <Suspense fallback={null}><Phase1TargetSelector rootItems={rootItems[currentPageIndex]?.items || []} onSelect={(id) => { setPhase1TargetId(id); setShowPhase1Selector(false); }} /></Suspense>}
       {showAdvancementModal && <Suspense fallback={null}><AdvancementModal currentPhase={currentPhase} onAdvance={handleAdvance} onWait={handleWait} /></Suspense>}
       <Suspense fallback={null}><A2HSModal /></Suspense>
@@ -1531,7 +1595,31 @@ function App() {
             setRootItems(newRootItems);
           }
           setShowOnboarding(false);
+          setIsEditMode(false); // Ensure controls are closed
+          // Trigger tour if not completed
+          if (!localStorage.getItem('kiwi-tour-completed')) {
+            setShowTour(true);
+          }
         }} />
+      )}
+
+      <GuidedTour
+        isOpen={showTour}
+        onComplete={() => {
+          setShowTour(false);
+          localStorage.setItem('kiwi-tour-completed', 'true');
+        }}
+        targetRefs={{
+          controlsHandle: controlsHandleRef,
+          mainCard: mainCardRef
+        }}
+        onEditNode={(index) => {
+          setEditingItemIndex(index);
+          setEditModalOpen(true);
+        }}
+      />
+      {toastMessage && (
+        <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
       )}
     </div>
   );

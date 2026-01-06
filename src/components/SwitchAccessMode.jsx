@@ -81,7 +81,7 @@ export default function SwitchAccessMode({ children, onIconSelect }) {
     });
 
     return (
-        <div ref={gridRef} className="switch-access-wrapper">
+        <div ref={gridRef} className="switch-access-wrapper" style={{ height: '100%', width: '100%', flex: 1, display: 'flex', flexDirection: 'column' }}>
             {children}
 
             {switchAccessEnabled && (

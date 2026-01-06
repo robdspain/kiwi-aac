@@ -11,7 +11,11 @@ import {
     EYES_LABELS,
     EYEBROW_LABELS,
     MOUTH_LABELS,
-    BACKGROUND_COLORS
+    BACKGROUND_COLORS,
+    FACIAL_HAIR_COLOR_HEX,
+    CLOTHES_COLOR_HEX,
+    HAT_COLOR_HEX,
+    ACCESSORIES_COLOR_HEX
 } from '../utils/dicebearGenerator';
 
 const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = null }) => {
@@ -30,9 +34,13 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
     const [skinColor, setSkinColor] = useState(initialConfig?.skinColor || 'light');
     const [top, setTop] = useState(initialConfig?.top || 'shortHairShortFlat');
     const [hairColor, setHairColor] = useState(initialConfig?.hairColor || 'brown');
+    const [hatColor, setHatColor] = useState(initialConfig?.hatColor || 'pastelBlue');
     const [facialHair, setFacialHair] = useState(initialConfig?.facialHair || 'none');
+    const [facialHairColor, setFacialHairColor] = useState(initialConfig?.facialHairColor || 'brown');
     const [clothing, setClothing] = useState(initialConfig?.clothing || 'shirtCrewNeck');
+    const [clothesColor, setClothesColor] = useState(initialConfig?.clothesColor || 'blue02');
     const [accessories, setAccessories] = useState(initialConfig?.accessories || 'none');
+    const [accessoriesColor, setAccessoriesColor] = useState(initialConfig?.accessoriesColor || 'black');
 
     // New Face Attributes
     const [eyes, setEyes] = useState(initialConfig?.eyes || 'default');
@@ -57,9 +65,13 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
                 skinColor,
                 top,
                 hairColor,
+                hatColor,
                 facialHair,
+                facialHairColor,
                 clothing,
+                clothesColor,
                 accessories,
+                accessoriesColor,
                 eyes,
                 eyebrows,
                 mouth,
@@ -67,7 +79,7 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
             });
             setPreview(dataUrl);
         }
-    }, [activeTab, seed, skinColor, top, hairColor, facialHair, clothing, accessories, eyes, eyebrows, mouth, bgColor]);
+    }, [activeTab, seed, skinColor, top, hairColor, hatColor, facialHair, facialHairColor, clothing, clothesColor, accessories, accessoriesColor, eyes, eyebrows, mouth, bgColor]);
 
     // Initial name set
     useEffect(() => {
@@ -93,9 +105,13 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
         setSkinColor(config.skinColor);
         setTop(config.top);
         setHairColor(config.hairColor);
+        setHatColor(config.hatColor || 'pastelBlue');
         setFacialHair(config.facialHair);
+        setFacialHairColor(config.facialHairColor || 'brown');
         setClothing(config.clothing);
+        setClothesColor(config.clothesColor || 'blue02');
         setAccessories(config.accessories);
+        setAccessoriesColor(config.accessoriesColor || 'black');
         setEyes(config.eyes || 'default');
         setEyebrows(config.eyebrows || 'default');
         setMouth(config.mouth || 'default');
@@ -120,9 +136,13 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
                 skinColor,
                 top,
                 hairColor,
+                hatColor,
                 facialHair,
+                facialHairColor,
                 clothing,
+                clothesColor,
                 accessories,
+                accessoriesColor,
                 eyes,
                 eyebrows,
                 mouth,
@@ -208,7 +228,6 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
                                     type="text"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    // Removed seed link
                                     style={{ border: 'none', textAlign: 'right', fontSize: '1.0625rem', outline: 'none', background: 'transparent', flex: 1, minHeight: '2.75rem' }}
                                     placeholder="e.g. Mom"
                                 />
@@ -320,6 +339,7 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
                                         <OptionGroup label="Eyebrows" options={EYEBROW_LABELS} selected={eyebrows} onChange={setEyebrows} />
                                         <OptionGroup label="Mouth" options={MOUTH_LABELS} selected={mouth} onChange={setMouth} />
                                         <OptionGroup label="Accessories" options={ACCESSORIES_LABELS} selected={accessories} onChange={setAccessories} />
+                                        <OptionGroup label="Glasses Color" options={colorOptions(ACCESSORIES_COLOR_HEX)} selected={accessoriesColor} onChange={setAccessoriesColor} isColor />
                                     </div>
                                 )}
 
@@ -327,13 +347,16 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                                         <OptionGroup label="Hairstyle & Hats" options={TOP_TYPE_LABELS} selected={top} onChange={setTop} />
                                         <OptionGroup label="Hair Color" options={HAIR_COLOR_LABELS} selected={hairColor} onChange={setHairColor} />
+                                        <OptionGroup label="Hat Color" options={colorOptions(HAT_COLOR_HEX)} selected={hatColor} onChange={setHatColor} isColor />
                                         <OptionGroup label="Facial Hair" options={FACIAL_HAIR_LABELS} selected={facialHair} onChange={setFacialHair} />
+                                        <OptionGroup label="Facial Hair Color" options={HAIR_COLOR_LABELS} selected={facialHairColor} onChange={setFacialHairColor} />
                                     </div>
                                 )}
 
                                 {activeCategory === 'outfit' && (
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                                         <OptionGroup label="Clothing" options={CLOTHING_LABELS} selected={clothing} onChange={setClothing} />
+                                        <OptionGroup label="Clothing Color" options={colorOptions(CLOTHES_COLOR_HEX)} selected={clothesColor} onChange={setClothesColor} isColor />
                                     </div>
                                 )}
 
@@ -375,10 +398,19 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
     );
 };
 
-const OptionGroup = ({ label, options, selected, onChange }) => (
+const colorOptions = (hexMap) => {
+    // Generate label map for colors (simplified)
+    const labels = {};
+    Object.keys(hexMap).forEach(key => {
+        labels[key] = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+    });
+    return labels;
+};
+
+const OptionGroup = ({ label, options, selected, onChange, isColor }) => (
     <div>
         <div className="ios-setting-group-header">{label}</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isColor ? 'repeat(4, 1fr)' : 'repeat(2, 1fr)', gap: '0.5rem' }}>
             {Object.entries(options).map(([key, label]) => (
                 <button
                     key={key}
@@ -392,7 +424,8 @@ const OptionGroup = ({ label, options, selected, onChange }) => (
                         fontSize: '0.85rem',
                         fontWeight: 600,
                         cursor: 'pointer',
-                        textAlign: 'center'
+                        textAlign: 'center',
+                        textTransform: isColor ? 'capitalize' : 'none'
                     }}
                 >
                     {label}

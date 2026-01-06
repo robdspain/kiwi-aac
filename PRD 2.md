@@ -1,6 +1,7 @@
 # PRODUCT REQUIREMENT DOCUMENT (PRD) - KIWI VOICE
 ## Project: Kiwi Voice 1.0 - Production Release
 ## Date: January 2, 2026
+
 ### 1. Project Overview
 Kiwi Voice is a specialized tool designed to curate and customize icon libraries for Augmentative and Alternative Communication (AAC). It allows users (caregivers, therapists, or developers) to browse, filter, skin-tone-customize, and export a specific set of emojis/icons for use in communication boards.
 
@@ -254,55 +255,6 @@ Does it improve CORE communication?
 - Accessibility testing with disabled users
 
 ---
-
-### 10. Roadmap & Implementation Status
-
-> **Note:** For quarter-based roadmap and detailed feature timelines, see [ROADMAP.md](./ROADMAP.md). This section provides phase-based implementation tracking with detailed technical requirements for each feature.
-
-| Phase | Feature | Status |
-| :--- | :--- | :--- |
-| **Phase 1** | Core Infrastructure (Vite, React, Linting) | **COMPLETE** |
-| **Phase 2** | UI Framework (Curator, Grid, Sidebar) | **COMPLETE** |
-| **Phase 3** | Logic (Skin Tone, Selection, Export) | **COMPLETE** |
-| **Phase 4** | Accessibility & Focus Management | **COMPLETE** |
-| **Phase 5** | PWA & Store Readiness | **COMPLETE** |
-| **Phase 6** | Full Dataset Integration | **COMPLETE** |
-| **Phase 7** | iOS Compliance Polish | **COMPLETE** |
-| **Phase 8** | Advanced AAC Features | **COMPLETE** |
-| **Phase 9** | Customization & Privacy | **COMPLETE** |
-| **Phase 10** | Roadmap Integration | **COMPLETE** |
-| **Phase 11** | Market Disruption (Kiwi Edge) | **COMPLETE** |
-| **Phase 12** | Context-Aware Intelligence | **COMPLETE** |
-| **Phase 13** | Circle of Support (Avatar Builder) | **COMPLETE** |
-| **Phase 14** | Advanced Disruptor Refinements | **COMPLETE** |
-| **Phase 15** | High-Fidelity Voice Engine | **COMPLETE** |
-| **Phase 16** | Apple Design & Accessibility Standards | **COMPLETE** |
-| **Phase 17** | Visual Schedules & Routine Builder | **COMPLETE** |
-| **Phase 18** | Essential Skills Training (FCR, Denial Tolerance) | **COMPLETE** |
-| **Phase 19** | Quick Start & Template System | **COMPLETE** |
-| **Phase 20** | Social Sharing & Collaboration | **COMPLETE** |
-| **Phase 21** | Usage Analytics & Progress Tracking | **COMPLETE** |
-| **Phase 22** | Symbol Libraries & Personal Photos | **PARTIAL** (Photos Complete) |
-| **Phase 23** | Board Layout & Motor Planning | **COMPLETE** |
-| **Phase 24** | Switch Access & Motor Accessibility | **✅ COMPLETE** |
-| **Phase 25** | AI Vision: JIT Visual Scene Automation | **PLANNED** (Experimental) |
-| **Phase 26** | Multi-Language Mirroring | **✅ COMPLETE** |
-| **Phase 27** | Native Quality Parity (High Fidelity) | **✅ COMPLETE** |
-| **Phase 28** | Advanced Motor Accessibility & Access Profiles | **PLANNED** |
-| **Phase 29** | Biometric Security (FaceID/TouchID) | **✅ COMPLETE** |
-| **Phase 30** | Physical Scaling for Motor Accessibility | **DEFERRED** (Logic exists, UI pending) |
-| **Phase 31** | Ionic Framework Standardization | **PLANNED** |
-
-
----
-
-
-
----
-
-## 🚀 1.0 Launch Features (Core & Completed)
-
-The following features are implemented or critical for the V1.0 launch.
 
 ### 4. Functional Requirements
 
@@ -588,6 +540,47 @@ The following features are currently integrated with RevenueCat using the `premi
 
 ---
 
+### 10. Roadmap & Implementation Status
+
+> **Note:** For quarter-based roadmap and detailed feature timelines, see [ROADMAP.md](./ROADMAP.md). This section provides phase-based implementation tracking with detailed technical requirements for each feature.
+
+| Phase | Feature | Status |
+| :--- | :--- | :--- |
+| **Phase 1** | Core Infrastructure (Vite, React, Linting) | **COMPLETE** |
+| **Phase 2** | UI Framework (Curator, Grid, Sidebar) | **COMPLETE** |
+| **Phase 3** | Logic (Skin Tone, Selection, Export) | **COMPLETE** |
+| **Phase 4** | Accessibility & Focus Management | **COMPLETE** |
+| **Phase 5** | PWA & Store Readiness | **COMPLETE** |
+| **Phase 6** | Full Dataset Integration | **COMPLETE** |
+| **Phase 7** | iOS Compliance Polish | **COMPLETE** |
+| **Phase 8** | Advanced AAC Features | **COMPLETE** |
+| **Phase 9** | Customization & Privacy | **COMPLETE** |
+| **Phase 10** | Roadmap Integration | **COMPLETE** |
+| **Phase 11** | Market Disruption (Kiwi Edge) | **COMPLETE** |
+| **Phase 12** | Context-Aware Intelligence | **COMPLETE** |
+| **Phase 13** | Circle of Support (Avatar Builder) | **COMPLETE** |
+| **Phase 14** | Advanced Disruptor Refinements | **COMPLETE** |
+| **Phase 15** | High-Fidelity Voice Engine | **COMPLETE** |
+| **Phase 16** | Apple Design & Accessibility Standards | **COMPLETE** |
+| **Phase 17** | Visual Schedules & Routine Builder | **COMPLETE** |
+| **Phase 18** | Essential Skills Training (FCR, Denial Tolerance) | **COMPLETE** |
+| **Phase 19** | Quick Start & Template System | **COMPLETE** |
+| **Phase 20** | Social Sharing & Collaboration | **COMPLETE** |
+| **Phase 21** | Usage Analytics & Progress Tracking | **COMPLETE** |
+| **Phase 22** | Symbol Libraries & Personal Photos | **PARTIAL** (Photos Complete) |
+| **Phase 23** | Board Layout & Motor Planning | **COMPLETE** |
+| **Phase 24** | Switch Access & Motor Accessibility | **✅ COMPLETE** |
+| **Phase 25** | AI Vision: JIT Visual Scene Automation | **PLANNED** (Experimental) |
+| **Phase 26** | Multi-Language Mirroring | **COMPLETE** |
+| **Phase 27** | Native Quality Parity (High Fidelity) | **COMPLETE** |
+| **Phase 28** | Advanced Motor Accessibility & Access Profiles | **PLANNED** |
+| **Phase 29** | Biometric Security (FaceID/TouchID) | **✅ COMPLETE** |
+| **Phase 30** | Physical Scaling for Motor Accessibility | **✅ COMPLETE** (Calibration UI pending) |
+| **Phase 31** | Ionic Framework Standardization | **PLANNED** |
+
+
+---
+
 ### 15. Phase 15: High-Fidelity Voice Engine (New)
 
 #### 15.1. Multi-Voice Support
@@ -599,8 +592,8 @@ The following features are currently integrated with RevenueCat using the `premi
 - [x] **Voice Preview:** A "Test Voice" button to hear a sample sentence before applying changes.
 
 #### 15.3. Phonetic Pronunciation Editor
-- [x] **Custom Dictionary:** ✅ Allow users to define phonetic overrides for specific words (e.g., "Kiwi" -> "Kee-wee") to fix mispronunciations in neural engines.
-- [x] **Exportable Lexicon:** ✅ Include the pronunciation dictionary in `iconsData.json`.
+- [x] **Custom Dictionary:** Allow users to define phonetic overrides for specific words (e.g., "Kiwi" -> "Kee-wee") to fix mispronunciations in neural engines.
+- [x] **Exportable Lexicon:** Include the pronunciation dictionary in `iconsData.json`.
 
 #### 15.4. Multi-Language Voice Support
 - [x] **All Languages:** Show all system voices, not just English (currently filtered to English only).
@@ -684,7 +677,7 @@ The following features are currently integrated with RevenueCat using the `premi
 
 #### 16.2a. iOS Modal/Sheet Close Button Standards (UPDATED)
 - [x] **Adult Settings Sheet:** "Done" button (top-right, iOS blue #007AFF)
-- [x] **Systematic Update Needed:** Apply standard iOS close patterns across all modals
+- [ ] **Systematic Update Needed:** Apply standard iOS close patterns across all modals
   - **Standard Pattern:** Text-based "Done" or "Cancel" buttons instead of circular X buttons
   - **Positioning:** Top-right corner for primary action ("Done"), top-left for secondary ("Cancel")
   - **Color:** iOS blue (#007AFF) for affirmative actions
@@ -724,10 +717,10 @@ The following features are currently integrated with RevenueCat using the `premi
 
 > **See also:** [ROADMAP.md - Q1 2025](./ROADMAP.md#q1-2025) for release timeline
 
-#### 17.1. Visual Schedule Component (✅ Complete)
-- [x] **VisualSchedule.jsx:** ✅ Dedicated component for step-by-step routine navigation
-- [x] **Step-by-Step Display:** ✅ Large visual display of current activity
-- [x] **Navigation Controls:** ✅ Previous, Next, and Reset buttons
+#### 17.1. Visual Schedule Component
+- [x] **VisualSchedule.jsx:** Dedicated component for step-by-step routine navigation
+- [x] **Step-by-Step Display:** Large visual display of current activity
+- [x] **Navigation Controls:** Previous, Next, and Reset buttons
 - [x] **Progress Tracking:** Visual indication of position in schedule (Step X of Y)
 - [x] **Accessibility:** ARIA live regions for screen reader support
 
@@ -759,11 +752,11 @@ The following features are currently integrated with RevenueCat using the `premi
 
 > **See also:** [ROADMAP.md - Q1 2025](./ROADMAP.md#q1-2025) for evidence-based protocols
 
-#### 18.1. Functional Communication Response (FCR) (✅ Complete)
-- [x] **FCR Mode:** ✅ Dedicated training interface for functional communication
-- [x] **Request Training:** ✅ "My Way" button for practicing manding (requesting)
-- [x] **Immediate Feedback:** ✅ Vocal and visual reinforcement on successful request
-- [x] **Success Flash:** ✅ Full-screen positive reinforcement animation
+#### 18.1. Functional Communication Response (FCR)
+- [x] **FCR Mode:** Dedicated training interface for functional communication
+- [x] **Request Training:** "My Way" button for practicing manding (requesting)
+- [x] **Immediate Feedback:** Vocal and visual reinforcement on successful request
+- [x] **Success Flash:** Full-screen positive reinforcement animation
 
 #### 18.2. Denial Tolerance Training
 - [x] **Controlled Denial:** Configurable probability of denial (sensitivity slider)
@@ -835,9 +828,9 @@ The following features are currently integrated with RevenueCat using the `premi
 #### 19.2. Template Library
 - [x] **Pre-Built Templates:** Multiple ready-made boards (First 50 Words, School Day, etc.).
 - [x] **Template Data Structure:** TEMPLATES object in aacData.js with curated word lists.
-- [x] **Context-Specific Boards:** ✅ CONTEXT_DEFINITIONS for School, Home, Park, Mealtime scenarios.
-- [x] **One-Click Apply:** ✅ Quick-apply templates to current board or create new board from template.
-- [x] **Template Gallery:** ✅ Visual gallery showing preview of each template before application.
+- [x] **Context-Specific Boards:** CONTEXT_DEFINITIONS for School, Home, Park, Mealtime scenarios.
+- [ ] **One-Click Apply:** Quick-apply templates to current board or create new board from template.
+- [ ] **Template Gallery:** Visual gallery showing preview of each template before application.
 - [ ] **Community Templates:** User-submitted templates shared via cloud (future).
 
 **Template Categories:**
@@ -863,9 +856,9 @@ The following features are currently integrated with RevenueCat using the `premi
 
 #### 19.4. Onboarding & Help System
 - [ ] **First Launch Tutorial:** Interactive walkthrough of core features
-- [x] **Video Tutorials:** ✅ Short (<2 min) videos for key tasks (adding icons, changing voice, etc.)
-- [x] **Contextual Tooltips:** ✅ Appear when user hovers over advanced features
-- [x] **Parent/Therapist Guide:** ✅ Downloadable PDF guide for setup and customization
+- [ ] **Video Tutorials:** Short (<2 min) videos for key tasks (adding icons, changing voice, etc.)
+- [ ] **Contextual Tooltips:** Appear when user hovers over advanced features
+- [ ] **Parent/Therapist Guide:** Downloadable PDF guide for setup and customization
 - [ ] **Best Practices:** Built-in AAC therapy tips and recommendations
 - [ ] **Help Center Link:** Direct link to online documentation and support
 
@@ -1020,6 +1013,215 @@ The following features are currently integrated with RevenueCat using the `premi
 
 ---
 
+### 22. Phase 22: Symbol Libraries & Personal Photos (CRITICAL MISSING FEATURE)
+
+> **Competitive Context:** ALL major AAC apps support personal photo upload and traditional AAC symbol sets. This is table-stakes functionality, not a premium feature. Without this, Kiwi cannot compete professionally.
+
+#### 22.1. Personal Photo Upload
+
+**Why Critical:**
+- Children with autism recognize real photos better than stylized icons/avatars
+- AAC best practice: Use real photos of familiar people, places, objects
+- Competitor standard: Proloquo2Go, TouchChat, LAMP, Snap+Core, CoughDrop all support
+- Current limitation: Emoji/Memoji may not represent child's actual family/environment
+
+**Implementation Requirements:**
+- [x] **Camera Integration:** Capacitor Camera API for taking photos directly
+- [x] **Photo Library Access:** Select from device photo library
+- [x] **Photo Editor:** Manual square crop on import for icon/profile photos
+- [x] **Auto-Optimization:** Resize to optimal dimensions, compress for performance
+- [ ] **Photo Categories:** Automatically suggest categories (People, Places, Food, Objects)
+- [ ] **Label Suggestions:** OCR or manual labeling for each photo
+- [ ] **Storage Management:** Show photo storage usage, delete unused photos
+
+**Free Tier Limits:**
+- Up to 20 custom photos (sufficient for core family/environment)
+- Basic photo editing (crop)
+- Local storage only
+
+**Premium Tier (Kiwi Pro):**
+- Unlimited custom photos
+- Advanced editing (filters, contrast, brightness)
+- Cloud backup of photos (synced across devices)
+- Batch photo import
+- Photo collections (organize by context)
+
+**Technical Specifications:**
+```javascript
+// Photo data structure
+{
+  id: 'photo_uuid',
+  type: 'custom_photo',
+  imageUrl: 'data:image/jpeg;base64,...', // or local file path
+  label: 'Grandma',
+  category: 'My People',
+  dateAdded: '2025-01-02',
+  metadata: {
+    originalFilename: 'IMG_1234.jpg',
+    dimensions: { width: 800, height: 600 },
+    fileSize: 125000, // bytes
+    tags: ['family', 'people']
+  }
+}
+```
+
+**Use Cases:**
+- Family members (Mom, Dad, siblings, grandparents)
+- Familiar places (home, school, therapy clinic, park)
+- Favorite objects (specific toy, blanket, snack, pet)
+- Medical equipment (wheelchair, AAC device, medication)
+- Daily routine items (toothbrush, backpack, lunchbox)
+
+#### 22.2. Symbol Library Integration
+
+**Why Critical:**
+- Emoji limitations: Missing AAC-specific concepts (therapy, medication, sensory, bathroom, etc.)
+- Professional AAC apps use PCS, SymbolStix, Widgit, or open symbol sets
+- SLPs expect traditional symbol support for clinical credibility
+- Some concepts clearer with symbols than emoji (abstract actions, medical terms)
+
+**Open Symbol Libraries (Free Tier):**
+
+**ARASAAC (Recommended Priority 1):**
+- [x] 40,000+ symbols in 30+ languages
+- [x] Free, Creative Commons license
+- [x] Covers comprehensive AAC vocabulary
+- [x] API available: https://api.arasaac.org/
+- [x] Used by Cboard (proven integration)
+- [x] High-quality, clear, consistent style
+
+**Mulberry Symbols:**
+- 3,400+ symbols
+- Creative Commons license
+- Designed for AAC specifically
+- SVG format (scalable)
+- Good for basic vocabulary
+
+**OpenMoji:**
+- 4,000+ open-source emoji
+- Consistent style (vs platform emoji variance)
+- SVG format
+- Good emoji alternative
+
+**Premium Symbol Libraries (Kiwi Pro):**
+
+**PCS (Picture Communication Symbols) - Tobii Dynavox:**
+- Industry standard (used in Proloquo2Go, Snap+Core)
+- 50,000+ symbols
+- Requires licensing ($$$)
+- High recognition, professional quality
+
+**SymbolStix - n2y:**
+- 40,000+ symbols
+- Used in TouchChat, Boardmaker
+- Licensing required
+- Excellent for educational settings
+
+**Implementation Architecture:**
+```javascript
+// Unified search across libraries
+searchIcons(query, libraries = ['emoji', 'arasaac', 'mulberry']) {
+  const results = [];
+
+  if (libraries.includes('emoji')) {
+    results.push(...searchEmoji(query));
+  }
+
+  if (libraries.includes('arasaac')) {
+    results.push(...searchARASAAC(query)); // API call
+  }
+
+  if (libraries.includes('mulberry')) {
+    results.push(...searchMulberry(query));
+  }
+
+  // Merge and deduplicate
+  return deduplicateResults(results);
+}
+```
+
+**User Experience:**
+- [x] **Unified Search:** Search across emoji + symbols simultaneously
+- [x] **Library Selector:** Toggle which libraries to search (emoji, ARASAAC, Mulberry, etc.)
+- [x] **Visual Distinction:** Clear icon badges showing source (🎨 emoji, 📚 ARASAAC, etc.)
+- [x] **Mixed Boards:** Allow emoji and symbols on same board
+- [x] **Symbol Preview:** Hover/long-press to see larger preview
+- [x] **Download Management:** Symbols cached locally for offline use (via browser cache)
+- [x] **Symbol Packs:** Pre-download common symbol sets (Core Vocabulary, Medical, School)
+
+**Category Mapping:**
+- Map ARASAAC categories to Kiwi categories
+- Automatic suggestion: "No emoji found, try ARASAAC symbols?"
+- Fallback hierarchy: Emoji → ARASAAC → Mulberry → Custom Photo
+
+#### 22.3. Hybrid Icon Boards
+
+**Best Practice Approach:**
+- Emoji for universally recognized items (food, animals, basic emotions)
+- Symbols for AAC-specific concepts (therapy, communication, sensory)
+- Photos for personal/familiar items (family, home, favorite objects)
+- Mixed approach recommended by SLPs
+
+**Example Board Composition:**
+- "I" → Memoji avatar (visual appeal)
+- "want" → ARASAAC symbol (clear action)
+- "Mom" → Personal photo (recognition)
+- "cookie" → Cookie emoji (universal)
+- "bathroom" → ARASAAC symbol (clear, appropriate)
+- "help" → ARASAAC symbol (professional)
+
+#### 22.4. Technical Implementation
+
+**ARASAAC API Integration:**
+```javascript
+// Fetch symbols by keyword
+async function searchARASAAC(keyword, language = 'en') {
+  const response = await fetch(
+    `https://api.arasaac.org/api/pictograms/${language}/search/${keyword}`
+  );
+  const symbols = await response.json();
+
+  return symbols.map(s => ({
+    id: `arasaac_${s._id}`,
+    name: s.keywords[0].keyword,
+    category: mapARASAACCategory(s.categories),
+    imageUrl: `https://static.arasaac.org/pictograms/${s._id}/${s._id}_500.png`,
+    type: 'arasaac_symbol',
+    source: 'ARASAAC'
+  }));
+}
+```
+
+**Local Caching:**
+- Cache symbol images in IndexedDB for offline use
+- Pre-download core vocabulary symbols on install
+- Progressive download: Fetch symbols as user searches
+- Storage quota management: Limit to 50MB symbol cache
+
+**Competitor Feature Comparison:**
+
+| Feature | Kiwi Voice | Proloquo2Go | TouchChat | Cboard |
+|---------|------------|-------------|-----------|---------|
+| Personal Photos | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes |
+| Open Symbols | ✅ ARASAAC+OpenMoji | ❌ No | ❌ No | ✅ ARASAAC |
+| Premium Symbols | ⏳ Planned | ✅ PCS | ✅ SymbolStix | ❌ No |
+| Mixed Boards | ✅ Yes | ✅ Yes | ✅ Yes | ⚠️ Limited |
+| Symbol Search | ✅ Unified (4 sources) | ✅ Yes | ✅ Yes | ✅ Yes |
+| Motor Planning | ✅ Yes (Fixed Grid) | ✅ Yes | ✅ Yes | ❌ Dynamic |
+| Switch Access | ⏳ Planned | ✅ Yes | ✅ Yes | ⚠️ Limited |
+| Color Coding | ✅ Yes (Fitzgerald) | ✅ Yes | ✅ Yes | ✅ Yes |
+| Multi-Page | ✅ Yes (Tabs+Thumbs) | ✅ Yes | ✅ Yes | ✅ Yes |
+| **Memoji Aesthetic**| ✅ **3D Characters** | ❌ 2D Only | ❌ 2D Only | ❌ 2D Only |
+| **Skill Training** | ✅ **FCR & Denial** | ❌ No | ❌ No | ❌ No |
+| **Routine Builder** | ✅ **Visual Schedules**| ❌ No | ❌ No | ❌ No |
+| **Biometric Security** | ✅ **FaceID/TouchID** | ✅ Yes | ✅ Yes | ❌ No |
+| **Physical Scaling (mm)** | ✅ **Precise** | ❌ No | ❌ No | ❌ No |
+| **Price** | ✅ **$39/yr (Free Tier)**| ❌ $249+ | ❌ $299+ | ✅ Free |
+| **Cross-Platform** | ✅ **Web/iOS/Android** | ❌ iOS Only | ⚠️ iOS/Android | ✅ Web Only |
+| Biometrics | ✅ Yes | ✅ Yes | ✅ Yes | ❌ No |
+
+---
+
 ### 23. Phase 23: Board Layout & Motor Planning (CRITICAL AAC FEATURE)
 
 > **Competitive Context:** Motor planning is foundational to AAC success. LAMP Words for Life ($299) built entire system on this principle. TouchChat, Proloquo2Go all support consistent icon positioning. Without this, Kiwi is not a serious AAC tool.
@@ -1162,16 +1364,16 @@ const gridConfigs = {
 **Development Timeline:** 2-4 weeks for basic implementation
 
 **Sequential Scanning:**
-- [x] **Auto-Highlight:** ✅ Icons highlighted one-by-one automatically
-- [x] **Scan Speed:** ✅ Adjustable 1s - 3s per icon (start with 1.5s default)
-- [x] **Visual Indicator:** ✅ Bold border + color change on highlighted icon
-- [x] **Audio Cue:** ✅ Optional beep/click sound on each highlight
-- [x] **Single-Switch Activation:** ✅ Tap anywhere (screen, external switch, keyboard spacebar) to select
-- [x] **Wraparound:** ✅ Scan loops continuously until selection made
-- [x] **Pause on Hover:** Longer pause on icon mouse/touch hover (optional)
+- [ ] **Auto-Highlight:** Icons highlighted one-by-one automatically
+- [ ] **Scan Speed:** Adjustable 1s - 3s per icon (start with 1.5s default)
+- [ ] **Visual Indicator:** Bold border + color change on highlighted icon
+- [ ] **Audio Cue:** Optional beep/click sound on each highlight
+- [ ] **Single-Switch Activation:** Tap anywhere (screen, external switch, keyboard spacebar) to select
+- [ ] **Wraparound:** Scan loops continuously until selection made
+- [ ] **Pause on Hover:** Longer pause on icon mouse/touch hover (optional)
 
 **Scan Pattern Options:**
-- [x] **Linear Scan:** ✅ Left-to-right, top-to-bottom
+- [ ] **Linear Scan:** Left-to-right, top-to-bottom
 - [ ] **Row-Column Scan:** Scan rows first, then columns within selected row
 - [ ] **Reverse Scan:** Right-to-left, bottom-to-top
 - [ ] **Random Scan:** Random order (for testing attention)
@@ -1213,18 +1415,18 @@ const ScanMode = {
 #### 24.3. Two-Switch Mode (Priority 2)
 
 **Switch Functions:**
-- [x] **Switch 1:** ✅ Advance to next icon (Auto-scan)
-- [x] **Switch 2:** ✅ Select current icon
+- [ ] **Switch 1:** Advance to next icon
+- [ ] **Switch 2:** Select current icon
 - [ ] **Manual Control:** User controls scan speed (no auto-advance)
 - [ ] **More Precise:** Better control than single-switch auto-scan
 - [ ] **Preferred by Power Users:** Faster for experienced users
 
 **Switch Input Methods:**
-- [x] **Keyboard keys:** ✅ (Space = advance, Enter = select)
-- [x] **External switch hardware:** ✅ (Bluetooth, USB)
-- [ ] Capacitive switches (AbleNet, Enabling Devices)
-- [ ] Sip-and-puff switches
-- [ ] Eye-gaze dwell clicks (future)
+- Keyboard keys (Space = advance, Enter = select)
+- External switch hardware (Bluetooth, USB)
+- Capacitive switches (AbleNet, Enabling Devices)
+- Sip-and-puff switches
+- Eye-gaze dwell clicks (future)
 
 #### 24.4. Advanced Scanning Options (Priority 3)
 
@@ -1305,6 +1507,64 @@ function handleSwitchPress(event) {
 
 ---
 
+### 25. Phase 25: AI Vision & Advanced Features (EXPERIMENTAL - REQUIRES VALIDATION)
+
+> **IMPORTANT:** These features are innovative but UNPROVEN in AAC context. Require extensive user testing before full implementation. Do NOT prioritize over core features.
+
+#### 25.1. AI Vision: JIT Visual Scene Automation
+
+**Concept:**
+- Upload photo of environment → AI detects objects → auto-create hotspots
+- Example: Photo of kitchen → AI finds fridge, stove, sink → create clickable areas
+- TensorFlow.js on-device processing (privacy-first, offline capable)
+
+**Status:** ⏸️ **ON HOLD / PENDING VALIDATION**
+
+**Validation Requirements:**
+- [ ] Test with 50+ users to validate usefulness
+- [ ] Measure accuracy: >90% correct object identification required
+- [ ] Compare to manual creation: Is AI actually faster/better?
+- [ ] SLP feedback: Does this improve AAC therapy outcomes?
+
+**If Validated (Future):**
+- [ ] **Vision Engine Integration:** TensorFlow.js object detection
+- [ ] **Auto-Hotspot Suggestion:** Bounding boxes → clickable areas
+- [ ] **Semantic Linking:** Map objects to icons automatically
+- [ ] **Manual Override:** User can adjust all AI suggestions
+
+**If NOT Validated:**
+- Remove feature or keep as experimental "Labs" feature
+- Do not prioritize over core features
+- Acknowledge that manual creation may be better
+
+#### 25.2. Advanced Morphology Engine
+
+**Grammar Support:**
+- [ ] **Plurals:** Cookie → Cookies (add +s toggle)
+- [ ] **Possessives:** Mom → Mom's (add 's toggle)
+- [ ] **Verb Conjugation:** I want → He wants (subject-verb agreement)
+- [ ] **Past Tense:** eat → ate (irregular verb support)
+
+**SLP Validation Required:**
+- Does automatic grammar help or confuse learners?
+- Should grammar be taught explicitly first?
+- Is this appropriate for early AAC users?
+
+#### 25.3. Visual Action Cues (Zen Animations)
+
+**Concept:**
+- Beautiful, calming animations to illustrate concepts
+- Example: "happy" icon shows gentle smile animation
+- Soft, non-distracting visual cues
+
+**Validation Requirements:**
+- Test with sensory-sensitive users
+- Measure distraction vs. engagement
+- SLP feedback on learning impact
+- Option to disable for those who find it overwhelming
+
+---
+
 ### 26. Phase 26: Multi-Language Mirroring
 
 > **Competitive Context:** Snap+Core First excels at bilingual AAC. Critical for Hispanic families (40M+ Spanish speakers in US). Motor planning requires consistent positions across languages.
@@ -1355,6 +1615,59 @@ const bilingualIcon = {
 - ARASAAC symbols available in 30+ languages
 - Automatic symbol translation via API
 - Fallback to emoji if symbol unavailable
+
+---
+
+### 28. Phase 28: Advanced Motor Accessibility & Access Profiles (NEW)
+
+> **Research-Backed Standards:** AAC success depends on physically consistent touch targets. Platform defaults (44pt/48dp) are a baseline, but motor-impaired users require larger, physically-measured targets.
+
+#### 28.1. Touch Target Research & Standards
+- **Baseline (Typical Touch):** 9–10 mm minimum (maps to 44pt iOS / 48dp Android).
+- **Moderate Motor Challenges / Younger Kids:** 12–15 mm targets.
+- **Significant Motor Challenges:** 15–22 mm targets.
+- **Hit Area vs. Visual Area:** The "hit area" must always meet the Access Profile requirement, even if the visual icon is smaller.
+
+#### 28.2. Access Profiles
+Instead of a single UI for everyone, Kiwi Voice uses **Access Profiles** to drive layout decisions:
+- **Target Size:** 10 / 12 / 15 / 18 / 22 mm (Physical measurement).
+- **Spacing:** Default to 8dp (approx. 1.5mm) minimum between hit areas.
+- **Selection Type:** Direct Touch (Default). Switch Scanning and Eye Gaze are planned future features.
+- **Visual Needs:** High contrast, field size limits, and symbol scaling.
+
+#### 28.3. Physical Sizing Strategy
+- **Physical Units:** Goal is 10mm feels like 10mm on every device.
+- **Conversion Logic:** Use device pixel ratio and standard PPI estimates to convert physical `mm` to CSS `rem/px`.
+- **Stable Motor Planning:** When scaling for different screens, keep button relative positions stable. Expand grids by adding rows/columns around the core, rather than reflowing.
+
+#### 28.4. Implementation Requirements
+- [x] **Access Profile State:** Store user-specific motor settings in `ProfileContext`.
+- [x] **Physical Calibration Tool:** Update `TouchCalibration.jsx` to measure accuracy at specific `mm` sizes.
+- [x] **Dynamic Grid Scaling:** Grid cells must calculate size based on the Access Profile's `targetSize` while maintaining a stable layout.
+- [x] **Hit Area Enforcement:** Ensure all buttons have a minimum hit area of 44x44pt or the user's custom target size.
+
+#### 28.5. Touch Calibration Interface (IMPLEMENTED)
+
+**Visual Grid Size Selector:**
+- [x] **5 Grid Layout Options:** Users can choose from 2×2, 3×3, 4×4, 5×5, or 6×6 grid layouts
+- [x] **Animal-Themed Icons:** Each grid size represented by an animal emoji (🐘 elephant for largest, 🐜 ant for smallest)
+- [x] **Visual Feedback:** Selected size shows dark teal background (#1A535C) with white text
+- [x] **Instant Application:** Grid size and target size settings apply immediately upon selection
+- [x] **Integrated with Onboarding:** Touch calibration shown during first-time setup flow
+- [x] **Settings Access:** "Redo Touch Calibration" button in Adult Settings → Extra → Accessibility section
+- [x] **Unified Experience:** Same calibration interface used in both onboarding and settings
+
+**Grid Size to Target Size Mapping:**
+- 2×2 (🐘 Super Big): 22mm touch targets
+- 3×3 (🦒 Big): 18mm touch targets
+- 4×4 (🐕 Standard): 15mm touch targets
+- 5×5 (🐈 Medium): 12mm touch targets
+- 6×6 (🐜 Dense): 10mm touch targets
+
+**User Experience:**
+- Clear explanatory text: "Larger grids have bigger buttons but fewer words visible"
+- Skip option for users who want to configure later
+- Persistent storage of calibration choice in user profile
 
 ---
 
@@ -1831,334 +2144,6 @@ function setIconPhysicalSize(mm) {
 ## End of PRD
 - Visual selection state with shadow effects and color changes
 - Responsive layout adapts to different screen sizes
-
----
-
-### 22. Phase 22: Symbol Libraries & Personal Photos (CRITICAL MISSING FEATURE)
-
-> **Competitive Context:** ALL major AAC apps support personal photo upload and traditional AAC symbol sets. This is table-stakes functionality, not a premium feature. Without this, Kiwi cannot compete professionally.
-
-#### 22.1. Personal Photo Upload
-
-**Why Critical:**
-- Children with autism recognize real photos better than stylized icons/avatars
-- AAC best practice: Use real photos of familiar people, places, objects
-- Competitor standard: Proloquo2Go, TouchChat, LAMP, Snap+Core, CoughDrop all support
-- Current limitation: Emoji/Memoji may not represent child's actual family/environment
-
-**Implementation Requirements:**
-- [x] **Camera Integration:** Capacitor Camera API for taking photos directly
-- [x] **Photo Library Access:** Select from device photo library
-- [x] **Photo Editor:** Manual square crop on import for icon/profile photos
-- [x] **Auto-Optimization:** Resize to optimal dimensions, compress for performance
-- [ ] **Photo Categories:** Automatically suggest categories (People, Places, Food, Objects)
-- [ ] **Label Suggestions:** OCR or manual labeling for each photo
-- [ ] **Storage Management:** Show photo storage usage, delete unused photos
-
-**Free Tier Limits:**
-- Up to 20 custom photos (sufficient for core family/environment)
-- Basic photo editing (crop)
-- Local storage only
-
-**Premium Tier (Kiwi Pro):**
-- Unlimited custom photos
-- Advanced editing (filters, contrast, brightness)
-- Cloud backup of photos (synced across devices)
-- Batch photo import
-- Photo collections (organize by context)
-
-**Technical Specifications:**
-```javascript
-// Photo data structure
-{
-  id: 'photo_uuid',
-  type: 'custom_photo',
-  imageUrl: 'data:image/jpeg;base64,...', // or local file path
-  label: 'Grandma',
-  category: 'My People',
-  dateAdded: '2025-01-02',
-  metadata: {
-    originalFilename: 'IMG_1234.jpg',
-    dimensions: { width: 800, height: 600 },
-    fileSize: 125000, // bytes
-    tags: ['family', 'people']
-  }
-}
-```
-
-**Use Cases:**
-- Family members (Mom, Dad, siblings, grandparents)
-- Familiar places (home, school, therapy clinic, park)
-- Favorite objects (specific toy, blanket, snack, pet)
-- Medical equipment (wheelchair, AAC device, medication)
-- Daily routine items (toothbrush, backpack, lunchbox)
-
-#### 22.2. Symbol Library Integration
-
-**Why Critical:**
-- Emoji limitations: Missing AAC-specific concepts (therapy, medication, sensory, bathroom, etc.)
-- Professional AAC apps use PCS, SymbolStix, Widgit, or open symbol sets
-- SLPs expect traditional symbol support for clinical credibility
-- Some concepts clearer with symbols than emoji (abstract actions, medical terms)
-
-**Open Symbol Libraries (Free Tier):**
-
-**ARASAAC (Recommended Priority 1):**
-- [x] 40,000+ symbols in 30+ languages
-- [x] Free, Creative Commons license
-- [x] Covers comprehensive AAC vocabulary
-- [x] API available: https://api.arasaac.org/
-- [x] Used by Cboard (proven integration)
-- [x] High-quality, clear, consistent style
-
-**Mulberry Symbols:**
-- 3,400+ symbols
-- Creative Commons license
-- Designed for AAC specifically
-- SVG format (scalable)
-- Good for basic vocabulary
-
-**OpenMoji:**
-- 4,000+ open-source emoji
-- Consistent style (vs platform emoji variance)
-- SVG format
-- Good emoji alternative
-
-**Premium Symbol Libraries (Kiwi Pro):**
-
-**PCS (Picture Communication Symbols) - Tobii Dynavox:**
-- Industry standard (used in Proloquo2Go, Snap+Core)
-- 50,000+ symbols
-- Requires licensing ($$$)
-- High recognition, professional quality
-
-**SymbolStix - n2y:**
-- 40,000+ symbols
-- Used in TouchChat, Boardmaker
-- Licensing required
-- Excellent for educational settings
-
-**Implementation Architecture:**
-```javascript
-// Unified search across libraries
-searchIcons(query, libraries = ['emoji', 'arasaac', 'mulberry']) {
-  const results = [];
-
-  if (libraries.includes('emoji')) {
-    results.push(...searchEmoji(query));
-  }
-
-  if (libraries.includes('arasaac')) {
-    results.push(...searchARASAAC(query)); // API call
-  }
-
-  if (libraries.includes('mulberry')) {
-    results.push(...searchMulberry(query));
-  }
-
-  // Merge and deduplicate
-  return deduplicateResults(results);
-}
-```
-
-**User Experience:**
-- [x] **Unified Search:** Search across emoji + symbols simultaneously
-- [x] **Library Selector:** Toggle which libraries to search (emoji, ARASAAC, Mulberry, etc.)
-- [x] **Visual Distinction:** Clear icon badges showing source (🎨 emoji, 📚 ARASAAC, etc.)
-- [x] **Mixed Boards:** Allow emoji and symbols on same board
-- [x] **Symbol Preview:** Hover/long-press to see larger preview
-- [x] **Download Management:** Symbols cached locally for offline use (via browser cache)
-- [x] **Symbol Packs:** Pre-download common symbol sets (Core Vocabulary, Medical, School)
-
-**Category Mapping:**
-- Map ARASAAC categories to Kiwi categories
-- Automatic suggestion: "No emoji found, try ARASAAC symbols?"
-- Fallback hierarchy: Emoji → ARASAAC → Mulberry → Custom Photo
-
-#### 22.3. Hybrid Icon Boards
-
-**Best Practice Approach:**
-- Emoji for universally recognized items (food, animals, basic emotions)
-- Symbols for AAC-specific concepts (therapy, communication, sensory)
-- Photos for personal/familiar items (family, home, favorite objects)
-- Mixed approach recommended by SLPs
-
-**Example Board Composition:**
-- "I" → Memoji avatar (visual appeal)
-- "want" → ARASAAC symbol (clear action)
-- "Mom" → Personal photo (recognition)
-- "cookie" → Cookie emoji (universal)
-- "bathroom" → ARASAAC symbol (clear, appropriate)
-- "help" → ARASAAC symbol (professional)
-
-#### 22.4. Technical Implementation
-
-**ARASAAC API Integration:**
-```javascript
-// Fetch symbols by keyword
-async function searchARASAAC(keyword, language = 'en') {
-  const response = await fetch(
-    `https://api.arasaac.org/api/pictograms/${language}/search/${keyword}`
-  );
-  const symbols = await response.json();
-
-  return symbols.map(s => ({
-    id: `arasaac_${s._id}`,
-    name: s.keywords[0].keyword,
-    category: mapARASAACCategory(s.categories),
-    imageUrl: `https://static.arasaac.org/pictograms/${s._id}/${s._id}_500.png`,
-    type: 'arasaac_symbol',
-    source: 'ARASAAC'
-  }));
-}
-```
-
-**Local Caching:**
-- Cache symbol images in IndexedDB for offline use
-- Pre-download core vocabulary symbols on install
-- Progressive download: Fetch symbols as user searches
-- Storage quota management: Limit to 50MB symbol cache
-
-**Competitor Feature Comparison:**
-
-| Feature | Kiwi Voice | Proloquo2Go | TouchChat | Cboard |
-|---------|------------|-------------|-----------|---------|
-| Personal Photos | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes |
-| Open Symbols | ✅ ARASAAC+OpenMoji | ❌ No | ❌ No | ✅ ARASAAC |
-| Premium Symbols | ⏳ Planned | ✅ PCS | ✅ SymbolStix | ❌ No |
-| Mixed Boards | ✅ Yes | ✅ Yes | ✅ Yes | ⚠️ Limited |
-| Symbol Search | ✅ Unified (4 sources) | ✅ Yes | ✅ Yes | ✅ Yes |
-| Motor Planning | ✅ Yes (Fixed Grid) | ✅ Yes | ✅ Yes | ❌ Dynamic |
-| Switch Access | ⏳ Planned | ✅ Yes | ✅ Yes | ⚠️ Limited |
-| Color Coding | ✅ Yes (Fitzgerald) | ✅ Yes | ✅ Yes | ✅ Yes |
-| Multi-Page | ✅ Yes (Tabs+Thumbs) | ✅ Yes | ✅ Yes | ✅ Yes |
-| **Memoji Aesthetic**| ✅ **3D Characters** | ❌ 2D Only | ❌ 2D Only | ❌ 2D Only |
-| **Skill Training** | ✅ **FCR & Denial** | ❌ No | ❌ No | ❌ No |
-| **Routine Builder** | ✅ **Visual Schedules**| ❌ No | ❌ No | ❌ No |
-| **Biometric Security** | ✅ **FaceID/TouchID** | ✅ Yes | ✅ Yes | ❌ No |
-| **Physical Scaling (mm)** | ✅ **Precise** | ❌ No | ❌ No | ❌ No |
-| **Price** | ✅ **$39/yr (Free Tier)**| ❌ $249+ | ❌ $299+ | ✅ Free |
-| **Cross-Platform** | ✅ **Web/iOS/Android** | ❌ iOS Only | ⚠️ iOS/Android | ✅ Web Only |
-| Biometrics | ✅ Yes | ✅ Yes | ✅ Yes | ❌ No |
-
----
-
-
-
----
-
-## 🔮 Future Development (Post-Launch)
-
-The following features are planned for future updates and are NOT required for 1.0.
-
-### 25. Phase 25: AI Vision & Advanced Features (EXPERIMENTAL - REQUIRES VALIDATION)
-
-> **IMPORTANT:** These features are innovative but UNPROVEN in AAC context. Require extensive user testing before full implementation. Do NOT prioritize over core features.
-
-#### 25.1. AI Vision: JIT Visual Scene Automation
-
-**Concept:**
-- Upload photo of environment → AI detects objects → auto-create hotspots
-- Example: Photo of kitchen → AI finds fridge, stove, sink → create clickable areas
-- TensorFlow.js on-device processing (privacy-first, offline capable)
-
-**Status:** ⏸️ **ON HOLD / PENDING VALIDATION**
-
-**Validation Requirements:**
-- [ ] Test with 50+ users to validate usefulness
-- [ ] Measure accuracy: >90% correct object identification required
-- [ ] Compare to manual creation: Is AI actually faster/better?
-- [ ] SLP feedback: Does this improve AAC therapy outcomes?
-
-**If Validated (Future):**
-- [ ] **Vision Engine Integration:** TensorFlow.js object detection
-- [ ] **Auto-Hotspot Suggestion:** Bounding boxes → clickable areas
-- [ ] **Semantic Linking:** Map objects to icons automatically
-- [ ] **Manual Override:** User can adjust all AI suggestions
-
-**If NOT Validated:**
-- Remove feature or keep as experimental "Labs" feature
-- Do not prioritize over core features
-- Acknowledge that manual creation may be better
-
-#### 25.2. Advanced Morphology Engine
-
-**Grammar Support:**
-- [ ] **Plurals:** Cookie → Cookies (add +s toggle)
-- [ ] **Possessives:** Mom → Mom's (add 's toggle)
-- [ ] **Verb Conjugation:** I want → He wants (subject-verb agreement)
-- [ ] **Past Tense:** eat → ate (irregular verb support)
-
-**SLP Validation Required:**
-- Does automatic grammar help or confuse learners?
-- Should grammar be taught explicitly first?
-- Is this appropriate for early AAC users?
-
-#### 25.3. Visual Action Cues (Zen Animations)
-
-**Concept:**
-- Beautiful, calming animations to illustrate concepts
-- Example: "happy" icon shows gentle smile animation
-- Soft, non-distracting visual cues
-
-**Validation Requirements:**
-- Test with sensory-sensitive users
-- Measure distraction vs. engagement
-- SLP feedback on learning impact
-- Option to disable for those who find it overwhelming
-
----
-
-### 28. Phase 28: Advanced Motor Accessibility & Access Profiles (NEW)
-
-> **Research-Backed Standards:** AAC success depends on physically consistent touch targets. Platform defaults (44pt/48dp) are a baseline, but motor-impaired users require larger, physically-measured targets.
-
-#### 28.1. Touch Target Research & Standards
-- **Baseline (Typical Touch):** 9–10 mm minimum (maps to 44pt iOS / 48dp Android).
-- **Moderate Motor Challenges / Younger Kids:** 12–15 mm targets.
-- **Significant Motor Challenges:** 15–22 mm targets.
-- **Hit Area vs. Visual Area:** The "hit area" must always meet the Access Profile requirement, even if the visual icon is smaller.
-
-#### 28.2. Access Profiles
-Instead of a single UI for everyone, Kiwi Voice uses **Access Profiles** to drive layout decisions:
-- **Target Size:** 10 / 12 / 15 / 18 / 22 mm (Physical measurement).
-- **Spacing:** Default to 8dp (approx. 1.5mm) minimum between hit areas.
-- **Selection Type:** Direct Touch (Default). Switch Scanning and Eye Gaze are planned future features.
-- **Visual Needs:** High contrast, field size limits, and symbol scaling.
-
-#### 28.3. Physical Sizing Strategy
-- **Physical Units:** Goal is 10mm feels like 10mm on every device.
-- **Conversion Logic:** Use device pixel ratio and standard PPI estimates to convert physical `mm` to CSS `rem/px`.
-- **Stable Motor Planning:** When scaling for different screens, keep button relative positions stable. Expand grids by adding rows/columns around the core, rather than reflowing.
-
-#### 28.4. Implementation Requirements
-- [x] **Access Profile State:** Store user-specific motor settings in `ProfileContext`.
-- [x] **Physical Calibration Tool:** Update `TouchCalibration.jsx` to measure accuracy at specific `mm` sizes.
-- [x] **Dynamic Grid Scaling:** Grid cells must calculate size based on the Access Profile's `targetSize` while maintaining a stable layout.
-- [x] **Hit Area Enforcement:** Ensure all buttons have a minimum hit area of 44x44pt or the user's custom target size.
-
-#### 28.5. Touch Calibration Interface (IMPLEMENTED)
-
-**Visual Grid Size Selector:**
-- [x] **5 Grid Layout Options:** Users can choose from 2×2, 3×3, 4×4, 5×5, or 6×6 grid layouts
-- [x] **Animal-Themed Icons:** Each grid size represented by an animal emoji (🐘 elephant for largest, 🐜 ant for smallest)
-- [x] **Visual Feedback:** Selected size shows dark teal background (#1A535C) with white text
-- [x] **Instant Application:** Grid size and target size settings apply immediately upon selection
-- [x] **Integrated with Onboarding:** Touch calibration shown during first-time setup flow
-- [x] **Settings Access:** "Redo Touch Calibration" button in Adult Settings → Extra → Accessibility section
-- [x] **Unified Experience:** Same calibration interface used in both onboarding and settings
-
-**Grid Size to Target Size Mapping:**
-- 2×2 (🐘 Super Big): 22mm touch targets
-- 3×3 (🦒 Big): 18mm touch targets
-- 4×4 (🐕 Standard): 15mm touch targets
-- 5×5 (🐈 Medium): 12mm touch targets
-- 6×6 (🐜 Dense): 10mm touch targets
-
-**User Experience:**
-- Clear explanatory text: "Larger grids have bigger buttons but fewer words visible"
-- Skip option for users who want to configure later
-- Persistent storage of calibration choice in user profile
 
 ---
 

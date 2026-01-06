@@ -138,6 +138,7 @@ const Grid = ({
                 alignItems: 'center',
                 justifyContent: 'center',
                 height: '100%',
+                width: '100%',
                 padding: '2.5rem',
                 textAlign: 'center'
             }}>
@@ -145,11 +146,11 @@ const Grid = ({
                     src="/images/logo.png"
                     alt="Kiwi Voice Logo"
                     style={{
-                        width: '8rem',
-                        height: '8rem',
+                        width: '12rem',
+                        height: '12rem',
                         marginBottom: '1.25rem',
-                        borderRadius: '1.5rem',
-                        boxShadow: '0 8px 16px rgba(0,0,0,0.05)'
+                        borderRadius: '2.5rem',
+                        filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.2))'
                     }}
                 />
                 <h2 style={{
