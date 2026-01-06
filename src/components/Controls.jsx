@@ -54,8 +54,7 @@ import {
     bookOutline,
     listOutline,
     colorWandOutline,
-    listOutline,
-    colorWandOutline,
+
     lockClosedOutline,
     helpCircleOutline,
     schoolOutline,
