@@ -207,7 +207,7 @@ const levelDetails = {
     7: {
         title: "Level 7: Asking Questions",
         emoji: "🕵️",
-        summary: "The learner asks questions to learn about the environment (SBT Complex FCR).",
+        summary: "The learner asks questions to learn about the environment (Skills Complex FCR).",
         image: "/images/level_7.png",
         nextGoal: "Graduation!",
         nextSummary: "Congratulations! Your child is using complex communication and branching skills.",
@@ -285,10 +285,10 @@ const AdvancementModal = ({ currentPhase, onAdvance, onWait }) => {
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                         <IonBadge style={{ background: '#5856D6', padding: '8px 14px', fontSize: '0.75rem', fontWeight: '800', borderRadius: '10px' }}>
-                            HANLEY SBT
+                            LIFE SKILLS
                         </IonBadge>
                         <IonBadge style={{ background: '#34C759', padding: '8px 14px', fontSize: '0.75rem', fontWeight: '800', borderRadius: '10px' }}>
-                            PLS
+                            PRESCHOOL READY
                         </IonBadge>
                     </div>
                     <h3 style={{ margin: '0 0 8px 0', color: '#1D1D1F', fontWeight: '900', fontSize: '1.25rem' }}>

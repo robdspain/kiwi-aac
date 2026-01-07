@@ -214,7 +214,7 @@ export const BACKGROUND_COLORS = [
 ];
 
 // Hex values for Avataaars
-const SKIN_TONE_HEX = {
+export const SKIN_TONE_HEX = {
     pale: 'ffdbb4',
     light: 'edb98a',
     brown: 'd08b5b',
@@ -339,7 +339,8 @@ export function generateAvatar(options = {}) {
         backgroundColor: [backgroundColor]
     };
 
-    return createAvatar(avataaars, dicebearOptions).toDataUri();
+    const style = avataaars.default || avataaars;
+    return createAvatar(style, dicebearOptions).toDataUri();
 }
 
 export function generateRandomAvatar(seed) {

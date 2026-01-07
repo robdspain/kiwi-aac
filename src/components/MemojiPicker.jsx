@@ -12,6 +12,8 @@ import {
     EYEBROW_LABELS,
     MOUTH_LABELS,
     BACKGROUND_COLORS,
+    SKIN_TONE_HEX,
+    HAIR_COLOR_HEX,
     FACIAL_HAIR_COLOR_HEX,
     CLOTHES_COLOR_HEX,
     HAT_COLOR_HEX,
@@ -166,9 +168,9 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
                 className="ios-bottom-sheet"
                 onClick={e => e.stopPropagation()}
                 onPointerDown={e => e.stopPropagation()}
-                style={{ height: '90vh' }}
+                style={{ height: '90vh', display: 'flex', flexDirection: 'column' }}
             >
-                <div className="ios-sheet-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 1rem 0 1rem', marginBottom: '1rem' }}>
+                <div className="ios-sheet-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 1rem 0 1rem', marginBottom: '1rem', flexShrink: 0 }}>
                     <button
                         onClick={onClose}
                         style={{
@@ -199,10 +201,10 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
                     </button>
                 </div>
 
-                <div className="ios-sheet-content" style={{ background: '#F2F2F7', display: 'flex', flexDirection: 'column', gap: '1rem', paddingBottom: '3rem' }}>
+                <div className="ios-sheet-content" style={{ background: '#F2F2F7', display: 'flex', flexDirection: 'column', gap: '1rem', paddingBottom: 0, flex: 1, overflow: 'hidden', minHeight: 0 }}>
 
                     {/* Preview Section */}
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1rem', flexShrink: 0 }}>
                         <div style={{
                             width: '7rem', height: '7rem',
                             background: 'white', borderRadius: '50%',
@@ -274,17 +276,43 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
                     </div>
 
                     {/* Tab Navigation */}
-                    <div className="ios-segmented-control" style={{ margin: '0 1rem' }}>
-                        <div
-                            className="selection-pill"
+                    <div style={{ margin: '0 1rem', display: 'flex', background: '#e5e5ea', padding: '4px', borderRadius: '12px' }}>
+                        <button
+                            onClick={() => setActiveTab('presets')}
                             style={{
-                                width: 'calc(50% - 4px)',
-                                transform: activeTab === 'presets' ? 'translateX(0)' : 'translateX(100%)',
-                                transition: 'transform 0.25s ease'
+                                flex: 1,
+                                padding: '8px',
+                                borderRadius: '8px',
+                                border: 'none',
+                                background: activeTab === 'presets' ? 'white' : 'transparent',
+                                boxShadow: activeTab === 'presets' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none',
+                                fontWeight: 600,
+                                fontSize: '0.9rem',
+                                color: activeTab === 'presets' ? '#000' : '#666',
+                                transition: 'all 0.2s ease',
+                                cursor: 'pointer'
                             }}
-                        />
-                        <button onClick={() => setActiveTab('presets')} style={{ flex: 1, minHeight: '2.75rem' }}>Presets</button>
-                        <button onClick={() => setActiveTab('customize')} style={{ flex: 1, minHeight: '2.75rem' }}>Customize</button>
+                        >
+                            Presets
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('customize')}
+                            style={{
+                                flex: 1,
+                                padding: '8px',
+                                borderRadius: '8px',
+                                border: 'none',
+                                background: activeTab === 'customize' ? 'white' : 'transparent',
+                                boxShadow: activeTab === 'customize' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none',
+                                fontWeight: 600,
+                                fontSize: '0.9rem',
+                                color: activeTab === 'customize' ? '#000' : '#666',
+                                transition: 'all 0.2s ease',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            Customize
+                        </button>
                     </div>
 
                     {/* Presets Tab */}
@@ -366,9 +394,9 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
                                 ))}
                             </div>
 
-                            <div style={{ padding: '0 1rem 2rem', overflowY: 'auto', flex: 1 }}>
+                            <div style={{ padding: '0 1rem 2rem', overflowY: 'auto', flex: 1, minHeight: 0 }}>
                                 {activeCategory === 'body' && (
-                                    <OptionGroup label="Skin Tone" options={SKIN_TONE_OPTIONS} selected={skinColor} onChange={setSkinColor} />
+                                    <OptionGroup label="Skin Tone" options={SKIN_TONE_OPTIONS} selected={skinColor} onChange={setSkinColor} isColor hexMap={SKIN_TONE_HEX} />
                                 )}
 
                                 {activeCategory === 'face' && (
@@ -377,52 +405,39 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
                                         <OptionGroup label="Eyebrows" options={EYEBROW_LABELS} selected={eyebrows} onChange={setEyebrows} />
                                         <OptionGroup label="Mouth" options={MOUTH_LABELS} selected={mouth} onChange={setMouth} />
                                         <OptionGroup label="Accessories" options={ACCESSORIES_LABELS} selected={accessories} onChange={setAccessories} />
-                                        <OptionGroup label="Glasses Color" options={colorOptions(ACCESSORIES_COLOR_HEX)} selected={accessoriesColor} onChange={setAccessoriesColor} isColor />
+                                        <OptionGroup label="Glasses Color" options={colorOptions(ACCESSORIES_COLOR_HEX)} selected={accessoriesColor} onChange={setAccessoriesColor} isColor hexMap={ACCESSORIES_COLOR_HEX} />
                                     </div>
                                 )}
 
                                 {activeCategory === 'hair' && (
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                                         <OptionGroup label="Hairstyle & Hats" options={TOP_TYPE_LABELS} selected={top} onChange={setTop} />
-                                        <OptionGroup label="Hair Color" options={HAIR_COLOR_LABELS} selected={hairColor} onChange={setHairColor} />
-                                        <OptionGroup label="Hat Color" options={colorOptions(HAT_COLOR_HEX)} selected={hatColor} onChange={setHatColor} isColor />
+                                        <OptionGroup label="Hair Color" options={HAIR_COLOR_LABELS} selected={hairColor} onChange={setHairColor} isColor hexMap={HAIR_COLOR_HEX} />
+                                        <OptionGroup label="Hat Color" options={colorOptions(HAT_COLOR_HEX)} selected={hatColor} onChange={setHatColor} isColor hexMap={HAT_COLOR_HEX} />
                                         <OptionGroup label="Facial Hair" options={FACIAL_HAIR_LABELS} selected={facialHair} onChange={setFacialHair} />
-                                        <OptionGroup label="Facial Hair Color" options={HAIR_COLOR_LABELS} selected={facialHairColor} onChange={setFacialHairColor} />
+                                        <OptionGroup label="Facial Hair Color" options={HAIR_COLOR_LABELS} selected={facialHairColor} onChange={setFacialHairColor} isColor hexMap={HAIR_COLOR_HEX} />
                                     </div>
                                 )}
 
                                 {activeCategory === 'outfit' && (
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                                         <OptionGroup label="Clothing" options={CLOTHING_LABELS} selected={clothing} onChange={setClothing} />
-                                        <OptionGroup label="Clothing Color" options={colorOptions(CLOTHES_COLOR_HEX)} selected={clothesColor} onChange={setClothesColor} isColor />
+                                        <OptionGroup label="Clothing Color" options={colorOptions(CLOTHES_COLOR_HEX)} selected={clothesColor} onChange={setClothesColor} isColor hexMap={CLOTHES_COLOR_HEX} />
                                     </div>
                                 )}
 
                                 {activeCategory === 'bg' && (
-                                    <div>
-                                        <div className="ios-setting-group-header">Background Color</div>
-                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.75rem' }}>
-                                            {BACKGROUND_COLORS.map(color => (
-                                                <button
-                                                    key={color}
-                                                    onClick={() => setBgColor(color)}
-                                                    style={{
-                                                        aspectRatio: '1/1',
-                                                        background: `#${color}`,
-                                                        border: bgColor === color ? '3px solid #007AFF' : '2px solid white',
-                                                        borderRadius: '50%',
-                                                        cursor: 'pointer',
-                                                        boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-                                                        transform: bgColor === color ? 'scale(1.1)' : 'scale(1)',
-                                                        transition: 'transform 0.2s'
-                                                    }}
-                                                />
-                                            ))}
-                                        </div>
-                                    </div>
+                                    <OptionGroup 
+                                        label="Background Color" 
+                                        options={BACKGROUND_COLORS.reduce((acc, c) => ({ ...acc, [c]: c }), {})} 
+                                        selected={bgColor} 
+                                        onChange={setBgColor} 
+                                        isColor 
+                                        hexMap={BACKGROUND_COLORS.reduce((acc, c) => ({ ...acc, [c]: c }), {})} 
+                                    />
                                 )}
 
-                                <div style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid #e5e5ea' }}>
+                                <div style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid #e5e5ea', flexShrink: 0 }}>
                                     <button onClick={randomizeCustomize} style={{ width: '100%', padding: '1rem', background: '#fff', border: '1px solid #ddd', borderRadius: '0.75rem', fontWeight: 600, color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
                                         🎲 Randomize Avatar
                                     </button>
@@ -445,16 +460,30 @@ const colorOptions = (hexMap) => {
     return labels;
 };
 
-const OptionGroup = ({ label, options, selected, onChange, isColor }) => (
+const OptionGroup = ({ label, options, selected, onChange, isColor, hexMap }) => (
     <div>
         <div className="ios-setting-group-header">{label}</div>
-        <div style={{ display: 'grid', gridTemplateColumns: isColor ? 'repeat(4, 1fr)' : 'repeat(2, 1fr)', gap: '0.5rem' }}>
+        <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: isColor ? 'repeat(5, 1fr)' : 'repeat(2, 1fr)', 
+            gap: '0.5rem' 
+        }}>
             {Object.entries(options).map(([key, label]) => (
                 <button
                     key={key}
                     onClick={() => onChange(key)}
-                    style={{
-                        padding: '0.75rem',
+                    style={isColor ? {
+                        aspectRatio: '1/1',
+                        background: `#${hexMap[key] || 'fff'}`,
+                        border: selected === key ? '3px solid #007AFF' : '2px solid white',
+                        borderRadius: '50%',
+                        cursor: 'pointer',
+                        boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+                        transform: selected === key ? 'scale(1.1)' : 'scale(1)',
+                        transition: 'transform 0.2s',
+                        padding: 0
+                    } : {
+                        padding: '0.75rem 0.25rem',
                         background: selected === key ? '#007AFF' : 'white',
                         color: selected === key ? 'white' : '#000',
                         border: selected === key ? '2px solid #007AFF' : '1px solid #ddd',
@@ -463,10 +492,11 @@ const OptionGroup = ({ label, options, selected, onChange, isColor }) => (
                         fontWeight: 600,
                         cursor: 'pointer',
                         textAlign: 'center',
-                        textTransform: isColor ? 'capitalize' : 'none'
+                        minHeight: '3rem'
                     }}
+                    title={label}
                 >
-                    {label}
+                    {!isColor && label}
                 </button>
             ))}
         </div>

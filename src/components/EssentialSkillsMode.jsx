@@ -212,7 +212,7 @@ const EssentialSkillsMode = ({ onExit, sensitivity = 0.4, onLogEvent }) => {
             </div>
 
             <div style={{ padding: '30px', textAlign: 'center', color: '#86868B', fontSize: '0.8rem', fontWeight: 600 }}>
-                ESSENTIAL SKILLS MODE • PFA/SBT FLOW
+                LIFE SKILLS MODE • LEARNING PATH
             </div>
         </div>
     );

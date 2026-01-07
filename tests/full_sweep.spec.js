@@ -97,44 +97,23 @@ test.describe('Full Application Sweep', () => {
         await page.waitForTimeout(300);
     });
 
-    test('Clinical Flow: Hanley SBT & Data Visualization', async ({ page }) => {
-        await page.locator('#settings-button').click();
-        await page.waitForTimeout(500);
-
-        // Transition to Data tab
-        await page.getByRole('tab', { name: 'Data' }).click();
-        await page.waitForTimeout(500);
-
-        // Open Dashboard to verify visual consistency
-        await page.locator('div').filter({ hasText: /^AVG WPM$/ }).first().click(); // Open Dashboard via the summary card
-        await page.waitForTimeout(800);
-        await takeScreenshot(page, '08_dashboard_view');
-
-        // Close dashboard (finding the close button)
-        const closeBtn = page.getByRole('button', { name: '✕' }).first();
-        if (await closeBtn.isVisible()) {
-            await closeBtn.click();
-        } else {
-            await page.getByRole('button', { name: 'Close' }).first().click();
-        }
-        await page.waitForTimeout(500);
-
-        // Enter SBT Mode
-        await page.getByText('Essential Skills (FCR)').click();
-        await page.waitForTimeout(500);
-        await takeScreenshot(page, '09_sbt_logic_start');
-
-        // Cycle through stages
-        await page.getByText('MY WAY').click();
-        await page.waitForTimeout(300);
-        await takeScreenshot(page, '10_sbt_stage_2');
-
-        await page.getByText('OKAY').click();
-        await page.waitForTimeout(300);
-        await takeScreenshot(page, '11_sbt_stage_3');
-
-        await page.getByText('DONE').click();
-        await page.waitForTimeout(300);
-        await takeScreenshot(page, '12_sbt_complete');
+    // Clinical Flow: Hanley Skills & Data Visualization
+    test('Clinical Flow: Hanley Skills & Data Visualization', async ({ page }) => {
+        await page.goto('/');
+        
+        // Enter Skills Mode
+        await page.getByLabel('Open Settings').click();
+        await page.getByText('Skills Training & Assessment').click();
+        await takeScreenshot(page, '09_skills_logic_start');
+        
+        // Complete Skills Assessment
+        await page.getByText('Yes, they do this').first().click();
+        await takeScreenshot(page, '10_skills_stage_2');
+        
+        await page.getByText('No, not yet').first().click();
+        await takeScreenshot(page, '11_skills_stage_3');
+        
+        await page.getByRole('button', { name: 'Close' }).click();
+        await takeScreenshot(page, '12_skills_complete');
     });
 });

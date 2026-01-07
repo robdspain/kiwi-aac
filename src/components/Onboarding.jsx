@@ -14,6 +14,7 @@ const Onboarding = ({ onComplete }) => {
     const [recommendedPhase, setRecommendedPhase] = useState(null);
     const [selectedFavorites, setSelectedFavorites] = useState([]);
     const [canRead, setCanRead] = useState(null);
+    const [assessmentAnswers, setAssessmentAnswers] = useState(null); // Store full assessment results
     const [learnerName, setLearnerName] = useState('');
     const [learnerPhoto, setLearnerPhoto] = useState(null);
     const [cropSource, setCropSource] = useState(null);
@@ -228,7 +229,11 @@ const Onboarding = ({ onComplete }) => {
         } else {
             // Complete onboarding
             localStorage.setItem('kiwi-onboarding-complete', 'true');
-            onComplete(recommendedPhase || 0, selectedFavorites, canRead, { name: learnerName, photo: learnerPhoto });
+            onComplete(recommendedPhase || 0, selectedFavorites, canRead, { 
+                name: learnerName, 
+                photo: learnerPhoto,
+                assessmentAnswers 
+            });
         }
     };
 
@@ -237,10 +242,11 @@ const Onboarding = ({ onComplete }) => {
         setShowAssessment(true);
     };
 
-    const handleAssessmentComplete = (phase, favorites, literacy) => {
+    const handleAssessmentComplete = (phase, favorites, literacy, answers) => {
         setRecommendedPhase(phase);
         setSelectedFavorites(favorites || []);
         setCanRead(literacy);
+        setAssessmentAnswers(answers); // Capture detailed answers
         setShowAssessment(false);
         setStep(1); // Move to "How to Use" step
     };
@@ -253,7 +259,7 @@ const Onboarding = ({ onComplete }) => {
 
     const handleSkip = () => {
         localStorage.setItem('kiwi-onboarding-complete', 'true');
-        onComplete(recommendedPhase || 0, selectedFavorites, canRead);
+        onComplete(recommendedPhase || 0, selectedFavorites, canRead, { assessmentAnswers });
     };
 
     if (showCalibration) {

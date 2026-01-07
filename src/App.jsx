@@ -1105,6 +1105,11 @@ function App() {
     const key = getContextStorageKey(currentContext);
     localStorage.setItem(key, JSON.stringify(newRootItems));
 
+    // If in Phase 1/2 and no target is set, make this the target so it shows up
+    if ((currentPhase === 1 || currentPhase === 2) && !phase1TargetId && type === 'button') {
+        setPhase1TargetId(newItem.id);
+    }
+
     setEditingItemIndex(newList.length - 1); setEditModalOpen(true);
   };
 
@@ -1469,7 +1474,7 @@ function App() {
           </Suspense>
         </div>
       </DndContext>
-      {!isLocked && !isEditMode && !isTrainingMode && <button id="settings-button" onClick={() => setIsEditMode(true)} aria-label="Open Settings">⚙️</button>}
+      {!isLocked && !isEditMode && !isTrainingMode && !showOnboarding && <button id="settings-button" onClick={() => setIsEditMode(true)} aria-label="Open Settings">⚙️</button>}
       {!isLocked && <Controls handleRef={controlsHandleRef} isEditMode={isEditMode} isTrainingMode={isTrainingMode} currentPhase={currentPhase} currentLevel={currentLevel} showStrip={showStrip} currentContext={currentContext} contexts={contexts} onSetContext={handleSetContext} onToggleMenu={() => setIsEditMode(!isEditMode)} onAddItem={handleAddItem} onAddContext={handleAddContext} onRenameContext={handleRenameContext} onDeleteContext={handleDeleteContext} onSetLevel={handleSetLevel} onStartTraining={() => { setIsTrainingMode(true); setTrainingSelection([]); }} onStartEssentialSkills={() => setIsEssentialSkillsMode(true)} onReset={() => { if (confirm("Reset everything?")) { localStorage.clear(); location.reload(); } }} onShuffle={handleShuffle} onStopTraining={handleStopTraining} onOpenPicker={handlePickerOpen} onToggleDashboard={() => setShowDashboard(true)} onRedoCalibration={() => setShowCalibration(true)} onToggleLock={() => setIsLocked(true)} voiceSettings={voiceSettings} onUpdateVoiceSettings={setVoiceSettings} gridSize={gridSize} onUpdateGridSize={setGridSize} phase1TargetId={phase1TargetId} onSetPhase1Target={setPhase1TargetId} rootItems={currentPageItems} allRootItems={rootItems} colorTheme={colorTheme} onSetColorTheme={setColorTheme} triggerPaywall={triggerPaywall} bellSound={bellSound} onUpdateBellSound={setBellSound} speechDelay={speechDelay} onUpdateSpeechDelay={setSpeechDelay} autoSpeak={autoSpeak} onUpdateAutoSpeak={setAutoSpeak} isScanning={isScanning} onToggleScanning={() => setIsScanning(!isScanning)} scanSpeed={scanSpeed} onUpdateScanSpeed={setScanSpeed} isLayoutLocked={isLayoutLocked} onToggleLayoutLock={() => setIsLayoutLocked(!isLayoutLocked)} isColorCodingEnabled={isColorCodingEnabled} onToggleColorCoding={() => setIsColorCodingEnabled(!isColorCodingEnabled)} showCategoryHeaders={showCategoryHeaders} onToggleCategoryHeaders={() => setShowCategoryHeaders(!showCategoryHeaders)} proficiencyLevel={proficiencyLevel} onUpdateProficiencyLevel={setProficiencyLevel} onAddPage={handleAddNewPage} onDeletePage={handleDeletePage} currentPageIndex={currentPageIndex} onAddFavorites={(favorites) => {
         const nowTime = new Date().getTime();
         const newFavs = favorites.map((fav, i) => ({ id: `fav-${nowTime}-${i}`, type: 'button', word: fav.word || fav.label, icon: fav.icon, bgColor: '#FFF3E0' }));
@@ -1557,7 +1562,11 @@ function App() {
       {pickerOpen && <Suspense fallback={null}><PickerModal isOpen={pickerOpen} onClose={() => setPickerOpen(false)} userItems={rootItems[currentPageIndex]?.items || []} triggerPaywall={triggerPaywall} onSelect={(w, i, isImage, category) => { if (pickerCallback) pickerCallback(w, i, isImage, category); }} /></Suspense>}
       {showPhase1Selector && <Suspense fallback={null}><Phase1TargetSelector rootItems={rootItems[currentPageIndex]?.items || []} onSelect={(id) => { setPhase1TargetId(id); setShowPhase1Selector(false); }} /></Suspense>}
       {showAdvancementModal && <Suspense fallback={null}><AdvancementModal currentPhase={currentPhase} onAdvance={handleAdvance} onWait={handleWait} /></Suspense>}
-      <Suspense fallback={null}><A2HSModal /></Suspense>
+            {!Capacitor.isNativePlatform() && (
+              <Suspense fallback={null}>
+                <A2HSModal />
+              </Suspense>
+            )}
 
       {inflectionData && (
         <div className="inflection-bubble" style={{
@@ -1653,8 +1662,14 @@ function App() {
             if (canRead !== null && canRead !== undefined) { localStorage.setItem('kiwi-literacy', JSON.stringify(canRead)); if (canRead === true || canRead === 'partial') document.body.classList.add('literacy-mode'); }
 
             if (learnerProfile) {
-              if (learnerProfile.name) updateProfile('default', { name: learnerProfile.name });
-              if (learnerProfile.photo) updateProfile('default', { avatar: learnerProfile.photo });
+              const profileUpdates = {};
+              if (learnerProfile.name) profileUpdates.name = learnerProfile.name;
+              if (learnerProfile.photo) profileUpdates.avatar = learnerProfile.photo;
+              if (learnerProfile.assessmentAnswers) profileUpdates.assessmentAnswers = learnerProfile.assessmentAnswers;
+              
+              if (Object.keys(profileUpdates).length > 0) {
+                updateProfile('default', profileUpdates);
+              }
             }
 
             if (favorites && Array.isArray(favorites) && favorites.length > 0) {
@@ -1698,7 +1713,7 @@ function App() {
         <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
       )}
 
-      {/* Floating Level Helper Button (Dr. Hanley SBT Strategy Helper) */}
+      {/* Floating Level Helper Button (Dr. Hanley Skills Strategy Helper) */}
       {!isLocked && !isEditMode && !showSplash && !showOnboarding && !activeVisualScene && (
         <button
           onClick={() => setShowLevelIntro(true)}

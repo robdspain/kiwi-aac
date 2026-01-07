@@ -28,7 +28,8 @@ import {
     IonCard,
     IonGrid,
     IonRow,
-    IonCol
+    IonCol,
+    IonRange
 } from '@ionic/react';
 import {
     colorPaletteOutline,
@@ -61,7 +62,11 @@ import {
     trashOutline,
     calendarOutline,
     timeOutline,
-    checkmarkCircleOutline
+    checkmarkCircleOutline,
+    expandOutline,
+    micOutline,
+    chevronBackOutline,
+    playCircleOutline
 } from 'ionicons/icons';
 
 const HelperBackupRestore = lazy(() => import('./BackupRestore'));
@@ -74,8 +79,11 @@ const ParentGuideModal = lazy(() => import('./ParentGuideModal'));
 const VideoTutorialsModal = lazy(() => import('./VideoTutorialsModal'));
 const PhysicalCalibration = lazy(() => import('./PhysicalCalibration'));
 const TalkSampler = lazy(() => import('./TalkSampler'));
+const SkillsAssessment = lazy(() => import('./SkillsAssessment'));
+const SkillsGuide = lazy(() => import('./SkillsGuide'));
 import HelpTooltip from './HelpTooltip';
 import CircleOfSupport from './CircleOfSupport';
+import { getLifeSkillsMapping } from '../data/clinicalFrameworks';
 
 const Controls = ({
     isEditMode,
@@ -92,7 +100,7 @@ const Controls = ({
     onAddItem,
     onSetLevel,
     onStartTraining,
-    onStartEssentialSkills,
+    onStartLifeSkills,
     onReset,
     onShuffle,
     onStopTraining,
@@ -163,6 +171,10 @@ const Controls = ({
     const [showParentGuide, setShowParentGuide] = useState(false);
     const [showVideoTutorials, setShowVideoTutorials] = useState(false);
     const [showCircleOfSupport, setShowCircleOfSupport] = useState(false);
+    const [showSkillsAssessment, setShowSkillsAssessment] = useState(false);
+    const [showSkillsGuide, setShowSkillsGuide] = useState(false);
+    const [skillsInitialPhase, setSkillsInitialPhase] = useState(1);
+    const [skillsInitialType, setSkillsInitialType] = useState('core');
     const [assessmentHistory, setAssessmentHistory] = useState([]);
     const [usageStats, setUsageStats] = useState([]);
     const [showPhysicalCalibration, setShowPhysicalCalibration] = useState(false);
@@ -178,6 +190,13 @@ const Controls = ({
             setAnalyticsData({ sentences: getRecentSentences(10) });
         }
     }, [activeTab]);
+
+    const handleSkillsAssessmentComplete = (phase, type) => {
+        setSkillsInitialPhase(phase);
+        setSkillsInitialType(type || 'core');
+        setShowSkillsAssessment(false);
+        setTimeout(() => setShowSkillsGuide(true), 300);
+    };
 
     const tabs = [
         { id: 'basic', label: 'Basic' },
@@ -471,27 +490,33 @@ const Controls = ({
                 <div id="edit-panel" style={{ display: (isEditMode && !isTrainingMode) ? 'flex' : 'none', flexDirection: 'column' }}>
 
                     {/* Action Section */}
-                    <div style={{ marginBottom: '1.25rem' }}>
-                        <button onClick={handleLock} className="apple-red-button">
-                            🔒 Lock App for Child
-                        </button>
+                    <div style={{ padding: '0 1rem', marginBottom: '0.5rem' }}>
+                        <IonList inset={true} style={{ margin: 0 }}>
+                            <IonItem button onClick={() => setShowCircleOfSupport(true)} detail={true}>
+                                <div slot="start" style={{ fontSize: '1.5rem' }}>👨‍👩‍👧‍👦</div>
+                                <IonLabel style={{ color: '#007AFF', fontWeight: 600 }}>Circle of Support</IonLabel>
+                            </IonItem>
 
-                        <button
-                            onClick={() => setShowCircleOfSupport(true)}
-                            className="apple-blue-button"
-                            style={{ marginTop: '0.75rem' }}
-                        >
-                            👨‍👩‍👧‍👦 Circle of Support Dashboard
-                        </button>
+                            <IonItem button onClick={() => setShowSkillsAssessment(true)} detail={true}>
+                                <div slot="start" style={{ fontSize: '1.5rem' }}>🌟</div>
+                                <IonLabel style={{ color: 'var(--primary-dark)', fontWeight: 600 }}>
+                                    Life Skills Path
+                                    <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 400 }}>Dr. Hanley's research on social independence</p>
+                                </IonLabel>
+                            </IonItem>
+                            
+                            {isIOS && (
+                                <IonItem button onClick={() => setShowGuidedAccess(true)} detail={true}>
+                                    <IonIcon icon={helpCircleOutline} slot="start" color="medium" />
+                                    <IonLabel>How to Use Guided Access</IonLabel>
+                                </IonItem>
+                            )}
 
-                        {isIOS && (
-                            <div className="ios-setting-card">
-                                <div className="ios-row" onClick={() => setShowGuidedAccess(true)}>
-                                    <span style={{ fontWeight: 600, color: '#5856D6' }}>ℹ️ How to Use Guided Access</span>
-                                    <span className="ios-chevron">›</span>
-                                </div>
-                            </div>
-                        )}
+                            <IonItem button onClick={handleLock}>
+                                <IonIcon icon={lockClosedOutline} slot="start" color="danger" />
+                                <IonLabel color="danger" style={{ fontWeight: 600 }}>Lock App for Child</IonLabel>
+                            </IonItem>
+                        </IonList>
                     </div>
 
 
@@ -678,6 +703,69 @@ const Controls = ({
                                     </div>
                                 )}
                             </IonCard>
+
+                            {/* Life Skills Recommended Skill Focus */}
+                            {currentLevel && getLifeSkillsMapping(currentLevel) && (
+                                <div style={{ padding: '0 1rem', marginTop: '1.25rem' }}>
+                                    <div style={{
+                                        background: 'white',
+                                        borderRadius: '1.25rem',
+                                        padding: '1.25rem',
+                                        border: '2px solid #007AFF20',
+                                        boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
+                                    }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                                            <div style={{ 
+                                                background: '#007AFF', 
+                                                borderRadius: '50%', 
+                                                width: '20px', 
+                                                height: '20px', 
+                                                display: 'flex', 
+                                                alignItems: 'center', 
+                                                justifyContent: 'center', 
+                                                color: 'white', 
+                                                fontSize: '0.7rem', 
+                                                fontWeight: '800' 
+                                            }}>
+                                                {getLifeSkillsMapping(currentLevel).phase}
+                                            </div>
+                                            <IonLabel style={{ fontWeight: '800', fontSize: '0.85rem', textTransform: 'uppercase', color: '#007AFF' }}>
+                                                Life Skills Goal
+                                            </IonLabel>
+                                        </div>
+                                        <h3 style={{ margin: '0 0 6px 0', fontSize: '1.1rem', fontWeight: '700', color: '#1D1D1F' }}>
+                                            {getLifeSkillsMapping(currentLevel).skill}
+                                        </h3>
+                                        <p style={{ margin: '0 0 16px 0', fontSize: '0.9rem', color: '#48484A', lineHeight: '1.4' }}>
+                                            {getLifeSkillsMapping(currentLevel).objective}
+                                        </p>
+                                        <button 
+                                            onClick={() => {
+                                                setSkillsInitialPhase(getLifeSkillsMapping(currentLevel).phase);
+                                                setShowSkillsGuide(true);
+                                            }}
+                                            style={{
+                                                width: '100%',
+                                                padding: '12px',
+                                                background: '#007AFF10',
+                                                color: '#007AFF',
+                                                border: 'none',
+                                                borderRadius: '12px',
+                                                fontWeight: '700',
+                                                fontSize: '0.9rem',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                gap: '6px'
+                                            }}
+                                        >
+                                            <IonIcon icon={bulbOutline} />
+                                            How to teach this
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Quick swap for Level 1 */}
                             {currentPhase === 1 && (
@@ -1116,7 +1204,7 @@ const Controls = ({
                                     alert(`Simulated Trial Success: "${randomPhrase}" logged! Open Circle of Support to see.`);
                                 }}>
                                     <IonIcon icon={playOutline} slot="start" color="success" />
-                                    <IonLabel>Simulate SBT Trial</IonLabel>
+                                    <IonLabel>Simulate Life Skills Trial</IonLabel>
                                     <IonNote slot="end">🧪</IonNote>
                                 </IonItem>
 
@@ -1644,9 +1732,9 @@ const Controls = ({
                                     <IonLabel style={{ color: '#5856D6', fontWeight: 600 }}>Training Mode</IonLabel>
                                     <IonIcon icon={chevronForwardOutline} slot="end" color="medium" size="small" />
                                 </IonItem>
-                                <IonItem onClick={onStartEssentialSkills} button={true}>
+                                <IonItem onClick={onStartLifeSkills} button={true}>
                                     <IonIcon icon={handRightOutline} slot="start" style={{ color: '#FF2D55' }} />
-                                    <IonLabel style={{ color: '#FF2D55', fontWeight: 600 }}>Essential Skills (FCR)</IonLabel>
+                                    <IonLabel style={{ color: '#FF2D55', fontWeight: 600 }}>Life Skills Mode</IonLabel>
                                     <IonIcon icon={chevronForwardOutline} slot="end" color="medium" size="small" />
                                 </IonItem>
                             </IonList>
@@ -1688,151 +1776,169 @@ const Controls = ({
                         <button className="primary" onClick={onShuffle}>🔀 Shuffle</button>
                         <button onClick={onStopTraining}>Done</button>
                     </div>
-                </div>
-
-            </div>
-
-            {
-                showGuidedAccess && (
-                    <GuidedAccessModal
-                        onClose={() => {
-                            setShowGuidedAccess(false);
-                            onToggleLock(); // Lock the app after they see the instructions
-                        }}
-                    />
-                )
-            }
-
-            {
-                showFavoritesPicker && (
-                    <Suspense fallback={null}>
-                        <FavoritesPickerModal
-                            onClose={() => setShowFavoritesPicker(false)}
-                            onAddFavorites={(favorites) => {
-                                if (onAddFavorites) {
-                                    onAddFavorites(favorites);
-                                }
-                            }}
-                            existingFavorites={[]} // We'll pass this from App
-                        />
-                    </Suspense>
-                )
-            }
-
-            {
-                showPronunciationEditor && (
-                    <Suspense fallback={null}>
-                        <PronunciationEditor
-                            onClose={() => setShowPronunciationEditor(false)}
-                        />
-                    </Suspense>
-                )
-            }
-
-            {
-                showVoiceSetup && (
-                    <Suspense fallback={null}>
-                        <VoiceSetupModal
-                            isOpen={showVoiceSetup}
-                            onClose={() => setShowVoiceSetup(false)}
-                            onRefresh={refreshVoices}
-                            isRefreshing={isRefreshingVoices}
-                            isIOS={isIOS}
-                        />
-                    </Suspense>
-                )
-            }
-
-            {
-                showMemojiPicker && (
-                    <Suspense fallback={null}>
-                        <MemojiPicker
-                            onSelect={(icon, config) => {
-                                if (memojiTarget?.mode === 'edit' && onUpdatePerson && memojiTarget.person) {
-                                    onUpdatePerson(memojiTarget.person.id, {
-                                        name: config?.name || memojiTarget.person.word,
-                                        icon,
-                                        config
-                                    });
-                                } else if (onAddPerson) {
-                                    onAddPerson({
-                                        name: config?.name,
-                                        icon,
-                                        config
-                                    });
-                                }
-                                setShowMemojiPicker(false);
-                                setMemojiTarget(null);
-                            }}
-                            onClose={() => {
-                                setShowMemojiPicker(false);
-                                setMemojiTarget(null);
-                            }}
-                            initialName={memojiTarget?.person?.word || ''}
-                            initialConfig={memojiTarget?.person?.characterConfig || null}
-                        />
-                    </Suspense>
-                )
-            }
-
-            {
-                showBackupRestore && (
-                    <Suspense fallback={null}>
-                        <HelperBackupRestore
-                            isOpen={showBackupRestore}
-                            onClose={() => setShowBackupRestore(false)}
-                        />
-                    </Suspense>
-                )
-            }
-
-            {
-                showTemplateGallery && (
-                    <Suspense fallback={null}>
-                        <TemplateGallery
-                            isOpen={showTemplateGallery}
-                            onClose={() => setShowTemplateGallery(false)}
-                            onApply={(templateName) => {
-                                if (window.handleApplyTemplate) {
-                                    window.handleApplyTemplate(templateName);
-                                }
-                                setShowTemplateGallery(false);
-                                onToggleMenu(); // Close controls
-                            }}
-                        />
-                    </Suspense>
-                )
-            }
-            {
-                showParentGuide && (
-                    <Suspense fallback={null}>
-                        <ParentGuideModal
-                            isOpen={showParentGuide}
-                            onClose={() => setShowParentGuide(false)}
-                        />
-                    </Suspense>
-                )
-            }
-
-            {
-                showVideoTutorials && (
-                    <Suspense fallback={null}>
-                        <VideoTutorialsModal
-                            isOpen={showVideoTutorials}
-                            onClose={() => setShowVideoTutorials(false)}
-                        />
-                    </Suspense>
-                )
-            }
-
-            {/* Circle of Support Dashboard */}
-            <CircleOfSupport
-                isOpen={showCircleOfSupport}
-                onClose={() => setShowCircleOfSupport(false)}
-                currentLevel={currentLevel}
-                peopleItems={peopleItems}
-                analyticsData={analyticsData}
-            />
+                                </div>
+                
+                            </div>
+                
+                            {
+                                showGuidedAccess && (
+                                    <GuidedAccessModal
+                                        onClose={() => {
+                                            setShowGuidedAccess(false);
+                                            onToggleLock(); // Lock the app after they see the instructions
+                                        }}
+                                    />
+                                )
+                            }
+                
+                            {
+                                showFavoritesPicker && (
+                                    <Suspense fallback={null}>
+                                        <FavoritesPickerModal
+                                            onClose={() => setShowFavoritesPicker(false)}
+                                            onAddFavorites={(favorites) => {
+                                                if (onAddFavorites) {
+                                                    onAddFavorites(favorites);
+                                                }
+                                            }}
+                                            existingFavorites={[]} // We'll pass this from App
+                                        />
+                                    </Suspense>
+                                )
+                            }
+                
+                            {
+                                showPronunciationEditor && (
+                                    <Suspense fallback={null}>
+                                        <PronunciationEditor
+                                            onClose={() => setShowPronunciationEditor(false)}
+                                        />
+                                    </Suspense>
+                                )
+                            }
+                
+                            {
+                                showVoiceSetup && (
+                                    <Suspense fallback={null}>
+                                        <VoiceSetupModal
+                                            isOpen={showVoiceSetup}
+                                            onClose={() => setShowVoiceSetup(false)}
+                                            onRefresh={refreshVoices}
+                                            isRefreshing={isRefreshingVoices}
+                                            isIOS={isIOS}
+                                        />
+                                    </Suspense>
+                                )
+                            }
+                
+                            {
+                                showMemojiPicker && (
+                                    <Suspense fallback={null}>
+                                        <MemojiPicker
+                                            onSelect={(icon, config) => {
+                                                if (memojiTarget?.mode === 'edit' && onUpdatePerson && memojiTarget.person) {
+                                                    onUpdatePerson(memojiTarget.person.id, {
+                                                        name: config?.name || memojiTarget.person.word,
+                                                        icon,
+                                                        config
+                                                    });
+                                                } else if (onAddPerson) {
+                                                    onAddPerson({
+                                                        name: config?.name,
+                                                        icon,
+                                                        config
+                                                    });
+                                                }
+                                                setShowMemojiPicker(false);
+                                                setMemojiTarget(null);
+                                            }}
+                                            onClose={() => {
+                                                setShowMemojiPicker(false);
+                                                setMemojiTarget(null);
+                                            }}
+                                            initialName={memojiTarget?.person?.word || ''}
+                                            initialConfig={memojiTarget?.person?.characterConfig || null}
+                                        />
+                                    </Suspense>
+                                )
+                            }
+                
+                            {
+                                showBackupRestore && (
+                                    <Suspense fallback={null}>
+                                        <HelperBackupRestore
+                                            isOpen={showBackupRestore}
+                                            onClose={() => setShowBackupRestore(false)}
+                                        />
+                                    </Suspense>
+                                )
+                            }
+                
+                            {
+                                showTemplateGallery && (
+                                    <Suspense fallback={null}>
+                                        <TemplateGallery
+                                            isOpen={showTemplateGallery}
+                                            onClose={() => setShowTemplateGallery(false)}
+                                            onApply={(templateName) => {
+                                                if (window.handleApplyTemplate) {
+                                                    window.handleApplyTemplate(templateName);
+                                                }
+                                                setShowTemplateGallery(false);
+                                                onToggleMenu(); // Close controls
+                                            }}
+                                        />
+                                    </Suspense>
+                                )
+                            }
+                            {
+                                showParentGuide && (
+                                    <Suspense fallback={null}>
+                                        <ParentGuideModal
+                                            isOpen={showParentGuide}
+                                            onClose={() => setShowParentGuide(false)}
+                                        />
+                                    </Suspense>
+                                )
+                            }
+                
+                            {
+                                showVideoTutorials && (
+                                    <Suspense fallback={null}>
+                                        <VideoTutorialsModal
+                                            isOpen={showVideoTutorials}
+                                            onClose={() => setShowVideoTutorials(false)}
+                                        />
+                                    </Suspense>
+                                )
+                            }
+                
+                            {/* Skills Modals */}
+                            <Suspense fallback={null}>
+                                {showSkillsAssessment && (
+                                    <SkillsAssessment 
+                                        isOpen={showSkillsAssessment}
+                                        onClose={() => setShowSkillsAssessment(false)}
+                                        onComplete={handleSkillsAssessmentComplete}
+                                    />
+                                )}
+                                                {showSkillsGuide && (
+                                                    <SkillsGuide 
+                                                        isOpen={showSkillsGuide}
+                                                        onClose={() => setShowSkillsGuide(false)}
+                                                        initialPhase={skillsInitialPhase}
+                                                        initialType={skillsInitialType}
+                                                    />
+                                                )}                            </Suspense>
+                
+                            {/* Circle of Support Dashboard */}
+                            <CircleOfSupport
+                                isOpen={showCircleOfSupport}
+                                onClose={() => setShowCircleOfSupport(false)}
+                                currentLevel={currentLevel}
+                                peopleItems={peopleItems}
+                                analyticsData={analyticsData}
+                            />
             {
                 showPhysicalCalibration && (
                     <Suspense fallback={null}>

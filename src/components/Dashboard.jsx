@@ -170,66 +170,68 @@ Communication is growing! 🥝
                                 textAlign: 'center',
                                 background: 'var(--gray-light)'
                             }}>
-                                <div style={{ fontSize: '3rem', marginBottom: '10px' }}>📝</div>
-                                <p style={{ color: 'var(--text-secondary)', margin: 0 }}>No level progress data yet. Complete some trials to see progress here!</p>
+                                <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>📝</div>
+                                <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '0.85rem' }}>No progress data yet.</p>
                             </div>
                         );
                     }
 
                     return (
-                        <div style={{ marginBottom: '1.875rem' }}>
+                        <div style={{ marginBottom: '1rem' }}>
                             {/* Current Level Card */}
                             {currentLevel && (
                                 <div className="dashboard-card" style={{
                                     background: `linear-gradient(135deg, ${getStage(currentLevel).color}10, ${getStage(currentLevel).color}20)`,
-                                    border: `0.125rem solid ${getStage(currentLevel).color}`
+                                    border: `0.125rem solid ${getStage(currentLevel).color}`,
+                                    padding: '0.75rem',
+                                    marginBottom: '0.75rem'
                                 }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <div>
-                                            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.25rem', fontWeight: 600 }}>Current Level</div>
-                                            <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: getStage(currentLevel).color }}>
+                                            <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', marginBottom: '0.125rem', fontWeight: 600 }}>Current Level</div>
+                                            <div style={{ fontSize: '1.15rem', fontWeight: 'bold', color: getStage(currentLevel).color }}>
                                                 {getStage(currentLevel).icon} Level {currentLevel}
                                             </div>
-                                            <div style={{ fontSize: '0.9rem', color: 'var(--text-primary)', fontWeight: 500 }}>{getLevel(currentLevel)?.name}</div>
+                                            <div style={{ fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: 500 }}>{getLevel(currentLevel)?.name}</div>
                                         </div>
                                         {levelProgress[currentLevel] && (
                                             <div style={{ textAlign: 'right' }}>
-                                                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: getStage(currentLevel).color }}>
+                                                <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: getStage(currentLevel).color }}>
                                                     {levelProgress[currentLevel].attempts}
                                                 </div>
-                                                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>attempts</div>
+                                                <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', fontWeight: 600 }}>att.</div>
                                             </div>
                                         )}
                                     </div>
                                     {levelProgress[currentLevel] && (
                                         <div style={{
                                             display: 'flex',
-                                            gap: '0.9375rem',
-                                            marginTop: '0.9375rem',
+                                            gap: '0.5rem',
+                                            marginTop: '0.75rem',
                                             background: 'var(--card-bg)',
-                                            padding: '0.75rem',
+                                            padding: '0.5rem',
                                             borderRadius: '0.75rem',
                                             border: '1px solid var(--gray-border)'
                                         }}>
                                             <div style={{ flex: 1, textAlign: 'center' }}>
-                                                <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--success)' }}>
+                                                <div style={{ fontSize: '1rem', fontWeight: 'bold', color: 'var(--success)' }}>
                                                     {levelProgress[currentLevel].independent}
                                                 </div>
-                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Independent</div>
+                                                <div style={{ fontSize: '0.6rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Indep.</div>
                                             </div>
                                             <div style={{ flex: 1, textAlign: 'center' }}>
-                                                <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--warning)' }}>
+                                                <div style={{ fontSize: '1rem', fontWeight: 'bold', color: 'var(--warning)' }}>
                                                     {levelProgress[currentLevel].prompted}
                                                 </div>
-                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Prompted</div>
+                                                <div style={{ fontSize: '0.6rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Prompt</div>
                                             </div>
                                             <div style={{ flex: 1, textAlign: 'center' }}>
-                                                <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--primary-dark)' }}>
+                                                <div style={{ fontSize: '1rem', fontWeight: 'bold', color: 'var(--primary-dark)' }}>
                                                     {levelProgress[currentLevel].attempts > 0
                                                         ? Math.round((levelProgress[currentLevel].independent / levelProgress[currentLevel].attempts) * 100)
                                                         : 0}%
                                                 </div>
-                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Accuracy</div>
+                                                <div style={{ fontSize: '0.6rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Acc.</div>
                                             </div>
                                         </div>
                                     )}
@@ -237,9 +239,9 @@ Communication is growing! 🥝
                             )}
 
                             {/* All Levels Progress */}
-                            <div className="dashboard-card" style={{ background: 'var(--gray-light)' }}>
-                                <h3 style={{ margin: '0 0 0.9375rem 0', fontSize: '1rem', color: 'var(--text-primary)' }}>Level History</h3>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                            <div className="dashboard-card" style={{ background: 'var(--gray-light)', padding: '0.75rem' }}>
+                                <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '0.9rem', color: 'var(--text-primary)', fontWeight: 800 }}>Level History</h3>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                                     {sortedLevels.map(lvl => {
                                         const progress = levelProgress[lvl];
                                         const levelDef = getLevel(lvl);
@@ -259,65 +261,42 @@ Communication is growing! 🥝
                                                 key={lvl}
                                                 style={{
                                                     background: 'var(--card-bg)',
-                                                    padding: '0.75rem 0.9375rem',
+                                                    padding: '0.5rem 0.75rem',
                                                     borderRadius: '0.75rem',
                                                     display: 'flex',
                                                     alignItems: 'center',
-                                                    gap: '0.75rem',
+                                                    gap: '0.5rem',
                                                     border: isCurrent ? `0.125rem solid ${stageDef?.color || 'var(--primary-dark)'}` : '1px solid var(--gray-border)'
                                                 }}
                                             >
                                                 <div style={{
-                                                    width: '2.25rem',
-                                                    height: '2.25rem',
+                                                    width: '1.75rem',
+                                                    height: '1.75rem',
                                                     borderRadius: '50%',
                                                     background: isPassed ? 'var(--success)' : (stageDef?.color || 'var(--gray-border)') + '20',
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
-                                                    fontSize: isPassed ? '1rem' : '0.9rem',
+                                                    fontSize: isPassed ? '0.85rem' : '0.75rem',
                                                     color: isPassed ? 'white' : stageDef?.color || 'var(--text-muted)'
                                                 }}>
                                                     {isPassed ? '✓' : stageDef?.icon || '📍'}
                                                 </div>
                                                 <div style={{ flex: 1 }}>
-                                                    <div style={{ fontWeight: '700', fontSize: '0.9rem', color: 'var(--text-primary)' }}>
-                                                        Level {lvl} {levelDef?.name && `– ${levelDef.name}`}
+                                                    <div style={{ fontWeight: '700', fontSize: '0.8rem', color: 'var(--text-primary)' }}>
+                                                        Level {lvl}
                                                     </div>
-                                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
-                                                        {progress.attempts} attempts • {accuracy}% accuracy
-                                                        {timeSpent > 0 && ` • ${timeSpent} day${timeSpent !== 1 ? 's' : ''}`}
+                                                    <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+                                                        {progress.attempts} att • {accuracy}% acc
                                                     </div>
                                                 </div>
                                                 <div style={{ textAlign: 'right' }}>
                                                     {isPassed ? (
-                                                        <span style={{
-                                                            background: 'var(--success)',
-                                                            color: 'white',
-                                                            padding: '0.25rem 0.75rem',
-                                                            borderRadius: '0.75rem',
-                                                            fontSize: '0.75rem',
-                                                            fontWeight: '700'
-                                                        }}>Passed</span>
+                                                        <span style={{ color: 'var(--success)', fontSize: '0.65rem', fontWeight: '800' }}>PASSED</span>
                                                     ) : isCurrent ? (
-                                                        <span style={{
-                                                            background: stageDef?.color || 'var(--primary-dark)',
-                                                            color: 'white',
-                                                            padding: '0.25rem 0.75rem',
-                                                            borderRadius: '0.75rem',
-                                                            fontSize: '0.75rem',
-                                                            fontWeight: '700'
-                                                        }}>Current</span>
+                                                        <span style={{ color: stageDef?.color || 'var(--primary-dark)', fontSize: '0.65rem', fontWeight: '800' }}>CURRENT</span>
                                                     ) : (
-                                                        <span style={{
-                                                            background: 'var(--gray-light)',
-                                                            color: 'var(--text-secondary)',
-                                                            padding: '0.25rem 0.75rem',
-                                                            borderRadius: '0.75rem',
-                                                            fontSize: '0.75rem',
-                                                            fontWeight: 600,
-                                                            border: '1px solid var(--gray-border)'
-                                                        }}>In Progress</span>
+                                                        <span style={{ color: 'var(--text-muted)', fontSize: '0.65rem', fontWeight: '600' }}>IN PROGRESS</span>
                                                     )}
                                                 </div>
                                             </div>
@@ -329,296 +308,75 @@ Communication is growing! 🥝
                     );
                 })()}
 
-                {/* Usage Overview */}
-                <h2 className="dashboard-section-title">📈 Usage Overview</h2>
-                <div className="dashboard-stat-grid">
-                    <div className="dashboard-stat-card">
-                        <div className="dashboard-stat-value">{totalStats.totalClicks}</div>
-                        <div className="dashboard-stat-label">Total Clicks</div>
+                {/* Usage Overview Grid (Compact) */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem', marginBottom: '1rem' }}>
+                    <div className="dashboard-stat-card" style={{ padding: '0.5rem' }}>
+                        <div className="dashboard-stat-value" style={{ fontSize: '1rem' }}>{totalStats.totalClicks}</div>
+                        <div className="dashboard-stat-label" style={{ fontSize: '0.6rem' }}>Taps</div>
                     </div>
-                    <div className="dashboard-stat-card">
-                        <div className="dashboard-stat-value">{totalStats.uniqueItems}</div>
-                        <div className="dashboard-stat-label">Items Used</div>
+                    <div className="dashboard-stat-card" style={{ padding: '0.5rem' }}>
+                        <div className="dashboard-stat-value" style={{ fontSize: '1rem' }}>{totalStats.uniqueItems}</div>
+                        <div className="dashboard-stat-label" style={{ fontSize: '0.6rem' }}>Words</div>
                     </div>
-                    <div className="dashboard-stat-card">
-                        <div className="dashboard-stat-value">{totalStats.totalSessions}</div>
-                        <div className="dashboard-stat-label">Sessions</div>
+                    <div className="dashboard-stat-card" style={{ padding: '0.5rem' }}>
+                        <div className="dashboard-stat-value" style={{ fontSize: '1rem' }}>{totalStats.totalSessions}</div>
+                        <div className="dashboard-stat-label" style={{ fontSize: '0.6rem' }}>Sess.</div>
                     </div>
-                    <div className="dashboard-stat-card">
-                        <div className="dashboard-stat-value">{totalStats.avgSessionTime}m</div>
-                        <div className="dashboard-stat-label">Avg Session</div>
+                    <div className="dashboard-stat-card" style={{ padding: '0.5rem' }}>
+                        <div className="dashboard-stat-value" style={{ fontSize: '1rem' }}>{totalStats.avgSessionTime}m</div>
+                        <div className="dashboard-stat-label" style={{ fontSize: '0.6rem' }}>Avg</div>
                     </div>
                 </div>
 
-                {/* Activity Chart */}
-                <div className="dashboard-card" style={{ background: 'var(--gray-light)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', gap: '0.75rem', flexWrap: 'wrap' }}>
-                        <h3 style={{ margin: 0, fontSize: '1rem', color: 'var(--text-primary)' }}>Activity (Last {analyticsDays} Days)</h3>
-                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                            {analyticsRanges.map(range => (
-                                <button
-                                    key={range.value}
-                                    onClick={() => handleSetAnalyticsRange(range.value)}
-                                    style={{
-                                        padding: '0.3125rem 0.625rem',
-                                        borderRadius: '0.75rem',
-                                        border: analyticsDays === range.value ? '0.125rem solid var(--primary)' : '1px solid var(--gray-border)',
-                                        background: analyticsDays === range.value ? 'var(--primary)' : 'white',
-                                        color: analyticsDays === range.value ? 'white' : 'var(--text-primary)',
-                                        fontSize: '0.7rem',
-                                        fontWeight: 700,
-                                        cursor: 'pointer'
-                                    }}
-                                >
-                                    {range.label}{range.premium ? ' 👑' : ''}
-                                </button>
+                {/* Activity & Trend Row */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '0.75rem', marginBottom: '1rem' }}>
+                    <div className="dashboard-card" style={{ background: 'var(--gray-light)', padding: '0.75rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                            <h3 style={{ margin: 0, fontSize: '0.8rem', fontWeight: 800 }}>Activity</h3>
+                            <button onClick={() => handleSetAnalyticsRange(analyticsDays === 7 ? 30 : 7)} style={{ padding: '2px 6px', borderRadius: '4px', border: 'none', background: 'white', fontSize: '0.6rem', fontWeight: 700 }}>{analyticsDays}d</button>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'flex-end', gap: '3px', height: '3.5rem' }}>
+                            {dailyStats.map((day, i) => (
+                                <div key={i} style={{ flex: 1, height: `${(day.clicks / maxDaily) * 100}%`, background: 'var(--btn-primary-bg)', borderRadius: '2px 2px 0 0' }} />
                             ))}
                         </div>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'flex-end', gap: '0.5rem', height: '6.25rem' }}>
-                        {dailyStats.map((day, i) => (
-                            <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                <div style={{
-                                    width: '100%',
-                                    height: `${(day.clicks / maxDaily) * 5}rem`,
-                                    background: 'var(--btn-primary-bg)',
-                                    borderRadius: '0.3125rem 0.3125rem 0 0',
-                                    minHeight: '0.25rem'
-                                }} />
-                                <span style={{ fontSize: '0.7rem', marginTop: '0.3125rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{day.label}</span>
-                            </div>
-                        ))}
+
+                    <div className="dashboard-card" style={{ padding: '0.75rem', background: 'var(--gray-light)' }}>
+                        <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '0.8rem', fontWeight: 800 }}>Rate</h3>
+                        <div style={{ textAlign: 'center' }}>
+                            <div style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--fitz-verb)' }}>{independenceRate}%</div>
+                            <div style={{ fontSize: '0.6rem', color: '#666', fontWeight: 700, textTransform: 'uppercase' }}>Independence</div>
+                        </div>
                     </div>
                 </div>
 
-                {/* Independence Trend Chart */}
-                {trials.length > 5 && (
-                    <div className="dashboard-card" style={{ background: 'var(--card-bg)', border: '1px solid var(--gray-border)' }}>
-                        <h3 style={{ margin: '0 0 0.9375rem 0', color: 'var(--text-primary)', fontSize: '1rem' }}>📈 Independence Trend (Last {analyticsDays} Days)</h3>
-                        {(() => {
-                            // Calculate daily independence rates
-                            const days = [];
-                            const today = new Date();
-                            for (let i = analyticsDays - 1; i >= 0; i--) {
-                                const d = new Date(today);
-                                d.setDate(d.getDate() - i);
-                                const dateStr = d.toISOString().split('T')[0];
-                                const dayTrials = trials.filter(t => t.date === dateStr);
-                                const total = dayTrials.length;
-                                const independent = dayTrials.filter(t => !t.isPrompted).length;
-                                const rate = total > 0 ? (independent / total) * 100 : 0;
-                                days.push({ label: formatTrendLabel(d), rate, hasData: total > 0 });
-                            }
-
-                            // Generate SVG points
-                            const points = days.map((d, i) => {
-                                const x = analyticsDays > 1 ? (i / (analyticsDays - 1)) * 100 : 0;
-                                const y = 100 - d.rate; // Invert for SVG coords
-                                return `${x},${y}`;
-                            }).join(' ');
-
-                            return (
-                                <div style={{ position: 'relative', height: '7.5rem', width: '100%' }}>
-                                    <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
-                                        {/* Grid lines */}
-                                        <line x1="0" y1="0" x2="100" y2="0" stroke="var(--gray-border)" strokeWidth="0.5" />
-                                        <line x1="0" y1="50" x2="100" y2="50" stroke="var(--gray-border)" strokeWidth="0.5" />
-                                        <line x1="0" y1="100" x2="100" y2="100" stroke="var(--gray-border)" strokeWidth="0.5" />
-
-                                        {/* Trend Line */}
-                                        <polyline
-                                            points={points}
-                                            fill="none"
-                                            stroke="var(--success)"
-                                            strokeWidth="3"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        />
-
-                                        {/* Data Points */}
-                                        {days.map((d, i) => (
-                                            <circle
-                                                key={i}
-                                                cx={analyticsDays > 1 ? (i / (analyticsDays - 1)) * 100 : 0}
-                                                cy={100 - d.rate}
-                                                r={d.hasData ? "3" : "1.5"}
-                                                fill={d.hasData ? "var(--success)" : "var(--gray-border)"}
-                                            />
-                                        ))}
-                                    </svg>
-
-                                    {/* Labels */}
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
-                                        {days.map((d, i) => (
-                                            <span key={i}>{d.label}</span>
-                                        ))}
-                                    </div>
-                                </div>
-                            );
-                        })()}
-                    </div>
-                )}
-
-                {/* Linguistic Environment Trend */}
-                {(() => {
-                    const talkHistory = getTalkHistory();
-                    if (talkHistory.length === 0) return null;
-
-                    const groupedByContext = talkHistory.reduce((acc, session) => {
-                        if (!acc[session.context]) acc[session.context] = [];
-                        acc[session.context].push(session.wpm);
-                        return acc;
-                    }, {});
-
-                    const contextLabels = {
-                        play: { label: 'Playtime', color: '#34C759', icon: '🧩' },
-                        car: { label: 'Car Ride', color: '#007AFF', icon: '🚗' },
-                        meal: { label: 'Mealtime', color: '#FF9500', icon: '🍱' },
-                        bath: { label: 'Bath/Bed', color: '#5856D6', icon: '🐳' }
-                    };
-
-                    return (
-                        <div className="dashboard-card" style={{ background: 'rgba(255,255,255,0.4)', marginBottom: '1.5rem', border: '1px solid rgba(255,255,255,0.3)' }}>
-                            <h3 style={{ margin: '0 0 1rem 0', color: 'var(--text-primary)', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800 }}>
-                                🗣️ Linguistic Environment (Avg WPM)
-                            </h3>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px' }}>
-                                {Object.entries(groupedByContext).map(([ctx, wpms]) => {
-                                    const avg = Math.round(wpms.reduce((a, b) => a + b, 0) / wpms.length);
-                                    const info = contextLabels[ctx] || { label: ctx, color: '#999', icon: '💬' };
-                                    return (
-                                        <div key={ctx} style={{
-                                            background: 'rgba(255,255,255,0.6)',
-                                            padding: '12px',
-                                            borderRadius: '16px',
-                                            borderLeft: `4px solid ${info.color}`,
-                                            boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
-                                        }}>
-                                            <div style={{ fontSize: '0.7rem', color: '#666', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>
-                                                {info.icon} {info.label}
-                                            </div>
-                                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-                                                <div style={{ fontSize: '1.25rem', fontWeight: 900, color: info.color }}>{avg}</div>
-                                                <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#999' }}>WPM</div>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    );
-                })()}
-
-                {/* Top Items */}
-                {topItems.length > 0 && (
-                    <div className="dashboard-card" style={{ background: 'var(--gray-light)' }}>
-                        <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem', color: 'var(--text-primary)' }}>🏆 Most Used Items</h3>
-                        {topItems.map((item, i) => (
-                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-                                <span style={{ width: '1.5rem', fontWeight: 'bold', color: 'var(--text-secondary)' }}>#{i + 1}</span>
-                                <span style={{ flex: 1, color: 'var(--text-primary)', fontWeight: 600 }}>{item.word}</span>
-                                <span style={{ background: 'var(--primary-dark)', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '0.75rem', fontSize: '0.9rem', fontWeight: 700 }}>{item.count}</span>
-                            </div>
-                        ))}
-                    </div>
-                )}
-
-                {/* Favorites Usage */}
+                {/* Compact Favorites Row */}
                 {favorites.length > 0 && (
-                    <div className="dashboard-card" style={{ background: 'var(--bg-color)', border: '2px solid var(--fitz-noun)' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.9375rem' }}>
-                            <h3 style={{ margin: 0, fontSize: '1rem', color: 'var(--text-primary)' }}>⭐ Favorite Usage</h3>
-                            <span style={{ background: 'var(--fitz-noun)', color: 'var(--fitz-noun-text)', padding: '0.25rem 0.75rem', borderRadius: '0.75rem', fontSize: '0.85rem', fontWeight: 'bold', border: '1px solid var(--gray-border)' }}>
-                                {totalFavoriteUses} total uses
-                            </span>
-                        </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(11.25rem, 1fr))', gap: '0.75rem' }}>
-                            {favorites.map((fav, i) => {
-                                const usagePercent = totalFavoriteUses > 0 ? ((fav.usageCount || 0) / totalFavoriteUses * 100).toFixed(0) : 0;
-                                const lastUsedDate = fav.lastUsed ? new Date(fav.lastUsed).toLocaleDateString() : 'Never';
-                                return (
-                                    <div key={i} style={{
-                                        background: 'var(--card-bg)',
-                                        padding: '1rem',
-                                        borderRadius: '0.75rem',
-                                        boxShadow: '0 0.125rem 0.5rem rgba(0,0,0,0.1)',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        gap: '0.5rem',
-                                        border: '1px solid var(--gray-border)'
-                                    }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                            <span style={{ fontSize: '2rem' }}>{fav.icon}</span>
-                                            <div style={{ flex: 1 }}>
-                                                <div style={{ fontWeight: 'bold', fontSize: '0.95rem', color: 'var(--text-primary)' }}>{fav.word}</div>
-                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500 }}>Last: {lastUsedDate}</div>
-                                            </div>
-                                        </div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                            <div style={{
-                                                flex: 1,
-                                                height: '0.5rem',
-                                                background: 'var(--gray-light)',
-                                                borderRadius: '0.25rem',
-                                                overflow: 'hidden'
-                                            }}>
-                                                <div style={{
-                                                    width: `${usagePercent}%`,
-                                                    height: '100%',
-                                                    background: 'var(--fitz-noun)',
-                                                    transition: 'width 0.3s ease'
-                                                }} />
-                                            </div>
-                                            <span style={{
-                                                fontSize: '0.85rem',
-                                                fontWeight: 'bold',
-                                                color: 'var(--text-primary)',
-                                                minWidth: '2.5rem',
-                                                textAlign: 'right'
-                                            }}>
-                                                {fav.usageCount}
-                                            </span>
-                                        </div>
-                                    </div>
-                                );
-                            })}
+                    <div className="dashboard-card" style={{ padding: '0.75rem', background: 'var(--bg-color)', border: '1px solid var(--fitz-noun)', marginBottom: '0.75rem' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
+                            {favorites.slice(0, 3).map((f, i) => (
+                                <div key={i} style={{ textAlign: 'center', background: 'white', padding: '0.4rem', borderRadius: '8px' }}>
+                                    <div style={{ fontSize: '1.25rem' }}>{f.icon}</div>
+                                    <div style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--primary-dark)' }}>{f.usageCount}</div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 )}
 
-                <h2 className="dashboard-section-title">🏃 Communication Progress</h2>
-                <div className="dashboard-stat-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
-                    <div className="dashboard-stat-card" style={{ borderBottom: '4px solid var(--fitz-social)' }}>
-                        <div className="dashboard-stat-value" style={{ color: 'var(--fitz-social)' }}>{independentTrials}</div>
-                        <div className="dashboard-stat-label">Independent</div>
-                    </div>
-                    <div className="dashboard-stat-card" style={{ borderBottom: '4px solid var(--fitz-noun)' }}>
-                        <div className="dashboard-stat-value" style={{ color: 'var(--warning)' }}>{promptedTrials}</div>
-                        <div className="dashboard-stat-label">Prompted</div>
-                    </div>
-                    <div className="dashboard-stat-card" style={{ borderBottom: '4px solid var(--fitz-verb)' }}>
-                        <div className="dashboard-stat-value" style={{ color: 'var(--fitz-verb)' }}>{independenceRate}%</div>
-                        <div className="dashboard-stat-label">Independence</div>
-                    </div>
-                </div>
-
+                {/* Progress Tape (Compact Trial History) */}
                 {trials.length > 0 && (
-                    <div className="dashboard-card" style={{ background: 'var(--gray-light)' }}>
-                        <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem', color: 'var(--text-primary)' }}>Trial History (Last 20)</h3>
-                        <div style={{ display: 'flex', gap: '0.3125rem', flexWrap: 'wrap' }}>
-                            {trials.slice(-20).map((t, i) => (
-                                <div
-                                    key={i}
-                                    style={{
-                                        width: '0.75rem',
-                                        height: '1.5rem',
-                                        background: t.isPrompted ? 'var(--warning)' : 'var(--fitz-social)',
-                                        borderRadius: '0.1875rem'
-                                    }}
-                                    title={t.isPrompted ? 'Prompted' : 'Independent'}
-                                />
-                            ))}
-                        </div>
+                    <div style={{ display: 'flex', gap: '3px', height: '12px', marginBottom: '1.25rem', overflow: 'hidden', borderRadius: '6px' }}>
+                        {trials.slice(-40).map((t, i) => (
+                            <div key={i} style={{ flex: 1, background: t.isPrompted ? 'var(--warning)' : 'var(--fitz-social)' }} />
+                        ))}
+                    </div>
+                )}
+
+                <div className="dashboard-actions" style={{ padding: '0 0.5rem' }}>
+                    <button onClick={handleShare} className="dashboard-btn primary" style={{ width: '100%', padding: '0.85rem', borderRadius: '14px', fontWeight: 800 }}>📤 Share Progress Report</button>
+                </div>
                     </div>
                 )}
             </div>

@@ -1,76 +1,110 @@
 import { useState, useEffect } from 'react';
 import LevelIntro from './LevelIntro';
 import { trackAssessment } from '../utils/AnalyticsService';
+import LevelSelector, { phaseDescriptions } from './LevelSelector';
 
 const questions = [
     {
         id: 1,
+        category: 'communication',
         question: "Has your child ever used pictures to communicate?",
         emoji: "🖼️",
-        hint: "This includes pointing at pictures, handing cards, or using a device",
+        hint: "This includes pointing at pictures, handing cards (Communication Exchange), or using a device/app.",
         yesNext: 2,
         noResult: 1
     },
     {
         id: 2,
+        category: 'communication',
         question: "Can your child get your attention to make a request?",
         emoji: "👋",
-        hint: "They come find you, tap your arm, or call out",
+        hint: "Do they pull your hand, tap you, or come find you when they need something?",
         yesNext: 3,
         noResult: 2
     },
     {
         id: 3,
+        category: 'communication',
         question: "Can your child choose the correct picture from 2 or more options?",
         emoji: "🎯",
-        hint: "When shown multiple pictures, they pick the one they want",
+        hint: "If you hold up a 'cookie' and 'broccoli' picture, do they reach for the one they actually want?",
         yesNext: 4,
         noResult: 3
     },
     {
         id: 4,
+        category: 'communication',
         question: "Can your child combine pictures to make a request?",
         emoji: "🔗",
-        hint: 'For example: "I want" + "cookie"',
+        hint: 'Do they put 2+ symbols together? (e.g. "I want" + "cookie", or "Red" + "Car")',
         yesNext: 5,
         noResult: 4
     },
     {
         id: 5,
+        category: 'communication',
         question: 'Can your child respond when asked "What do you want?"',
         emoji: "💬",
-        hint: "They answer the question instead of just reaching for items",
+        hint: "Do they answer the question using words/signs/pictures instead of just reaching?",
         yesNext: 6,
         noResult: 5
     },
     {
         id: 6,
+        category: 'communication',
         question: "Does your child make comments about things they see or hear?",
         emoji: "👀",
-        hint: '"I see a dog", "I hear music"',
+        hint: 'Do they point out things just to share? (e.g. "Look airplane!", "Big dog", "Yuck!")', 
         yesNext: 7,
         noResult: 5
     },
     {
         id: 7,
+        category: 'communication',
         question: "Does your child ask questions to learn about things?",
         emoji: "🔎",
-        hint: '"What is that?", "Where is mom?", "Who is that?"',
-        yesNext: null, // End - recommend phase 0 (normal mode)
+        hint: 'Do they ask "What is that?", "Where is mom?", or "Who?" to get information?',
+        yesNext: null, 
         noResult: 6
+    },
+    // Essential Skills (Life Skills)
+    {
+        id: 101,
+        category: 'life-skill',
+        question: "Can your child independently use the toilet?",
+        emoji: "🚽",
+        hint: "Do they recognize the need to go and complete the process with minimal help?",
+        yesNext: null,
+        noResult: null
+    },
+    {
+        id: 102,
+        category: 'life-skill',
+        question: "Can your child feed themselves with a spoon or fork?",
+        emoji: "🥄",
+        hint: "Are they able to eat a meal without significant assistance?",
+        yesNext: null,
+        noResult: null
+    },
+    {
+        id: 103,
+        category: 'life-skill',
+        question: "Can your child put on simple clothing?",
+        emoji: "👕",
+        hint: "Can they put on a jacket, shoes (velcro), or pants by themselves?",
+        yesNext: null,
+        noResult: null
+    },
+    {
+        id: 104,
+        category: 'life-skill',
+        question: "Does your child follow simple safety commands?",
+        emoji: "🛑",
+        hint: "Do they stop when you say 'Stop' or come when called?",
+        yesNext: null,
+        noResult: null
     }
 ];
-
-const phaseDescriptions = {
-    0: { name: "Free Communication", description: "Your child is ready to explore all communication features on the tablet!" },
-    1: { name: "Level 1: Physical Exchange", description: "Tap a picture on the tablet and hand it to an adult to request items." },
-    2: { name: "Level 2: Getting Attention", description: "Bring the tablet to an adult from across the room to make requests." },
-    3: { name: "Level 3: Picture Selection", description: "Choose the right picture from multiple options on the tablet." },
-    4: { name: "Level 4: Sentence Building", description: "Build sentences like 'I want cookie' using the tablet." },
-    5: { name: "Level 5: Answering Questions", description: "Respond to 'What do you want?' using the tablet." },
-    6: { name: "Level 6: Commenting", description: "Share observations like 'I see a bird' using the tablet." },
-    7: { name: "Level 7: Asking Questions", description: "Ask 'What?', 'Where?', and 'Who?' to learn about the world." }
-};
 
 // High-value reinforcers that kids typically love
 const favoriteOptions = [
@@ -89,6 +123,7 @@ const Assessment = ({ onComplete, onBack }) => {
     const [showNotSureOptions, setShowNotSureOptions] = useState(false);
     const [showFavoritesPicker, setShowFavoritesPicker] = useState(false);
     const [showLiteracyCheck, setShowLiteracyCheck] = useState(false);
+    const [showLevelSelector, setShowLevelSelector] = useState(false);
     const [selectedFavorites, setSelectedFavorites] = useState([]);
     const [canRead, setCanRead] = useState(null);
     const [showIntro, setShowIntro] = useState(false);
@@ -100,19 +135,20 @@ const Assessment = ({ onComplete, onBack }) => {
 
     const calculateResult = (finalAnswers) => {
         let recommendedPhase = 0; // Default to advanced/free mode if all Yes
+        
+        // Filter for communication questions only
+        const commQuestions = questions.filter(q => q.category === 'communication');
 
-        // Iterate through questions to find the first skill gap
-        for (let i = 0; i < questions.length; i++) {
-            const q = questions[i];
+        // Iterate through communication questions to find the first skill gap
+        for (let i = 0; i < commQuestions.length; i++) {
+            const q = commQuestions[i];
+            // If they answered No (false), start at this level
             if (finalAnswers[q.id] === false) {
-                // If they can't do this skill yet, start at this level
-                // Use the noResult from the question definition as the phase
                 recommendedPhase = q.noResult;
                 break;
             }
         }
 
-        // If they answered Yes to everything, recommendedPhase stays 0
         setResult(recommendedPhase);
         trackAssessment(recommendedPhase, phaseDescriptions[recommendedPhase].name);
         setShowFavoritesPicker(true);
@@ -152,9 +188,27 @@ const Assessment = ({ onComplete, onBack }) => {
     };
 
     const handleContinue = (phase) => {
-        // Pass phase, favorites, and literacy preference to parent
-        onComplete(phase, selectedFavorites, canRead);
+        // Pass phase, favorites, literacy preference, AND assessment answers (including life skills) to parent
+        onComplete(phase, selectedFavorites, canRead, answers);
     };
+
+    // Manual Level Selection Screen (Skip Assessment)
+    if (showLevelSelector) {
+        return (
+            <LevelSelector 
+                onSelect={(phase) => {
+                    // When manually selecting, we assume they want to start there immediately
+                    // We can still show the favorites picker if desired, but standard skip 
+                    // usually implies skipping setup too. Let's show favorites picker first
+                    // to ensure a good experience, then pass the selected phase.
+                    setResult(phase);
+                    setShowLevelSelector(false);
+                    setShowFavoritesPicker(true);
+                }}
+                onBack={() => setShowLevelSelector(false)}
+            />
+        );
+    }
 
     // Favorites Picker Screen
     if (showFavoritesPicker) {
@@ -837,7 +891,7 @@ const Assessment = ({ onComplete, onBack }) => {
 
             {/* Skip option */}
             <button
-                onClick={() => onComplete(0)}
+                onClick={() => setShowLevelSelector(true)}
                 style={{
                     background: 'transparent',
                     border: 'none',

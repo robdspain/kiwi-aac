@@ -1,69 +1,71 @@
 /**
- * Clinical Frameworks Integration (Hanley SBT & PLS)
- * Maps Kiwi AAC Levels to Dr. Greg Hanley's Skill-Based Training (SBT) and Preschool Life Skills (PLS).
+ * Life Skills Framework Integration
+ * Maps Kiwi AAC Levels to Dr. Greg Hanley's Life Skills Training and social independence goals.
  */
 
-export const SBT_MAPPING = {
+export const LIFE_SKILLS_MAPPING = {
     1: {
-        skill: "FCR (Simple)",
-        objective: "The child will use a simple Functional Communication Response to request reinforcers.",
+        phase: 1,
+        skill: "Simple Request",
+        objective: "Ask for things using a simple request (like 'My Way') instead of using difficult behavior.",
         levels: [1.1, 1.2],
-        clinicalNote: "Focus on immediate reinforcement and zero-error teaching."
+        clinicalNote: "Focus on immediate rewards and helping the child succeed every time."
     },
     2: {
-        skill: "FCR Persistence & Travel",
-        objective: "The child will travel to a communication partner to deliver a request.",
+        phase: 2,
+        skill: "Polite Request",
+        objective: "Use longer, polite sentences like “Excuse me, can I have my way, please?”",
         levels: [2.1, 2.2],
-        clinicalNote: "Build the 'search and find' component of communication."
+        clinicalNote: "Help them move from one word to full polite sentences."
     },
     3: {
-        skill: "Simple Discrimination",
-        objective: "The child will select between a preferred and non-preferred item with 90% accuracy.",
-        levels: [3.1],
-        clinicalNote: "Honor all selections to teach the consequence of choice."
+        phase: 3,
+        skill: "Learning to Wait",
+        objective: "Stay calm when told 'No' or 'Wait' and respond with 'Okay'.",
+        levels: [3.1, 3.2, 3.3],
+        clinicalNote: "Reward the child immediately for staying calm and saying 'Okay'."
     },
     4: {
-        skill: "Complex Discrimination",
-        objective: "The child will select from an array of 5+ items.",
-        levels: [3.2, 3.3],
-        clinicalNote: "Gradually increase field size to manage cognitive load."
+        phase: 4,
+        skill: "Giving Things Up",
+        objective: "Calmly give up a favorite item (like an iPad) when asked by an adult.",
+        levels: [4.1, 4.2, 4.3, 4.4],
+        clinicalNote: "Practice letting go of items and getting them back right away."
     },
     5: {
-        skill: "Chaining & Syntactic Expansion (Adjectives)",
-        objective: "The child will expand requests using adjectives (I want + [color/size] + item).",
-        levels: [4.1, 4.2, 4.3, 4.4],
-        clinicalNote: "Dr. Hanley's SBT emphasizes expanding the FCR once simple FCR is mastered. Adjectives are the first step in creating a diverse communication repertoire."
+        phase: 5,
+        skill: "Moving Places",
+        objective: "Move from one area to another (like from play to the table) when asked.",
+        levels: [5.1, 5.2, 5.3],
+        clinicalNote: "Teach the child to transition smoothly between different activities."
     },
     6: {
-        skill: "Intraverbals (Responding)",
-        objective: "The child will respond to verbal prompts (What do you want?).",
-        levels: [5.1, 5.2, 5.3],
-        clinicalNote: "Fade prompts to ensure stimulus control by the question, not the item."
+        phase: 6,
+        skill: "Doing a Task",
+        objective: "Complete 1 to 3 simple tasks before getting a reward.",
+        levels: [6.1, 6.2, 6.3, 6.4],
+        clinicalNote: "Build the habit of doing a little bit of work before playtime."
     },
     7: {
-        skill: "Complex FCR & Branching",
-        objective: "The child will use complex sentences and ask questions to learn about the environment.",
-        levels: [6.1, 6.2, 6.3, 6.4, 7.1, 7.2, 7.3],
-        clinicalNote: "Dr. Hanley's SBT emphasizes expanding the FCR repertoire once tolerance is established."
-    }
-};
-
-export const PLS_MAPPING = {
-    "Instruction Following": {
-        description: "Following adult-led directives during communication setup.",
-        levels: [1.1, 2.1, 3.1]
+        phase: 7,
+        skill: "Doing Multiple Tasks",
+        objective: "Complete tasks across different activities (like table work then circle time).",
+        levels: [7.1, 7.2, 7.3],
+        clinicalNote: "Increase independence by linking different tasks together."
     },
-    "Functional Communication": {
-        description: "Standard FCR protocols (Simple, Multi-word, Complex).",
-        levels: [1.2, 4.1]
+    8: {
+        phase: 8,
+        skill: "Extended Working",
+        objective: "Stay focused and complete longer sequences of work.",
+        levels: [8.1, 8.2, 8.3],
+        clinicalNote: "Build endurance for school routines and longer activities."
     },
-    "Social Skills": {
-        description: "Greetings, niceties, and joint attention via commenting.",
-        levels: [4.4, 6.1]
-    },
-    "Tolerance & Waiting": {
-        description: "Accepting 'no' and waiting for reinforcers.",
-        levels: ["All (Integrated via Denial Tolerance Mode)"]
+    9: {
+        phase: 9,
+        skill: "Staying Flexible",
+        objective: "Stay calm and keep working even when things get difficult or change.",
+        levels: [9.1, 9.2, 9.3],
+        clinicalNote: "The ultimate goal: being able to handle challenges and changes calmly."
     }
 };
 
@@ -71,30 +73,30 @@ export const ROLE_SUPPORT_TIPS = {
     parent: {
         title: "Home Support",
         tips: [
-            "Keep the device within reach at all times.",
-            "Narrate your own actions using the app (Aided Language Input).",
-            "Honor every request, even if it's messy - you are building trust."
+            "Keep the tablet within reach so your child can always 'talk'.",
+            "Use the tablet yourself to show how it works (Aided Modeling).",
+            "Honor every request at first - you are building trust and power."
         ]
     },
     teacher: {
         title: "Classroom Support",
         tips: [
-            "Integrate the app into circle time and transitions.",
-            "Assign a 'Communication Buddy' to model use during play.",
-            "Use the Visual Schedules for classroom routines."
+            "Use the tablet during circle time and transitions.",
+            "Have classmates model using the tablet during play.",
+            "Use Visual Schedules to show what is happening next."
         ]
     },
     therapist: {
         title: "Clinical Support",
         tips: [
-            "Use the data export for IEP progress monitoring.",
-            "Focus on motor planning stability across sessions.",
-            "Implement Denial Tolerance protocols 2-3x per session."
+            "Use the data history for progress monitoring.",
+            "Focus on motor planning stability across different settings.",
+            "Implement Waiting/Tolerance practice 2-3x per session."
         ]
     }
 };
 
-export const getClinicalMapping = (level) => {
+export const getLifeSkillsMapping = (level) => {
     const stage = Math.floor(level);
-    return SBT_MAPPING[stage] || null;
+    return LIFE_SKILLS_MAPPING[stage] || null;
 };

@@ -269,55 +269,55 @@ export const LEVELS = {
 // Stage metadata for UI display
 export const STAGES = {
     1: {
-        name: 'Exchange',
+        name: 'Requesting',
         icon: '🤝',
         color: '#2E7D32',
-        description: 'Learning to request by exchanging a picture'
+        description: 'Learning to ask for things using pictures'
     },
     2: {
-        name: 'Persistence',
+        name: 'Getting Attention',
         icon: '📣',
         color: '#1565C0',
-        description: 'Getting attention and traveling to communicate'
+        description: 'Finding a partner and persisting to be heard'
     },
     3: {
-        name: 'Discrimination',
+        name: 'Choosing',
         icon: '🎯',
         color: '#6A1B9A',
-        description: 'Selecting the right picture from choices'
+        description: 'Selecting the right picture from many choices'
     },
     4: {
-        name: 'Sentences',
+        name: 'Building Sentences',
         icon: '💬',
         color: '#E65100',
-        description: 'Building multi-word requests with attributes'
+        description: 'Building multi-word requests with colors and sizes'
     },
     5: {
-        name: 'Responding',
+        name: 'Answering',
         icon: '❓',
         color: '#C2185B',
         description: 'Answering questions about wants and observations'
     },
     6: {
-        name: 'Commenting',
+        name: 'Sharing',
         icon: '💭',
         color: '#00838F',
         description: 'Making spontaneous comments about the world'
     },
     7: {
-        name: 'Questions',
+        name: 'Asking Questions',
         icon: '🕵️',
         color: '#E64A19',
-        description: 'Asking questions to learn about the environment (Hanley SBT Complex FCR)'
+        description: 'Asking questions to learn about the environment'
     },
     8: {
-        name: 'Grammar',
+        name: 'Advanced Language',
         icon: '🔗',
         color: '#7B1FA2',
-        description: 'Advanced syntax, prepositions, and negation'
+        description: 'Learning complex grammar, positions, and negations'
     },
     9: {
-        name: 'Narrative',
+        name: 'Storytelling',
         icon: '📖',
         color: '#0097A7',
         description: 'Early storytelling, sequencing, and literacy'

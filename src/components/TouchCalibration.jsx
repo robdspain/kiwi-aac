@@ -146,14 +146,13 @@ const TouchCalibration = ({ onComplete, onBack }) => {
                 {/* Step 2: Interactive Testing */}
                 {step === 2 && testingSize && (
                     <div style={{ maxWidth: '36rem', margin: '0 auto' }}>
-                        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                            <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>{testingSize.icon}</div>
+                        <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
                             <IonText>
-                                <h2 style={{ fontWeight: 800, fontSize: '1.5rem', margin: '0 0 0.5rem 0' }}>
+                                <h2 style={{ fontWeight: 800, fontSize: '1.5rem', margin: '0 0 0.25rem 0' }}>
                                     {testingSize.label} - {testingSize.description}
                                 </h2>
-                                <p style={{ color: 'var(--ion-color-medium)', fontSize: '1rem' }}>
-                                    Tap the buttons below to test this size
+                                <p style={{ color: 'var(--ion-color-medium)', fontSize: '0.95rem', margin: 0 }}>
+                                    Tap the buttons below to test
                                 </p>
                             </IonText>
                         </div>
@@ -161,14 +160,14 @@ const TouchCalibration = ({ onComplete, onBack }) => {
                         {/* Interactive Test Grid */}
                         <div style={{
                             display: 'grid',
-                            gridTemplateColumns: `repeat(${testingSize.cols}, 1fr)`,
+                            gridTemplateColumns: `repeat(2, 1fr)`,
                             gap: '0.75rem',
-                            marginBottom: '2rem',
+                            marginBottom: '1.5rem',
                             padding: '1rem',
                             background: 'var(--ion-color-light)',
                             borderRadius: '1.25rem'
                         }}>
-                            {TEST_WORDS.slice(0, testingSize.cols * 2).map((word, i) => (
+                            {TEST_WORDS.slice(0, 4).map((word, i) => (
                                 <button
                                     key={i}
                                     onClick={() => handleTestTarget(i)}

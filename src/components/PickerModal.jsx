@@ -37,7 +37,7 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import ImageCropModal from './ImageCropModal';
 
 const iconsData = {
-    'TV': [{ w: 'Elmo', i: '🔴' }, { w: 'Bluey', i: '🐶' }, { w: 'Music', i: '🎵' }, { w: 'Book', i: '📚' }],
+    'Characters': [{ w: 'Elmo', i: '🔴' }, { w: 'Bluey', i: '🐶' }, { w: 'Music', i: '🎵' }, { w: 'Book', i: '📚' }],
     'Food': [{ w: 'Apple', i: '🍎' }, { w: 'Banana', i: '🍌' }, { w: 'Juice', i: '🧃' }, { w: 'Cookie', i: '🍪' }],
     'Toys': [{ w: 'Ball', i: '⚽' }, { w: 'Blocks', i: '🧱' }, { w: 'Car', i: '🚗' }, { w: 'Bubbles', i: '🫧' }],
     'Feelings': [{ w: 'Happy', i: '😄' }, { w: 'Sad', i: '😢' }, { w: 'Mad', i: '😠' }]
@@ -335,6 +335,16 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
         { id: 'photo', icon: cameraOutline, label: 'Photos' }
     ];
 
+    // Calculate display categories for Symbols tab
+    const symbolDisplayCategories = (() => {
+        const cats = Object.keys(EMOJI_DATA).filter(k => !k.startsWith('Tone') && !k.startsWith('Skin'));
+        const mapping = { 'Things': 'Objects', 'Food': 'Food & Drink', 'TV': 'Characters' };
+        const mappedCats = cats.map(c => mapping[c] || c);
+        const priority = ['Activities', 'Objects', 'Food & Drink', 'Characters', 'People', 'Places', 'Nature'];
+        const otherCats = mappedCats.filter(c => !priority.includes(c)).sort();
+        return [...priority.filter(p => mappedCats.includes(p)), ...otherCats];
+    })();
+
     return (
         <IonModal isOpen={isOpen} onDidDismiss={onClose} breakpoints={[0, 0.5, 0.9]} initialBreakpoint={0.9}>
             <IonHeader className="ion-no-border">
@@ -476,16 +486,37 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
 
                             {!isSearching && (activeTab === 'emoji' || activeTab === 'symbol') && (
                                 <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '1rem' }}>
-                                    {(activeTab === 'symbol' ? Object.keys(EMOJI_DATA).filter(k => !k.startsWith('Tone') && !k.startsWith('Skin')) : ['My Icons', ...Object.keys(iconsData)]).map(cat => (
+                                    {(activeTab === 'symbol' ? symbolDisplayCategories : ['My Icons', ...Object.keys(iconsData)]).map(cat => (
                                         <button
                                             key={cat}
                                             onClick={() => {
                                                 triggerHaptic('light');
-                                                setActiveCategory(cat);
+                                                // Map display name back to original data key if needed
+                                                let lookupCat = cat;
+                                                if (activeTab === 'symbol') {
+                                                    const reverseMapping = { 'Objects': 'Things', 'Food & Drink': 'Food', 'Characters': 'TV' };
+                                                    // Only map back if the original key exists in EMOJI_DATA (e.g. 'TV' might not exist, 'Characters' might be the key)
+                                                    if (reverseMapping[cat] && EMOJI_DATA[reverseMapping[cat]]) {
+                                                        lookupCat = reverseMapping[cat];
+                                                    } else if (cat === 'Characters' && EMOJI_DATA['Characters']) {
+                                                        lookupCat = 'Characters';
+                                                    }
+                                                }
+                                                setActiveCategory(lookupCat);
                                             }}
                                             style={{
-                                                background: activeCategory === cat ? 'var(--primary)' : '#fff',
-                                                color: activeCategory === cat ? '#fff' : '#000',
+                                                background: (activeCategory === cat || 
+                                                    (activeTab === 'symbol' && (
+                                                        (cat === 'Objects' && activeCategory === 'Things') ||
+                                                        (cat === 'Food & Drink' && activeCategory === 'Food') ||
+                                                        (cat === 'Characters' && activeCategory === 'TV')
+                                                    ))) ? 'var(--primary)' : '#fff',
+                                                color: (activeCategory === cat || 
+                                                    (activeTab === 'symbol' && (
+                                                        (cat === 'Objects' && activeCategory === 'Things') ||
+                                                        (cat === 'Food & Drink' && activeCategory === 'Food') ||
+                                                        (cat === 'Characters' && activeCategory === 'TV')
+                                                    ))) ? '#fff' : '#000',
                                                 padding: '0.5rem 1rem',
                                                 borderRadius: '1.25rem',
                                                 border: 'none',

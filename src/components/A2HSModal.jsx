@@ -104,7 +104,7 @@ const A2HSModal = () => {
                     </IonButton>
                 </div>
 
-                <div style={{ height: '3rem' }} />
+                <div style={{ height: '5rem' }} />
             </IonContent>
         </IonModal>
     );

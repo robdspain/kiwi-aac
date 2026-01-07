@@ -30,6 +30,7 @@ import VoiceRecorder from './VoiceRecorder';
 import MemojiPicker from './MemojiPicker';
 import ImageCropModal from './ImageCropModal';
 import { saveMedia, getMedia, deleteMedia } from '../utils/db';
+import { AAC_LEXICON } from '../data/aacLexicon';
 
 const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item, customPhotoCount = 0 }) => {
     const [word, setWord] = useState('');
@@ -91,6 +92,21 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
         } catch (error) {
             console.error('Failed to check custom photo limit:', error);
             return true;
+        }
+    };
+
+    const handleWordChange = (newWord) => {
+        setWord(newWord);
+        
+        // Auto-categorize based on lexicon
+        if (newWord && newWord.trim()) {
+            const lowerWord = newWord.toLowerCase().trim();
+            const entry = AAC_LEXICON[lowerWord];
+            if (entry && entry.type) {
+                setWc(entry.type);
+                // Clear bgColor so Fitzgerald color takes precedence
+                setBgColor('');
+            }
         }
     };
 
@@ -200,7 +216,7 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                         <IonLabel position="fixed" style={{ fontWeight: 600 }}>Label</IonLabel>
                         <IonInput
                             value={word}
-                            onIonChange={(e) => setWord(e.detail.value)}
+                            onIonChange={(e) => handleWordChange(e.detail.value)}
                             placeholder="Enter label"
                             className="ion-text-right"
                         />
@@ -266,17 +282,32 @@ const EditModal = ({ isOpen, onClose, onSave, onDelete, onOpenEmojiPicker, item,
                             ))}
                         </div>
                     </div>
-                    <IonItem onClick={() => onOpenEmojiPicker(setWord, (ni, isImg, cat) => { setIcon(ni); setIsImage(!!isImg); if (cat) { setWc(cat); setBgColor(''); } })} button={true}>
+                    <IonItem onClick={() => onOpenEmojiPicker(setWord, (ni, isImg, cat) => { 
+                        setIcon(ni); 
+                        setIsImage(!!isImg); 
+                        if (cat) { 
+                            setWc(cat); 
+                            setBgColor(''); 
+                        } else {
+                            // If picker didn't return a category (e.g. from search text), try to infer it from current word
+                            const currentWord = word; // Use current word state? No, setWord might be async-ish or we want the *new* word.
+                            // The picker callback signature setWord is passed, but here we can just invoke logic.
+                            // Actually, onOpenEmojiPicker(setWord, ...) passes setWord to the picker.
+                            // The picker calls setWord(newWord).
+                            // We should intercept or re-check.
+                            // But better: let's trust the picker's return 'cat' if available, otherwise check lexicon.
+                        }
+                    })} button={true} detail={false}>
                         <IonIcon icon={libraryOutline} slot="start" color="primary" />
                         <IonLabel>Choose from Library</IonLabel>
                         <IonIcon icon={chevronForwardOutline} slot="end" color="medium" size="small" />
                     </IonItem>
-                    <IonItem onClick={() => setShowMemojiPicker(true)} button={true}>
+                    <IonItem onClick={() => setShowMemojiPicker(true)} button={true} detail={false}>
                         <IonIcon icon={personOutline} slot="start" color="primary" />
                         <IonLabel>Select Character</IonLabel>
                         <IonIcon icon={chevronForwardOutline} slot="end" color="medium" size="small" />
                     </IonItem>
-                    <IonItem onClick={() => takePhoto(CameraSource.Prompt)} button={true}>
+                    <IonItem onClick={() => takePhoto(CameraSource.Prompt)} button={true} detail={false}>
                         <IonIcon icon={cameraOutline} slot="start" color="primary" />
                         <IonLabel>Add Photo or Image</IonLabel>
                         <IonIcon icon={chevronForwardOutline} slot="end" color="medium" size="small" />

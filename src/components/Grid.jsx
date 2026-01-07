@@ -138,7 +138,7 @@ const Grid = ({
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                height: '100%',
+                minHeight: '60vh',
                 width: '100%',
                 flex: 1,
                 padding: '2.5rem',

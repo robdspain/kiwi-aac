@@ -68,14 +68,13 @@ test.describe('Clinical & Engagement Features', () => {
         await expect(page.getByText('Physical Calibration')).not.toBeVisible();
     });
 
-    test('Essential Skills: SBT Progression', async ({ page }) => {
+    test('Essential Skills: Skills Progression', async ({ page }) => {
         // Essential Skills is currently under 'Actions' in the Data tab or root items if pinned
         // But in my implementation I put it in Controls.jsx -> Data Tab
         await openSettingsTab(page, 'Data');
 
-        const sbtBtn = page.getByText('Essential Skills (FCR)');
-        await sbtBtn.click();
-
+            const sbtBtn = page.getByText('Life Skills Mode');
+            await sbtBtn.click();
         // Step 1: Request
         await expect(page.getByText('STAGE 1: THE REQUEST')).toBeVisible();
         await page.getByText('MY WAY').click();
