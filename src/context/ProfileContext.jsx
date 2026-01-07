@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const ProfileContext = createContext();
 
@@ -28,10 +28,12 @@ const DEFAULT_PROFILE = {
     accessProfile: DEFAULT_ACCESS_PROFILE
 };
 
-export const ProfileProvider = ({ children }) => {
-    const [profiles, setProfiles] = useState(() => {
+const getInitialProfiles = () => {
+    try {
         const saved = localStorage.getItem('kiwi-profiles');
         const data = saved ? JSON.parse(saved) : [DEFAULT_PROFILE];
+        if (!Array.isArray(data)) return [DEFAULT_PROFILE];
+
         // Migration for existing profiles - Force 'touch' as scan/eye are future features
         return data.map(p => ({
             ...p,
@@ -40,16 +42,29 @@ export const ProfileProvider = ({ children }) => {
                 selectionType: 'touch'
             }
         }));
-    });
+    } catch (e) {
+        console.error('Failed to load profiles:', e);
+        return [DEFAULT_PROFILE];
+    }
+};
 
-    const [currentProfileId, setCurrentProfileId] = useState(() => {
-        return localStorage.getItem('kiwi-current-profile') || 'default';
-    });
+const getInitialProfileId = () => {
+    return localStorage.getItem('kiwi-current-profile') || 'default';
+};
 
-    const [pronunciations, setPronunciations] = useState(() => {
+const getInitialPronunciations = () => {
+    try {
         const saved = localStorage.getItem('kiwi-pronunciations');
         return saved ? JSON.parse(saved) : {};
-    });
+    } catch (e) {
+        return {};
+    }
+};
+
+export const ProfileProvider = ({ children }) => {
+    const [profiles, setProfiles] = useState(getInitialProfiles);
+    const [currentProfileId, setCurrentProfileId] = useState(getInitialProfileId);
+    const [pronunciations, setPronunciations] = useState(getInitialPronunciations);
 
     useEffect(() => {
         localStorage.setItem('kiwi-profiles', JSON.stringify(profiles));

@@ -1,4 +1,4 @@
-import { useState, useEffect, Suspense, lazy, useRef, useCallback } from 'react';
+import React, { useState, useEffect, Suspense, lazy, useRef, useCallback } from 'react';
 import Grid from './components/Grid';
 import SentenceStrip from './components/SentenceStrip';
 import Controls from './components/Controls';
@@ -19,7 +19,7 @@ const TouchCalibration = lazy(() => import('./components/TouchCalibration'));
 const VisualSceneView = lazy(() => import('./components/VisualSceneView'));
 import GuidedTour from './components/GuidedTour';
 import { playBellSound } from './utils/sounds';
-import { trackSentence, trackItemClick } from './utils/AnalyticsService';
+import { trackSentence, trackItemClick, trackEvent } from './utils/AnalyticsService';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { InAppReview } from '@capacitor-community/in-app-review';
 import {
@@ -47,7 +47,7 @@ import { useProfile } from './context/ProfileContext';
 import { MIRROR_DICTIONARY } from './utils/translate';
 import { ensureDefaultVoice } from './utils/voiceUtils';
 import { Capacitor } from '@capacitor/core';
-import { NativeBiometric } from 'capacitor-native-biometric';
+import { NativeBiometric } from '@capgo/capacitor-native-biometric';
 import { authenticateWithBiometric, isSessionValid } from './utils/biometricAuth';
 import { getDeviceDPI } from './utils/physicalScaling';
 import { saveMedia, deleteMedia } from './utils/db';
@@ -56,8 +56,8 @@ const synth = window.speechSynthesis || null;
 
 const INITIAL_CONTEXTS = [
   { id: 'home', label: 'Home', icon: '🏠' },
+  { id: 'mealtime', label: 'Mealtime', icon: '🥣' },
   { id: 'school', label: 'School', icon: '🏫' },
-  { id: 'grandparents', label: 'Grandparents', icon: '👵' },
   { id: 'store', label: 'Store', icon: '🛒' },
   { id: 'outside', label: 'Outside', icon: '🌳' },
 ];
@@ -116,59 +116,109 @@ const attributesFolder = {
 };
 
 const homeDefaultData = [
-  { id: 'snack-generic', type: 'button', word: "Snack", icon: "🥨" },
-  { id: 'toy-generic', type: 'button', word: "Toy", icon: "🧸" },
-  { id: 'play-generic', type: 'button', word: "Play", icon: "🏃" },
-  { id: 'bathroom', type: 'button', word: "Bathroom", icon: "🚽" },
-  { id: 'drink', type: 'button', word: "Drink", icon: "🧃" },
-  { id: 'mom', type: 'button', word: "Mom", icon: "/images/memojis/1.png" },
-  { id: 'dad', type: 'button', word: "Dad", icon: "/images/memojis/2.png" }
+  { id: 'social-hi', type: 'button', word: "Hi", icon: "👋" },
+  { id: 'social-bye', type: 'button', word: "Bye-bye", icon: "👋" },
+  { id: 'social-yes', type: 'button', word: "Yes", icon: "✅" },
+  { id: 'social-no', type: 'button', word: "No", icon: "❌" },
+  { id: 'social-want', type: 'button', word: "Want", icon: "🙏" },
+  { id: 'social-mine', type: 'button', word: "Mine", icon: "🧒" },
+  { id: 'social-help', type: 'button', word: "Help", icon: "🆘" },
+  { id: 'social-again', type: 'button', word: "Again", icon: "🔄" },
+  { id: 'action-open', type: 'button', word: "Open", icon: "🔓" },
+  { id: 'action-close', type: 'button', word: "Close", icon: "🔒" },
+  { id: 'action-put', type: 'button', word: "Put", icon: "📥" },
+  { id: 'action-play', type: 'button', word: "Play", icon: "🪁" },
+  { id: 'action-wash', type: 'button', word: "Wash", icon: "🧼" },
+  { id: 'action-sleep', type: 'button', word: "Sleep", icon: "😴" },
+  { id: 'action-get', type: 'button', word: "Get", icon: "🤲" },
+  { id: 'mama', type: 'button', word: "Mama", icon: "👩" },
+  { id: 'dada', type: 'button', word: "Dada", icon: "👨" },
+  { id: 'book', type: 'button', word: "Book", icon: "📖" },
+  { id: 'toy', type: 'button', word: "Toy", icon: "🧸" },
+  { id: 'blanket', type: 'button', word: "Blanket", icon: "🛌" },
+  { id: 'diaper', type: 'button', word: "Diaper", icon: "👶" }
+];
+
+const mealtimeDefaultData = [
+  { id: 'req-eat', type: 'button', word: "Eat", icon: "🥣" },
+  { id: 'req-drink', type: 'button', word: "Drink", icon: "🥤" },
+  { id: 'req-more', type: 'button', word: "More", icon: "➕" },
+  { id: 'req-please', type: 'button', word: "Please", icon: "🙏" },
+  { id: 'req-want', type: 'button', word: "Want", icon: "👈" },
+  { id: 'req-alldone', type: 'button', word: "All done", icon: "👐" },
+  { id: 'desc-yummy', type: 'button', word: "Yummy", icon: "😋" },
+  { id: 'desc-yucky', type: 'button', word: "Yucky", icon: "🤢" },
+  { id: 'desc-hot', type: 'button', word: "Hot", icon: "🔥" },
+  { id: 'desc-cold', type: 'button', word: "Cold", icon: "❄️" },
+  { id: 'desc-big', type: 'button', word: "Big", icon: "🐘" },
+  { id: 'desc-little', type: 'button', word: "Little", icon: "🐜" },
+  { id: 'milk', type: 'button', word: "Milk", icon: "🥛" },
+  { id: 'juice', type: 'button', word: "Juice", icon: "🧃" },
+  { id: 'water', type: 'button', word: "Water", icon: "💧" },
+  { id: 'apple', type: 'button', word: "Apple", icon: "🍎" },
+  { id: 'cookie', type: 'button', word: "Cookie", icon: "🍪" },
+  { id: 'spoon', type: 'button', word: "Spoon", icon: "🥄" },
+  { id: 'bowl', type: 'button', word: "Bowl", icon: "🥣" }
 ];
 
 const schoolDefaultData = [
-  { id: 'teacher', type: 'button', word: "Teacher", icon: "👩‍🏫" },
-  { id: 'friend', type: 'button', word: "Friend", icon: "🧑" },
-  { id: 'pencil', type: 'button', word: "Pencil", icon: "✏️" },
-  { id: 'desk', type: 'button', word: "Desk", icon: "🪑" },
-  { id: 'lunch', type: 'button', word: "Lunch", icon: "🍎" },
-  { id: 'bathroom', type: 'button', word: "Bathroom", icon: "🚽" },
-  { id: 'bus', type: 'button', word: "Bus", icon: "🚌" }
-];
-
-const grandparentsDefaultData = [
-  { id: 'grandma', type: 'button', word: "Grandma", icon: "👵" },
-  { id: 'grandpa', type: 'button', word: "Grandpa", icon: "👴" },
-  { id: 'hug', type: 'button', word: "Hug", icon: "🤗" },
-  { id: 'cookie', type: 'button', word: "Cookie", icon: "🍪" },
-  { id: 'story', type: 'button', word: "Story", icon: "📖" },
-  { id: 'tv', type: 'button', word: "TV", icon: "📺" },
-  { id: 'phone', type: 'button', word: "Phone", icon: "📞" }
+  { id: 'social-hello', type: 'button', word: "Hello", icon: "👋" },
+  { id: 'social-excuseme', type: 'button', word: "Excuse me", icon: "🙋" },
+  { id: 'social-thanks', type: 'button', word: "Thank you", icon: "🙏" },
+  { id: 'social-please', type: 'button', word: "Please", icon: "🙏" },
+  { id: 'social-friend', type: 'button', word: "Friend", icon: "🧑‍🤝‍🧑" },
+  { id: 'social-share', type: 'button', word: "Share", icon: "🤲" },
+  { id: 'action-look', type: 'button', word: "Look", icon: "👀" },
+  { id: 'action-see', type: 'button', word: "See", icon: "👁️" },
+  { id: 'action-turn', type: 'button', word: "Turn", icon: "🔄" },
+  { id: 'action-read', type: 'button', word: "Read", icon: "📖" },
+  { id: 'action-color', type: 'button', word: "Color", icon: "🖍️" },
+  { id: 'action-make', type: 'button', word: "Make", icon: "🛠️" },
+  { id: 'action-work', type: 'button', word: "Work", icon: "📝" },
+  { id: 'action-sit', type: 'button', word: "Sit", icon: "🪑" }
 ];
 
 const storeDefaultData = [
-  { id: 'cart', type: 'button', word: "Cart", icon: "🛒" },
-  { id: 'cashier', type: 'button', word: "Cashier", icon: "🧑‍💼" },
-  { id: 'pay', type: 'button', word: "Pay", icon: "💳" },
-  { id: 'price', type: 'button', word: "Price", icon: "🏷️" },
-  { id: 'snack', type: 'button', word: "Snack", icon: "🍿" },
-  { id: 'drink', type: 'button', word: "Drink", icon: "🧃" },
-  { id: 'bathroom', type: 'button', word: "Bathroom", icon: "🚽" }
+  { id: 'obs-look', type: 'button', word: "Look", icon: "👀" },
+  { id: 'obs-see', type: 'button', word: "See", icon: "👁️" },
+  { id: 'obs-that', type: 'button', word: "That", icon: "👉" },
+  { id: 'obs-what', type: 'button', word: "What", icon: "❓" },
+  { id: 'obs-hear', type: 'button', word: "Hear", icon: "👂" },
+  { id: 'obs-find', type: 'button', word: "Find", icon: "🔍" },
+  { id: 'mvmt-go', type: 'button', word: "Go", icon: "🟢" },
+  { id: 'mvmt-stop', type: 'button', word: "Stop", icon: "🛑" },
+  { id: 'mvmt-in', type: 'button', word: "In", icon: "📥" },
+  { id: 'mvmt-out', type: 'button', word: "Out", icon: "📤" },
+  { id: 'mvmt-here', type: 'button', word: "Here", icon: "📍" },
+  { id: 'mvmt-there', type: 'button', word: "There", icon: "🏁" }
 ];
 
 const outsideDefaultData = [
-  { id: 'park', type: 'button', word: "Park", icon: "🌳" },
-  { id: 'ball', type: 'button', word: "Ball", icon: "⚽" },
-  { id: 'walk', type: 'button', word: "Walk", icon: "🚶" },
-  { id: 'run', type: 'button', word: "Run", icon: "🏃" },
-  { id: 'bike', type: 'button', word: "Bike", icon: "🚲" },
-  { id: 'sun', type: 'button', word: "Sun", icon: "☀️" },
-  { id: 'water', type: 'button', word: "Water", icon: "💧" }
+  { id: 'action-go', type: 'button', word: "Go", icon: "🟢" },
+  { id: 'action-stop', type: 'button', word: "Stop", icon: "🛑" },
+  { id: 'action-push', type: 'button', word: "Push", icon: "👐" },
+  { id: 'action-run', type: 'button', word: "Run", icon: "🏃" },
+  { id: 'action-jump', type: 'button', word: "Jump", icon: "🦘" },
+  { id: 'action-slide', type: 'button', word: "Slide", icon: "🛝" },
+  { id: 'action-swing', type: 'button', word: "Swing", icon: "⛓️" },
+  { id: 'action-climb', type: 'button', word: "Climb", icon: "🧗" },
+  { id: 'action-fall', type: 'button', word: "Fall", icon: "🤕" },
+  { id: 'dir-up', type: 'button', word: "Up", icon: "⬆️" },
+  { id: 'dir-down', type: 'button', word: "Down", icon: "⬇️" },
+  { id: 'dir-fast', type: 'button', word: "Fast", icon: "⚡" },
+  { id: 'dir-slow', type: 'button', word: "Slow", icon: "🐢" },
+  { id: 'dir-over', type: 'button', word: "Over", icon: "⤴️" },
+  { id: 'dir-under', type: 'button', word: "Under", icon: "⤵️" },
+  { id: 'sound-uhoh', type: 'button', word: "Uh-oh", icon: "😮" },
+  { id: 'sound-vroom', type: 'button', word: "Vroom", icon: "🏎️" },
+  { id: 'sound-beep', type: 'button', word: "Beep-beep", icon: "🚗" },
+  { id: 'sound-wow', type: 'button', word: "Wow", icon: "✨" }
 ];
 
 const getDefaultDataForContext = (contextId) => {
   switch (contextId) {
     case 'school': return JSON.parse(JSON.stringify(schoolDefaultData));
-    case 'grandparents': return JSON.parse(JSON.stringify(grandparentsDefaultData));
+    case 'mealtime': return JSON.parse(JSON.stringify(mealtimeDefaultData));
     case 'store': return JSON.parse(JSON.stringify(storeDefaultData));
     case 'outside': return JSON.parse(JSON.stringify(outsideDefaultData));
     default: return JSON.parse(JSON.stringify(homeDefaultData));
@@ -317,7 +367,7 @@ function App() {
 
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
 
-  const { currentProfile, updateProfile, pronunciations } = useProfile();
+  const { currentProfile, updateProfile, updateAccessProfile, pronunciations } = useProfile();
 
   /* 
   // Sync isScanning with Access Profile Selection Type (Disabled until Switch/Eye Gaze returns)
@@ -612,7 +662,7 @@ function App() {
 
   // Auto-detect device DPI on first app load (Phase 30: Physical Scaling)
   useEffect(() => {
-    const { accessProfile, updateAccessProfile } = currentProfile || {};
+    const { accessProfile } = currentProfile || {};
 
     // Only detect if not already set
     if (accessProfile && accessProfile.deviceDPI === null) {
@@ -1227,7 +1277,8 @@ function App() {
       category: 'pronoun',
       wc: 'pronoun',
       isCustomPerson: true,
-      characterConfig: config || null
+      characterConfig: config || null,
+      role: config?.role || 'other'
     };
 
     const newList = [...currentPageItems];
@@ -1271,7 +1322,8 @@ function App() {
       word: trimmedName,
       icon: finalIcon,
       isCustomPerson: person.isCustomPerson || config?.type === 'multiavatar',
-      characterConfig: config || person.characterConfig || null
+      characterConfig: config || person.characterConfig || null,
+      role: config?.role || person.role || 'other'
     };
 
     const [nextPages, didUpdate] = updatePersonAcrossPages(rootItems, personId, () => updatedPerson);
@@ -1393,6 +1445,7 @@ function App() {
                 onDelete={handleDelete}
                 onEdit={handleEdit}
                 onAddItem={handleAddItem}
+                onOpenPicker={handlePickerOpen}
                 onToggleTraining={handleToggleTraining}
                 hasBack={currentPath.length > 0}
                 trainingPanelVisible={!shuffledItems}
@@ -1429,7 +1482,7 @@ function App() {
 
         newRootItems[currentPageIndex] = { ...newRootItems[currentPageIndex], items: list };
         setRootItems(newRootItems);
-      }} onAddPerson={handleAddPerson} onUpdatePerson={handleUpdatePerson} onRemovePerson={handleRemovePerson} progressData={progressData} />}
+      }} onAddPerson={handleAddPerson} onUpdatePerson={handleUpdatePerson} onRemovePerson={handleRemovePerson} progressData={progressData} analyticsData={progressData} />}
 
       {isLocked && (
         <div style={{ position: 'fixed', bottom: '0', left: '0', right: '0', padding: '12px 20px calc(12px + env(safe-area-inset-bottom, 0px)) 20px', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)', borderTopLeftRadius: '20px', borderTopRightRadius: '20px', boxShadow: '0 -2px 10px rgba(0,0,0,0.1)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100, cursor: 'pointer', textAlign: 'center' }}
@@ -1555,7 +1608,22 @@ function App() {
         <Suspense fallback={null}>
           <EssentialSkillsMode
             onExit={() => setIsEssentialSkillsMode(false)}
-            onLogEvent={(event) => console.log('Skills Event:', event)}
+            onLogEvent={(event) => {
+              trackEvent(event);
+              // Also update progressData for the graph
+              const today = new Date().toISOString().split('T')[0];
+              const newTrial = {
+                date: today,
+                timestamp: Date.now(),
+                isPrompted: false,
+                level: 0, // Event specific
+                type: 'skill_event'
+              };
+              setProgressData(prev => ({
+                ...prev,
+                trials: [...(prev.trials || []), newTrial]
+              }));
+            }}
           />
         </Suspense>
       )}
@@ -1628,6 +1696,35 @@ function App() {
       />
       {toastMessage && (
         <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
+      )}
+
+      {/* Floating Level Helper Button (Dr. Hanley SBT Strategy Helper) */}
+      {!isLocked && !isEditMode && !showSplash && !showOnboarding && !activeVisualScene && (
+        <button
+          onClick={() => setShowLevelIntro(true)}
+          style={{
+            position: 'fixed',
+            bottom: showStrip ? '9.5rem' : '1.5rem',
+            left: '1.5rem',
+            width: '3.5rem',
+            height: '3.5rem',
+            borderRadius: '50%',
+            background: 'var(--primary-light)',
+            color: 'var(--text-primary)',
+            border: '2px solid var(--primary)',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '1.8rem',
+            zIndex: 1000,
+            transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+          }}
+          className="level-helper-btn"
+          aria-label="Level Instructions"
+        >
+          🎓
+        </button>
       )}
     </div>
   );

@@ -172,6 +172,69 @@ const levelDetails = {
             "Child builds response on tablet",
             "Adult honors the request"
         ]
+    },
+    6: {
+        title: "Level 6: Commenting",
+        summary: "The learner shares observations using 'I see', 'I feel', and 'I like'.",
+        image: "/images/level_6.png",
+        nextGoal: "Level 7: Asking Questions",
+        nextSummary: "The learner will learn to ask 'What?', 'Where?', and 'Who?' to gain information.",
+        instruction: `🎯 Goal: Child spontaneously comments on things in their world.
+
+📱 Setup:
+• Point out interesting things (birds, planes, fire trucks)
+• Model: "I see a bird!" on the tablet
+• Use the Feelings folder to express emotions
+
+👣 Steps:
+1. Spot something interesting with the child
+2. Model a comment on the tablet
+3. Wait for child to initiate their own comment
+4. Respond enthusiastically with social attention
+5. Practice during walks, reading, and play
+
+💡 Tips:
+• Comments aren't requests - they are for sharing!
+• React with big emotions to child's comments
+• Model "I feel" during natural emotional moments`,
+        teachingPoints: [
+            "Child notices something",
+            "Child builds a comment",
+            "Social attention given",
+            "Conversation continues"
+        ]
+    },
+    7: {
+        title: "Level 7: Asking Questions",
+        emoji: "🕵️",
+        summary: "The learner asks questions to learn about the environment (SBT Complex FCR).",
+        image: "/images/level_7.png",
+        nextGoal: "Graduation!",
+        nextSummary: "Congratulations! Your child is using complex communication and branching skills.",
+        instruction: `🎯 Goal: Child asks "What?", "Where?", and "Who?" to gain information.
+
+📱 Setup:
+• Use the "Box of Wonders" with hidden items
+• Hide favorite toys to prompt "Where?"
+• Use photos of family to prompt "Who?"
+
+👣 Steps:
+1. Create curiosity or a "problem" (item is missing)
+2. Model the question on the tablet
+3. Child builds and speaks the question
+4. Provide the answer/information immediately
+5. Celebrate the quest for knowledge!
+
+💡 Tips:
+• This is the peak of early communication!
+• Information is the reinforcer here
+• Use novelty and mystery to drive curiosity`,
+        teachingPoints: [
+            "Curiosity is triggered",
+            "Child builds a question",
+            "Information is provided",
+            "Child achieves goal"
+        ]
     }
 };
 
@@ -188,47 +251,69 @@ const AdvancementModal = ({ currentPhase, onAdvance, onWait }) => {
             breakpoints={[0, 0.95]}
             initialBreakpoint={0.95}
         >
-            <IonHeader>
-                <IonToolbar>
-                    <IonTitle>Great Progress!</IonTitle>
+            <IonHeader className="ion-no-border">
+                <IonToolbar style={{ '--background': 'transparent' }}>
+                    <IonTitle style={{ fontWeight: '900', letterSpacing: '-0.5px' }}>Achievement!</IonTitle>
                     <IonButtons slot="end">
-                        <IonButton onClick={onWait}>
-                            <IonIcon icon={closeOutline} />
+                        <IonButton onClick={onWait} style={{ background: 'rgba(0,0,0,0.05)', borderRadius: '50%', width: '36px', height: '36px' }}>
+                            <IonIcon icon={closeOutline} color="dark" />
                         </IonButton>
                     </IonButtons>
                 </IonToolbar>
             </IonHeader>
-            <IonContent className="ion-padding">
-                <div style={{ textAlign: 'center', margin: '1rem 0' }}>
-                    <div style={{ fontSize: '4rem', marginBottom: '0.5rem' }}>🚀</div>
-                    <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: '0 0 1rem 0' }}>Next Milestone Reached!</h2>
-                    <p style={{ color: 'var(--ion-color-medium)', fontSize: '1.1rem', lineHeight: '1.4' }}>
-                        Your child has successfully completed their recent trials. They may be ready for the next level!
+            <IonContent className="ion-padding" style={{
+                '--background': 'transparent',
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.7), rgba(242,242,247,0.7))',
+                backdropFilter: 'blur(30px) saturate(180%)',
+                WebkitBackdropFilter: 'blur(30px) saturate(180%)'
+            }}>
+                <div style={{ textAlign: 'center', margin: '1.5rem 0' }}>
+                    <div className="pulse-animation" style={{ fontSize: '5rem', marginBottom: '1rem' }}>🏆</div>
+                    <h2 style={{ fontSize: '1.75rem', fontWeight: '900', margin: '0 0 0.5rem 0', color: '#1D1D1F' }}>Milestone Reached!</h2>
+                    <p style={{ color: '#86868B', fontSize: '1.1rem', fontWeight: 600, lineHeight: '1.4' }}>
+                        Independent trials complete. <br />Ready for the next clinical stage?
                     </p>
                 </div>
 
                 <div style={{
-                    background: 'rgba(var(--ion-color-primary-rgb), 0.1)',
-                    padding: '1.25rem',
-                    borderRadius: '1rem',
+                    background: 'rgba(255,255,255,0.4)',
+                    padding: '1.5rem',
+                    borderRadius: '24px',
                     margin: '1.25rem 0',
-                    border: '1px solid rgba(var(--ion-color-primary-rgb), 0.2)'
+                    border: '1px solid rgba(255,255,255,0.3)',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.05)'
                 }}>
-                    <h3 style={{ margin: '0 0 0.5rem 0', color: 'var(--ion-color-primary)', fontWeight: 'bold' }}>
-                        Next Area: {details.nextGoal}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                        <IonBadge style={{ background: '#5856D6', padding: '8px 14px', fontSize: '0.75rem', fontWeight: '800', borderRadius: '10px' }}>
+                            HANLEY SBT
+                        </IonBadge>
+                        <IonBadge style={{ background: '#34C759', padding: '8px 14px', fontSize: '0.75rem', fontWeight: '800', borderRadius: '10px' }}>
+                            PLS
+                        </IonBadge>
+                    </div>
+                    <h3 style={{ margin: '0 0 8px 0', color: '#1D1D1F', fontWeight: '900', fontSize: '1.25rem' }}>
+                        {details.nextGoal}
                     </h3>
-                    <p style={{ margin: 0, fontSize: '1.05rem', color: 'var(--ion-color-dark)' }}>
+                    <p style={{ margin: 0, fontSize: '1.05rem', color: '#424245', fontWeight: 500, lineHeight: '1.5' }}>
                         {details.nextSummary}
                     </p>
                 </div>
 
                 <IonButton
                     expand="block"
-                    size="large"
                     onClick={onAdvance}
-                    style={{ marginBottom: '1rem', '--border-radius': '12px', fontWeight: 'bold' }}
+                    style={{
+                        '--background': '#007AFF',
+                        '--border-radius': '20px',
+                        '--padding-top': '20px',
+                        '--padding-bottom': '20px',
+                        height: '70px',
+                        fontSize: '1.1rem',
+                        fontWeight: '900',
+                        boxShadow: '0 15px 35px rgba(0,122,255,0.3)',
+                        marginBottom: '1rem'
+                    }}
                 >
-                    <IonIcon icon={rocketOutline} slot="start" />
                     Advance to Level {currentPhase + 1}
                 </IonButton>
 
@@ -236,7 +321,7 @@ const AdvancementModal = ({ currentPhase, onAdvance, onWait }) => {
                     expand="block"
                     fill="clear"
                     onClick={() => setShowFullInstructions(!showFullInstructions)}
-                    style={{ fontWeight: '600' }}
+                    style={{ color: '#007AFF', fontWeight: '700', fontSize: '0.95rem' }}
                 >
                     <IonIcon icon={bookOutline} slot="start" />
                     {showFullInstructions ? "Hide" : "Show"} Teaching Instructions

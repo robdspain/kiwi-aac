@@ -153,7 +153,7 @@ Configure the switch to send **Spacebar** key presses.
 - [ ] Dwell time selection (hover to select)
 - [ ] External Bluetooth switch support
 - [ ] Customizable scan patterns
-- [ ] Group scanning (scan categories first)
+- [ ] Group scanning (scan Context first)
 
 ---
 

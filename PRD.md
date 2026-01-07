@@ -395,7 +395,7 @@ The following features are implemented or critical for the V1.0 launch.
 - ✅ Basic grid system (up to 50 icons)
 - ✅ Text-to-speech (system voices)
 - ✅ Skin tone customization
-- ✅ Basic templates (First 50 Words)
+- ✅ Basic templates (First 100 Words)
 - ✅ Default Kiwi color theme
 - ✅ Export to JSON
 - ✅ QR code sharing
@@ -833,7 +833,7 @@ The following features are currently integrated with RevenueCat using the `premi
 - [x] **Benefit:** Faster access to vocabulary, less scrolling, simpler visual hierarchy
 
 #### 19.2. Template Library
-- [x] **Pre-Built Templates:** Multiple ready-made boards (First 50 Words, School Day, etc.).
+- [x] **Pre-Built Templates:** Multiple ready-made boards (First 100 Words, School Day, etc.).
 - [x] **Template Data Structure:** TEMPLATES object in aacData.js with curated word lists.
 - [x] **Context-Specific Boards:** ✅ CONTEXT_DEFINITIONS for School, Home, Park, Mealtime scenarios.
 - [x] **One-Click Apply:** ✅ Quick-apply templates to current board or create new board from template.
@@ -842,7 +842,7 @@ The following features are currently integrated with RevenueCat using the `premi
 
 **Template Categories:**
 - **Starter Templates (Free):**
-  - First 50 Words (bilingual English/Spanish)
+  - First 100 Words (bilingual English/Spanish)
   - Feelings & Emotions
   - Basic Needs (food, bathroom, help)
   - Yes/No Communication

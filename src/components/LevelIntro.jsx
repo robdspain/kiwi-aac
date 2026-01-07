@@ -4,6 +4,7 @@ import {
     getLevelInstructions,
     LEVEL_ORDER
 } from '../data/levelDefinitions';
+import { ROLE_SUPPORT_TIPS } from '../data/clinicalFrameworks';
 import {
     IonModal,
     IonHeader,
@@ -113,18 +114,18 @@ const LevelIntro = ({ level, onComplete, onChangeLevel }) => {
                 </div>
 
                 {instructions.tips && (
-                    <div className="ios-setting-card" style={{ textAlign: 'left', marginTop: '1.5rem', background: 'var(--ion-color-tertiary-tint)', border: '1px solid var(--ion-color-tertiary-shade)' }}>
-                        <div style={{ padding: '1rem', borderBottom: '1px solid rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <IonIcon icon={bulbOutline} color="tertiary" />
-                            <IonText color="tertiary">
-                                <h4 style={{ margin: 0, fontWeight: '800' }}>Pro Tips</h4>
+                    <div className="ios-setting-card" style={{ textAlign: 'left', marginTop: '1.5rem', background: 'var(--card-bg)', border: '1px solid var(--gray-border)' }}>
+                        <div style={{ padding: '1rem', borderBottom: '1px solid var(--gray-border)', display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--gray-light)' }}>
+                            <IonIcon icon={bulbOutline} style={{ color: 'var(--primary)' }} />
+                            <IonText>
+                                <h4 style={{ margin: 0, fontWeight: '800', color: 'var(--primary)' }}>Pro Tips</h4>
                             </IonText>
                         </div>
                         <IonList lines="none" style={{ background: 'transparent' }}>
                             {instructions.tips.map((tip, i) => (
                                 <IonItem key={i} style={{ '--background': 'transparent' }}>
-                                    <div slot="start" style={{ color: 'var(--ion-color-tertiary)', fontSize: '1.2rem' }}>•</div>
-                                    <IonLabel className="ion-text-wrap" style={{ fontSize: '0.9rem', fontWeight: '500' }}>
+                                    <div slot="start" style={{ color: 'var(--primary)', fontSize: '1.2rem' }}>•</div>
+                                    <IonLabel className="ion-text-wrap" style={{ fontSize: '0.9rem', fontWeight: '500', color: 'var(--text-primary)' }}>
                                         {tip}
                                     </IonLabel>
                                 </IonItem>
@@ -132,6 +133,38 @@ const LevelIntro = ({ level, onComplete, onChangeLevel }) => {
                         </IonList>
                     </div>
                 )}
+
+                <div style={{ padding: '1rem 0', textAlign: 'left' }}>
+                    <IonText color="dark">
+                        <h4 style={{ margin: '0 0 1rem 0', fontWeight: '800' }}>Circle of Support Tips</h4>
+                    </IonText>
+                    <div style={{ display: 'grid', gap: '10px', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+                        {Object.entries(ROLE_SUPPORT_TIPS).map(([role, data]) => {
+                            const roleAccent = role === 'parent'
+                                ? 'var(--primary)'
+                                : role === 'teacher'
+                                    ? 'var(--btn-blue-bg)'
+                                    : 'var(--fitz-verb)';
+                            return (
+                                <div key={role} style={{
+                                    minWidth: 0,
+                                    padding: '1rem',
+                                    borderRadius: '12px',
+                                    background: 'var(--card-bg)',
+                                    border: '1px solid var(--gray-border)',
+                                    borderLeft: `4px solid ${roleAccent}`
+                                }}>
+                                    <div style={{ fontSize: '0.8rem', fontWeight: '800', textTransform: 'uppercase', color: roleAccent, marginBottom: '4px' }}>
+                                        {data.title}
+                                    </div>
+                                    <ul style={{ padding: '0 0 0 1rem', margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                                        {data.tips.map((tip, i) => <li key={i} style={{ marginBottom: '4px' }}>{tip}</li>)}
+                                    </ul>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
 
                 {/* Level Progress Visualizer */}
                 <div style={{

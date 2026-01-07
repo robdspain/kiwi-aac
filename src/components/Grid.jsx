@@ -33,6 +33,7 @@ const Grid = ({
     onDelete,
     onEdit,
     onAddItem,
+    onOpenPicker,
     onToggleTraining,
     hasBack,
     trainingPanelVisible,
@@ -132,13 +133,14 @@ const Grid = ({
     // Show empty state when no items to display
     if (items.length === 0) {
         return (
-            <div id="grid-container" style={{
+            <div id="empty-grid-container" style={{
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
                 height: '100%',
                 width: '100%',
+                flex: 1,
                 padding: '2.5rem',
                 textAlign: 'center'
             }}>
@@ -174,7 +176,15 @@ const Grid = ({
                 </p>
                 {!hasBack && (
                     <div
-                        onClick={() => onAddItem('', '', 'button')}
+                        onClick={() => {
+                            if (typeof onOpenPicker === 'function') {
+                                onOpenPicker((word, icon) => onAddItem?.(word, icon, 'button'));
+                                return;
+                            }
+                            if (typeof onAddItem === 'function') {
+                                onAddItem('', '', 'button');
+                            }
+                        }}
                         className="primary-button"
                         style={{
                             display: 'flex',
@@ -186,7 +196,11 @@ const Grid = ({
                             fontWeight: '600',
                             cursor: 'pointer',
                             minHeight: '3.5rem',
-                            justifyContent: 'center'
+                            justifyContent: 'center',
+                            background: 'var(--primary-light)',
+                            color: 'var(--text-primary)',
+                            border: '1px solid var(--primary)',
+                            boxShadow: '0 0.25rem 1rem rgba(26, 83, 92, 0.2)'
                         }}
                         onMouseDown={e => e.currentTarget.style.transform = 'scale(0.95)'}
                         onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
@@ -397,4 +411,3 @@ const Grid = ({
 };
 
 export default Grid;
-

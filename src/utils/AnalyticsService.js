@@ -20,7 +20,7 @@ const saveAnalytics = (data) => {
 export const trackSentence = (sentence) => {
     if (!sentence || !sentence.trim()) return;
     const analytics = getAnalytics();
-    
+
     // Initialize if missing (backward compatibility)
     if (!analytics.sentences) analytics.sentences = [];
 
@@ -30,7 +30,7 @@ export const trackSentence = (sentence) => {
     };
 
     analytics.sentences.unshift(entry); // Add to beginning
-    
+
     // Keep last 100 sentences
     if (analytics.sentences.length > 100) {
         analytics.sentences = analytics.sentences.slice(0, 100);
@@ -152,6 +152,71 @@ export const exportToCSV = () => {
     URL.revokeObjectURL(url);
 };
 
+export const trackAssessment = (resultLevel, resultName) => {
+    const analytics = getAnalytics();
+    if (!analytics.assessments) analytics.assessments = [];
+
+    analytics.assessments.unshift({
+        level: resultLevel,
+        name: resultName,
+        timestamp: new Date().toISOString()
+    });
+
+    if (analytics.assessments.length > 50) {
+        analytics.assessments = analytics.assessments.slice(0, 50);
+    }
+
+    saveAnalytics(analytics);
+};
+
+export const getAssessmentHistory = () => {
+    const analytics = getAnalytics();
+    return analytics.assessments || [];
+};
+
+export const trackEvent = (type, metadata = {}) => {
+    const analytics = getAnalytics();
+    if (!analytics.sentences) analytics.sentences = [];
+
+    // Map some event types to friendly sentences for the "Success Feed"
+    let friendlyText = '';
+    if (type === 'fcr_attempt') friendlyText = 'Successfully requested "My Way"';
+    if (type === 'tolerance_success') friendlyText = 'Showed tolerance ("Okay")';
+    if (type === 'cooperation_success') friendlyText = 'Completed cooperation task';
+
+    if (friendlyText) {
+        analytics.sentences.unshift({
+            text: friendlyText,
+            timestamp: new Date().toISOString(),
+            isEvent: true
+        });
+    }
+
+    saveAnalytics(analytics);
+};
+
+export const trackTalkSession = (session) => {
+    const analytics = getAnalytics();
+    if (!analytics.talkSessions) analytics.talkSessions = [];
+
+    analytics.talkSessions.unshift({
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        ...session
+    });
+
+    if (analytics.talkSessions.length > 100) {
+        analytics.talkSessions = analytics.talkSessions.slice(0, 100);
+    }
+
+    saveAnalytics(analytics);
+};
+
+export const getTalkHistory = () => {
+    const analytics = getAnalytics();
+    return analytics.talkSessions || [];
+};
+
 export default {
     trackItemClick,
     trackSentence,
@@ -161,5 +226,10 @@ export default {
     getDailyStats,
     getRecentSentences,
     getTotalStats,
-    exportToCSV
+    exportToCSV,
+    trackAssessment,
+    getAssessmentHistory,
+    trackEvent,
+    trackTalkSession,
+    getTalkHistory
 };

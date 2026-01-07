@@ -39,6 +39,7 @@ const MainCommunicationPage = ({
     onDelete,
     onEdit,
     onAddItem,
+    onOpenPicker,
     onToggleTraining,
     shuffledItems,
     scanIndex,
@@ -176,6 +177,7 @@ const MainCommunicationPage = ({
                                     onDelete={onDelete}
                                     onEdit={onEdit}
                                     onAddItem={onAddItem}
+                                    onOpenPicker={onOpenPicker}
                                     onToggleTraining={onToggleTraining}
                                     hasBack={currentPath.length > 0}
                                     trainingPanelVisible={!shuffledItems}

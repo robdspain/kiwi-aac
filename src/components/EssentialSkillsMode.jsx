@@ -2,9 +2,10 @@ import { useState } from 'react';
 
 const EssentialSkillsMode = ({ onExit, sensitivity = 0.4, onLogEvent }) => {
     // Steps: 'request', 'denial', 'tolerance', 'cooperation', 'reward'
-    // For MVP we implement: Request -> (Chance of Denial) -> Tolerance -> Reward
     const [step, setStep] = useState('request');
     const [toleranceEnabled, setToleranceEnabled] = useState(false);
+    const [cooperationEnabled, setCooperationEnabled] = useState(false);
+    const [cabLevel, setCabLevel] = useState(1); // 1, 2, or 3 tasks
 
     const handleRequest = () => {
         onLogEvent('fcr_attempt');
@@ -26,7 +27,16 @@ const EssentialSkillsMode = ({ onExit, sensitivity = 0.4, onLogEvent }) => {
 
     const handleTolerance = () => {
         onLogEvent('tolerance_success');
-        triggerReward("Good saying okay!");
+        if (cooperationEnabled) {
+            setStep('cooperation');
+        } else {
+            triggerReward("Good saying okay!");
+        }
+    };
+
+    const handleCooperation = () => {
+        onLogEvent('cooperation_success');
+        triggerReward("Great job working!");
     };
 
     const triggerReward = (msg) => {
@@ -48,29 +58,62 @@ const EssentialSkillsMode = ({ onExit, sensitivity = 0.4, onLogEvent }) => {
     return (
         <div className="essential-mode-container" style={{
             position: 'fixed', top: 0, left: 0, width: '100vw', height: '100dvh',
-            background: '#F2F2F7', zIndex: 200, display: 'flex', flexDirection: 'column'
+            background: 'linear-gradient(135deg, rgba(242,242,247,0.8), rgba(255,255,255,0.8))',
+            backdropFilter: 'blur(30px) saturate(200%)',
+            WebkitBackdropFilter: 'blur(30px) saturate(200%)',
+            zIndex: 200, display: 'flex', flexDirection: 'column'
         }}>
             {/* Header / Controls */}
-            <div style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <button onClick={onExit} style={{ background: '#636E72', color: 'var(--primary-text)', border: 'none', padding: '10px 20px', borderRadius: '10px', fontWeight: 'bold' }}>
-                    Exit Mode
+            <div style={{
+                padding: '20px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                background: 'rgba(255,255,255,0.4)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.02)'
+            }}>
+                <button onClick={onExit} style={{ background: '#636E72', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '12px', fontWeight: '800' }}>
+                    Exit
                 </button>
 
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                    <span style={{ fontSize: '0.9rem', color: 'var(--text-primary)', fontWeight: 'bold' }}>Tolerance Training ({toleranceEnabled ? 'ON' : 'OFF'})</span>
-                    <div
-                        onClick={() => setToleranceEnabled(!toleranceEnabled)}
-                        style={{
-                            width: '50px', height: '30px', background: toleranceEnabled ? 'var(--success)' : '#E5E5EA',
-                            borderRadius: '15px', position: 'relative', cursor: 'pointer', transition: '0.3s'
-                        }}
-                    >
-                        <div style={{
-                            width: '26px', height: '26px', background: 'white', borderRadius: '50%',
-                            position: 'absolute', top: '2px', left: toleranceEnabled ? '22px' : '2px',
-                            transition: '0.3s', boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                        }} />
+                <div style={{ display: 'flex', gap: '15px' }}>
+                    <div style={{ textAlign: 'center' }}>
+                        <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#999', marginBottom: '4px' }}>TOLERANCE</div>
+                        <div
+                            onClick={() => setToleranceEnabled(!toleranceEnabled)}
+                            style={{
+                                width: '44px', height: '24px', background: toleranceEnabled ? 'var(--success)' : '#E5E5EA',
+                                borderRadius: '12px', position: 'relative', cursor: 'pointer', transition: '0.3s'
+                            }}
+                        >
+                            <div style={{
+                                width: '20px', height: '20px', background: 'white', borderRadius: '50%',
+                                position: 'absolute', top: '2px', left: toleranceEnabled ? '22px' : '2px',
+                                transition: '0.3s', boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                            }} />
+                        </div>
                     </div>
+
+                    {toleranceEnabled && (
+                        <div style={{ textAlign: 'center' }}>
+                            <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#999', marginBottom: '4px' }}>WORK (CABs)</div>
+                            <div
+                                onClick={() => setCooperationEnabled(!cooperationEnabled)}
+                                style={{
+                                    width: '44px', height: '24px', background: cooperationEnabled ? '#5856D6' : '#E5E5EA',
+                                    borderRadius: '12px', position: 'relative', cursor: 'pointer', transition: '0.3s'
+                                }}
+                            >
+                                <div style={{
+                                    width: '20px', height: '20px', background: 'white', borderRadius: '50%',
+                                    position: 'absolute', top: '2px', left: cooperationEnabled ? '22px' : '2px',
+                                    transition: '0.3s', boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                                }} />
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -82,53 +125,76 @@ const EssentialSkillsMode = ({ onExit, sensitivity = 0.4, onLogEvent }) => {
                         onClick={handleRequest}
                         className="pulse-animation"
                         style={{
-                            width: '300px', height: '300px', borderRadius: '50%', border: 'none',
-                            background: 'var(--btn-blue-bg)',
-                            color: 'var(--btn-blue-text)', fontSize: '3rem', fontWeight: 'bold',
-                            boxShadow: '0 10px 30px rgba(0,122,255,0.4)',
-                            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px'
+                            width: '280px', height: '280px', borderRadius: '40px', border: 'none',
+                            background: '#007AFF',
+                            color: 'white', fontSize: '2.5rem', fontWeight: '900',
+                            boxShadow: '0 20px 40px rgba(0,122,255,0.3)',
+                            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '15px'
                         }}
                     >
-                        <span>🙋</span>
-                        <span>My Way</span>
+                        <span style={{ fontSize: '5rem' }}>🙋‍♂️</span>
+                        <span>MY WAY</span>
                     </button>
                 )}
 
                 {step === 'denial' && (
                     <div style={{ textAlign: 'center', animation: 'fadeIn 0.3s' }}>
-                        <div style={{ fontSize: '8rem', marginBottom: '20px' }}>✋</div>
-                        <h2 style={{ fontSize: '2rem', color: 'var(--text-primary)' }}>Not right now...</h2>
+                        <div style={{ fontSize: '8rem', marginBottom: '20px', animation: 'shake 0.5s ease-in-out' }}>✋</div>
+                        <h2 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#1D1D1F' }}>Not right now...</h2>
+                        <p style={{ color: '#86868B', fontWeight: 600 }}>Can you say okay?</p>
 
                         <button
                             onClick={() => setStep('tolerance')}
                             style={{
                                 marginTop: '40px',
-                                padding: '20px 60px',
+                                padding: '25px 60px',
                                 fontSize: '2rem',
-                                background: 'var(--warning)',
+                                background: '#FF9500',
                                 color: 'white',
                                 border: 'none',
-                                borderRadius: '20px',
-                                boxShadow: '0 5px 15px rgba(255,149,0,0.4)'
+                                borderRadius: '24px',
+                                fontWeight: '900',
+                                boxShadow: '0 10px 30px rgba(255,149,0,0.3)'
                             }}
                         >
-                            Okay 👌
+                            OKAY 👌
                         </button>
                     </div>
                 )}
 
                 {step === 'tolerance' && (
                     <div style={{ textAlign: 'center', animation: 'zoomIn 0.3s' }}>
+                        <div style={{ fontSize: '4rem', marginBottom: '20px' }}>🌟</div>
                         <button
                             onClick={handleTolerance}
                             style={{
-                                width: '300px', height: '300px', borderRadius: '50%', border: 'none',
-                                background: 'var(--success)',
-                                color: 'white', fontSize: '3rem', fontWeight: 'bold',
-                                boxShadow: '0 10px 30px rgba(52,199,89,0.4)'
+                                width: '280px', height: '280px', borderRadius: '40px', border: 'none',
+                                background: '#34C759',
+                                color: 'white', fontSize: '2.2rem', fontWeight: '900',
+                                boxShadow: '0 20px 40px rgba(52,199,89,0.3)'
                             }}
                         >
-                            Good Job!
+                            GOOD <br />SAYING OKAY!
+                        </button>
+                    </div>
+                )}
+
+                {step === 'cooperation' && (
+                    <div style={{ textAlign: 'center', animation: 'fadeIn 0.3s' }}>
+                        <div style={{ fontSize: '6rem', marginBottom: '20px' }}>🧩</div>
+                        <h2 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#1D1D1F' }}>Let&apos;s do some work!</h2>
+                        <p style={{ color: '#86868B', fontWeight: 600, marginBottom: '30px' }}>Complete your tasks to get My Way</p>
+
+                        <button
+                            onClick={handleCooperation}
+                            style={{
+                                width: '280px', height: '200px', borderRadius: '40px', border: 'none',
+                                background: '#5856D6',
+                                color: 'white', fontSize: '2rem', fontWeight: '900',
+                                boxShadow: '0 20px 40px rgba(88,86,214,0.3)'
+                            }}
+                        >
+                            I&apos;M ALL DONE! ✅
                         </button>
                     </div>
                 )}
@@ -136,17 +202,17 @@ const EssentialSkillsMode = ({ onExit, sensitivity = 0.4, onLogEvent }) => {
                 {step === 'reward' && (
                     <div style={{
                         animation: 'zoomIn 0.5s',
-                        fontSize: '10rem',
-                        textShadow: '0 10px 20px rgba(0,0,0,0.2)'
+                        textAlign: 'center'
                     }}>
-                        🎉
+                        <div style={{ fontSize: '10rem', textShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>🎉</div>
+                        <h2 style={{ fontSize: '3rem', fontWeight: 900, color: '#34C759', marginTop: '20px' }}>YES!</h2>
                     </div>
                 )}
 
             </div>
 
-            <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-                Essential Skills Mode • Based on Dr. Hanley&apos;s SBT
+            <div style={{ padding: '30px', textAlign: 'center', color: '#86868B', fontSize: '0.8rem', fontWeight: 600 }}>
+                ESSENTIAL SKILLS MODE • PFA/SBT FLOW
             </div>
         </div>
     );

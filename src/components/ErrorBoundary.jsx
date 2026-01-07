@@ -20,8 +20,8 @@ class ErrorBoundary extends Component {
       return (
         <div style={{ padding: '20px', color: 'red' }}>
           <h1>Something went wrong.</h1>
-          <pre>{this.state.error && this.state.error.toString()}</pre>
-          <pre>{this.state.errorInfo && this.state.errorInfo.componentStack}</pre>
+          <pre>{this.state.error ? String(this.state.error) : 'Unknown Error'}</pre>
+          <pre>{this.state.errorInfo?.componentStack || ''}</pre>
           <button onClick={() => {
             localStorage.clear();
             window.location.reload();

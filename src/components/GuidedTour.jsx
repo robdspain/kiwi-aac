@@ -123,11 +123,14 @@ const GuidedTour = ({ isOpen, onComplete, targetRefs, onEditNode }) => {
 
                 width: '90%',
                 maxWidth: '22rem',
-                background: 'white',
-                padding: '1.5rem',
-                borderRadius: '1.5rem',
-                boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
-                animation: 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                background: 'rgba(255,255,255,0.85)',
+                backdropFilter: 'blur(25px) saturate(180%)',
+                WebkitBackdropFilter: 'blur(25px) saturate(180%)',
+                padding: '2rem',
+                borderRadius: '32px',
+                border: '1px solid rgba(255,255,255,0.4)',
+                boxShadow: '0 30px 60px rgba(0,0,0,0.25)',
+                animation: 'slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
                 textAlign: 'center'
             }}>
                 <div style={{

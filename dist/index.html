@@ -1,39 +1,56 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/icons/icon-48.png" />
-    <link rel="manifest" href="/manifest.json" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Kiwi Voice" />
-    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://images.unsplash.com https://picsum.photos https://*.arasaac.org https://cdn.jsdelivr.net; connect-src 'self' https://*.neon.tech https://api.unsplash.com https://api.mymemory.translated.net https://api.arasaac.org; font-src 'self' https://fonts.gstatic.com;" />
-    <meta name="theme-color" content="#4ECDC4" />
-    <meta name="description" content="Kiwi Voice - A professional, mobile-first AAC communication tool designed for children and adults with speech impairments." />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Kiwi Voice</title>
-    <script type="module" crossorigin src="/assets/index-DtlQ6Ya8.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/dnd-kit-ClIvLSm9.js">
-    <link rel="modulepreload" crossorigin href="/assets/ui-utils-CFTHaOjQ.js">
-    <link rel="modulepreload" crossorigin href="/assets/capacitor-CdZ5aVN6.js">
-    <link rel="stylesheet" crossorigin href="/assets/index-CPwSCvvj.css">
-  </head>
-  <body>
-    <div id="static-splash" style="position: fixed; inset: 0; background: linear-gradient(135deg, #1A535C 0%, #113F46 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999999; color: white; transition: opacity 0.5s ease;">
-      <img src="/images/logo.png" alt="Kiwi Voice Logo" style="width: 12rem; height: 12rem; margin-bottom: 20px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2)); border-radius: 2.5rem;">
-      <h1 style="margin: 0; font-size: 3rem; font-weight: bold; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Rounded', sans-serif;">Kiwi Voice</h1>
-      <div style="margin-top: 20px; width: 40px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden; position: relative;">
-        <div style="width: 100%; height: 100%; background: white; position: absolute; left: 0; top: 0; animation: splash-load 1.5s infinite ease-in-out;"></div>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="/icons/icon-48.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Kiwi Voice" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://images.unsplash.com https://picsum.photos https://*.arasaac.org https://cdn.jsdelivr.net; connect-src 'self' ws: wss: https://*.neon.tech https://api.unsplash.com https://api.mymemory.translated.net https://api.arasaac.org; font-src 'self' https://fonts.gstatic.com;" />
+  <meta name="theme-color" content="#4ECDC4" />
+  <meta name="description"
+    content="Kiwi Voice - A professional, mobile-first AAC communication tool designed for children and adults with speech impairments." />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Kiwi Voice</title>
+  <script type="module" crossorigin src="/assets/index-DlW319fX.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/dnd-kit-ClIvLSm9.js">
+  <link rel="modulepreload" crossorigin href="/assets/ui-utils-CFTHaOjQ.js">
+  <link rel="modulepreload" crossorigin href="/assets/capacitor-CdZ5aVN6.js">
+  <link rel="stylesheet" crossorigin href="/assets/index-CN-9z5hf.css">
+</head>
+
+<body>
+  <div id="static-splash"
+    style="position: fixed; inset: 0; background: linear-gradient(135deg, #1A535C 0%, #113F46 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999999; color: white; transition: opacity 0.5s ease;">
+    <img src="/images/logo.png" alt="Kiwi Voice Logo"
+      style="width: 12rem; height: 12rem; margin-bottom: 20px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2)); border-radius: 2.5rem;">
+    <h1
+      style="margin: 0; font-size: 3rem; font-weight: bold; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Rounded', sans-serif;">
+      Kiwi Voice</h1>
+    <div
+      style="margin-top: 20px; width: 40px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden; position: relative;">
+      <div
+        style="width: 100%; height: 100%; background: white; position: absolute; left: 0; top: 0; animation: splash-load 1.5s infinite ease-in-out;">
       </div>
-      <style>
-        @keyframes splash-load {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
-        }
-      </style>
     </div>
-    <a href="#main-grid" class="skip-link">Skip to main content</a>
-    <div id="root"></div>
-  </body>
+    <style>
+      @keyframes splash-load {
+        0% {
+          transform: translateX(-100%);
+        }
+
+        100% {
+          transform: translateX(100%);
+        }
+      }
+    </style>
+  </div>
+  <a href="#main-grid" class="skip-link">Skip to main content</a>
+  <div id="root"></div>
+</body>
+
 </html>

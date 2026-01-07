@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import LevelIntro from './LevelIntro';
+import { trackAssessment } from '../utils/AnalyticsService';
 
 const questions = [
     {
@@ -47,8 +48,16 @@ const questions = [
         question: "Does your child make comments about things they see or hear?",
         emoji: "👀",
         hint: '"I see a dog", "I hear music"',
-        yesNext: null, // End - recommend phase 0 (normal mode)
+        yesNext: 7,
         noResult: 5
+    },
+    {
+        id: 7,
+        question: "Does your child ask questions to learn about things?",
+        emoji: "🔎",
+        hint: '"What is that?", "Where is mom?", "Who is that?"',
+        yesNext: null, // End - recommend phase 0 (normal mode)
+        noResult: 6
     }
 ];
 
@@ -58,7 +67,9 @@ const phaseDescriptions = {
     2: { name: "Level 2: Getting Attention", description: "Bring the tablet to an adult from across the room to make requests." },
     3: { name: "Level 3: Picture Selection", description: "Choose the right picture from multiple options on the tablet." },
     4: { name: "Level 4: Sentence Building", description: "Build sentences like 'I want cookie' using the tablet." },
-    5: { name: "Level 5: Answering Questions", description: "Respond to 'What do you want?' using the tablet." }
+    5: { name: "Level 5: Answering Questions", description: "Respond to 'What do you want?' using the tablet." },
+    6: { name: "Level 6: Commenting", description: "Share observations like 'I see a bird' using the tablet." },
+    7: { name: "Level 7: Asking Questions", description: "Ask 'What?', 'Where?', and 'Who?' to learn about the world." }
 };
 
 // High-value reinforcers that kids typically love
@@ -103,6 +114,7 @@ const Assessment = ({ onComplete, onBack }) => {
 
         // If they answered Yes to everything, recommendedPhase stays 0
         setResult(recommendedPhase);
+        trackAssessment(recommendedPhase, phaseDescriptions[recommendedPhase].name);
         setShowFavoritesPicker(true);
     };
 

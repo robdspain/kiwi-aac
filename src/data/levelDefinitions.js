@@ -174,8 +174,93 @@ export const LEVELS = {
         stage: 6,
         name: 'Mixed Commenting',
         description: 'Spontaneous use of all sentence starters',
-        next: null, // Final level
+        next: 7.1,
         threshold: 30,
+        showStrip: true,
+        gridMode: 'full'
+    },
+    7.1: {
+        stage: 7,
+        name: '"What is...?"',
+        description: 'Asking for object identification',
+        next: 7.2,
+        threshold: 20,
+        showStrip: true,
+        gridMode: 'full',
+        focusStarter: 'What is'
+    },
+    7.2: {
+        stage: 7,
+        name: '"Where is...?"',
+        description: 'Asking for location',
+        next: 7.3,
+        threshold: 20,
+        showStrip: true,
+        gridMode: 'full',
+        focusStarter: 'Where is'
+    },
+    7.3: {
+        stage: 7,
+        name: '"Who is...?"',
+        description: 'Asking for people',
+        next: 8.1,
+        threshold: 20,
+        showStrip: true,
+        gridMode: 'full',
+        focusStarter: 'Who is'
+    },
+    8.1: {
+        stage: 8,
+        name: 'Negation',
+        description: 'Using "Not" or "Don\'t" to express "Don\'t want"',
+        next: 8.2,
+        threshold: 20,
+        showStrip: true,
+        gridMode: 'full'
+    },
+    8.2: {
+        stage: 8,
+        name: 'Prepositions',
+        description: 'Using location words like "in", "on", "under"',
+        next: 8.3,
+        threshold: 20,
+        showStrip: true,
+        gridMode: 'full',
+        requirePreposition: true
+    },
+    8.3: {
+        stage: 8,
+        name: 'Possession',
+        description: 'Using "mine" and "yours"',
+        next: 9.1,
+        threshold: 20,
+        showStrip: true,
+        gridMode: 'full'
+    },
+    9.1: {
+        stage: 9,
+        name: 'Sequencing',
+        description: 'Using "First" and "Then" for schedules',
+        next: 9.2,
+        threshold: 15,
+        showStrip: true,
+        gridMode: 'full'
+    },
+    9.2: {
+        stage: 9,
+        name: 'Recounting',
+        description: 'Sharing events from the day',
+        next: 9.3,
+        threshold: 15,
+        showStrip: true,
+        gridMode: 'full'
+    },
+    9.3: {
+        stage: 9,
+        name: 'Early Literacy',
+        description: 'Sound blending and phonics',
+        next: null,
+        threshold: 20,
         showStrip: true,
         gridMode: 'full'
     }
@@ -218,6 +303,24 @@ export const STAGES = {
         icon: '💭',
         color: '#00838F',
         description: 'Making spontaneous comments about the world'
+    },
+    7: {
+        name: 'Questions',
+        icon: '🕵️',
+        color: '#E64A19',
+        description: 'Asking questions to learn about the environment (Hanley SBT Complex FCR)'
+    },
+    8: {
+        name: 'Grammar',
+        icon: '🔗',
+        color: '#7B1FA2',
+        description: 'Advanced syntax, prepositions, and negation'
+    },
+    9: {
+        name: 'Narrative',
+        icon: '📖',
+        color: '#0097A7',
+        description: 'Early storytelling, sequencing, and literacy'
     }
 };
 
@@ -228,7 +331,10 @@ export const LEVEL_ORDER = [
     3.1, 3.2, 3.3,
     4.1, 4.2, 4.3, 4.4,
     5.1, 5.2, 5.3,
-    6.1, 6.2, 6.3, 6.4
+    6.1, 6.2, 6.3, 6.4,
+    7.1, 7.2, 7.3,
+    8.1, 8.2, 8.3,
+    9.1, 9.2, 9.3
 ];
 
 // Helper functions
@@ -236,7 +342,7 @@ export const getLevel = (level) => LEVELS[level] || LEVELS[1.1];
 export const getStage = (level) => STAGES[Math.floor(level)] || STAGES[1];
 export const getLevelIndex = (level) => LEVEL_ORDER.indexOf(level);
 export const getNextLevel = (level) => LEVELS[level]?.next || null;
-export const isMaxLevel = (level) => level === 6.4;
+export const isMaxLevel = (level) => level === 9.3;
 
 // Get sub-level within stage (e.g., 4.2 → 2)
 export const getSubLevel = (level) => Math.round((level - Math.floor(level)) * 10);
@@ -582,6 +688,89 @@ export const LEVEL_INSTRUCTIONS = {
             'This is the goal - spontaneous communication',
             'Continue expanding vocabulary',
             'You\'ve done amazing work together!'
+        ]
+    },
+    7.1: {
+        title: 'Asking "What is it?"',
+        emoji: '🔍',
+        summary: 'Your child asks for the names of things they see.',
+        steps: [
+            'Place a mysterious or new item in a "box of wonders"',
+            'Model: "What is it?" while tapping the icons',
+            'Wait for the child to ask using the tablet',
+            'Immediately name the item and let them play with it',
+            'Use high-interest items (hidden toys, different snacks)'
+        ],
+        tips: [
+            'Curiosity drives this skill - use novelty!',
+            'Respond with excitement to every question',
+            'Make it a game of "I Wonder"'
+        ]
+    },
+    7.2: {
+        title: 'Asking "Where is it?"',
+        emoji: '📍',
+        summary: 'Your child asks for the location of missing items.',
+        steps: [
+            'Hide a favorite toy "accidentally" while they are watching',
+            'Model: "Where is it?" on the tablet',
+            'Help them build the question to find the toy',
+            'Give a clue or reveal the location immediately',
+            'Repeat with items relevant to their routine (shoes, backpack)'
+        ],
+        tips: [
+            'Functional use: Use items they actually need to find',
+            'Play hide and seek with objects',
+            'Transition from clear hiding to more difficult spots'
+        ]
+    },
+    7.3: {
+        title: 'Asking "Who is it?"',
+        emoji: '👥',
+        summary: 'Your child asks about people and characters.',
+        steps: [
+            'Show photos of hidden family members (behind a card)',
+            'Model: "Who is it?" on the tablet',
+            'Encourage the child to ask to reveal the person',
+            'Use favorite characters from books or shows too',
+            'Celebrate as people are revealed!'
+        ],
+        tips: [
+            'Personal photos are best for this stage',
+            'Use the Memoji people they built',
+            'Expand to "Who is...?" for teachers or friends'
+        ]
+    },
+    8.1: {
+        title: 'Descriptors',
+        emoji: '🎨',
+        summary: 'Add attributes like color, size, and texture to items.',
+        steps: [
+            'Offer two versions of the same item (red block vs blue block)',
+            'Model tapping the color then the item',
+            'Wait for child to specify which one they want',
+            'Provide the specific item requested'
+        ],
+        tips: [
+            'Use visually distinct colors or sizes',
+            'Keep the descriptor choice meaningful (big vs small cookie)',
+            'Model during art and sensory play'
+        ]
+    },
+    9.1: {
+        title: 'Sequencing',
+        emoji: '⏳',
+        summary: 'Learn to use "First" and "Then" for schedules and play.',
+        steps: [
+            'Use a visual schedule on the tablet',
+            'Model tapping "First [work]" then "Then [play]"',
+            'Execute the sequence immediately',
+            'Reinforce the concept of waiting for the reward'
+        ],
+        tips: [
+            'This is a key PLS skill (Waiting & Tolerance)',
+            'Keep the "First" task short and easy initially',
+            'Always deliver the "Then" immediately upon completion'
         ]
     }
 };

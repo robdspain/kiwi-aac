@@ -123,6 +123,8 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
         applyConfig(random.config);
     };
 
+    const [role, setRole] = useState(initialConfig?.role || 'other');
+
     const handleSave = () => {
         if (!preview) return alert('Please create an avatar');
 
@@ -131,6 +133,7 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
         const config = {
             type: 'dicebear',
             style: 'avataaars',
+            role, // Include role in config
             config: {
                 seed,
                 skinColor,
@@ -231,6 +234,41 @@ const MemojiPicker = ({ onSelect, onClose, initialName = '', initialConfig = nul
                                     style={{ border: 'none', textAlign: 'right', fontSize: '1.0625rem', outline: 'none', background: 'transparent', flex: 1, minHeight: '2.75rem' }}
                                     placeholder="e.g. Mom"
                                 />
+                            </div>
+                            <div className="ios-row" style={{ flexDirection: 'column', alignItems: 'flex-start', padding: '10px 16px', borderTop: '1px solid #E5E5EA' }}>
+                                <span style={{ fontWeight: 600, fontSize: '0.85rem', marginBottom: '8px', color: '#666' }}>ROLE</span>
+                                <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
+                                    {[
+                                        { id: 'parent', label: 'Parent', icon: '❤️' },
+                                        { id: 'teacher', label: 'Teacher', icon: '🏫' },
+                                        { id: 'therapist', label: 'Pro', icon: '🩺' },
+                                        { id: 'other', label: 'Other', icon: '👤' }
+                                    ].map(r => (
+                                        <button
+                                            key={r.id}
+                                            onClick={() => setRole(r.id)}
+                                            style={{
+                                                flex: 1,
+                                                padding: '8px 4px',
+                                                borderRadius: '10px',
+                                                border: '1px solid ' + (role === r.id ? '#007AFF' : '#E5E5EA'),
+                                                background: role === r.id ? '#007AFF15' : 'white',
+                                                color: role === r.id ? '#007AFF' : '#000',
+                                                fontSize: '0.75rem',
+                                                fontWeight: 600,
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'center',
+                                                gap: '4px',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s ease'
+                                            }}
+                                        >
+                                            <span style={{ fontSize: '1rem' }}>{r.icon}</span>
+                                            {r.label}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>

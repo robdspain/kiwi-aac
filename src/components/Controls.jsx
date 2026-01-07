@@ -1,11 +1,12 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import GuidedAccessModal from './GuidedAccessModal';
 import { STAGES, LEVEL_ORDER, getLevel, getStage } from '../data/levelDefinitions';
 import { BELL_SOUNDS, playBellSound } from '../utils/sounds';
 import { useProfile } from '../context/ProfileContext';
 import { isHighQualityVoice, getVoicesReady, pickBestVoice } from '../utils/voiceUtils';
-import { NativeBiometric } from 'capacitor-native-biometric';
+import { NativeBiometric } from '@capgo/capacitor-native-biometric';
 import { Capacitor } from '@capacitor/core';
+import { trackSentence, trackItemClick, getDailyStats, getAssessmentHistory, getTalkHistory, getRecentSentences } from '../utils/AnalyticsService';
 import { getMedia } from '../utils/db';
 import {
     IonContent,
@@ -45,7 +46,6 @@ import {
     handRightOutline,
     shieldCheckmarkOutline,
     refreshOutline,
-    trashOutline,
     saveOutline,
     closeOutline,
     personOutline,
@@ -58,7 +58,10 @@ import {
     helpCircleOutline,
     schoolOutline,
     videocamOutline,
-    trashOutline
+    trashOutline,
+    calendarOutline,
+    timeOutline,
+    checkmarkCircleOutline
 } from 'ionicons/icons';
 
 const HelperBackupRestore = lazy(() => import('./BackupRestore'));
@@ -69,7 +72,10 @@ const VoiceSetupModal = lazy(() => import('./VoiceSetupModal'));
 const TemplateGallery = lazy(() => import('./TemplateGallery'));
 const ParentGuideModal = lazy(() => import('./ParentGuideModal'));
 const VideoTutorialsModal = lazy(() => import('./VideoTutorialsModal'));
+const PhysicalCalibration = lazy(() => import('./PhysicalCalibration'));
+const TalkSampler = lazy(() => import('./TalkSampler'));
 import HelpTooltip from './HelpTooltip';
+import CircleOfSupport from './CircleOfSupport';
 
 const Controls = ({
     isEditMode,
@@ -156,6 +162,22 @@ const Controls = ({
     const [showTemplateGallery, setShowTemplateGallery] = useState(false);
     const [showParentGuide, setShowParentGuide] = useState(false);
     const [showVideoTutorials, setShowVideoTutorials] = useState(false);
+    const [showCircleOfSupport, setShowCircleOfSupport] = useState(false);
+    const [assessmentHistory, setAssessmentHistory] = useState([]);
+    const [usageStats, setUsageStats] = useState([]);
+    const [showPhysicalCalibration, setShowPhysicalCalibration] = useState(false);
+    const [showTalkSampler, setShowTalkSampler] = useState(false);
+    const [talkHistory, setTalkHistory] = useState([]);
+    const [analyticsData, setAnalyticsData] = useState({ sentences: [] });
+
+    useEffect(() => {
+        if (activeTab === 'data') {
+            setAssessmentHistory(getAssessmentHistory());
+            setUsageStats(getDailyStats(7));
+            setTalkHistory(getTalkHistory());
+            setAnalyticsData({ sentences: getRecentSentences(10) });
+        }
+    }, [activeTab]);
 
     const tabs = [
         { id: 'basic', label: 'Basic' },
@@ -452,6 +474,14 @@ const Controls = ({
                     <div style={{ marginBottom: '1.25rem' }}>
                         <button onClick={handleLock} className="apple-red-button">
                             🔒 Lock App for Child
+                        </button>
+
+                        <button
+                            onClick={() => setShowCircleOfSupport(true)}
+                            className="apple-blue-button"
+                            style={{ marginTop: '0.75rem' }}
+                        >
+                            👨‍👩‍👧‍👦 Circle of Support Dashboard
                         </button>
 
                         {isIOS && (
@@ -1078,6 +1108,17 @@ const Controls = ({
                                         }}
                                     />
                                 </IonItem>
+                                <IonItem button onClick={() => {
+                                    const phrases = ["I want apple", "Help please", "All done", "Go outside", "More cookies"];
+                                    const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+                                    trackSentence(randomPhrase);
+                                    playBellSound('success');
+                                    alert(`Simulated Trial Success: "${randomPhrase}" logged! Open Circle of Support to see.`);
+                                }}>
+                                    <IonIcon icon={playOutline} slot="start" color="success" />
+                                    <IonLabel>Simulate SBT Trial</IonLabel>
+                                    <IonNote slot="end">🧪</IonNote>
+                                </IonItem>
 
                                 {accessProfile.switchAccessEnabled && (
                                     <>
@@ -1450,6 +1491,11 @@ const Controls = ({
                                     <IonLabel>Backup & Restore All Data</IonLabel>
                                     <IonIcon icon={chevronForwardOutline} slot="end" color="medium" size="small" />
                                 </IonItem>
+                                <IonItem onClick={() => setShowPhysicalCalibration(true)} button={true}>
+                                    <IonIcon icon={expandOutline} slot="start" color="primary" />
+                                    <IonLabel>Screen Size Calibration (mm)</IonLabel>
+                                    <IonIcon icon={chevronForwardOutline} slot="end" color="medium" size="small" />
+                                </IonItem>
                                 <IonItem onClick={onReset} button={true}>
                                     <IonIcon icon={trashOutline} slot="start" color="danger" />
                                     <IonLabel color="danger" style={{ fontWeight: 600 }}>Reset All Data</IonLabel>
@@ -1463,27 +1509,123 @@ const Controls = ({
                     {activeTab === 'data' && (
                         <div style={{ background: '#F2F2F7', margin: '0 -1.5rem', padding: '0 1.5rem 1.5rem', flex: 1 }}>
 
-                            <IonListHeader style={{ marginTop: '1rem' }}>Overview</IonListHeader>
-                            <IonCard className="ion-no-margin" style={{ margin: '0 1rem' }}>
-                                <IonGrid style={{ padding: '0.9375rem' }}>
-                                    <IonRow>
-                                        <IonCol style={{ background: '#F2F2F7', margin: '0 0.25rem', padding: '0.75rem', borderRadius: '0.75rem', textAlign: 'center' }}>
-                                            <div style={{ fontSize: '1.25rem' }}>{STAGES[Math.floor(currentLevel)]?.icon || '📱'}</div>
-                                            <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.25rem', fontWeight: 700 }}>Level {Math.floor(currentLevel)}</div>
-                                        </IonCol>
-                                        <IonCol style={{ background: '#F2F2F7', margin: '0 0.25rem', padding: '0.75rem', borderRadius: '0.75rem', textAlign: 'center' }}>
-                                            <div style={{ fontSize: '1.125rem', fontWeight: 'bold', color: '#007AFF' }}>{rootItems.length}</div>
-                                            <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.25rem', fontWeight: 700 }}>Icons</div>
-                                        </IonCol>
-                                        <IonCol style={{ background: '#F2F2F7', margin: '0 0.25rem', padding: '0.75rem', borderRadius: '0.75rem', textAlign: 'center' }}>
-                                            <div style={{ fontSize: '1.125rem', fontWeight: 'bold', color: '#34C759' }}>
-                                                {Object.values(progressData || {}).reduce((acc, curr) => acc + (curr?.totalUses || 0), 0) || 0}
+                            <IonListHeader style={{ marginTop: '1rem' }}>Progress Insights</IonListHeader>
+                            <div style={{ padding: '0 1rem' }}>
+                                <div style={{
+                                    background: 'white',
+                                    borderRadius: '20px',
+                                    padding: '20px',
+                                    boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
+                                    marginBottom: '1rem'
+                                }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+                                        <div>
+                                            <div style={{ fontSize: '0.8rem', color: '#999', fontWeight: 600 }}>WEEKLY ACTIVITY</div>
+                                            <div style={{ fontSize: '1.25rem', fontWeight: 800 }}>
+                                                {usageStats.reduce((sum, d) => sum + d.clicks, 0)} <span style={{ fontSize: '0.9rem', color: '#666', fontWeight: 500 }}>taps</span>
                                             </div>
-                                            <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.25rem', fontWeight: 700 }}>Total Taps</div>
-                                        </IonCol>
-                                    </IonRow>
-                                </IonGrid>
-                            </IonCard>
+                                        </div>
+                                        <div style={{ textAlign: 'right' }}>
+                                            <div style={{ fontSize: '0.8rem', color: '#999', fontWeight: 600 }}>CURRENT STAGE</div>
+                                            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#007AFF' }}>
+                                                {STAGES[Math.floor(currentLevel)]?.icon} {Math.floor(currentLevel)}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Mini Sparkline Chart */}
+                                    <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px', height: '40px', marginBottom: '15px' }}>
+                                        {usageStats.map((d, i) => {
+                                            const max = Math.max(...usageStats.map(s => s.clicks), 1);
+                                            const height = (d.clicks / max) * 100;
+                                            return (
+                                                <div key={i} style={{
+                                                    flex: 1,
+                                                    height: `${Math.max(height, 5)}%`,
+                                                    background: i === usageStats.length - 1 ? '#007AFF' : '#E5E5EA',
+                                                    borderRadius: '4px'
+                                                }} />
+                                            );
+                                        })}
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.65rem', color: '#999', fontWeight: 700 }}>
+                                        <span>{usageStats[0]?.label}</span>
+                                        <span>TODAY</span>
+                                    </div>
+                                </div>
+
+                                {/* Assessment History */}
+                                <div style={{ background: 'white', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 4px 15px rgba(0,0,0,0.05)' }}>
+                                    <div style={{ padding: '16px', borderBottom: '1px solid #F2F2F7', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>ASSESSMENT HISTORY</div>
+                                        <IonIcon icon={calendarOutline} style={{ color: '#007AFF' }} />
+                                    </div>
+                                    <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                                        {assessmentHistory.length > 0 ? (
+                                            assessmentHistory.map((a, i) => (
+                                                <div key={i} style={{ padding: '12px 16px', borderBottom: i === assessmentHistory.length - 1 ? 'none' : '1px solid #F2F2F7', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <div>
+                                                        <div style={{ fontWeight: 700, fontSize: '0.85rem' }}>{a.name}</div>
+                                                        <div style={{ fontSize: '0.7rem', color: '#999' }}>
+                                                            {new Date(a.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                        </div>
+                                                    </div>
+                                                    <div style={{ background: '#007AFF10', color: '#007AFF', padding: '4px 10px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 800 }}>
+                                                        L{a.level}
+                                                    </div>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div style={{ padding: '24px', textAlign: 'center', color: '#999', fontSize: '0.85rem' }}>
+                                                No assessments recorded yet.
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Linguistic Environment Sampling */}
+                                    <div style={{
+                                        background: 'linear-gradient(135deg, #34C75915, #34C75905)',
+                                        borderRadius: '20px',
+                                        padding: '20px',
+                                        marginTop: '1rem',
+                                        border: '1px solid rgba(52, 199, 89, 0.2)',
+                                        boxShadow: '0 4px 15px rgba(0,0,0,0.05)'
+                                    }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                                            <div>
+                                                <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>LINGUISTIC ENVIRONMENT</div>
+                                                <div style={{ fontSize: '0.7rem', color: '#666', fontWeight: 600 }}>SAMPLE CONVERSATIONAL DENSITY</div>
+                                            </div>
+                                            <div style={{
+                                                background: '#34C759',
+                                                padding: '10px',
+                                                borderRadius: '50%',
+                                                color: 'white',
+                                                display: 'flex',
+                                                cursor: 'pointer'
+                                            }} onClick={() => setShowTalkSampler(true)}>
+                                                <IonIcon icon={micOutline} />
+                                            </div>
+                                        </div>
+
+                                        {talkHistory.length > 0 ? (
+                                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                                                <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#1D1D1F' }}>
+                                                    {Math.round(talkHistory.reduce((sum, s) => sum + s.wpm, 0) / talkHistory.length)}
+                                                </div>
+                                                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#34C759' }}>AVG WPM</div>
+                                                <div style={{ fontSize: '0.7rem', color: '#999', flex: 1, textAlign: 'right' }}>
+                                                    {talkHistory.length} samples
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div style={{ fontSize: '0.85rem', color: '#666', fontStyle: 'italic' }}>
+                                                No samples taken yet. Start a session to measure talk density!
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
 
                             <IonListHeader>Actions</IonListHeader>
                             <IonList inset={true}>
@@ -1627,7 +1769,7 @@ const Controls = ({
                                 setMemojiTarget(null);
                             }}
                             initialName={memojiTarget?.person?.word || ''}
-                            initialSeed={memojiTarget?.person?.characterConfig?.seed || null}
+                            initialConfig={memojiTarget?.person?.characterConfig || null}
                         />
                     </Suspense>
                 )
@@ -1678,6 +1820,38 @@ const Controls = ({
                         <VideoTutorialsModal
                             isOpen={showVideoTutorials}
                             onClose={() => setShowVideoTutorials(false)}
+                        />
+                    </Suspense>
+                )
+            }
+
+            {/* Circle of Support Dashboard */}
+            <CircleOfSupport
+                isOpen={showCircleOfSupport}
+                onClose={() => setShowCircleOfSupport(false)}
+                currentLevel={currentLevel}
+                peopleItems={peopleItems}
+                analyticsData={analyticsData}
+            />
+            {
+                showPhysicalCalibration && (
+                    <Suspense fallback={null}>
+                        <PhysicalCalibration
+                            isOpen={showPhysicalCalibration}
+                            onClose={() => setShowPhysicalCalibration(false)}
+                        />
+                    </Suspense>
+                )
+            }
+            {
+                showTalkSampler && (
+                    <Suspense fallback={null}>
+                        <TalkSampler
+                            isOpen={showTalkSampler}
+                            onClose={() => {
+                                setShowTalkSampler(false);
+                                setTalkHistory(getTalkHistory());
+                            }}
                         />
                     </Suspense>
                 )

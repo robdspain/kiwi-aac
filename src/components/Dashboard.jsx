@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { getTopItems, getDailyStats, getTotalStats, exportToCSV, getRecentSentences } from '../utils/AnalyticsService';
+import { getTopItems, getDailyStats, getTotalStats, exportToCSV, getRecentSentences, getTalkHistory } from '../utils/AnalyticsService';
 import { getLevel, getStage } from '../data/levelDefinitions';
 import { FREE_TIER_LIMITS } from '../utils/paywall';
 
@@ -92,11 +92,21 @@ Communication is growing! 🥝
     };
 
     return (
-        <div className="dashboard-modal">
-            <div className="dashboard-content">
-                <button className="ios-close-button" onClick={onClose} aria-label="Close">✕</button>
+        <div className="dashboard-modal" style={{
+            background: 'rgba(0,0,0,0.15)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)'
+        }}>
+            <div className="dashboard-content" style={{
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.7), rgba(242,242,247,0.7))',
+                backdropFilter: 'blur(25px) saturate(180%)',
+                WebkitBackdropFilter: 'blur(25px) saturate(180%)',
+                borderRadius: '30px',
+                border: '1px solid rgba(255,255,255,0.3)'
+            }}>
+                <button className="ios-close-button" onClick={onClose} aria-label="Close" style={{ background: 'rgba(0,0,0,0.05)', backdropFilter: 'blur(5px)' }}>✕</button>
                 <div className="dashboard-header">
-                    <h1>📊 Dashboard</h1>
+                    <h1 style={{ fontWeight: 800, letterSpacing: '-0.5px' }}>Dashboard</h1>
                     <div className="dashboard-actions">
                         <button onClick={handleShare} className="dashboard-btn primary">📤 Share Progress</button>
                         <button onClick={async () => {
@@ -449,6 +459,56 @@ Communication is growing! 🥝
                     </div>
                 )}
 
+                {/* Linguistic Environment Trend */}
+                {(() => {
+                    const talkHistory = getTalkHistory();
+                    if (talkHistory.length === 0) return null;
+
+                    const groupedByContext = talkHistory.reduce((acc, session) => {
+                        if (!acc[session.context]) acc[session.context] = [];
+                        acc[session.context].push(session.wpm);
+                        return acc;
+                    }, {});
+
+                    const contextLabels = {
+                        play: { label: 'Playtime', color: '#34C759', icon: '🧩' },
+                        car: { label: 'Car Ride', color: '#007AFF', icon: '🚗' },
+                        meal: { label: 'Mealtime', color: '#FF9500', icon: '🍱' },
+                        bath: { label: 'Bath/Bed', color: '#5856D6', icon: '🐳' }
+                    };
+
+                    return (
+                        <div className="dashboard-card" style={{ background: 'rgba(255,255,255,0.4)', marginBottom: '1.5rem', border: '1px solid rgba(255,255,255,0.3)' }}>
+                            <h3 style={{ margin: '0 0 1rem 0', color: 'var(--text-primary)', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800 }}>
+                                🗣️ Linguistic Environment (Avg WPM)
+                            </h3>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px' }}>
+                                {Object.entries(groupedByContext).map(([ctx, wpms]) => {
+                                    const avg = Math.round(wpms.reduce((a, b) => a + b, 0) / wpms.length);
+                                    const info = contextLabels[ctx] || { label: ctx, color: '#999', icon: '💬' };
+                                    return (
+                                        <div key={ctx} style={{
+                                            background: 'rgba(255,255,255,0.6)',
+                                            padding: '12px',
+                                            borderRadius: '16px',
+                                            borderLeft: `4px solid ${info.color}`,
+                                            boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+                                        }}>
+                                            <div style={{ fontSize: '0.7rem', color: '#666', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>
+                                                {info.icon} {info.label}
+                                            </div>
+                                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+                                                <div style={{ fontSize: '1.25rem', fontWeight: 900, color: info.color }}>{avg}</div>
+                                                <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#999' }}>WPM</div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    );
+                })()}
+
                 {/* Top Items */}
                 {topItems.length > 0 && (
                     <div className="dashboard-card" style={{ background: 'var(--gray-light)' }}>
@@ -527,7 +587,7 @@ Communication is growing! 🥝
                 )}
 
                 <h2 className="dashboard-section-title">🏃 Communication Progress</h2>
-                <div className="dashboard-stat-grid" style={{gridTemplateColumns: 'repeat(3, 1fr)'}}>
+                <div className="dashboard-stat-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
                     <div className="dashboard-stat-card" style={{ borderBottom: '4px solid var(--fitz-social)' }}>
                         <div className="dashboard-stat-value" style={{ color: 'var(--fitz-social)' }}>{independentTrials}</div>
                         <div className="dashboard-stat-label">Independent</div>

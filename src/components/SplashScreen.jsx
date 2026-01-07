@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
-const SplashScreen = ({ onComplete }) => {
+const SplashScreen = ({ onComplete = () => {} }) => {
     useEffect(() => {
         const timer = setTimeout(onComplete, 2000);
         return () => clearTimeout(timer);
@@ -14,16 +14,16 @@ const SplashScreen = ({ onComplete }) => {
             color: 'white', zIndex: 99999,
             animation: 'fadeIn 0.5s ease-out'
         }}>
-            <img 
-                src="/images/logo.png" 
-                alt="Kiwi Voice Logo" 
-                style={{ 
-                    width: '12rem', 
-                    height: '12rem', 
-                    marginBottom: '20px', 
+            <img
+                src="/images/logo.png"
+                alt="Kiwi Voice Logo"
+                style={{
+                    width: '12rem',
+                    height: '12rem',
+                    marginBottom: '20px',
                     filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.2))',
                     borderRadius: '2.5rem'
-                }} 
+                }}
             />
             <h1 style={{ margin: 0, fontSize: '3rem', fontWeight: 'bold', color: 'white' }}>Kiwi Voice</h1>            <div style={{
                 marginTop: '20px',

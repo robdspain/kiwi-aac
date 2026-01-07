@@ -235,6 +235,19 @@ export const FACIAL_HAIR_COLOR_HEX = {
     red: 'c93305'
 };
 
+export const HAIR_COLOR_HEX = {
+    auburn: 'a55728',
+    black: '2c1b18',
+    blonde: 'b58143',
+    blondeGolden: 'd6b370',
+    brown: '724133',
+    brownDark: '4a312c',
+    pastelPink: 'ff488e',
+    platinum: 'ecdcbf',
+    red: 'c93305',
+    silverGray: '929598'
+};
+
 export const CLOTHES_COLOR_HEX = {
     black: '262e33',
     blue01: '65c9ff',

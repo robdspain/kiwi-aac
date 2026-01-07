@@ -25,16 +25,13 @@ import {
     closeOutline,
     settingsOutline,
     happyOutline,
-    brushOutline,
     bookOutline,
     cameraOutline,
-    starOutline,
     chevronBackOutline,
     checkmarkOutline,
-    chevronForwardOutline
+    searchOutline
 } from 'ionicons/icons';
 import { EMOJI_DATA } from '../utils/emojiData';
-import { getOpenMojiUrl } from '../utils/imageUtils';
 import { AAC_LEXICON } from '../data/aacLexicon';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import ImageCropModal from './ImageCropModal';
@@ -104,13 +101,13 @@ const dedupeIcons = (icons) => {
 
 const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
     const [activeTab, setActiveTab] = useState('emoji');
-    const [activeCategory, setActiveCategory] = useState(Object.keys(iconsData)[0] || 'My Icons');
+    const [activeCategory, setActiveCategory] = useState('My Icons');
     const [searchQuery, setSearchQuery] = useState('');
     const [symbols, setSymbols] = useState([]);
     const [arasaacSymbols, setArasaacSymbols] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [showLibraryFilters, setShowLibraryFilters] = useState(false);
-    const [selectedLibraries, setSelectedLibraries] = useState(['emoji', 'openmoji', 'arasaac']);
+    const [selectedLibraries, setSelectedLibraries] = useState(['emoji', 'arasaac']);
     const [customizingItem, setCustomizingItem] = useState(null);
     const [peekItem, setPeekItem] = useState(null);
     const [customName, setCustomName] = useState('');
@@ -120,6 +117,7 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
     const fileInputRef = useRef(null);
     const lastCustomizingItemIdRef = useRef(null);
     const peekTimerRef = useRef(null);
+    const wasSearchingRef = useRef(false);
     const [showSaveOptions, setShowSaveOptions] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState('');
 
@@ -282,28 +280,41 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
     };
 
     useEffect(() => {
-        if (activeTab === 'symbol' && searchQuery.length >= 2) {
-            const timer = setTimeout(() => {
-                if (selectedLibraries.includes('emoji') || selectedLibraries.includes('openmoji')) {
-                    searchBuiltInEmojis(searchQuery);
-                } else {
-                    setSymbols([]);
-                }
-                if (selectedLibraries.includes('arasaac')) {
-                    searchARASAAC(searchQuery);
-                } else {
-                    setArasaacSymbols([]);
-                }
-            }, 600);
-            return () => clearTimeout(timer);
-        } else if (searchQuery.length < 2) {
+        const trimmedQuery = (searchQuery || '').trim();
+        if (trimmedQuery.length < 2) {
             setSymbols([]);
             setArasaacSymbols([]);
+            return;
         }
-    }, [searchQuery, selectedLibraries, activeTab]);
+        const timer = setTimeout(() => {
+            if (selectedLibraries.includes('emoji')) {
+                searchBuiltInEmojis(trimmedQuery);
+            } else {
+                setSymbols([]);
+            }
+            if (selectedLibraries.includes('arasaac')) {
+                searchARASAAC(trimmedQuery);
+            } else {
+                setArasaacSymbols([]);
+            }
+        }, 600);
+        return () => clearTimeout(timer);
+    }, [searchQuery, selectedLibraries]);
 
     useEffect(() => {
-        if (activeTab === 'emoji' || activeTab === 'openmoji') {
+        const isSearching = (searchQuery || '').trim().length >= 2;
+        if (isSearching && !wasSearchingRef.current) {
+            setActiveTab('all');
+        }
+        if (!isSearching && wasSearchingRef.current && activeTab === 'all') {
+            setActiveTab('emoji');
+        }
+        wasSearchingRef.current = isSearching;
+    }, [searchQuery, activeTab]);
+
+    useEffect(() => {
+        if ((searchQuery || '').trim().length >= 2) return;
+        if (activeTab === 'emoji') {
             const emojiCategories = ['My Icons', ...Object.keys(iconsData)];
             if (!emojiCategories.includes(activeCategory)) {
                 setActiveCategory(emojiCategories[0] || 'My Icons');
@@ -316,9 +327,10 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
         }
     }, [activeTab, activeCategory]);
 
+    const isSearching = (searchQuery || '').trim().length >= 2;
     const tabs = [
+        ...(isSearching ? [{ id: 'all', icon: searchOutline, label: 'All' }] : []),
         { id: 'emoji', icon: happyOutline, label: 'Emoji' },
-        { id: 'openmoji', icon: brushOutline, label: 'OpenMoji' },
         { id: 'symbol', icon: bookOutline, label: 'Symbols' },
         { id: 'photo', icon: cameraOutline, label: 'Photos' }
     ];
@@ -349,13 +361,15 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                     </IonButtons>
                 </IonToolbar>
                 {!customizingItem && (
-                    <IonToolbar>
-                        <IonSearchbar
-                            value={searchQuery}
-                            onIonInput={(e) => setSearchQuery(e.detail.value)}
-                            placeholder="Search icons..."
-                            style={{ '--border-radius': '0.75rem' }}
-                        />
+                    <IonToolbar style={{ '--padding-top': '0.25rem', '--padding-bottom': '0.25rem', '--min-height': '4.25rem' }}>
+                        <div style={{ padding: '0.25rem 0.75rem' }}>
+                            <IonSearchbar
+                                value={searchQuery}
+                                onIonInput={(e) => setSearchQuery(e.detail.value ?? '')}
+                                placeholder="Search icons..."
+                                style={{ '--border-radius': '0.75rem', margin: 0 }}
+                            />
+                        </div>
                     </IonToolbar>
                 )}
             </IonHeader>
@@ -366,6 +380,17 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                         <div style={{ width: '8rem', height: '8rem', background: 'white', borderRadius: '1.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 24px rgba(0,0,0,0.1)', fontSize: '4.5rem', overflow: 'hidden' }}>
                             {customizingItem.isImage ? <img src={customizingItem.icon} alt="Selected" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span>{customizingItem.icon}</span>}
                         </div>
+                        <IonButton
+                            expand="block"
+                            fill="outline"
+                            onClick={() => {
+                                setSearchQuery(customName || customizingItem.word || '');
+                                setCustomizingItem(null);
+                            }}
+                            style={{ width: '100%', maxWidth: '20rem' }}
+                        >
+                            Choose Different Icon
+                        </IonButton>
                         <IonList inset={true} style={{ width: '100%' }}>
                             <IonItem lines="none" style={{ '--background': 'transparent' }}>
                                 <div style={{ width: '100%', textAlign: 'center' }}>
@@ -418,8 +443,7 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                                 <IonList inset={true}>
                                     <IonListHeader>Search Sources</IonListHeader>
                                     {[
-                                        { id: 'emoji', label: 'System Emoji' },
-                                        { id: 'openmoji', label: 'OpenMoji' },
+                                        { id: 'emoji', label: 'Emoji' },
                                         { id: 'arasaac', label: 'Symbols' }
                                     ].map(lib => (
                                         <IonItem key={lib.id} button onClick={() => {
@@ -450,7 +474,7 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                                 ))}
                             </IonSegment>
 
-                            {!searchQuery.trim() && (activeTab === 'emoji' || activeTab === 'openmoji' || activeTab === 'symbol') && (
+                            {!isSearching && (activeTab === 'emoji' || activeTab === 'symbol') && (
                                 <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '1rem' }}>
                                     {(activeTab === 'symbol' ? Object.keys(EMOJI_DATA).filter(k => !k.startsWith('Tone') && !k.startsWith('Skin')) : ['My Icons', ...Object.keys(iconsData)]).map(cat => (
                                         <button
@@ -481,6 +505,33 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
 
                             <div className="picker-grid">
                                 {(() => {
+                                    const normalizedQuery = (searchQuery || '').trim().toLowerCase();
+                                    const userIconsList = (userItems || [])
+                                        .filter(item => item.type === 'button')
+                                        .map(item => ({ w: item.word, i: item.icon, isUserIcon: true }));
+                                    const libraryIcons = Object.values(iconsData).flat();
+                                    const emojiSearchMatches = symbols.map(item => ({ w: item.name, i: item.emoji }));
+
+                                    const emojiResults = isSearching
+                                        ? (selectedLibraries.includes('emoji')
+                                            ? dedupeIcons([
+                                                ...userIconsList.filter(item => item.w.toLowerCase().includes(normalizedQuery)),
+                                                ...libraryIcons.filter(item => item.w.toLowerCase().includes(normalizedQuery)),
+                                                ...emojiSearchMatches
+                                            ])
+                                            : [])
+                                        : (activeCategory === 'My Icons' ? dedupeIcons(userIconsList) : iconsData[activeCategory] || []);
+
+                                    const symbolResults = isSearching
+                                        ? (selectedLibraries.includes('arasaac')
+                                            ? arasaacSymbols.map(item => ({ ...item, isArasaac: true }))
+                                            : [])
+                                        : (EMOJI_DATA[activeCategory] || []);
+
+                                    const photoResults = isSearching
+                                        ? userPhotos.filter(photo => (photo.w || '').toLowerCase().includes(normalizedQuery))
+                                        : userPhotos;
+
                                     if (activeTab === 'photo') {
                                         return (
                                             <>
@@ -490,9 +541,9 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                                                         Upload from Device
                                                     </IonButton>
                                                 </div>
-                                                {userPhotos.length === 0 ? (
+                                                {photoResults.length === 0 ? (
                                                     <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '2rem', opacity: 0.5 }}>No photos yet.</div>
-                                                ) : userPhotos.map((photo, index) => (
+                                                ) : photoResults.map((photo, index) => (
                                                     <button key={index} className="picker-btn" onClick={() => handleItemSelect(photo.w, photo.i, true)} style={{ minHeight: '6rem' }}>
                                                         <img src={photo.i} alt={photo.w} style={{ width: '100%', height: '4rem', objectFit: 'cover', borderRadius: '0.5rem' }} />
                                                         <span style={{ fontSize: '0.75rem', marginTop: '0.25rem', opacity: 0.8, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '100%' }}>{photo.w}</span>
@@ -502,45 +553,32 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                                         );
                                     }
 
-                                    let results = [];
-                                    const normalizedQuery = searchQuery.trim().toLowerCase();
+                                    const allResults = isSearching ? [
+                                        ...emojiResults.map(item => ({ ...item, resultType: 'emoji' })),
+                                        ...symbolResults.map(item => ({ ...item, resultType: 'symbol', isArasaac: item.isArasaac || item.source === 'Symbols' })),
+                                        ...photoResults.map(item => ({ ...item, resultType: 'photo', isPhoto: true }))
+                                    ] : [];
 
-                                    if (activeTab === 'emoji' || activeTab === 'openmoji') {
-                                        const userIconsList = (userItems || []).filter(item => item.type === 'button').map(item => ({ w: item.word, i: item.icon, isUserIcon: true }));
-                                        const libraryIcons = Object.values(iconsData).flat();
-                                        if (normalizedQuery) {
-                                            const userMatches = userIconsList.filter(item => item.w.toLowerCase().includes(normalizedQuery));
-                                            const libraryMatches = libraryIcons.filter(item => item.w.toLowerCase().includes(normalizedQuery));
-                                            const allEmojis = Object.values(EMOJI_DATA).flat();
-                                            const emojiResults = allEmojis.filter(item => item.name?.toLowerCase().includes(normalizedQuery)).slice(0, 30);
-                                            results = dedupeIcons([...userMatches, ...libraryMatches, ...emojiResults.map(e => ({ w: e.name, i: e.emoji }))]);
-                                        } else {
-                                            results = (activeCategory === 'My Icons' ? dedupeIcons(userIconsList) : iconsData[activeCategory] || []);
-                                        }
+                                    let results = [];
+                                    if (activeTab === 'all') {
+                                        results = allResults;
+                                    } else if (activeTab === 'emoji') {
+                                        results = emojiResults.map(item => ({ ...item, resultType: 'emoji' }));
                                     } else if (activeTab === 'symbol') {
-                                        if (normalizedQuery) {
-                                            if (selectedLibraries.includes('emoji') || selectedLibraries.includes('openmoji')) results.push(...symbols.map(s => ({ ...s, type: 'emoji' })));
-                                            if (selectedLibraries.includes('arasaac')) results.push(...arasaacSymbols.map(s => ({ ...s, type: 'arasaac', isArasaac: true })));
-                                        } else {
-                                            results = EMOJI_DATA[activeCategory] || [];
-                                        }
+                                        results = symbolResults.map(item => ({ ...item, resultType: 'symbol', isArasaac: item.isArasaac || item.source === 'Symbols' }));
                                     }
 
                                     if (results.length === 0 && !isLoading) return <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '2.5rem', color: '#666' }}>No icons found</div>;
 
                                     return results.map((item, index) => {
+                                        const resultType = item.resultType || activeTab;
                                         const iconVal = item.icon || item.emoji || item.i;
                                         const wordVal = item.word || item.name || item.w;
                                         const isAlreadyImage = typeof iconVal === 'string' && (iconVal.startsWith('http') || iconVal.startsWith('data:'));
                                         const isArasaac = item.isArasaac;
-
+                                        const isPhoto = item.isPhoto || resultType === 'photo';
                                         let displayIcon = iconVal;
-                                        let isOutputImage = isAlreadyImage || isArasaac;
-
-                                        if ((activeTab === 'openmoji' || (activeTab === 'symbol' && selectedLibraries.includes('openmoji'))) && !isAlreadyImage) {
-                                            displayIcon = getOpenMojiUrl(iconVal);
-                                            isOutputImage = true;
-                                        }
+                                        let isOutputImage = isAlreadyImage || isArasaac || isPhoto;
 
                                         return (
                                             <button
@@ -555,8 +593,7 @@ const PickerModal = ({ isOpen, onClose, onSelect, userItems = [] }) => {
                                                     <ImageWithFallback src={displayIcon} alt={wordVal} fallback={iconVal} style={{ width: '72px', height: '72px', objectFit: 'contain', marginBottom: '8px' }} />
                                                 ) : <span className="emoji-span">{displayIcon}</span>}
                                                 <span>{wordVal}</span>
-                                                {item.isUserIcon && <span style={{ position: 'absolute', top: '0.125rem', right: '0.125rem', fontSize: '0.5rem', background: '#34C759', color: 'white', borderRadius: '0.25rem', padding: '0.0625rem 0.1875rem' }}>MY</span>}
-                                                {isArasaac && <span style={{ position: 'absolute', top: '0.125rem', right: '0.125rem', fontSize: '0.5rem', background: '#007AFF', color: 'white', borderRadius: '0.25rem', padding: '0.0625rem 0.1875rem' }}>SYM</span>}
+                                                {item.isUserIcon && <span style={{ position: 'absolute', top: '0.125rem', right: '0.125rem', fontSize: '0.5rem', background: 'var(--success)', color: 'white', borderRadius: '0.25rem', padding: '0.0625rem 0.1875rem' }}>MY</span>}
                                             </button>
                                         );
                                     });
