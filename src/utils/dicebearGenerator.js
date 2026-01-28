@@ -339,7 +339,7 @@ export function generateAvatar(options = {}) {
         backgroundColor: [backgroundColor]
     };
 
-    const style = avataaars.default || avataaars;
+    const style = avataaars;
     return createAvatar(style, dicebearOptions).toDataUri();
 }
 

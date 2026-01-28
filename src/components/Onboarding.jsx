@@ -19,6 +19,8 @@ const Onboarding = ({ onComplete }) => {
     const [learnerPhoto, setLearnerPhoto] = useState(null);
     const [cropSource, setCropSource] = useState(null);
     const [showCropper, setShowCropper] = useState(false);
+    const [isCalibrationComplete, setIsCalibrationComplete] = useState(false);
+    const [isAssessmentComplete, setIsAssessmentComplete] = useState(false);
     const fileInputRef = useRef(null);
 
     const takePhoto = async () => {
@@ -114,7 +116,7 @@ const Onboarding = ({ onComplete }) => {
                         }}>EDIT</div>
                     </div>
                     <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        <label style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-secondary)', marginLeft: '0.5rem' }}>LEARNER&apos;S NAME</label>
+                        <label style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-secondary)', marginLeft: '0.5rem' }}>LEARNER'S NAME</label>
                         <input
                             type="text"
                             placeholder="Enter name (optional)"
@@ -202,7 +204,7 @@ const Onboarding = ({ onComplete }) => {
                             <p style={{ marginBottom: '0.75rem' }}><strong>Step 1:</strong> Go to Settings → Accessibility → Guided Access</p>
                             <p style={{ marginBottom: '0.75rem' }}><strong>Step 2:</strong> Turn it ON and set a passcode</p>
                             <p style={{ marginBottom: '0.75rem' }}><strong>Step 3:</strong> Open Kiwi Voice and <strong>triple-click the Side Button</strong></p>
-                            <p style={{ marginBottom: '0.75rem' }}><strong>Step 4:</strong> Tap &quot;Start&quot; to lock the app</p>
+                            <p style={{ marginBottom: '0.75rem' }}><strong>Step 4:</strong> Tap "Start" to lock the app</p>
                             <p style={{ marginBottom: '0' }}><strong>To Exit:</strong> Triple-click Side Button again and enter passcode</p>
                         </div>
                     </div>
@@ -221,13 +223,18 @@ const Onboarding = ({ onComplete }) => {
     };
 
     const handleNext = () => {
-        if (step === 0) {
-            // After welcome, check motor skills
-            setShowCalibration(true);
+        if (step === 0 && (!isCalibrationComplete || !isAssessmentComplete)) {
+            // After welcome, check motor skills if not done
+            if (!isCalibrationComplete) {
+                setShowCalibration(true);
+            } else if (!isAssessmentComplete) {
+                setShowAssessment(true);
+            }
         } else if (step < steps.length - 1) {
             setStep(step + 1);
         } else {
             // Complete onboarding
+            console.log('Onboarding: Final Get Started clicked. Calling onComplete...');
             localStorage.setItem('kiwi-onboarding-complete', 'true');
             onComplete(recommendedPhase || 0, selectedFavorites, canRead, { 
                 name: learnerName, 
@@ -238,8 +245,13 @@ const Onboarding = ({ onComplete }) => {
     };
 
     const handleCalibrationComplete = () => {
+        setIsCalibrationComplete(true);
         setShowCalibration(false);
-        setShowAssessment(true);
+        if (!isAssessmentComplete) {
+            setShowAssessment(true);
+        } else {
+            setStep(1);
+        }
     };
 
     const handleAssessmentComplete = (phase, favorites, literacy, answers) => {
@@ -247,14 +259,16 @@ const Onboarding = ({ onComplete }) => {
         setSelectedFavorites(favorites || []);
         setCanRead(literacy);
         setAssessmentAnswers(answers); // Capture detailed answers
+        setIsAssessmentComplete(true);
         setShowAssessment(false);
-        setStep(1); // Move to "How to Use" step
+        console.log('Onboarding: Assessment complete. Moving to step 1.');
+        setStep(1); // Move to "Who are we helping?" step
     };
 
     const handleFavoritesComplete = (favs) => {
         setSelectedFavorites(favs);
         setShowFavorites(false);
-        setStep(1); // Move to "How to Use" step
+        setStep(1); // Move to "Who are we helping?" step
     };
 
     const handleSkip = () => {

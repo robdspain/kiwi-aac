@@ -377,8 +377,6 @@ Communication is growing! 🥝
                 <div className="dashboard-actions" style={{ padding: '0 0.5rem' }}>
                     <button onClick={handleShare} className="dashboard-btn primary" style={{ width: '100%', padding: '0.85rem', borderRadius: '14px', fontWeight: 800 }}>📤 Share Progress Report</button>
                 </div>
-                    </div>
-                )}
             </div>
         </div>
     );

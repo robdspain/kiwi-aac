@@ -1475,19 +1475,84 @@ function App() {
         </div>
       </DndContext>
       {!isLocked && !isEditMode && !isTrainingMode && !showOnboarding && <button id="settings-button" onClick={() => setIsEditMode(true)} aria-label="Open Settings">⚙️</button>}
-      {!isLocked && <Controls handleRef={controlsHandleRef} isEditMode={isEditMode} isTrainingMode={isTrainingMode} currentPhase={currentPhase} currentLevel={currentLevel} showStrip={showStrip} currentContext={currentContext} contexts={contexts} onSetContext={handleSetContext} onToggleMenu={() => setIsEditMode(!isEditMode)} onAddItem={handleAddItem} onAddContext={handleAddContext} onRenameContext={handleRenameContext} onDeleteContext={handleDeleteContext} onSetLevel={handleSetLevel} onStartTraining={() => { setIsTrainingMode(true); setTrainingSelection([]); }} onStartEssentialSkills={() => setIsEssentialSkillsMode(true)} onReset={() => { if (confirm("Reset everything?")) { localStorage.clear(); location.reload(); } }} onShuffle={handleShuffle} onStopTraining={handleStopTraining} onOpenPicker={handlePickerOpen} onToggleDashboard={() => setShowDashboard(true)} onRedoCalibration={() => setShowCalibration(true)} onToggleLock={() => setIsLocked(true)} voiceSettings={voiceSettings} onUpdateVoiceSettings={setVoiceSettings} gridSize={gridSize} onUpdateGridSize={setGridSize} phase1TargetId={phase1TargetId} onSetPhase1Target={setPhase1TargetId} rootItems={currentPageItems} allRootItems={rootItems} colorTheme={colorTheme} onSetColorTheme={setColorTheme} triggerPaywall={triggerPaywall} bellSound={bellSound} onUpdateBellSound={setBellSound} speechDelay={speechDelay} onUpdateSpeechDelay={setSpeechDelay} autoSpeak={autoSpeak} onUpdateAutoSpeak={setAutoSpeak} isScanning={isScanning} onToggleScanning={() => setIsScanning(!isScanning)} scanSpeed={scanSpeed} onUpdateScanSpeed={setScanSpeed} isLayoutLocked={isLayoutLocked} onToggleLayoutLock={() => setIsLayoutLocked(!isLayoutLocked)} isColorCodingEnabled={isColorCodingEnabled} onToggleColorCoding={() => setIsColorCodingEnabled(!isColorCodingEnabled)} showCategoryHeaders={showCategoryHeaders} onToggleCategoryHeaders={() => setShowCategoryHeaders(!showCategoryHeaders)} proficiencyLevel={proficiencyLevel} onUpdateProficiencyLevel={setProficiencyLevel} onAddPage={handleAddNewPage} onDeletePage={handleDeletePage} currentPageIndex={currentPageIndex} onAddFavorites={(favorites) => {
-        const nowTime = new Date().getTime();
-        const newFavs = favorites.map((fav, i) => ({ id: `fav-${nowTime}-${i}`, type: 'button', word: fav.word || fav.label, icon: fav.icon, bgColor: '#FFF3E0' }));
+      {!isLocked && (
+        <Controls 
+          handleRef={controlsHandleRef} 
+          isEditMode={isEditMode} 
+          isTrainingMode={isTrainingMode} 
+          currentPhase={currentPhase} 
+          currentLevel={currentLevel} 
+          showStrip={showStrip} 
+          currentContext={currentContext} 
+          contexts={contexts} 
+          onSetContext={handleSetContext} 
+          onToggleMenu={() => setIsEditMode(!isEditMode)} 
+          onAddItem={handleAddItem} 
+          onAddContext={handleAddContext} 
+          onRenameContext={handleRenameContext} 
+          onDeleteContext={handleDeleteContext} 
+          onSetLevel={handleSetLevel} 
+          onStartTraining={() => { setIsTrainingMode(true); setTrainingSelection([]); }} 
+          onStartEssentialSkills={() => setIsEssentialSkillsMode(true)} 
+          onReset={() => { if (confirm("Reset everything?")) { localStorage.clear(); location.reload(); } }} 
+          onShuffle={handleShuffle} 
+          onStopTraining={handleStopTraining} 
+          onOpenPicker={handlePickerOpen} 
+          onToggleDashboard={() => setShowDashboard(true)} 
+          onRedoCalibration={() => setShowCalibration(true)} 
+          onToggleLock={() => setIsLocked(true)} 
+          voiceSettings={voiceSettings} 
+          onUpdateVoiceSettings={setVoiceSettings} 
+          gridSize={gridSize} 
+          onUpdateGridSize={setGridSize} 
+          phase1TargetId={phase1TargetId} 
+          onSetPhase1Target={setPhase1TargetId} 
+          rootItems={currentPageItems} 
+          allRootItems={rootItems} 
+          colorTheme={colorTheme} 
+          onSetColorTheme={setColorTheme} 
+          triggerPaywall={triggerPaywall} 
+          bellSound={bellSound} 
+          onUpdateBellSound={setBellSound} 
+          speechDelay={speechDelay} 
+          onUpdateSpeechDelay={setSpeechDelay} 
+          autoSpeak={autoSpeak} 
+          onUpdateAutoSpeak={setAutoSpeak} 
+          isScanning={isScanning} 
+          onToggleScanning={() => setIsScanning(!isScanning)} 
+          scanSpeed={scanSpeed} 
+          onUpdateScanSpeed={setScanSpeed} 
+          isLayoutLocked={isLayoutLocked} 
+          onToggleLayoutLock={() => setIsLayoutLocked(!isLayoutLocked)} 
+          isColorCodingEnabled={isColorCodingEnabled} 
+          onToggleColorCoding={() => setIsColorCodingEnabled(!isColorCodingEnabled)} 
+          showCategoryHeaders={showCategoryHeaders} 
+          onToggleCategoryHeaders={() => setShowCategoryHeaders(!showCategoryHeaders)} 
+          proficiencyLevel={proficiencyLevel} 
+          onUpdateProficiencyLevel={setProficiencyLevel} 
+          onAddPage={handleAddNewPage} 
+          onDeletePage={handleDeletePage} 
+          currentPageIndex={currentPageIndex} 
+          onAddPerson={handleAddPerson} 
+          onUpdatePerson={handleUpdatePerson} 
+          onRemovePerson={handleRemovePerson} 
+          progressData={progressData} 
+          analyticsData={progressData} 
+          onAddFavorites={(favorites) => {
+            const nowTime = new Date().getTime();
+            const newFavs = favorites.map((fav, i) => ({ id: `fav-${nowTime}-${i}`, type: 'button', word: fav.word || fav.label, icon: fav.icon, bgColor: '#FFF3E0' }));
 
-        const newRootItems = [...rootItems];
-        const list = [...(newRootItems[currentPageIndex]?.items || [])];
-        let insertIndex = 0;
-        for (let i = 0; i < list.length; i++) if (list[i].category === 'starter' || list[i].category === 'core') insertIndex = i + 1; else break;
-        list.splice(insertIndex, 0, ...newFavs);
+            const newRootItems = [...rootItems];
+            const list = [...(newRootItems[currentPageIndex]?.items || [])];
+            let insertIndex = 0;
+            for (let i = 0; i < list.length; i++) if (list[i].category === 'starter' || list[i].category === 'core') insertIndex = i + 1; else break;
+            list.splice(insertIndex, 0, ...newFavs);
 
-        newRootItems[currentPageIndex] = { ...newRootItems[currentPageIndex], items: list };
-        setRootItems(newRootItems);
-      }} onAddPerson={handleAddPerson} onUpdatePerson={handleUpdatePerson} onRemovePerson={handleRemovePerson} progressData={progressData} analyticsData={progressData} />}
+            newRootItems[currentPageIndex] = { ...newRootItems[currentPageIndex], items: list };
+            setRootItems(newRootItems);
+          }}
+        />
+      )}
 
       {isLocked && (
         <div style={{ position: 'fixed', bottom: '0', left: '0', right: '0', padding: '12px 20px calc(12px + env(safe-area-inset-bottom, 0px)) 20px', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)', borderTopLeftRadius: '20px', borderTopRightRadius: '20px', boxShadow: '0 -2px 10px rgba(0,0,0,0.1)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100, cursor: 'pointer', textAlign: 'center' }}
@@ -1658,10 +1723,20 @@ function App() {
       {showOnboarding && (
         <Suspense fallback={null}>
           <Onboarding onComplete={(recommendedPhase, favorites, canRead, learnerProfile) => {
-            if (typeof recommendedPhase === 'number') handleSetPhase(recommendedPhase);
-            if (canRead !== null && canRead !== undefined) { localStorage.setItem('kiwi-literacy', JSON.stringify(canRead)); if (canRead === true || canRead === 'partial') document.body.classList.add('literacy-mode'); }
+            console.log('App: Onboarding onComplete called', { recommendedPhase, favoritesCount: favorites?.length, canRead });
+            
+            if (typeof recommendedPhase === 'number') {
+              console.log('App: Setting phase to', recommendedPhase);
+              handleSetPhase(recommendedPhase);
+            }
+
+            if (canRead !== null && canRead !== undefined) {
+              localStorage.setItem('kiwi-literacy', JSON.stringify(canRead));
+              if (canRead === true || canRead === 'partial') document.body.classList.add('literacy-mode');
+            }
 
             if (learnerProfile) {
+              console.log('App: Updating learner profile', learnerProfile.name);
               const profileUpdates = {};
               if (learnerProfile.name) profileUpdates.name = learnerProfile.name;
               if (learnerProfile.photo) profileUpdates.avatar = learnerProfile.photo;
@@ -1684,8 +1759,11 @@ function App() {
               newRootItems[currentPageIndex] = { ...newRootItems[currentPageIndex], items: list };
               setRootItems(newRootItems);
             }
+
+            console.log('App: Hiding onboarding and starting tour');
             setShowOnboarding(false);
             setIsEditMode(false); // Ensure controls are closed
+            
             // Trigger tour if not completed
             if (!localStorage.getItem('kiwi-tour-completed')) {
               setShowTour(true);
