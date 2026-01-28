@@ -11,7 +11,8 @@ import {
     IonList,
     IonItem,
     IonLabel,
-    IonNote
+    IonNote,
+    IonBadge
 } from '@ionic/react';
 import { closeOutline, bookOutline, rocketOutline, checkmarkCircleOutline } from 'ionicons/icons';
 

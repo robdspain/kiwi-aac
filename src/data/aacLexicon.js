@@ -63,7 +63,7 @@ export const AAC_LEXICON = {
     "i": { type: "pronoun", emoji: "👤" }, "me": { type: "pronoun", emoji: "👤" }, "my": { type: "pronoun", emoji: "👤" }, "you": { type: "pronoun", emoji: "👤" }, "your": { type: "pronoun", emoji: "👤" }, "he": { type: "pronoun", emoji: "👦" }, "she": { type: "pronoun", emoji: "👧" },
     "we": { type: "pronoun", emoji: "👥" }, "they": { type: "pronoun", emoji: "👥" }, "it": { type: "pronoun", emoji: "📦" }, "that": { type: "pronoun", emoji: "👉" }, "this": { type: "pronoun", emoji: "👈" },
     "hello": { type: "social", emoji: "👋" }, "hi": { type: "social", emoji: "👋" }, "goodbye": { type: "social", emoji: "👋" }, "bye": { type: "social", emoji: "👋" }, "bye-bye": { type: "social", emoji: "👋" }, "uh-oh": { type: "social", emoji: "😮" },
-    "sleep": { type: "verb", emoji: "😴", inflections: ["sleeping", "slept", "sleeps"] }, "night-night": { type: "social", emoji: "😴" },
+    "night-night": { type: "social", emoji: "😴" },
 
     // --- MISC/PREPOSITIONS (Orange) ---
     "in": { type: "misc", emoji: "📥" }, "on": { type: "misc", emoji: "🔛" }, "up": { type: "misc", emoji: "⬆️" }, "down": { type: "misc", emoji: "⬇️" }, "out": { type: "misc", emoji: "📤" }, "off": { type: "misc", emoji: "📴" }, "with": { type: "misc", emoji: "➕" }, "over": { type: "misc", emoji: "⤴️" }, "under": { type: "misc", emoji: "⤵️" },
